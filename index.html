@@ -734,7 +734,7 @@ if(!G.migrated){
 }
 let combo = 0;
 
-const RANKS = [[1,"Lab Rat"],[2,"Wakefield Minion"],[3,"Curious Participant"],[5,"Research Assistant"],[7,"Classically Conditioned"],[9,"Undergraduate"],[11,"Wakefield's Teacher's Pet"],[13,"Graduate Researcher"],[15,"Extraneous Variable"],[17,"Doctor of Psychology"],[20,"Professor"],[23,"Asch's Lone Dissenter"],[26,"Head of Department"],[30,"Grand Master of the Mind"],[35,"Wakefield's Apprentice"],[40,"Keeper of the Fount"],[45,"Mr Wakefield in Training"],[50,"Dedicated Wakefield Stan"]];
+const RANKS = [[1,"Lab Rat"],[2,"Wakefield Minion"],[3,"Tabula Rasa"],[4,"Confused Participant"],[5,"Back-Row Napper"],[6,"Pavlov's Puppy"],[7,"Wakefield's Seat Warmer"],[8,"Magic Number 7±2"],[9,"Chunking Champion"],[10,"Bobo Doll Bystander"],[11,"Teacher's Pet (Wakefield Edition)"],[12,"Extraneous Variable"],[13,"Phonological Looper"],[14,"Highlighter Hoarder"],[15,"Wakefield's Whiteboard Wiper"],[16,"Demand Characteristic"],[17,"Agentic State Agent"],[18,"Asch's Lone Dissenter"],[19,"Strange Situation Survivor"],[20,"Wakefield's Hall Monitor"],[21,"Securely Attached"],[22,"Null Hypothesis Rejecter"],[23,"Type I Error Dodger"],[24,"Sign Test Sorcerer"],[25,"Wakefield's Favourite (Allegedly)"],[26,"Neuroplastic Fantastic"],[27,"Hemisphere Hero"],[28,"Fight or Flight Fanatic"],[29,"Synapse Surfer"],[30,"Wakefield's Lab Assistant"],[31,"Superego in Charge"],[32,"Self-Actualiser"],[33,"Cognitive Distortion Detector"],[34,"Data-Driven Detective"],[35,"Wakefield's Essay Whisperer"],[36,"Diathesis-Stress Defuser"],[37,"Dopamine Decoder"],[38,"Rusbult's Investor"],[39,"Parasocial Superfan"],[40,"Keeper of the Fount"],[41,"Peer Reviewer"],[42,"Spearman's Rho-mantic"],[43,"Pearson's Pal"],[44,"Wakefield's Red Pen"],[45,"AO3 Ace"],[46,"PEEL Master"],[47,"Level 4 Essay Machine"],[48,"Wakefield's Right-Hand Rat"],[49,"Chartered Psychologist"],[50,"Mr Wakefield in Training"],[51,"Professor of Pop Quizzes"],[52,"Head of Department"],[53,"Wakefield's Understudy"],[54,"Paradigm Shifter"],[55,"Grand Master of the Mind"],[56,"Fount of Wisdom (Junior)"],[57,"Wakefield's Chosen One"],[58,"Walking Textbook"],[59,"Basically Mr Wakefield"],[60,"Dedicated Wakefield Stan"]];
 const lvlStart = n => 50*(n-1)*n;           // XP needed to reach level n
 function lvlFor(xp){ let n=1; while(xp>=lvlStart(n+1)) n++; return n; }
 function rankFor(n){ let r=RANKS[0][1]; RANKS.forEach(([l,name])=>{ if(n>=l) r=name; }); return r; }
@@ -904,7 +904,7 @@ const BADGES = [
   ["l5","⭐","Rising star","Reach level 5",()=>lvlFor(G.xp)>=5],
   ["l10","🌟","Shining","Reach level 10",()=>lvlFor(G.xp)>=10],
   ["l20","🏆","Elite","Reach level 20",()=>lvlFor(G.xp)>=20],
-  ["l50","🫡","Certified stan","Reach level 50: Dedicated Wakefield Stan",()=>lvlFor(G.xp)>=50],
+  ["l50","🫡","Certified stan","Reach level 60: Dedicated Wakefield Stan",()=>lvlFor(G.xp)>=60],
   ["gold1","✨","Lucky find","Get a golden card right",()=>G.st.gold>=1, true],
   ["gold10","💰","Gold digger","Get 10 golden cards right",()=>G.st.gold>=10, true],
   ["weekend","🛋️","Weekend warrior","Revise on a Saturday or Sunday",()=>[0,6].includes(new Date().getDay()) && G.st.cards>0, true],
