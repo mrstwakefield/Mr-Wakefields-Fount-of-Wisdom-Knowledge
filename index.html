@@ -675,7 +675,7 @@ if(!G.migrated){
 }
 let combo = 0;
 
-const RANKS = [[1,"Lab Rat"],[3,"Curious Participant"],[5,"Research Assistant"],[8,"Undergraduate"],[12,"Graduate Researcher"],[16,"Doctor of Psychology"],[20,"Professor"],[25,"Head of Department"],[30,"Grand Master of the Mind"]];
+const RANKS = [[1,"Lab Rat"],[2,"Wakefield Minion"],[3,"Curious Participant"],[5,"Research Assistant"],[7,"Classically Conditioned"],[9,"Undergraduate"],[11,"Wakefield's Teacher's Pet"],[13,"Graduate Researcher"],[15,"Confounding Variable"],[17,"Doctor of Psychology"],[20,"Professor"],[23,"Asch's Lone Dissenter"],[26,"Head of Department"],[30,"Grand Master of the Mind"],[35,"Wakefield's Apprentice"],[40,"Keeper of the Fount"],[45,"Mr Wakefield in Training"],[50,"Dedicated Wakefield Stan"]];
 const lvlStart = n => 50*(n-1)*n;           // XP needed to reach level n
 function lvlFor(xp){ let n=1; while(xp>=lvlStart(n+1)) n++; return n; }
 function rankFor(n){ let r=RANKS[0][1]; RANKS.forEach(([l,name])=>{ if(n>=l) r=name; }); return r; }
@@ -844,6 +844,7 @@ const BADGES = [
   ["l5","⭐","Rising star","Reach level 5",()=>lvlFor(G.xp)>=5],
   ["l10","🌟","Shining","Reach level 10",()=>lvlFor(G.xp)>=10],
   ["l20","🏆","Elite","Reach level 20",()=>lvlFor(G.xp)>=20],
+  ["l50","🫡","Certified stan","Reach level 50: Dedicated Wakefield Stan",()=>lvlFor(G.xp)>=50],
   ["gold1","✨","Lucky find","Get a golden card right",()=>G.st.gold>=1, true],
   ["gold10","💰","Gold digger","Get 10 golden cards right",()=>G.st.gold>=10, true],
   ["weekend","🛋️","Weekend warrior","Revise on a Saturday or Sunday",()=>[0,6].includes(new Date().getDay()) && G.st.cards>0, true],
