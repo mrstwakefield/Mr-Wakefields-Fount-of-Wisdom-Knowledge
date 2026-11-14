@@ -2186,6 +2186,7 @@ const DESIGNS = [
 
 /* ---- ✍️ writing: essays and design a study ---- */
 const DRAFT_KEY="rr-psych-drafts";
+const WRITING_BOOST=2; // long writing (essays, design a study) earns double XP
 function drafts(){ try{ return JSON.parse(localStorage.getItem(DRAFT_KEY)||"{}"); }catch(e){ return {}; } }
 function saveDraft(id,txt){ const d=drafts(); if(txt) d[id]=txt; else delete d[id]; try{ localStorage.setItem(DRAFT_KEY,JSON.stringify(d)); }catch(e){} }
 const wr={mode:"essay", topic:"", marks:"", cur:null, revealed:false, timerEnd:0, timer:null, design:null, step:0, picks:[], done:false, result:null};
@@ -2208,7 +2209,7 @@ function renderWriting(){
     const e=wr.cur, t=TMAP[e.t], sp=aoSplit(e), mins=e.m===16?20:10, draft=drafts()[e.id]||"";
     const words=draft.trim()?draft.trim().split(/\s+/).length:0;
     body=`<div class="quiz-q essay" style="--c:${t.c}">
-      <div class="tag">${esc(t.name)} · ${e.m} marks <span class="muted">AO1 ${sp[0]} · AO2 ${sp[1]} · AO3 ${sp[2]}</span></div>
+      <div class="tag">${esc(t.name)} · ${e.m} marks · <span class="goldtag">2× XP</span> <span class="muted">AO1 ${sp[0]} · AO2 ${sp[1]} · AO3 ${sp[2]}</span></div>
       <div class="q">${esc(e.q)}</div>
       ${e.sc?`<div class="stem"><b>Scenario</b> ${esc(e.sc)}</div>`:""}
       <div class="essaybar"><button class="btn ghost" id="wrTimer">${wr.timerEnd?"⏱ <span id='wrClock'></span> · Stop":"⏱ Start "+mins+"-minute timer"}</button>${canSpeak?`<button class="btn ghost" id="wrTts">🔈 Read aloud</button>`:""}<span class="muted" id="wrWords">${words} words</span></div>
@@ -2219,7 +2220,7 @@ function renderWriting(){
   }
   area.innerHTML=`${seg}<div class="bar-row wrfilters"><label class="muted">Topic <select id="wrTopic"><option value="">All topics</option>${topics.map(k=>`<option value="${esc(k)}" ${wr.topic===k?"selected":""}>${esc(TMAP[k].name)}</option>`).join("")}</select></label>
     <label class="muted">Marks <select id="wrMarks"><option value="">Any</option><option value="16" ${wr.marks==="16"?"selected":""}>16 marks</option><option value="8" ${wr.marks==="8"?"selected":""}>8 marks</option></select></label>
-    <span class="muted" style="font-size:14px">${G.st.essays||0} essays self-marked</span></div>${body}
+    <span class="boost">2× XP</span><span class="muted" style="font-size:14px">${G.st.essays||0} essays self-marked</span></div>${body}
     <p class="muted" style="font-size:13px;margin-top:10px">This is self-marked practice. For a proper mark, hand your essay to your teacher.</p>`;
   area.querySelectorAll("[data-wm]").forEach(b=>b.onclick=()=>{ wr.mode=b.dataset.wm; stopTimer(); renderWriting(); });
   $("#wrTopic").onchange=e=>{ wr.topic=e.target.value; pickEssay(); renderWriting(); };
@@ -2255,16 +2256,16 @@ function wireMarking(e){
   document.querySelectorAll('input[name="wrLvl"]').forEach(r=>r.onchange=()=>{ const [lo,hi]=ESSAY_LEVELS[e.m][+r.value][1].split("–").map(Number); sel.innerHTML=Array.from({length:hi-lo+1},(_,i)=>`<option ${i===hi-lo?"selected":""}>${lo+i}</option>`).join(""); sel.disabled=false; sv.disabled=false; });
   sv.onclick=()=>{
     const ticks=document.querySelectorAll('#wrMark input[type=checkbox]:checked').length, mark=+sel.value, li=+document.querySelector('input[name="wrLvl"]:checked').value;
-    const xp=Math.min(100, 30+ticks*5);
+    const xp=Math.min(100, 30+ticks*5)*WRITING_BOOST;
     G.st.essays=(G.st.essays||0)+1; if(e.m===16 && mark>=13) G.st.essayL4=1;
     G.essayLog=(G.essayLog||[]).concat([[e.id,mark,e.m,today()]]).slice(-30);
     wr.result={mark, level:ESSAY_LEVELS[e.m][li][0], xp};
-    addXP(xp,false); toast("✍️","Essay self-marked: "+mark+"/"+e.m,"+"+xp+" XP. Great practice."); confetti(90); save(); checkBadges(); renderWriting();
+    addXP(xp,false); toast("✍️","Essay self-marked: "+mark+"/"+e.m,"+"+xp+" XP (double XP for long writing)."); confetti(90); save(); checkBadges(); renderWriting();
   };
 }
 function renderDesign(area,seg){
   if(!wr.design){
-    area.innerHTML=`${seg}<div class="empty" style="text-align:left"><h3 style="text-align:center">Design a study (12 marks)</h3><p style="text-align:center">Build a study one decision at a time. Each choice gets feedback, and you'll practise justifying it, which is where the marks are. You finish with a model answer to compare against.</p>
+    area.innerHTML=`${seg}<div class="empty" style="text-align:left"><h3 style="text-align:center">Design a study (12 marks) <span class="boost" style="vertical-align:middle">2× XP</span></h3><p style="text-align:center">Build a study one decision at a time. Each choice gets feedback, and you'll practise justifying it, which is where the marks are. You finish with a model answer to compare against.</p>
       <div class="designs">${DESIGNS.map((d,i)=>`<button class="dcard" data-d="${i}"><b>🔬 ${esc(d.title)}</b><span>${esc(d.brief)}</span>${(G.designsDone||[]).includes(d.id)?'<small>✓ Done</small>':""}</button>`).join("")}</div></div>`;
     area.querySelectorAll("[data-wm]").forEach(b=>b.onclick=()=>{ wr.mode=b.dataset.wm; renderWriting(); });
     area.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{ wr.design=DESIGNS[+b.dataset.d]; wr.step=0; wr.picks=[]; wr.done=false; renderWriting(); });
@@ -2298,7 +2299,7 @@ function renderDesign(area,seg){
   area.querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>{ wr.picks[wr.step]=+b.dataset.o; sfx(st.o[+b.dataset.o][1]===2?"ok":"no"); renderWriting(); });
   $("#dQuit").onclick=()=>{ wr.design=null; renderWriting(); };
   const dn=$("#dNext"); if(dn) dn.onclick=()=>{
-    if(wr.step+1>=n){ wr.done=true; const score=wr.picks.reduce((a,p,i)=>a+D.steps[i].o[p][1],0); G.designsDone=[...new Set((G.designsDone||[]).concat(D.id))]; G.st.designs=(G.st.designs||0)+1; addXP(40+score*3,false); toast("🔬","Study designed","+"+(40+score*3)+" XP"); confetti(90); save(); checkBadges(); }
+    if(wr.step+1>=n){ wr.done=true; const score=wr.picks.reduce((a,p,i)=>a+D.steps[i].o[p][1],0); G.designsDone=[...new Set((G.designsDone||[]).concat(D.id))]; G.st.designs=(G.st.designs||0)+1; addXP((40+score*3)*WRITING_BOOST,false); toast("🔬","Study designed","+"+((40+score*3)*WRITING_BOOST)+" XP (double XP for long writing)"); confetti(90); save(); checkBadges(); }
     else wr.step++;
     renderWriting(); window.scrollTo({top:$("#wrArea").offsetTop-80,behavior:reduced()?"auto":"smooth"});
   };
