@@ -623,7 +623,9 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 :root[data-skin="ocean"]{--paper:#0B1C2C;--card:#12293D;--ink:#E6F1FA;--muted:#93AEC4;--line:#22405A;--soft:#1A3550;--good:#4CC896;--good-bg:#153A2E;--warn:#F39A63;--warn-bg:#3E2616;color-scheme:dark}
 :root[data-skin="neon"]{--paper:#0D0221;--card:#1A0B3D;--ink:#F5F0FF;--muted:#B6A6E0;--line:#34206B;--soft:#261454;--good:#3CF2A0;--good-bg:#0F3B2E;--warn:#FF8A5B;--warn-bg:#3D1C10;color-scheme:dark}
 :root[data-skin="exam"]{--paper:#0E0E10;--card:#18181B;--ink:#F4F4F5;--muted:#A1A1AA;--line:#2E2E33;--soft:#232327;--good:#4CC896;--good-bg:#14352A;--warn:#FF6B6B;--warn-bg:#3A1717;color-scheme:dark}
-:root[data-skin="sunset"]{--paper:#2A1320;--card:#3A1B2C;--ink:#FDEEF3;--muted:#D3A6B8;--line:#55283F;--soft:#47223A;--good:#5BD6A0;--good-bg:#173B2E;--warn:#FF9F6E;--warn-bg:#4A2414;color-scheme:dark}
+:root[data-skin="tamworth"]{--paper:#EFE1CB;--card:#FBF4E8;--ink:#3A2416;--muted:#7A5A44;--line:#DCC3A1;--soft:#E7D3B6;--good:#2E7D4F;--good-bg:#DCEBD9;--warn:#A33B2B;--warn-bg:#F3D9D0;color-scheme:light}
+:root[data-skin="tamworth"] .xpbar i{background:linear-gradient(90deg,#A33B2B,#C8774A,#E0B26B)}
+:root[data-skin="tamworth"] .top h1::before{content:"🏰 "}
 /* themes added in v2 of the theme set */
 :root[data-skin="peach"]{--paper:#FFF1E8;--card:#FFFFFF;--ink:#3A1F12;--muted:#7A5444;--line:#F4D7C6;--soft:#FBE3D5;--good:#1C8A5E;--good-bg:#DDF3E8;--warn:#B4531B;--warn-bg:#FBE7D9;color-scheme:light}
 :root[data-skin="sky"]{--paper:#EAF4FD;--card:#FFFFFF;--ink:#0F2A44;--muted:#4B6684;--line:#CFE2F5;--soft:#DCEBFA;--good:#1C8A5E;--good-bg:#DDF3E8;--warn:#B4531B;--warn-bg:#FBE7D9;color-scheme:light}
@@ -827,7 +829,7 @@ const SKINS=[
   {id:"neon", name:"Neon Synapse", lvl:28, sw:["#0D0221","#3CF2A0"], desc:"Firing on all cylinders"},
   {id:"exam", name:"Exam Season", lvl:32, sw:["#0E0E10","#E5484D"], desc:"No distractions"},
   {id:"blues", name:"Keep Right On", lvl:36, sw:["#0A1F8F","#FFFFFF"], desc:"Royal blue and white 💙"},
-  {id:"sunset", name:"Sunset", lvl:40, sw:["#2A1320","#FF9F6E"], desc:"Golden hour revision"},
+  {id:"tamworth", name:"Tamworth Castle", lvl:40, sw:["#EAD6B8","#A33B2B"], desc:"Sandstone walls and red brick 🏰"},
   {id:"pink", name:"Pink Pen", lvl:44, sw:["#FCEEF4","#D6478F"], desc:"Mr Wakefield approved"},
   {id:"grape", name:"Grape", lvl:48, sw:["#1E1033","#B57BFF"], desc:"Deep purple focus"},
   {id:"terminal", name:"Terminal", lvl:52, sw:["#050805","#39FF6A"], desc:"Hacker mode"},
@@ -836,6 +838,7 @@ const SKINS=[
   {id:"wakefield", name:"Wakefield Mode", lvl:999, hidden:true, sw:["#0F3D2E","#D4AF37"], desc:"Keeper of the Scrolls ✦"}
 ];
 function applySkin(id){ const r=document.documentElement; r.removeAttribute("data-skin"); r.removeAttribute("data-theme"); if(id==="light"||id==="dark") r.setAttribute("data-theme",id); else if(id && id!=="auto") r.setAttribute("data-skin",id); }
+if(store.theme==="sunset"){ store.theme="tamworth"; save(); } // Sunset became Tamworth Castle
 applySkin(store.theme);
 
 /* ---------- boss battles ---------- */
