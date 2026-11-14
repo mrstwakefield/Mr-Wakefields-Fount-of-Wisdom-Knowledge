@@ -669,11 +669,11 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 :root[data-skin="dreams"] .top h1{color:#D9CFFF}
 :root[data-skin="dreams"] .top h1::before{content:"😴 "}
 :root[data-skin="dreams"] .xpbar i{background:linear-gradient(90deg,#6D5BD0,#B9A7FF,#FFE9A8)}
-:root[data-skin="secret"]{--paper:#E9DDBF;--card:#F7EFD9;--ink:#2A2418;--muted:#6B5F45;--line:#D6C69E;--soft:#EFE4C6;--good:#2E6B3A;--good-bg:#DCE9D2;--warn:#B3261E;--warn-bg:#F5D6D1;color-scheme:light}
-:root[data-skin="secret"] .top h1{font-family:"Courier New",ui-monospace,monospace;letter-spacing:-.02em}
-:root[data-skin="secret"] .top h1::before{content:"CLASSIFIED";display:block;width:max-content;font-size:14px;letter-spacing:.2em;color:#B3261E;border:2px solid #B3261E;padding:2px 8px;margin-bottom:8px;transform:rotate(-3deg)}
-:root[data-skin="secret"] .top h1 span{font-family:var(--body)}
-:root[data-skin="secret"] .xpbar i{background:#2A2418}
+:root[data-skin="coffee"]{--paper:#2A1A12;--card:#3A261B;--ink:#F7ECDD;--muted:#CDB59B;--line:#4E3626;--soft:#45301F;--good:#8EDBA8;--good-bg:#1F3A28;--warn:#F0B86E;--warn-bg:#4A3218;color-scheme:dark}
+:root[data-skin="coffee"] .top h1{color:#F1D3A8}
+:root[data-skin="coffee"] .top h1::before{content:"☕ "}
+:root[data-skin="coffee"] .top h1 span{color:var(--muted)}
+:root[data-skin="coffee"] .xpbar i{background:linear-gradient(90deg,#6B3E1F,#B07A45,#E8C9A0)}
 :root[data-skin="pavlov"]{--paper:#F6E7D2;--card:#FFF8EE;--ink:#3A2414;--muted:#7A5B43;--line:#E8D2B4;--soft:#F1DEC3;--good:#2E7D4F;--good-bg:#DCEFE0;--warn:#B4441C;--warn-bg:#F8DCCD;color-scheme:light}
 :root[data-skin="pavlov"] .top h1::before{content:"🔔 "}
 :root[data-skin="pavlov"] .top h1{color:#7A3E12}
@@ -896,7 +896,7 @@ const SKINS=[
   {id:"graduate", name:"Graduation", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[10], sw:["#0E1B3A","#E2B84B"], desc:"Basically Mr Wakefield 🎓"},
   {id:"bullring", name:"Bullring", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[7], sw:["#1E4FA8","#C9CED6"], desc:"Meet you by the bull 🐂"},
   {id:"dreams", name:"Sweet Dreams", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[2], sw:["#1A1640","#B9A7FF"], desc:"Not consolidating, just sleeping 😴"},
-  {id:"secret", name:"Top Secret", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[5], sw:["#EBD9AE","#B3261E"], desc:"For true stans only 🗂️"},
+  {id:"coffee", name:"Coffee Break", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[5], sw:["#2A1A12","#D9A066"], desc:"IV: coffee. DV: marking ☕"},
   {id:"pavlov", name:"Pavlov's Dog", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[8], sw:["#F6E7D2","#A0602C"], desc:"Ding! Feeling hungry? 🔔"},
   {id:"graph", name:"Graph Paper", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[11], sw:["#FBFDFF","#2563EB"], desc:"p ≤ 0.05 📈"},
   {id:"arcade8", name:"8-bit Arcade", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[6], sw:["#0B0B1E","#FF2E9A"], desc:"Unlocked by the rarest scroll 🎮"},
@@ -1187,7 +1187,7 @@ const SECRET_SCROLLS = [
   {id:2, theme:"dreams", trigger:"ring10", title:"Wake up!", text:"This is your official reminder that sleeping in my lesson is NOT 'consolidating your memories', however convincingly you argue it. (Sleep does help memory, mind — do it at night.) — Mr W", hint:"Is this thing on?"},
   {id:3, theme:"veggie", trigger:"wakefield", title:"A message from the management", text:"Mr W and Romeo have one message for you: eat your vegetables. Your brain runs on them. No arguments. — Mr W (and Romeo)", hint:"Say my name (keyboard required)"},
   {id:4, theme:"volts", trigger:"milgram", title:"450 volts", text:"Please continue. The experiment requires that you continue. It is absolutely essential that you continue… revising. No volts were harmed in the making of this scroll. — Mr W", hint:"A shocking surname (keyboard required)"},
-  {id:5, theme:"secret", trigger:"stan", title:"Classified lore", text:"Only true stans know this: Mr W has never, ever crashed out after a bad line-up. Any eyewitnesses who say otherwise are clearly reconstructing their memories. — Mr W", hint:"What are you? Type it. (keyboard required)"},
+  {id:5, theme:"coffee", trigger:"stan", title:"Results are in", text:"Only true stans know this: Mr W once ran a study on himself. IV: cups of coffee. DV: essays marked per hour. Result: a strong positive correlation, right up until cup six. Sample size of one, so it won't generalise. — Mr W", hint:"What are you? Type it. (keyboard required)"},
   {id:6, trigger:"konami", theme:"arcade8", title:"The rarest scroll", text:"You found the rarest scroll of all. Honestly? Being this deep in a revision website is exactly the kind of effort that gets grades. I'm proud of you. Now go and smash it in May. — Mr W", hint:"Up, up, down, down… (keyboard required)"},
   {id:7, theme:"bullring", trigger:"blues", title:"Keep Right On", text:"Keep right on to the end of the road. It's the Blues anthem and, it turns out, the best revision advice ever written. Up the Blues! 💙 (Villa fans: this scroll is not for you.) — Mr W", hint:"Keep right on… (keyboard required)"},
   {id:8, theme:"pavlov", trigger:"pavlov", title:"Ding!", text:"Did you just get hungry? That's classical conditioning. Pavlov's dogs drooled at a bell — you drool at XP. We are not so different. — Mr W", hint:"Ring a bell? Try the gap fills."},
@@ -2220,7 +2220,7 @@ function showScroll(id, reread){
   o.innerHTML=`<div class="parch ${blues?"blues":""}" role="dialog" aria-modal="true" aria-labelledby="scT"><div class="rod"></div><div class="pbody">
     <div class="kick">📜 Secret scroll · ${found} of ${SECRET_SCROLLS.length} found${first?" · +30 XP":""}</div>
     <h3 id="scT">${esc(sc.title)}</h3><p>${esc(sc.text)}</p>
-    ${first&&sc.theme?`<p class="unlock">🎮 Bonus theme unlocked: <b>${esc((SKINS.find(k=>k.id===sc.theme)||{}).name||"")}</b>. Pick it in the Themes tab.</p>`:""}
+    ${first&&sc.theme?`<p class="unlock">🎨 Bonus theme unlocked: <b>${esc((SKINS.find(k=>k.id===sc.theme)||{}).name||"")}</b>. Pick it in the Themes tab.</p>`:""}
     ${first&&allScrolls()?`<p class="unlock">✦ You found every scroll! The secret <b>Wakefield Mode</b> theme is now in the Themes tab.</p>`:""}
     <button class="btn" id="scOk">Roll it up</button></div><div class="rod"></div></div>`;
   document.body.appendChild(o);
