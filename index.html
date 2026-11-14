@@ -354,13 +354,16 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .weekban div span{font-size:14px;color:var(--muted)}
 .weekban i{font-style:normal;font-weight:800;background:var(--c);color:#fff;border-radius:99px;padding:6px 14px;white-space:nowrap}
 
+/* one tab bar */
+@media (min-width:700px){ .tabs{flex-wrap:wrap;width:auto;max-width:100%;overflow:visible} .tabs button{padding:9px 14px} }
+@media (max-width:699px){ .tabs{-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent);padding-right:28px} }
 /* trophies pages */
 #trophyArea{display:flex;flex-direction:column}
 #trophyArea > section{display:none}
-#trophyArea[data-sec="progress"] > section[data-sec="progress"],#trophyArea[data-sec="badges"] > section[data-sec="badges"],#trophyArea[data-sec="themes"] > section[data-sec="themes"],#trophyArea[data-sec="settings"] > section[data-sec="settings"]{display:block}
+#trophyArea[data-sec="progress"] > section[data-sec="progress"],#trophyArea[data-sec="weak"] > section[data-sec="weak"],#trophyArea[data-sec="badges"] > section[data-sec="badges"],#trophyArea[data-sec="scrolls"] > section[data-sec="scrolls"],#trophyArea[data-sec="themes"] > section[data-sec="themes"],#trophyArea[data-sec="saves"] > section[data-sec="saves"]{display:block}
 .ts-profile{order:1}.ts-tiles{order:2}.ts-exam{order:3}.ts-weak{order:4}.ts-heat{order:5}.ts-goal{order:6}
 .ts-badges{order:1}.ts-scrolls{order:2}.ts-certs{order:3}
-.ts-a11y{order:1}.ts-report{order:2}.ts-backup{order:3}
+.ts-backup{order:1}.ts-report{order:2}.ts-a11y{order:3}
 .tseg{order:0;align-self:flex-start;margin-bottom:14px;max-width:100%;overflow-x:auto;flex-wrap:nowrap}
 .tseg button{white-space:nowrap;font-weight:700;padding:9px 14px}
 .tseg small{opacity:.7;font-weight:400}
@@ -642,7 +645,12 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
     <button role="tab" aria-selected="false" data-tab="arcade" id="tab-arcade" aria-controls="p-arcade">🕹️ Arcade</button>
     <button role="tab" aria-selected="false" data-tab="browse" id="tab-browse" aria-controls="p-browse">Browse</button>
     <button role="tab" aria-selected="false" data-tab="writing" id="tab-writing" aria-controls="p-writing">✍️ Writing <span class="tabsticky" aria-label="double XP">2×</span></button>
-    <button role="tab" aria-selected="false" data-tab="trophies" id="tab-trophies" aria-controls="p-trophies">🏆 Trophies</button>
+    <button role="tab" aria-selected="false" data-tab="progress" id="tab-progress" aria-controls="p-trophies">📊 Progress</button>
+    <button role="tab" aria-selected="false" data-tab="weak" id="tab-weak" aria-controls="p-trophies">🎯 Weak spots</button>
+    <button role="tab" aria-selected="false" data-tab="badges" id="tab-badges" aria-controls="p-trophies">🏆 Badges</button>
+    <button role="tab" aria-selected="false" data-tab="scrolls" id="tab-scrolls" aria-controls="p-trophies">📜 Secret scrolls</button>
+    <button role="tab" aria-selected="false" data-tab="themes" id="tab-themes" aria-controls="p-trophies">🎨 Themes</button>
+    <button role="tab" aria-selected="false" data-tab="saves" id="tab-saves" aria-controls="p-trophies">💾 Saves</button>
   </div>
 
   <section class="topics" aria-labelledby="topicsTitle">
@@ -843,16 +851,20 @@ function topicsChanged(){ renderDue(); newDeck(); if(quiz.phase!=="run") renderQ
 
 /* ---------- tabs ---------- */
 let tab="cards";
+const TROPHY_TABS=["progress","weak","badges","scrolls","themes","saves"];
+const inTrophies=()=>TROPHY_TABS.includes(tab);
 function goTab(name){
+  if(name==="trophies") name=TROPHY_TABS.includes(trophyTab)?trophyTab:"progress";
   if(tab==="arcade" && name!=="arcade" && arc.phase==="play") arcFinish();
   if(name!==tab) resetCombo();
   tab=name;
   document.querySelectorAll("[role=tab]").forEach(x=>x.setAttribute("aria-selected", x.dataset.tab===tab));
-  document.querySelectorAll(".panel").forEach(p=>p.hidden = p.id!=="p-"+tab);
-  $(".topics").hidden = tab==="trophies";
+  const panel=inTrophies()?"trophies":tab;
+  document.querySelectorAll(".panel").forEach(p=>p.hidden = p.id!=="p-"+panel);
+  $(".topics").hidden = panel==="trophies";
   if(tab==="browse") renderBrowse();
   if(tab==="arcade") renderArcade();
-  if(tab==="trophies") renderTrophies();
+  if(inTrophies()){ trophyTab=tab; renderTrophies(); }
   if(tab==="writing") renderWriting();
 }
 document.querySelectorAll("[role=tab]").forEach(b=>b.addEventListener("click",()=>goTab(b.dataset.tab)));
@@ -1061,7 +1073,7 @@ $("#list").addEventListener("click",e=>{
 });
 
 /* ---------- reset ---------- */
-$("#resetBtn").onclick=()=>{ if(confirm("Clear all your known and still-learning marks, plus your XP, level, streak and badges? This can't be undone.")){ store.p={}; store.sr={}; const snd=G.sound; Object.keys(G).forEach(k=>delete G[k]); Object.assign(G, JSON.parse(JSON.stringify(GDEF)), {sound:snd, migrated:1}); G.st.bosses={}; initG(); combo=0; save(); renderMeter(); renderChips(); newDeck(); renderBrowse(); renderHud(); renderArcade(); if(tab==="trophies") renderTrophies(); } };
+$("#resetBtn").onclick=()=>{ if(confirm("Clear all your known and still-learning marks, plus your XP, level, streak and badges? This can't be undone.")){ store.p={}; store.sr={}; const snd=G.sound; Object.keys(G).forEach(k=>delete G[k]); Object.assign(G, JSON.parse(JSON.stringify(GDEF)), {sound:snd, migrated:1}); G.st.bosses={}; initG(); combo=0; save(); renderMeter(); renderChips(); newDeck(); renderBrowse(); renderHud(); renderArcade(); if(inTrophies()) renderTrophies(); } };
 
 /* ================= GAME LAYER ================= */
 
@@ -1413,9 +1425,9 @@ function renderHud(){
   $("#soundBtn").setAttribute("aria-label", G.sound?"Mute sounds":"Turn sounds on");
 }
 $("#soundBtn").onclick=()=>{ G.sound=!G.sound; save(); renderHud(); if(G.sound) sfx("ok"); };
-$("#hudLvl").onclick=()=>{ trophyTab="progress"; goTab("trophies"); };
-$("#hudGoal").onclick=()=>{ trophyTab="progress"; goTab("trophies"); };
-$("#hudExam").onclick=()=>{ trophyTab="progress"; goTab("trophies"); setTimeout(()=>{ const b=$("#examBox"); if(b) b.scrollIntoView({behavior:reduced()?"auto":"smooth"}); },50); };
+$("#hudLvl").onclick=()=>goTab("progress");
+$("#hudGoal").onclick=()=>goTab("progress");
+$("#hudExam").onclick=()=>{ goTab("progress"); setTimeout(()=>{ const b=$("#examBox"); if(b) b.scrollIntoView({behavior:reduced()?"auto":"smooth"}); },50); };
 $("#hudDue").onclick=()=>{ if(dueCount()===0){ store.sel=TOPICS.map(t=>t.key); save(); renderChips(); } goTab("cards"); setFilter("due"); document.querySelector("#p-cards").scrollIntoView({behavior:reduced()?"auto":"smooth"}); };
 
 /* ================= QUESTION GENERATORS (stats lab, exam skills, gap fill) =================
@@ -2110,7 +2122,7 @@ function showScroll(id, reread){
   document.addEventListener("keydown",k2,true);
   o.onclick=e=>{ if(e.target===o||e.target.id==="scOk") close(); };
   $("#scOk").focus();
-  if(first){ addXP(30,false); checkBadges(); if(tab==="trophies") setTimeout(renderTrophies,50); }
+  if(first){ addXP(30,false); checkBadges(); if(inTrophies()) setTimeout(renderTrophies,50); }
 }
 // clicking the title 5 times / tapping the level ring 10 times
 function tapCounter(n, ms, fn){ let ts=[]; return ()=>{ const t=Date.now(); ts=ts.filter(x=>t-x<ms); ts.push(t); if(ts.length>=n){ ts=[]; fn(); } }; }
@@ -2835,10 +2847,10 @@ function wireBackup(){
   $("#loadSave").onclick=()=>{ const v=$("#loadCode").value.trim(); if(!v){ msg.className="savemsg no"; msg.textContent="Paste a save code into the box first."; return; } loadSave(v); };
   $("#loadFile").onchange=e=>{ const f=e.target.files[0]; if(!f) return; f.text().then(loadSave); };
 }
-$("#backupLink").onclick=()=>{ trophyTab="settings"; goTab("trophies"); setTimeout(()=>{ const b=$("#backupBox"); if(b) b.scrollIntoView({behavior:reduced()?"auto":"smooth"}); },50); };
+$("#backupLink").onclick=()=>{ goTab("saves"); setTimeout(()=>{ const b=$("#backupBox"); if(b) b.scrollIntoView({behavior:reduced()?"auto":"smooth"}); },50); };
 
 /* ---- trophies ---- */
-let trophyTab=store.trophyTab||"progress", badgeFilter="all";
+let trophyTab="progress", badgeFilter="all";
 function renderTrophies(){
   const n=lvlFor(G.xp), s=lvlStart(n), e=lvlStart(n+1), frac=(G.xp-s)/(e-s), t=today();
   const acc = G.st.cards ? Math.round(G.st.right/G.st.cards*100) : 0;
@@ -2852,7 +2864,6 @@ function renderTrophies(){
   }
   const ta=$("#trophyArea"); ta.dataset.sec=trophyTab;
   ta.innerHTML=`
-    <div class="seg tseg" role="tablist" aria-label="Trophies pages">${[["progress","📊 Progress"],["badges","🏆 Badges"],["themes","🎨 Themes"],["settings","⚙️ Settings"]].map(([k,l])=>`<button role="tab" aria-selected="${trophyTab===k}" aria-pressed="${trophyTab===k}" data-tt="${k}">${l}${k==="badges"?` <small>${got}/${BADGES.length}</small>`:""}</button>`).join("")}</div>
 
 <section data-sec="progress" class="ts-exam">
     ${(()=>{ const tg=dailyTarget();
@@ -2889,7 +2900,7 @@ function renderTrophies(){
       <div class="tile"><b>🩹 ${G.st.mistakesFixed||0}</b><span>Mistakes fixed</span></div>
     </div></details>
     </section>
-<section data-sec="progress" class="ts-weak">
+<section data-sec="weak" class="ts-weak">
     ${(()=>{ const ts=topicStats().filter(x=>x.n>0).sort((a,b)=>a.acc-b.acc), ys=Object.entries(G.acc.y).filter(([,v])=>v[1]>0).sort((a,b)=>a[1][0]/a[1][1]-b[1][0]/b[1][1]);
       const bar=(name,acc,n,c)=>`<div class="wrow"><span class="wl">${esc(name)}</span><span class="wb"><i style="width:${Math.round(acc*100)}%;background:${c}"></i></span><span class="wv">${Math.round(acc*100)}% <small>(${n})</small></span></div>`;
       return `<div class="box" id="weakBox"><h3>Weak spots <small>How often you get each topic right</small></h3>${ts.length?ts.map(x=>bar(x.name,x.acc,x.n,x.c)).join("")+(ys.length?`<h4 class="wh">By type of question</h4>`+ys.map(([k,v])=>bar(k,v[0]/v[1],v[1],"var(--ink)")).join(""):"")+(weakest(1).length?`<div class="btnrow" style="margin-top:12px"><button class="btn" id="weakGo">🎯 Fix my weak spots</button></div>`:`<p class="muted" style="margin:10px 0 0;font-size:14px">Answer at least ${WEAK_MIN} questions in a topic to unlock Fix my weak spots.</p>`):`<p class="muted" style="margin:0">Answer some flashcards, quizzes or Arcade questions and your strongest and weakest topics will appear here.</p>`}</div>`; })()}
@@ -2901,19 +2912,19 @@ function renderTrophies(){
 <section data-sec="badges" class="ts-certs">
     <div class="box" id="certBox"><h3>🏅 Certificates <small>Print them or save as a PDF</small></h3><div class="scrolls">${CERTS.map(c=>c.ok()?`<button class="scr got" data-cert="${c.id}"><span>🏅</span><b>${esc(c.title)}</b><small>${esc(c.sub())}</small></button>`:`<div class="scr"><span>🔒</span><b>${esc(c.title)}</b><small>${c.id==="bosses"?"Beat every topic boss":"Reach "+esc(c.title.toLowerCase())}</small></div>`).join("")}</div></div>
     </section>
-<section data-sec="settings" class="ts-a11y">
+<section data-sec="saves" class="ts-a11y">
     <div class="box" id="a11yBox"><h3>Reading and accessibility</h3>
       <div class="bar-row" style="margin:0"><div class="seg" role="group" aria-label="Font">${[["std","Standard font"],["lexend","Easy-read font (Lexend)"]].map(([v,l])=>`<button aria-pressed="${store.a11y.font===v}" data-font="${v}">${l}</button>`).join("")}</div>
       <div class="seg" role="group" aria-label="Text size">${[[0.9,"A−"],[1,"A"],[1.15,"A+"],[1.3,"A++"]].map(([v,l])=>`<button aria-pressed="${store.a11y.size===v}" data-size="${v}" aria-label="Text size ${l}">${l}</button>`).join("")}</div></div>
       <p class="muted" style="margin:10px 0 0;font-size:14px">${canSpeak?"Tap 🔈 on a flashcard or quiz question to hear it read aloud.":"Read aloud isn't available in this browser."}</p></div>
     </section>
-<section data-sec="settings" class="ts-report">
+<section data-sec="saves" class="ts-report">
     <div class="box" id="reportBox"><h3>📨 Send your progress to your teacher</h3>
       <p class="muted" style="margin:0 0 10px">Makes a short code with your level, streak, cards known and how you're doing in each topic. Paste it into Google Classroom, Teams or an email to your teacher. Nothing is uploaded anywhere.</p>
       <div class="bar-row" style="margin:0"><input class="search" id="repName" maxlength="30" placeholder="Your name or initials" value="${esc(store.reportName||"")}" aria-label="Your name or initials" style="flex:1 1 200px"><button class="btn" id="repCopy">📋 Copy progress report code</button></div>
       <p id="repMsg" class="savemsg" aria-live="polite"></p></div>
     </section>
-<section data-sec="settings" class="ts-backup">
+<section data-sec="saves" class="ts-backup">
     <div class="box" id="backupBox"><h3>Back up or move your progress <small>Last backed up: ${G.lastBackup?G.lastBackup.split("-").reverse().join("/"):"never"}</small></h3>
       <p class="muted" style="margin:0 0 12px">Your progress is saved in this browser only, so clearing your browser data wipes it. Copy your save code and keep it safe, e.g. email it to yourself. To carry on on another device (school PC, phone, laptop), paste the code there. The code holds your progress only: no name, no login, no personal data.</p>
       <div class="btnrow"><button class="btn" id="copySave">📋 Copy my save code</button><button class="btn ghost" id="dlSave">💾 Download backup file</button></div>
@@ -2929,7 +2940,7 @@ function renderTrophies(){
 <section data-sec="progress" class="ts-heat">
     <div class="box"><h3>Last 12 weeks <small>Darker = closer to your goal</small></h3><div class="heat">${cells}</div></div>
     </section>
-<section data-sec="badges" class="ts-scrolls">
+<section data-sec="scrolls" class="ts-scrolls">
     <div class="box" id="scrollBox"><h3>📜 Secret scrolls <small>${SECRET_SCROLLS.filter(x=>G.scrolls[x.id]).length} of ${SECRET_SCROLLS.length} found</small></h3><div class="scrolls">${SECRET_SCROLLS.map(x=>G.scrolls[x.id]?`<button class="scr got" data-scroll="${x.id}"><span>📜</span><b>${esc(x.title)}</b><small>Tap to read again</small></button>`:`<div class="scr"><span>🔒</span><b>Sealed scroll</b><small>${esc(x.hint)}</small></div>`).join("")}</div></div>
     </section>
 <section data-sec="badges" class="ts-badges">
@@ -2942,7 +2953,6 @@ function renderTrophies(){
 `;
   document.querySelectorAll(".skin[data-skin]").forEach(b=>b.onclick=()=>{ store.theme=b.dataset.skin; if(!G.themesTried.includes(store.theme)) G.themesTried.push(store.theme); applySkin(store.theme); save(); checkBadges(); renderTrophies(); });
   wireBackup();
-  ta.querySelectorAll("[data-tt]").forEach(b=>b.onclick=()=>{ trophyTab=b.dataset.tt; store.trophyTab=trophyTab; save(); renderTrophies(); });
   ta.querySelectorAll("[data-bf]").forEach(b=>b.onclick=()=>{ badgeFilter=b.dataset.bf; renderTrophies(); });
   document.querySelectorAll("[data-font]").forEach(b=>b.onclick=()=>{ store.a11y.font=b.dataset.font; applyA11y(); save(); renderTrophies(); });
   document.querySelectorAll("#a11yBox [data-size]").forEach(b=>b.onclick=()=>{ store.a11y.size=+b.dataset.size; applyA11y(); save(); renderTrophies(); });
