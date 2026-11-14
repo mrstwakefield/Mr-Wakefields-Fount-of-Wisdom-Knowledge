@@ -506,6 +506,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .parch.blues .pbody{background:radial-gradient(ellipse at 50% 40%,#FFFFFF 0%,#E6ECFF 75%,#C9D5FF 100%);color:#0A1F8F}
 .parch.blues h3,.parch.blues .kick{color:#1F3FBF}
 .parch.blues .btn{background:#1F3FBF;border-color:#1F3FBF;color:#fff}
+.scrnote{margin:-4px 0 12px;color:var(--muted);font-size:14px}
 .scrolls{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .scr{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;border:1px dashed var(--line);border-radius:14px;padding:12px;background:var(--paper)}
 .scr span{font-size:28px;line-height:1.1}
@@ -3121,7 +3122,7 @@ function renderTrophies(){
     <div class="box"><h3>Last 12 weeks <small>Darker = closer to your goal</small></h3><div class="heat">${cells}</div></div>
     </section>
 <section data-sec="scrolls" class="ts-scrolls">
-    <div class="box" id="scrollBox"><h3>📜 Secret scrolls <small>${SECRET_SCROLLS.filter(x=>G.scrolls[x.id]).length} of ${SECRET_SCROLLS.length} found</small></h3><div class="scrolls">${SECRET_SCROLLS.map(x=>G.scrolls[x.id]?`<button class="scr got" data-scroll="${x.id}"><span>📜</span><b>${esc(x.title)}</b><small>Tap to read again</small></button>`:`<div class="scr"><span>🔒</span><b>Sealed scroll</b><small>${esc(x.hint)}</small></div>`).join("")}</div></div>
+    <div class="box" id="scrollBox"><h3>📜 Secret scrolls <small>${SECRET_SCROLLS.filter(x=>G.scrolls[x.id]).length} of ${SECRET_SCROLLS.length} found</small></h3><p class="scrnote">🎨 Every scroll unlocks a bonus theme. Find one, then pick its theme in the Themes tab.</p><div class="scrolls">${[...SECRET_SCROLLS].sort((a,b)=>(G.scrolls[a.id]?1:0)-(G.scrolls[b.id]?1:0)).map(x=>G.scrolls[x.id]?`<button class="scr got" data-scroll="${x.id}"><span>📜</span><b>${esc(x.title)}</b><small>Theme: ${esc((SKINS.find(k=>k.id===x.theme)||{}).name||"")} · tap to read again</small></button>`:`<div class="scr"><span>🔒</span><b>Sealed scroll</b><small>${esc(x.hint)}</small></div>`).join("")}</div></div>
     </section>
 <section data-sec="badges" class="ts-badges">
     <div class="box"><h3>Badges <small>${got} of ${BADGES.length} unlocked</small></h3>
