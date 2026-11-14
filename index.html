@@ -315,6 +315,25 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .bosshp i{display:block;height:100%;background:linear-gradient(90deg,#B91C1C,#E0533D);transition:width .4s}
 .bosshp span{position:absolute;inset:0;display:flex;align-items:center;padding:0 10px;font-weight:800;font-size:14px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5)}
 
+/* exam countdown */
+.examc[hidden]{display:none}
+@media (max-width:560px){
+  #hudGoalN{display:none}
+  #hudGoal{padding:6px}
+  #hudExam .ico{display:none}
+  #hudExamN::after{content:"d";font-size:.75em;margin-left:1px}
+  #hudExam{padding:7px 8px}
+}
+.exams{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.exam{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
+.exam b{display:block;font-family:var(--display);font-weight:800;font-size:34px;line-height:1}
+.exam span{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+.exam strong{display:block;font-family:var(--display)}
+.exam small{display:block;font-size:12.5px;color:var(--muted);line-height:1.3}
+.exam.past{opacity:.6}
+.target{margin:0 0 10px;font-size:15px;line-height:1.5}
+@media (max-width:480px){ .exams{gap:6px} .exam{padding:10px 6px} .exam b{font-size:26px} }
+
 /* weak spots */
 .weaknudge{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-left:6px solid var(--warn);border-radius:14px;padding:10px 14px;margin:0 0 14px}
 .weaknudge.on{border-left-color:var(--good)}
@@ -426,6 +445,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
     <div class="xpbox"><div class="xprow"><b id="rankName">Lab Rat</b><span id="xpText"></span></div><div class="xpbar"><i id="xpFill"></i></div></div>
     <div class="hud-stat" id="hudStreak"><span class="ico">🔥</span><span><span id="hudStreakN">0</span><span class="lab">streak</span></span></div>
     <button class="hud-stat" id="hudGoal" aria-label="Today's goal. Open trophies"><svg class="goalring" viewBox="0 0 30 30"><circle class="ring-bg" cx="15" cy="15" r="12" style="stroke-width:4"/><circle class="ring-fg" id="hudGoalRing" cx="15" cy="15" r="12" style="stroke-width:4" stroke-dasharray="75.4" stroke-dashoffset="75.4"/></svg><span><span id="hudGoalN">0/30</span><span class="lab">today</span></span></button>
+    <button class="hud-stat examc" id="hudExam" aria-label="Exam countdown" hidden><span class="ico">⏳</span><span><span id="hudExamN">0</span><span class="lab" id="hudExamL">days</span></span></button>
     <button class="hud-stat duebtn" id="hudDue" aria-label="Cards due today" title="Cards due for review today" hidden><span class="ico">📅</span><span><span id="hudDueN">0</span><span class="lab">due today</span></span></button>
     <div class="combo" id="combo" aria-live="polite"></div>
     <button class="iconbtn" id="soundBtn" aria-label="Mute sounds">🔊</button>
@@ -538,6 +558,17 @@ function srMark(id, s){ if(!s) delete store.sr[id]; else if(s==="l") store.sr[id
 const isDue = id => { const e=store.sr[id]; return !!e && !!store.p[id] && e.due<=todayStr(); };
 function dueCount(all){ const sel=new Set(store.sel); let n=0; for(const d of DATA) if((all||sel.has(d.t)) && isDue(d.id)) n++; return n; }
 function nextReview(id){ const e=store.sr[id]; if(!e||!store.p[id]) return ""; if(e.due<=todayStr()) return "Due today"; const days=Math.round((new Date(e.due+"T12:00")-new Date(todayStr()+"T12:00"))/864e5); return days===1?"Back tomorrow":`Back in ${days} days`; }
+
+/* ---------- exam countdown (edit dates here) ---------- */
+const EXAMS=[["Paper 1","2027-05-18","Introductory topics"],["Paper 2","2027-05-25","Psychology in context"],["Paper 3","2027-06-09","Issues and options"]];
+const daysUntil=d=>Math.round((new Date(d+"T12:00")-new Date(todayStr()+"T12:00"))/864e5);
+function nextExam(){ return EXAMS.find(e=>daysUntil(e[1])>=0); }
+function dailyTarget(){
+  const nx=nextExam(); if(!nx) return null;
+  const unknown=DATA.filter(d=>status(d.id)!=="k").length, days=Math.max(1,daysUntil(EXAMS[0][1])>=0?daysUntil(EXAMS[0][1]):daysUntil(nx[1]));
+  const perDay=Math.ceil(unknown/days), goal=[15,30,50,100].find(g=>g>=perDay*2)||100;
+  return {unknown, days, perDay, goal};
+}
 
 /* ---------- themes ---------- */
 const SKINS=[
@@ -1090,12 +1121,15 @@ function renderHud(){
   $("#hudStreak").title = G.last===t ? "Streak extended today" : "Hit your daily goal to extend your streak";
   $("#hudGoalN").textContent=`${Math.min(done,G.goal)}/${G.goal}`;
   $("#hudGoalRing").setAttribute("stroke-dashoffset", (2*Math.PI*12*(1-Math.min(1,done/G.goal))).toFixed(1));
+  const nx=nextExam(), he=$("#hudExam");
+  if(he){ he.hidden=!nx; if(nx){ const dd=daysUntil(nx[1]); $("#hudExamN").textContent=dd; $("#hudExamL").textContent=dd===0?nx[0]+" today!":`day${dd===1?"":"s"} to ${nx[0]}`; he.title=dd===0?`${nx[0]} is today. Good luck!`:`${dd} day${dd===1?"":"s"} until ${nx[0]} (${new Date(nx[1]+"T12:00").toLocaleDateString("en-GB",{day:"numeric",month:"long"})})`; } }
   $("#soundBtn").textContent=G.sound?"🔊":"🔇";
   $("#soundBtn").setAttribute("aria-label", G.sound?"Mute sounds":"Turn sounds on");
 }
 $("#soundBtn").onclick=()=>{ G.sound=!G.sound; save(); renderHud(); if(G.sound) sfx("ok"); };
 $("#hudLvl").onclick=()=>goTab("trophies");
 $("#hudGoal").onclick=()=>goTab("trophies");
+$("#hudExam").onclick=()=>{ goTab("trophies"); setTimeout(()=>{ const b=$("#examBox"); if(b) b.scrollIntoView({behavior:reduced()?"auto":"smooth"}); },50); };
 $("#hudDue").onclick=()=>{ if(dueCount()===0){ store.sel=TOPICS.map(t=>t.key); save(); renderChips(); } goTab("cards"); setFilter("due"); document.querySelector("#p-cards").scrollIntoView({behavior:reduced()?"auto":"smooth"}); };
 
 /* ================= QUESTION GENERATORS (stats lab, exam skills, gap fill) =================
@@ -1777,6 +1811,9 @@ function renderTrophies(){
     cells+=`<i class="${l} ${k===t?"today":""}" ${future?'style="visibility:hidden"':""} title="${k}: ${v} answered"></i>`;
   }
   $("#trophyArea").innerHTML=`
+    ${(()=>{ const tg=dailyTarget();
+      return `<div class="box" id="examBox"><h3>Exam countdown <small>AQA A-level Psychology, summer 2027</small></h3><div class="exams">${EXAMS.map(([nm,d,sub])=>{ const dd=daysUntil(d); return `<div class="exam ${dd<0?"past":""}"><b>${dd<0?"✓":dd}</b><span>${dd<0?"Done":dd===0?"Today!":dd===1?"day to go":"days to go"}</span><strong>${nm}</strong><small>${new Date(d+"T12:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"long"})} · ${sub}</small></div>`; }).join("")}</div>
+        ${tg?`<p class="target">You have <b>${tg.unknown.toLocaleString()}</b> cards not yet known and <b>${tg.days}</b> days until Paper 1. Learning about <b>${tg.perDay}</b> new card${tg.perDay===1?"":"s"} a day gets you through them all. With reviews, a daily goal of <b>${tg.goal}</b> answers would cover it${G.goal===tg.goal?" (that's your goal already ✓)":""}.</p>${G.goal!==tg.goal?`<button class="btn ghost" id="useGoal" data-g="${tg.goal}">Set my daily goal to ${tg.goal}</button>`:""}`:`<p class="target">All three papers are done. Brilliant work. 🎉</p>`}</div>`; })()}
     <div class="profile"><div class="bigring"><svg viewBox="0 0 110 110"><circle class="ring-bg" cx="55" cy="55" r="48" style="stroke-width:9"/><circle class="ring-fg" cx="55" cy="55" r="48" style="stroke-width:9" ${ring(48,frac)}/></svg><b>${n}</b></div>
       <div><h2>${esc(rankFor(n))}</h2><p>Level ${n} · ${G.xp.toLocaleString()} XP total · ${e-G.xp} XP to level ${n+1}</p>
       <p>${(()=>{const nx=RANKS.find(r=>r[0]>n); return nx?`Next rank: <b>${esc(nx[1])}</b> at level ${nx[0]}`:"You've reached the top rank. Legend."})()}</p></div></div>
@@ -1814,6 +1851,7 @@ function renderTrophies(){
       return `<div class="badge ${has?"got":"locked"}"><div class="bi">${ic}</div><b>${esc(name)}</b><span>${esc(desc)}</span></div>`; }).join("")}</div></div>`;
   document.querySelectorAll(".skin[data-skin]").forEach(b=>b.onclick=()=>{ store.theme=b.dataset.skin; applySkin(store.theme); save(); checkBadges(); renderTrophies(); });
   wireBackup();
+  const ug=$("#useGoal"); if(ug) ug.onclick=()=>{ G.goal=+ug.dataset.g; if((G.hist[t]||0)>=G.goal && G.last!==t) goalMet(); save(); renderHud(); renderTrophies(); toast("🎯",`Daily goal set to ${G.goal}`,"You can change it any time below."); };
   const wg=$("#weakGo"); if(wg) wg.onclick=()=>{ goTab("cards"); setFilter("weak"); document.querySelector("#p-cards").scrollIntoView({behavior:reduced()?"auto":"smooth"}); };
   document.querySelectorAll("[data-goal]").forEach(b=>b.onclick=()=>{ G.goal=+b.dataset.goal; if((G.hist[t]||0)>=G.goal && G.last!==t) goalMet(); save(); renderHud(); renderTrophies(); });
 }
