@@ -354,6 +354,96 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .weekban div span{font-size:14px;color:var(--muted)}
 .weekban i{font-style:normal;font-weight:800;background:var(--c);color:#fff;border-radius:99px;padding:6px 14px;white-space:nowrap}
 
+/* batch 3 */
+.seg[aria-label="Which cards"]{flex-wrap:wrap}
+.evban{display:flex;align-items:center;gap:8px;background:linear-gradient(90deg,#F2C14E,#F39A3C);color:#2B1D0A;border-radius:12px;padding:8px 14px;margin:-8px 0 12px;font-size:14.5px;flex-wrap:wrap}
+.evban span{font-size:20px} .evban b{font-family:var(--display)}
+.plan-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:0 0 14px}
+.plan-card.complete{border-color:var(--good);background:color-mix(in srgb,var(--good) 8%,var(--card))}
+.plan-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.plan-h b{font-family:var(--display);font-size:17px} .plan-h span{font-size:14px;color:var(--muted)}
+.plan-tasks{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px}
+.ptask{display:flex;align-items:center;gap:8px;text-align:left;border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:9px 12px;font-size:14.5px;font-weight:700}
+.ptask span{font-size:18px}
+.ptask.done{background:var(--good-bg);border-color:transparent;color:var(--ink);font-weight:400;text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--ink) 40%,transparent)}
+.ptask:disabled{cursor:default}
+@media (max-width:560px){ .plan-tasks{grid-template-columns:1fr 1fr;gap:6px} .ptask{font-size:13px;padding:7px 9px;gap:6px} .ptask span{font-size:15px} .plan-card{padding:10px 10px} .plan-h span{font-size:12.5px} }
+.focusbtn{background:color-mix(in srgb,#7B5BE0 10%,var(--card));border-color:color-mix(in srgb,#7B5BE0 40%,var(--line))}
+.match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.6fr);gap:10px}
+.match > div{display:grid;gap:8px;align-content:start}
+.mcard{text-align:left;border:2px solid var(--line);background:var(--card);border-radius:12px;padding:10px 12px;font-size:15px;line-height:1.35}
+.mcard.who{border-left:6px solid var(--c);font-weight:700}
+.mcard.sel{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink) inset}
+.mcard.done{background:var(--good-bg);border-color:var(--good);opacity:.7}
+.mcard.shake{animation:shake .35s;border-color:var(--warn)}
+@media (max-width:640px){ .match{grid-template-columns:1fr} }
+.order-done{padding-left:1.4em;margin:0 0 12px;display:grid;gap:6px}
+.order-done li button{width:100%;text-align:left;border:2px solid var(--ink);background:var(--card);border-radius:10px;padding:8px 12px;font-size:15px}
+.order-done li.ok button{border-color:var(--good);background:var(--good-bg)}
+.order-done li.no button{border-color:var(--warn);background:var(--warn-bg)}
+.order-done li small{display:block;color:var(--warn);font-size:13px;margin-top:2px}
+.order-avail{display:grid;gap:8px}
+.mock-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin-bottom:12px;position:sticky;top:76px;z-index:5}
+.mock-head b{font-family:var(--display);font-size:18px}
+.mock-clock{margin-left:auto;font-family:var(--display);font-weight:800;font-size:20px}
+.mq{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--c);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.mq.ok{border-left-color:var(--good)} .mq.no{border-left-color:var(--warn)}
+.mq-h{font-size:14px;margin-bottom:4px} .mq p{margin:4px 0 8px}
+.mopt{display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:15px;cursor:pointer}
+.mopt input{margin-top:4px}
+.proj{position:fixed;inset:0;z-index:99;background:var(--paper);overflow:auto;padding:16px clamp(16px,4vw,48px) 30px;display:flex;flex-direction:column}
+.pj-top{display:flex;align-items:center;gap:10px;margin-bottom:10px} .pj-top b{font-family:var(--display);font-size:20px}
+.pj-top .btn{padding:7px 12px}
+.pj-setup{max-width:760px;margin:0 auto;width:100%}
+.pj-setup h2{font-family:var(--display);font-size:34px;margin:6px 0} .pj-setup h3{font-family:var(--display);margin:18px 0 8px}
+.pj-row{display:flex;flex-wrap:wrap;gap:8px}
+.pj-pill{border:2px solid var(--line);background:var(--card);border-radius:12px;padding:8px 16px;font-weight:800;font-size:16px}
+.pj-pill.on{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.pj-names{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-top:10px}
+.btn.big{font-size:20px;padding:14px 26px;margin-top:20px}
+.pj-q{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;max-width:1100px;margin:0 auto;width:100%}
+.pj-meta{display:flex;gap:16px;align-items:center;justify-content:center;font-weight:700;color:var(--c);font-size:18px}
+.pj-time{font-family:var(--display);font-size:40px;color:var(--ink)}
+.pj-bar{width:100%;height:10px;background:var(--soft);border-radius:9px;overflow:hidden;margin:10px 0} .pj-bar i{display:block;height:100%;background:var(--c)}
+.pj-text{font-family:var(--display);font-weight:800;font-size:clamp(30px,4.6vw,60px);line-height:1.15;margin:3vh 0}
+.pj-ans{font-size:clamp(24px,3.2vw,40px);line-height:1.35;background:color-mix(in srgb,var(--c) 14%,var(--card));border-radius:18px;padding:18px 26px;max-width:1000px}
+.pj-hint{color:var(--muted);font-size:18px}
+.pj-award{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.pj-award .pj-pill{font-size:20px;padding:12px 20px}
+.pj-board{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:auto;padding-top:20px}
+.pj-team{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:10px 20px;text-align:center;min-width:120px}
+.pj-team.on{border-color:var(--good);background:var(--good-bg)}
+.pj-team b{display:block;font-family:var(--display);font-size:42px;line-height:1} .pj-team span{font-weight:700}
+.pj-end{text-align:center;margin:auto} .pj-end h2{font-family:var(--display);font-size:48px}
+.podium{display:flex;gap:14px;justify-content:center;align-items:flex-end;flex-wrap:wrap}
+.pod{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:16px 24px;min-width:150px}
+.pod span{font-size:44px;display:block} .pod b{display:block;font-size:22px} .pod strong{font-family:var(--display);font-size:46px}
+.pod.p0{border-color:#D4AF37;padding-top:34px;background:color-mix(in srgb,#F2C14E 14%,var(--card))}
+.cert-ov{position:fixed;inset:0;z-index:99;background:rgba(10,14,30,.7);overflow:auto;padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.cert-tools{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:min(900px,100%)}
+.cert-tools .search{flex:1 1 220px}
+.cert{background:#FFFDF6;color:#2B1D0A;width:min(900px,100%);aspect-ratio:1.414;padding:22px;border-radius:6px;box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.cert-in{height:100%;border:3px double #B8860B;outline:8px solid #F3E8C8;outline-offset:-14px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:4% 6%;font-family:Georgia,"Times New Roman",serif}
+.cert-kick{letter-spacing:.2em;text-transform:uppercase;font-size:clamp(11px,1.4vw,15px);color:#8B6914}
+.cert-site{font-family:var(--display);font-weight:800;font-size:clamp(18px,3vw,30px);margin:.4em 0 1em}
+.cert-for{margin:.3em 0;font-style:italic;font-size:clamp(13px,1.8vw,18px)}
+.cert-name{font-size:clamp(26px,5vw,52px);border-bottom:2px solid #B8860B;padding:0 .6em .1em;margin:.2em 0 .4em;min-width:50%}
+.cert-title{font-family:var(--display);font-weight:800;font-size:clamp(22px,4vw,42px);color:#7A1F1F}
+.cert-sub{font-size:clamp(14px,2vw,20px);margin-top:.2em}
+.cert-foot{display:flex;justify-content:space-between;align-items:flex-end;width:100%;margin-top:auto;padding-top:4%}
+.cert-foot div{display:flex;flex-direction:column;align-items:center;min-width:28%}
+.cert-foot span{border-bottom:1px solid #2B1D0A;padding:0 1em .2em;font-size:clamp(13px,1.8vw,18px)}
+.cert-foot small{font-size:12px;color:#6B5A38;margin-top:4px}
+.cert-foot .sig{font-family:"Brush Script MT","Segoe Script",cursive;font-size:clamp(18px,3vw,30px)}
+.cert-foot .cert-seal{min-width:0!important;flex:none;width:clamp(50px,9vw,90px);height:clamp(50px,9vw,90px);border-radius:50%;background:radial-gradient(#F2C14E,#B8860B);color:#FFF8E1;display:grid!important;place-items:center;font-size:clamp(22px,4vw,40px)}
+@media print{
+  body > *:not(.cert-ov){display:none!important}
+  .cert-ov{position:static;background:none;padding:0}
+  .noprint{display:none!important}
+  .cert{box-shadow:none;width:100%;border-radius:0}
+  @page{size:A4 landscape;margin:10mm}
+}
+
 /* double XP sticky note */
 .wrhead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px}
 .wrhead .wrseg{margin-bottom:0}
@@ -525,6 +615,8 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
     <div class="combo" id="combo" aria-live="polite"></div>
     <button class="iconbtn" id="soundBtn" aria-label="Mute sounds">🔊</button>
   </div>
+  <div id="evBanner"></div>
+  <div id="plan"></div>
 
   <div class="tabs" role="tablist" aria-label="Revision mode">
     <button role="tab" aria-selected="true" data-tab="cards" id="tab-cards" aria-controls="p-cards">Flashcards</button>
@@ -547,6 +639,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
   <section class="panel" id="p-cards" role="tabpanel" aria-labelledby="tab-cards">
     <div class="bar-row">
       <div class="seg" role="group" aria-label="Which cards">
+        <button aria-pressed="false" data-filter="mistakes">🩹 Mistakes <span class="duen" id="misN"></span></button>
         <button aria-pressed="false" data-filter="due">📅 Due today <span class="duen" id="dueN"></span></button>
         <button aria-pressed="true" data-filter="all">All cards</button>
         <button aria-pressed="false" data-filter="notknown">Not known yet</button>
@@ -708,7 +801,7 @@ const MC_MAX=220, mcOK = d => d.a.length<=MC_MAX;
 /* ---------- meter + chips ---------- */
 $("#totalQ").textContent = DATA.length;
 function setFilter(f){ filter=f; document.querySelectorAll("[data-filter]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.filter===f)); newDeck(); }
-function renderDue(){ const n=dueCount(), e=$("#dueN"); if(e) e.textContent=n?n:""; const h=$("#hudDue"); if(h){ const a=dueCount(true); h.hidden=!a; $("#hudDueN").textContent=a; } }
+function renderDue(){ const n=dueCount(), e=$("#dueN"); if(e) e.textContent=n?n:""; const mn=$("#misN"); if(mn){ const c=Object.keys(G.mistakes||{}).filter(id=>BY_ID[id]).length; mn.textContent=c?c:""; } const h=$("#hudDue"); if(h){ const a=dueCount(true); h.hidden=!a; $("#hudDueN").textContent=a; } }
 function renderMeter(){ renderDue();
   let k=0,l=0; DATA.forEach(d=>{const s=status(d.id); if(s==="k")k++; else if(s==="l")l++;});
   $("#knownCount").textContent=k; $("#learningCount").textContent=l;
@@ -769,17 +862,18 @@ function newDeck(){
   let p = pool();
   if(gapMode) p=p.filter(d=>gapById(d.id));
   if(filter==="weak") p=weakDeck();
+  if(filter==="mistakes"){ p=DATA.filter(d=>d.id in G.mistakes); if(gapMode) p=p.filter(d=>gapById(d.id)); }
   if(filter==="due") p=p.filter(d=>isDue(d.id));
   if(filter==="notknown") p=p.filter(d=>status(d.id)!=="k");
   if(filter==="learning") p=p.filter(d=>status(d.id)==="l");
   deck=(filter==="weak"?p:shuffle(p)).sort((a,b)=>filter==="due"?(store.sr[a.id].due<store.sr[b.id].due?-1:store.sr[a.id].due>store.sr[b.id].due?1:0):0).map(d=>d.id); pos=0; flipped=false; sessionRes={}; deckXP=0; deckBest=0; deckCombo=0;
-  golds=new Set(deck.filter(()=>Math.random()<0.07)); renderCard();
+  golds=new Set(deck.filter(()=>Math.random()<(activeEvents().some(e=>e.scope==="gold")?0.14:0.07))); renderCard();
 }
 function renderCard(){
   const area=$("#cardArea");
   if(!store.sel.length){ area.innerHTML=`<div class="empty"><h3>Pick a topic to start</h3><p>Tap one or more topics above and your flashcards will appear here.</p></div>`; return; }
   if(!deck.length){
-    const msg = gapMode && !pool().some(d=>gapById(d.id)) ? ["No gap fills for these topics","Pick other topics, or turn off gap fill mode."] : filter==="weak" ? ["No weak spots yet","Answer at least 8 questions in a topic and your weakest topics will show up here."] : filter==="due" ? ["Nothing due today 🎉","You're all caught up. Cards you mark as Got it come back after 1, 3, 7, 21 and then 60 days, just before you'd forget them. Come back tomorrow, or switch to All cards."] : filter==="learning" ? ["Nothing marked as still learning","When you mark a card as still learning, it will show up here so you can go over it again."] : ["You know every card here","Every question in these topics is marked as known. Try another topic, or switch to all cards for a refresher."];
+    const msg = gapMode && !pool().some(d=>gapById(d.id)) ? ["No gap fills for these topics","Pick other topics, or turn off gap fill mode."] : filter==="mistakes" ? ["No mistakes to fix 🎉","Anything you get wrong (or mark still learning) lands here, and leaves once you get it right twice in a row."] : filter==="weak" ? ["No weak spots yet","Answer at least 8 questions in a topic and your weakest topics will show up here."] : filter==="due" ? ["Nothing due today 🎉","You're all caught up. Cards you mark as Got it come back after 1, 3, 7, 21 and then 60 days, just before you'd forget them. Come back tomorrow, or switch to All cards."] : filter==="learning" ? ["Nothing marked as still learning","When you mark a card as still learning, it will show up here so you can go over it again."] : ["You know every card here","Every question in these topics is marked as known. Try another topic, or switch to all cards for a refresher."];
     area.innerHTML=`<div class="empty"><h3>${msg[0]}</h3><p>${msg[1]}</p></div>`; return;
   }
   if(pos>=deck.length){
@@ -977,7 +1071,7 @@ try{ const s=JSON.parse(localStorage.getItem(KEY)||"null"); if(s && s.g) store.g
 store.g = Object.assign({}, GDEF, store.g||{}); store.g.st = Object.assign({}, GDEF.st, store.g.st||{});
 const G = store.g;
 if(!G.st.bosses || typeof G.st.bosses!=="object") G.st.bosses={};
-function initG(){ if(!G.acc||!G.acc.t) G.acc={t:{},y:{}}; if(!G.sec) G.sec={}; if(!G.scrolls) G.scrolls={}; if(!G.lc) G.lc={}; if(!Array.isArray(G.themesTried)) G.themesTried=[]; }
+function initG(){ if(!G.acc||!G.acc.t) G.acc={t:{},y:{}}; if(!G.sec) G.sec={}; if(!G.scrolls) G.scrolls={}; if(!G.lc) G.lc={}; if(!Array.isArray(G.themesTried)) G.themesTried=[]; if(!G.mistakes) G.mistakes={}; }
 initG();
 
 /* ---------- weak spots: accuracy by topic and by type of card ---------- */
@@ -988,7 +1082,7 @@ function cardType(d){
   if(/\(\d{4}\)|stud(y|ies)|research|found|find|procedure|sample|aim|conclu|investigat|experiment/i.test(d.q)) return "Studies";
   return "Concepts";
 }
-function recAcc(id, ok){ const d=BY_ID[id]; if(!d) return; const a=G.acc, y=cardType(d);
+function recAcc(id, ok){ const d=BY_ID[id]; if(!d) return; noteMistake(id,ok); const pl=G.plan; if(pl && pl.d===today() && d.t===pl.weak) pl.weakN++; const a=G.acc, y=cardType(d);
   (a.t[d.t]=a.t[d.t]||[0,0])[1]++; if(ok) a.t[d.t][0]++;
   (a.y[y]=a.y[y]||[0,0])[1]++; if(ok) a.y[y][0]++; }
 function noteLearn(id, ok){ if(!ok){ G.lc[id]=(G.lc[id]||0)+1; G.st.learnMarks=(G.st.learnMarks||0)+1; } else if((G.lc[id]||0)>=3){ G.sec.finally=1; delete G.lc[id]; } else delete G.lc[id]; }
@@ -1081,6 +1175,7 @@ function floater(text, el, cls=""){
   document.body.appendChild(f); setTimeout(()=>f.remove(),1200);
 }
 function toast(icon,title,sub=""){
+  if(typeof focusS!=="undefined" && focusS.end && icon!=="🧘") return;
   const w=$("#toasts"), t=document.createElement("div"); t.className="toast"; t.setAttribute("role","status");
   t.innerHTML=`<span class="ti">${icon}</span><div><b>${esc(title)}</b>${sub?`<span>${esc(sub)}</span>`:""}</div>`;
   w.appendChild(t); while(w.children.length>2) w.firstChild.remove();
@@ -1091,7 +1186,7 @@ function levelUp(n){
   sfx("lvl"); confetti(200);
   const o=document.createElement("div"); o.className="overlay";
   o.innerHTML=`<div class="levelup" role="dialog" aria-modal="true" aria-label="Level up"><div class="kick">Level up!</div><div class="num">${n}</div>
-    <h3>${r!==old?"New rank: "+esc(r):esc(r)}</h3>${SKINS.filter(k=>k.lvl===n).map(k=>`<p class="unlock">🎨 New theme unlocked: <b>${esc(k.name)}</b>. Pick it in Trophies.</p>`).join("")}<p>${lvlStart(n+1)-G.xp} XP to level ${n+1}. Keep it going.</p><button class="btn" id="luOk">Let's go</button></div>`;
+    <h3>${r!==old?"New rank: "+esc(r):esc(r)}</h3>${[10,20,30,40,50,60].includes(n)?`<p class="unlock">🏅 New certificate unlocked! Print it from Trophies.</p>`:""}${SKINS.filter(k=>k.lvl===n).map(k=>`<p class="unlock">🎨 New theme unlocked: <b>${esc(k.name)}</b>. Pick it in Trophies.</p>`).join("")}<p>${lvlStart(n+1)-G.xp} XP to level ${n+1}. Keep it going.</p><button class="btn" id="luOk">Let's go</button></div>`;
   document.body.appendChild(o);
   const close=()=>{ o.remove(); document.removeEventListener("keydown",esc2,true); };
   const esc2=e=>{ if(e.key==="Tab") return; e.stopPropagation(); if(e.key==="Escape"||e.key==="Enter"||e.key===" "){ e.preventDefault(); close(); } };
@@ -1155,6 +1250,7 @@ function answer({ok, el, mode, gold, boost}){
   let mult = ok ? comboMult() : 1;
   if(gold && ok){ mult*=5; G.st.gold++; }
   if(boost && ok) mult*=boost;
+  if(ok){ const em=eventMult(tab==="arcade"&&arc.mode==="boss"&&arc.phase==="play"?"boss":"all"); if(em>1) mult*=em; }
   const xp=Math.round(base*mult);
   G.hist[t]=(G.hist[t]||0)+1;
   secretOnAnswer(t);
@@ -1258,6 +1354,14 @@ const BADGES = [
   ["weekly1","🏁","Weekly warrior","Finish a Weekly Challenge",()=>(G.st.weeklies||0)>=1],
   ["weekly15","🏆","Perfect week","Score 15/15 in a Weekly Challenge",()=>!!G.st.weeklyPerfect],
   ["report","📨","Team player","Send your teacher a progress report code",()=>(G.st.reports||0)>=1],
+  ["plan7","📋","Planner","Complete Today's plan on 7 days",()=>(G.st.plans||0)>=7],
+  ["fix50","🩹","Mistake mender","Fix 50 mistakes",()=>(G.st.mistakesFixed||0)>=50],
+  ["flaw8","🔎","Methodologist","Score 8/8 in Spot the Flaw",()=>(G.st.flawBest||0)>=8],
+  ["match15","🔗","Perfect match","Match all 15 studies with no wrong guesses",()=>!!G.st.matchPerfect],
+  ["order5","🧩","In order","Get all 5 sequences right in Put It in Order",()=>(G.st.orderBest||0)>=5],
+  ["mock1","📝","Mock ready","Complete a mini mock paper",()=>(G.mocks||[]).length>=1],
+  ["mock80","🎯","80% club","Score 80% or more on a mini mock",()=>!!G.st.mock80],
+  ["focus3","🧘","In the zone","Complete 3 focus sessions",()=>(G.st.focus||0)>=3],
   ["app","📲","Pocket psychologist","Open the app from your home screen",()=>!!G.st.standalone],
 ];
 function checkBadges(){
@@ -1286,6 +1390,7 @@ function renderHud(){
   $("#hudGoalRing").setAttribute("stroke-dashoffset", (2*Math.PI*12*(1-Math.min(1,done/G.goal))).toFixed(1));
   const nx=nextExam(), he=$("#hudExam");
   if(he){ he.hidden=!nx; if(nx){ const dd=daysUntil(nx[1]); $("#hudExamN").textContent=dd; $("#hudExamL").textContent=dd===0?nx[0]+" today!":`day${dd===1?"":"s"} to ${nx[0]}`; he.title=dd===0?`${nx[0]} is today. Good luck!`:`${dd} day${dd===1?"":"s"} until ${nx[0]} (${new Date(nx[1]+"T12:00").toLocaleDateString("en-GB",{day:"numeric",month:"long"})})`; } }
+  renderPlan(); renderEvents();
   $("#soundBtn").textContent=G.sound?"🔊":"🔇";
   $("#soundBtn").setAttribute("aria-label", G.sound?"Mute sounds":"Turn sounds on");
 }
@@ -1708,8 +1813,13 @@ const MODES = {
         desc:"Fill the gap with the right key term. 60 seconds, wrong answers cost 3 seconds. Uses the topics you've selected."},
   blitz:{icon:"⚡", name:"Blitz", c:"#E0533D", kind:"blitz", src:"cards", desc:"60 seconds. Answer as many as you can. Wrong answers cost 3 seconds. Combos multiply your score."},
   surv:{icon:"❤️", name:"Survival", c:"#7B5BE0", kind:"surv", src:"cards", desc:"Three lives, 12 seconds per question. How far can you get?"},
+  flaw:{icon:"🔎", name:"Spot the Flaw", c:"#2596B0", kind:"round", n:8, src:"flaw", desc:"A short study, one big methodological problem. Can you spot it? Explanations after every answer."},
+  match:{icon:"🔗", name:"Study Matcher", c:"#D6478F", kind:"mini", src:"match", desc:"Match the researcher to what they found. Three rounds of five, from the topics you've selected."},
+  order:{icon:"🧩", name:"Put It in Order", c:"#7B5BE0", kind:"mini", src:"order", desc:"Tap the steps into the right order: synaptic transmission, Duck's phases, CBT, report sections and more."},
+  mistakes:{icon:"🩹", name:"Fix My Mistakes", c:"#B4531B", kind:"round", n:10, src:"mistakes", desc:"Questions you've got wrong before. Each one leaves your mistakes bank once it's right twice in a row."},
   boss:{icon:"👹", name:"Boss Battles", c:"#B91C1C", kind:"boss", src:"boss", desc:"One boss per topic. Land 15 hits with hard questions before you lose 3 lives. Beat a boss to earn its badge."},
   weekly:{icon:"🏁", name:"Weekly Challenge", c:"#C2410C", kind:"weekly", n:15, src:"weekly", desc:"This week's topic, the same 15 questions for everyone in the class. One scored go per week, so make it count."},
+  proj:{icon:"📽️", name:"Projector Mode", c:"#18203A", kind:"proj", src:"proj", desc:"For teachers: a team quiz for the board, with a timer, scoreboard and podium. Doesn't affect anyone's XP."},
   daily:{icon:"📰", name:"Daily 10", c:"#1C8A5E", kind:"daily", src:"daily", desc:"The same 10 questions for everyone today, including exam skills and a stats question. One go. Compare with your class."},
 };
 const arc={phase:"menu", mode:null, qs:[], i:0, score:0, right:0, lives:3, end:0, qEnd:0, timer:null, cur:null, locked:false, log:[], t0:0, xp:0, best:false, seen:new Set(), fb:false};
@@ -1730,6 +1840,11 @@ function bestLabel(k){
     : k==="gap" ? (st.gap?`Best: ${st.gap.toLocaleString()} points`:"No score yet")
     : k==="exam" ? (st.examRounds?`Best: ${st.exam}/10 · ${st.examRounds} round${st.examRounds===1?"":"s"}`:"Not played yet")
     : k==="stats" ? (st.statsRounds?`Best: ${st.stats}/10 · ${st.statsRounds} round${st.statsRounds===1?"":"s"}`:"Not played yet")
+    : k==="flaw" ? (st.flawBest?`Best: ${st.flawBest}/8`:"Not played yet")
+    : k==="match" ? (st.matchBest?`Best: ${st.matchBest}/15 matched`:"Not played yet")
+    : k==="order" ? (st.orderBest!=null&&st.orders?`Best: ${st.orderBest}/5 perfect`:"Not played yet")
+    : k==="mistakes" ? `${mistakeIds().length} in your mistakes bank`
+    : k==="proj" ? "Teacher-led, no XP"
     : k==="boss" ? `${Object.keys(G.st.bosses).filter(x=>BOSSES[x]).length} of ${TOPICS.length} bosses beaten`
     : (G.daily[today()]&&G.daily[today()].done ? `Done today: ${G.daily[today()].score}/10 ✓` : "Ready to play");
 }
@@ -1742,12 +1857,12 @@ function renderArcade(){
     const weekBanner=`<button class="weekban" id="weekBan" style="--c:${weekTopic().c}"><span>🏁</span><div><b>Weekly Challenge #${weekNo()}: ${esc(weekTopic().name)}</b><span>${wk&&wk.done?`You scored ${wk.score}/15 this week. New topic on Monday.`:`15 questions, one go. Ends ${daysLeft===0?"tonight":daysLeft===1?"tomorrow":"in "+daysLeft+" days"}.`}</span></div><i>${wk&&wk.done?"See result":"Play"}</i></button>`;
     area.innerHTML=weekBanner+`${examToday?"":`<div class="focus"><span>🎯</span><div><b>Today's focus: exam skills</b><span>Do one Exam Skills round today for double XP. It's where the easy marks are.</span></div></div>`}
       <div class="modes">${Object.entries(MODES).map(([k,m])=>{
-      const dis = (m.src==="cards" && !nCards) || (m.src==="gap" && nGap<4);
+      const dis = (m.src==="cards" && !nCards) || (m.src==="gap" && nGap<4) || (m.src==="mistakes" && !mistakeIds().filter(id=>mcOK(BY_ID[id])).length);
       const tag = m.featured ? `<span class="new">2× XP</span>` : (k==="daily"&&!(dd&&dd.done)) ? '<span class="new">NEW</span>' : "";
       return `<button class="mode ${m.featured?"featured":""}" style="--c:${m.c}" data-mode="${k}" ${dis?"disabled":""}>${tag}<span class="mi">${m.icon}</span><h3>${m.name}${m.featured?' <small>Featured</small>':""}</h3><p>${m.desc}</p><span class="best">${bestLabel(k)}</span></button>`; }).join("")}</div>
       <p class="arc-note">Blitz, Survival and Gap Fill use the topics you've selected above${nCards?"":", so pick at least one"}. Exam Skills and Stats Lab cover the whole course. Wrong answers on revision cards are added to your still-learning pile. Use keys 1 to 4 to answer, and Enter for the next question.</p>`;
     $("#weekBan").onclick=()=>startArc("weekly");
-    area.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{ if(b.dataset.mode==="boss"){ arc.phase="bossmenu"; renderArcade(); } else startArc(b.dataset.mode); });
+    area.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{ const md=b.dataset.mode; if(md==="boss"){ arc.phase="bossmenu"; renderArcade(); } else if(md==="match") startMatch(); else if(md==="order") startOrder(); else if(md==="proj") openProjector(); else startArc(md); });
     return;
   }
   if(arc.phase==="bossmenu"){
@@ -1759,6 +1874,7 @@ function renderArcade(){
     area.querySelectorAll("[data-boss]").forEach(b=>b.onclick=()=>{ arc.bossTopic=b.dataset.boss; startArc("boss"); });
     return;
   }
+  if(arc.phase==="mini") return renderMini(area);
   if(arc.phase==="play"){
     const q=arc.cur, m=M(), k=m.kind;
     const right = k==="blitz" ? `<span>Score</span><span class="big" id="arcScore">${arc.score.toLocaleString()}</span>`
@@ -1822,7 +1938,9 @@ function nextQ(){
   if(m.kind==="daily"||m.kind==="boss"||m.kind==="weekly") return arc.qs[arc.i];
   for(let tries=0;tries<25;tries++){
     let q;
-    if(m.src==="exam") q=qExam(rng); else if(m.src==="stats") q=qStats(rng); else if(m.src==="gap") q=qGap(rng);
+    if(m.src==="flaw"){ const f=FLAWS[Math.floor(rng()*FLAWS.length)]; q={...mcq("Spot the flaw: "+f[0]+"\nWhat is the main problem with this study?", f[1], shuffleR(f[2],rng), f[3], rng, "Spot the flaw"), tname:"Spot the flaw", c:"#2596B0"}; }
+    else if(m.src==="mistakes"){ const ids=mistakeIds().filter(id=>mcOK(BY_ID[id])); q=qFromCard(BY_ID[ids[Math.floor(rng()*ids.length)]],rng); q.tname="🩹 Mistake · "+q.tname; }
+    else if(m.src==="exam") q=qExam(rng); else if(m.src==="stats") q=qStats(rng); else if(m.src==="gap") q=qGap(rng);
     else { const p=pool().filter(mcOK); q=qFromCard(p[Math.floor(rng()*p.length)],rng); }
     const key=q.q.slice(0,90); if(!arc.seen.has(key) || tries===24){ arc.seen.add(key); return q; }
   }
@@ -1841,6 +1959,7 @@ function startArc(mode){
   resetCombo();
   const m=M();
   if(m.kind==="boss") arc.qs=bossQs(arc.bossTopic);
+  if(mode==="mistakes") MODES.mistakes.n=Math.max(1,Math.min(10,mistakeIds().filter(id=>mcOK(BY_ID[id])).length));
   if(m.kind==="weekly"){ arc.qs=weeklyQs(); G.weekly[weekStart()]={started:true, done:false, score:0, time:0, log:[], qa:arc.qs.map(q=>[q.q,q.opts[q.correct]])}; save(); }
   if(m.kind==="daily"){
     arc.qs=dailyQs();
@@ -1915,6 +2034,8 @@ function arcFinish(){
   if(m.kind==="round"){
     const done=arc.i>=m.n || arc.log.length>=m.n;
     if(arc.mode==="exam"){ if(done){ st.examRounds++; st.examDay=today(); } if(arc.right>st.exam){ st.exam=arc.right; arc.best=true; } bonus=done?20+arc.right*3:0; }
+    if(arc.mode==="flaw"){ if(arc.right>(st.flawBest||0)){ st.flawBest=arc.right; arc.best=true; } bonus=done?10+arc.right*3:0; }
+    if(arc.mode==="mistakes"){ bonus=done?10+arc.right*2:0; }
     if(arc.mode==="stats"){ if(done) st.statsRounds++; if(arc.right>st.stats){ st.stats=arc.right; arc.best=true; } bonus=done?15+arc.right*3:0; }
     if(m.boost) bonus*=m.boost;
   }
@@ -2208,8 +2329,9 @@ function pickEssay(){
 function stopTimer(){ clearInterval(wr.timer); wr.timer=null; wr.timerEnd=0; }
 function renderWriting(){
   const area=$("#wrArea");
-  const seg=`<div class="wrhead"><div class="seg wrseg" role="group" aria-label="Writing practice"><button aria-pressed="${wr.mode==="essay"}" data-wm="essay">16 & 8-mark essays</button><button aria-pressed="${wr.mode==="design"}" data-wm="design">Design a study (12)</button></div><div class="sticky" role="note"><b>Double XP!</b>All long writing earns 2× XP ✍️</div></div>`;
+  const seg=`<div class="wrhead"><div class="seg wrseg" role="group" aria-label="Writing practice"><button aria-pressed="${wr.mode==="essay"}" data-wm="essay">16 & 8-mark essays</button><button aria-pressed="${wr.mode==="design"}" data-wm="design">Design a study (12)</button><button aria-pressed="${wr.mode==="mock"}" data-wm="mock">📝 Mini mock</button></div><div class="sticky" role="note"><b>Double XP!</b>All long writing earns 2× XP ✍️</div></div>`;
   if(wr.mode==="design") return renderDesign(area,seg);
+  if(wr.mode==="mock") return renderMock(area,seg);
   const topics=[...new Set(ESSAY_BANK.map(e=>e.t))];
   let body="";
   if(!wr.cur){
@@ -2326,6 +2448,331 @@ async function makeReport(){
   return `${pre}.${body}.${chk4(pre+body)}`;
 }
 
+/* ===== 🧩 PUT IT IN ORDER: sequences students tap into the right order (current spec only) ===== */
+const SEQUENCES = [
+  {t:"Biopsychology", title:"Synaptic transmission", steps:["An action potential reaches the presynaptic terminal","Vesicles release neurotransmitter into the synaptic cleft","Neurotransmitter diffuses across the cleft","It binds to receptors on the postsynaptic neuron","The postsynaptic neuron is excited or inhibited"]},
+  {t:"Biopsychology", title:"The fight or flight response", steps:["A threat is perceived","The hypothalamus activates the sympathetic nervous system","The adrenal medulla is stimulated","Adrenaline is released into the bloodstream","Heart rate and breathing increase"]},
+  {t:"Relationships", title:"Duck's phase model of breakdown", steps:["Intra-psychic phase","Dyadic phase","Social phase","Grave-dressing phase","Resurrection phase"]},
+  {t:"Forensic Psychology", title:"The typology approach to profiling", steps:["Data assimilation","Crime scene classification","Crime reconstruction","Profile generation"]},
+  {t:"Forensic Psychology", title:"Anger management", steps:["Cognitive preparation","Skill acquisition","Application practice"]},
+  {t:"Forensic Psychology", title:"Kohlberg's levels of moral reasoning", steps:["Pre-conventional","Conventional","Post-conventional"]},
+  {t:"Psychopathology", title:"Systematic desensitisation", steps:["Learn relaxation techniques","Build an anxiety hierarchy with the therapist","Gradually face each step while relaxed","Work up to the most feared situation"]},
+  {t:"Psychopathology", title:"Ellis's ABC model (as used in CBT)", steps:["Activating event","Belief","Consequence","Dispute","Effect"]},
+  {t:"Memory", title:"The multi-store model", steps:["Environmental stimulus","Sensory register","Attention","Short-term memory","Maintenance rehearsal","Long-term memory"]},
+  {t:"Approaches", title:"Freud's psychosexual stages", steps:["Oral","Anal","Phallic","Latency","Genital"]},
+  {t:"Approaches", title:"Maslow's hierarchy of needs (bottom to top)", steps:["Physiological","Safety","Love and belongingness","Esteem","Self-actualisation"]},
+  {t:"Approaches", title:"Classical conditioning", steps:["Unconditioned stimulus produces an unconditioned response","Neutral stimulus is paired with the unconditioned stimulus","Neutral stimulus becomes a conditioned stimulus","Conditioned stimulus produces a conditioned response"]},
+  {t:"Approaches", title:"Bandura's mediational processes", steps:["Attention","Retention","Motor reproduction","Motivation"]},
+  {t:"Social Influence", title:"Milgram's verbal prods", steps:["Please continue","The experiment requires that you continue","It is absolutely essential that you continue","You have no other choice, you must go on"]},
+  {t:"RM", title:"Sections of a scientific report", steps:["Abstract","Introduction","Method","Results","Discussion","Referencing"]},
+  {t:"RM", title:"Peer review", steps:["The researcher submits a paper to a journal","The editor sends it to experts in the field","Reviewers assess its quality and validity","The paper is accepted, revised or rejected","The paper is published"]},
+  {t:"RM", title:"Testing for significance", steps:["Write the null and alternative hypotheses","Choose a statistical test","Calculate the test statistic","Compare it with the critical value","Accept or reject the null hypothesis"]},
+  {t:"RM", title:"Levels of measurement (least to most precise)", steps:["Nominal","Ordinal","Interval"]},
+  {t:"Attachment", title:"The Strange Situation (key episodes)", steps:["Parent and infant explore the room","A stranger joins them","The parent leaves the infant with the stranger","The parent returns (first reunion)","The infant is left alone","The parent returns (second reunion)"]},
+  {t:"Schizophrenia", title:"Diathesis-stress model", steps:["A genetic or early vulnerability (diathesis)","A stressful trigger, e.g. cannabis or a life event","Vulnerability and stress interact","Symptoms of schizophrenia appear"]}
+];
+
+/* ===== 🔎 SPOT THE FLAW: one methodological problem per study [question, answer, wrong answers, explanation] ===== */
+const FLAWS = [
+  ["A researcher tests whether caffeine improves reaction time. The caffeine group is tested at 9am and the water group at 4pm.","Time of day is a confounding variable",["The sample is too large","The DV isn't operationalised","There is no hypothesis"],"Tiredness at different times of day could explain the difference instead of caffeine. Test both groups at the same time."],
+  ["To study stress in teenagers, a psychologist puts up a poster asking for volunteers and 20 students reply.","Volunteer bias",["Order effects","Investigator effects","Low inter-rater reliability"],"Volunteers may be more motivated or confident than other teenagers, so the sample may not be representative."],
+  ["Participants complete a memory test with music and then the same test in silence. Everyone does the music condition first.","Order effects (no counterbalancing)",["Volunteer bias","Social desirability bias","Lack of a hypothesis"],"Practice or fatigue could explain the results. Half should do silence first (counterbalancing)."],
+  ["A researcher who knows the hypothesis interviews participants and smiles when they give the 'right' answer.","Investigator effects",["Order effects","Ethnocentrism","Sampling bias"],"The researcher's behaviour could influence answers. A double-blind design would prevent this."],
+  ["A questionnaire asks students, 'How many hours do you revise each night?' and finds everyone revises at least 3 hours.","Social desirability bias",["Order effects","Confounding by time of day","Low test-retest reliability"],"Students may overstate revision to look good. Anonymous answers or a revision log would help."],
+  ["Two observers record aggression in a playground, but each uses their own idea of what counts as 'aggressive'.","Low inter-observer reliability (no shared behavioural categories)",["Order effects","Demand characteristics from a lab","Volunteer bias"],"Without agreed, operationalised categories, the observers' tallies can't be compared. They should agree categories and check reliability."],
+  ["A study concludes that eating breakfast causes better grades because the two are positively correlated.","A correlation can't show cause and effect",["The sample was too small to correlate","Correlations need a control group","Breakfast is a nominal variable"],"A third variable (e.g. a stable home routine) could explain both. Only an experiment can show cause."],
+  ["Participants are told, 'We're testing whether this new app makes you happier,' before rating their mood after using it.","Demand characteristics",["Order effects","Sampling bias","Low inter-rater reliability"],"Knowing the aim may lead participants to rate their mood higher. The aim should be hidden or a placebo condition used."],
+  ["A researcher studies conformity using only male American university students and generalises to everyone.","Unrepresentative (biased) sample",["Investigator effects","Order effects","Low internal validity from a lab"],"The results may not apply to women, other ages or other cultures (gender and culture bias)."],
+  ["In a matched pairs design, pairs are matched on their shoe size before a memory test.","Matched on an irrelevant variable",["Order effects","Too much control","Volunteer bias"],"Matching should be on a variable that could affect the DV, e.g. previous memory ability."],
+  ["A psychologist gives participants a mild electric shock without telling them it might happen and doesn't debrief them.","Ethical issues: no informed consent, protection from harm or debrief",["Low reliability","Order effects","Social desirability bias"],"Participants must give informed consent, be protected from harm and be debriefed."],
+  ["A study measures 'memory' by asking participants how good they think their memory is.","The DV is poorly operationalised (subjective self-rating)",["Order effects","The IV isn't manipulated","Volunteer bias"],"A self-rating isn't an objective measure. A recall test with a score would be better."],
+  ["A researcher tests a new revision method on 4 students and says it works for all students.","The sample is too small to generalise",["Order effects","Investigator effects","Social desirability bias"],"With 4 participants, individual differences could explain the result."],
+  ["In an independent groups study, the experimental group happens to have all the top-set students.","Participant variables (no random allocation)",["Order effects","Demand characteristics","Low inter-rater reliability"],"Differences in ability could explain the result. Participants should be randomly allocated."],
+  ["A researcher repeats a questionnaire a week later and the same people give very different scores.","Low test-retest reliability",["Low face validity","Order effects","Volunteer bias"],"The questionnaire isn't consistent over time, so it may not be a reliable measure."],
+  ["A study of obedience takes place in a lab with an artificial task that has nothing to do with real life.","Low ecological validity / mundane realism",["Low reliability","Order effects","Volunteer bias"],"Behaviour in an artificial task may not generalise to real-world obedience."],
+  ["A psychologist analyses interview data on its own and finds it supports her favourite theory.","Researcher bias (no second coder)",["Order effects","Volunteer bias","Demand characteristics"],"Her expectations may affect how she interprets the data. A second coder and inter-rater reliability would help."],
+  ["A natural experiment compares stress in two schools, one with a new mindfulness programme. The schools are in very different areas.","Extraneous variables between the groups (no random allocation)",["Order effects","Investigator effects only","The IV was manipulated"],"Differences between the schools' areas could explain the results instead of the programme."]
+];
+
+/* ================= BATCH 3: plan, mistakes, events, projector, mock, games, certificates, focus ================= */
+
+/* ---- 🩹 mistakes bank (wrong answers stay until right twice in a row) ---- */
+function noteMistake(id, ok){
+  if(!BY_ID[id]) return;
+  if(!ok){ G.mistakes[id]=0; return; }
+  if(id in G.mistakes){ G.mistakes[id]++; if(G.mistakes[id]>=2){ delete G.mistakes[id]; G.st.mistakesFixed=(G.st.mistakesFixed||0)+1; setTimeout(()=>toast("🩹","Mistake fixed!","Right twice in a row, so it's out of your mistakes bank."),400); } }
+}
+const mistakeIds=()=>Object.keys(G.mistakes).map(Number).filter(id=>BY_ID[id]);
+
+/* ---- 📋 today's plan ---- */
+function planWeakTopic(){
+  const w=weakest(1)[0]; if(w && w.key!=="Exam skills") return w.key;
+  const ts=topicStats().filter(x=>x.key!=="Exam skills").sort((a,b)=>a.known-b.known); return ts[0].key;
+}
+function ensurePlan(){ const t=today(); if(!G.plan || G.plan.d!==t) G.plan={d:t, weak:planWeakTopic(), weakN:0, done:false}; return G.plan; }
+function planTasks(){
+  const pl=ensurePlan(), due=dueCount(true), dd=G.daily[today()];
+  return [
+    {id:"due", icon:"📅", label: due?`Review ${due} due card${due===1?"":"s"}`:"No reviews due today", done:due===0},
+    {id:"daily", icon:"📰", label:"Play the Daily 10", done:!!(dd&&dd.done)},
+    {id:"weak", icon:"🎯", label:`10 cards on ${TMAP[pl.weak].name} (${Math.min(pl.weakN,10)}/10)`, done:pl.weakN>=10}
+  ];
+}
+function renderPlan(){
+  const el=$("#plan"); if(!el) return;
+  const tasks=planTasks(), n=tasks.filter(x=>x.done).length, pl=G.plan;
+  if(n===3 && !pl.done){ pl.done=true; G.st.plans=(G.st.plans||0)+1; save(); setTimeout(()=>{ toast("📋","Today's plan complete! +40 XP","See you tomorrow."); confetti(140); sfx("badge"); addXP(40,false); checkBadges(); },300); }
+  el.innerHTML=`<div class="plan-card ${n===3?"complete":""}"><div class="plan-h"><b>📋 Today's plan</b><span>${n===3?"All done. Brilliant work! ✓":`${n} of 3 done · finish all three for +40 XP`}</span></div>
+    <div class="plan-tasks">${tasks.map(x=>`<button class="ptask ${x.done?"done":""}" data-plan="${x.id}" ${x.done?"disabled":""}><span>${x.done?"✅":x.icon}</span>${esc(x.label)}</button>`).join("")}
+    <button class="ptask focusbtn" id="focusBtn">${focusS.end?`🧘 Focus: <span id="focusLeft">${fmtTime(focusS.end-Date.now())}</span> · stop`:"🧘 25-minute focus session"}</button></div></div>`;
+  el.querySelectorAll("[data-plan]").forEach(b=>b.onclick=()=>{
+    const k=b.dataset.plan;
+    if(k==="due"){ if(dueCount()===0){ store.sel=TOPICS.map(t=>t.key); save(); renderChips(); } goTab("cards"); setFilter("due"); }
+    if(k==="daily"){ goTab("arcade"); startArc("daily"); }
+    if(k==="weak"){ store.sel=[G.plan.weak]; save(); renderChips(); goTab("cards"); setFilter("all"); }
+    $(".tabs").scrollIntoView({behavior:reduced()?"auto":"smooth"});
+  });
+  $("#focusBtn").onclick=()=>focusS.end?stopFocus(false):startFocus();
+}
+
+/* ---- 🧘 focus timer: 25 minutes, pop-ups paused, bonus XP for 15+ answers ---- */
+var focusS={end:0, start:0, timer:null};
+function startFocus(){ focusS.end=Date.now()+25*60000; focusS.start=G.st.cards; focusS.timer=setInterval(tickFocus,1000); toast("🧘","Focus session started","25 minutes. Pop-ups are paused until it ends."); renderPlan(); }
+function tickFocus(){ const l=$("#focusLeft"); const left=focusS.end-Date.now(); if(left<=0) return stopFocus(true); if(l) l.textContent=fmtTime(left); }
+function stopFocus(finished){
+  clearInterval(focusS.timer); const answered=G.st.cards-focusS.start; focusS.end=0;
+  if(finished){ if(answered>=15){ G.st.focus=(G.st.focus||0)+1; save(); toast("🧘",`Focus session done: ${answered} answers`,"+50 XP bonus. Take a 5-minute break."); addXP(50,false); confetti(100); checkBadges(); } else toast("🧘","Focus session over",`${answered} answers. Get 15+ in a session for a bonus.`); sfx("lvl"); }
+  renderPlan();
+}
+
+/* ---- ⚡ double XP events: dates are easy to edit here ---- */
+const XP_EVENTS = [
+  {name:"Double XP weekend", icon:"⚡", mult:2, rule:"firstWeekend", desc:"Every first weekend of the month"},
+  {name:"Final countdown", icon:"⏳", mult:1.5, from:"2027-04-18", to:"2027-05-17", desc:"×1.5 XP for the 30 days before Paper 1"},
+  {name:"New Year, new grades", icon:"🎆", mult:1.5, from:"01-01", to:"01-07", yearly:true, desc:"×1.5 XP all week"},
+  {name:"Halloween Boss Rush", icon:"🎃", mult:2, from:"10-25", to:"10-31", yearly:true, scope:"boss", desc:"Double XP in boss battles"},
+  {name:"Advent of revision", icon:"🎄", mult:1, from:"12-01", to:"12-24", yearly:true, scope:"gold", desc:"Golden cards are twice as common"}
+];
+function activeEvents(){
+  const t=today(), md=t.slice(5), d=new Date(), dow=d.getDay(), dt=d.getDate();
+  return XP_EVENTS.filter(e=> e.rule==="firstWeekend" ? ((dow===6&&dt<=7)||(dow===0&&dt>=2&&dt<=8)) : e.yearly ? (md>=e.from&&md<=e.to) : (t>=e.from&&t<=e.to));
+}
+function eventMult(scope){ return activeEvents().filter(e=>!e.scope||e.scope===scope).reduce((m,e)=>Math.max(m,e.mult),1); }
+function renderEvents(){ const el=$("#evBanner"); if(!el) return; const ev=activeEvents(); el.innerHTML=ev.map(e=>`<div class="evban"><span>${e.icon}</span><b>${esc(e.name)}</b> ${esc(e.desc)}</div>`).join(""); }
+
+/* ---- 🏅 certificates ---- */
+const CERTS=[...[10,20,30,40,50,60].map(l=>({id:"l"+l, title:`Level ${l}`, sub:()=>rankFor(l), ok:()=>lvlFor(G.xp)>=l})), {id:"bosses", title:"Dungeon cleared", sub:()=>"Defeated every topic boss", ok:()=>TOPICS.every(t=>(G.st.bosses||{})[t.key])}];
+function showCert(id){
+  const c=CERTS.find(x=>x.id===id); if(!c) return;
+  const o=document.createElement("div"); o.className="cert-ov";
+  const render=()=>{ o.innerHTML=`<div class="cert-tools noprint"><input id="certName" class="search" placeholder="Your name" value="${esc(store.reportName||"")}" aria-label="Name on the certificate"><button class="btn" id="certPrint">🖨️ Print / save as PDF</button><button class="btn ghost" id="certClose">Close</button></div>
+    <div class="cert"><div class="cert-in"><div class="cert-kick">Certificate of achievement</div><div class="cert-site">Mr Wakefield's Fount of Knowledge and Wisdom</div>
+    <p class="cert-for">This certifies that</p><div class="cert-name" id="certNameOut">${esc(store.reportName||"")||"&nbsp;"}</div>
+    <p class="cert-for">has reached</p><div class="cert-title">${esc(c.title)}</div><div class="cert-sub">${esc(c.sub())}</div>
+    <div class="cert-foot"><div><span>${new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"})}</span><small>Date</small></div><div class="cert-seal">✦</div><div><span class="sig">Mr Wakefield</span><small>Mr Wakefield</small></div></div></div></div>`;
+    $("#certName").oninput=e=>{ store.reportName=e.target.value; save(); $("#certNameOut").textContent=e.target.value||"\u00a0"; };
+    $("#certPrint").onclick=()=>window.print(); $("#certClose").onclick=()=>o.remove(); };
+  document.body.appendChild(o); render();
+}
+
+/* ---- 📽️ projector mode (teacher-led, no XP) ---- */
+const pj={teams:["Team A","Team B","Team C","Team D","Team E","Team F"], n:2, q:10, secs:30, qs:[], i:0, scores:[], phase:"setup", revealed:false, end:0, timer:null, award:new Set()};
+function openProjector(){ pj.phase="setup"; let o=$("#proj"); if(!o){ o=document.createElement("div"); o.id="proj"; o.className="proj"; document.body.appendChild(o); document.addEventListener("keydown",projKeys,true); } renderProj(); }
+function closeProjector(){ clearInterval(pj.timer); const o=$("#proj"); if(o) o.remove(); document.removeEventListener("keydown",projKeys,true); if(document.fullscreenElement) document.exitFullscreen().catch(()=>{}); }
+function projStart(){
+  const p=pool().filter(d=>d.a.length<=180 && d.t!=="Exam skills");
+  pj.qs=shuffle(p).slice(0,pj.q); pj.i=0; pj.scores=Array(pj.n).fill(0); pj.phase="q"; pj.revealed=false; pj.award=new Set(); projTimer(); renderProj();
+}
+function projTimer(){ clearInterval(pj.timer); if(!pj.secs) return; pj.end=Date.now()+pj.secs*1000; pj.timer=setInterval(()=>{ const l=Math.max(0,pj.end-Date.now()), el=$("#pjTime"), bar=$("#pjBar"); if(el) el.textContent=Math.ceil(l/1000); if(bar) bar.style.width=(l/(pj.secs*1000)*100)+"%"; if(l<=0){ clearInterval(pj.timer); sfx("no"); } },200); }
+function projNext(){ pj.award.forEach(i=>pj.scores[i]++); if(pj.award.size){ sfx("ok"); } pj.i++; pj.revealed=false; pj.award=new Set(); if(pj.i>=pj.qs.length){ pj.phase="end"; clearInterval(pj.timer); confetti(260); sfx("lvl"); } else projTimer(); renderProj(); }
+function projKeys(e){
+  if(!$("#proj")) return;
+  if(e.target.matches && e.target.matches("input")) return;
+  e.stopPropagation();
+  if(e.key==="Escape"){ e.preventDefault(); if(confirm("Leave projector mode?")) closeProjector(); return; }
+  if(pj.phase!=="q") return;
+  if(e.key===" "||e.key==="Enter"){ e.preventDefault(); if(!pj.revealed){ pj.revealed=true; clearInterval(pj.timer); renderProj(); } else projNext(); }
+  else if(/^[1-6]$/.test(e.key) && pj.revealed && +e.key<=pj.n){ const i=+e.key-1; pj.award.has(i)?pj.award.delete(i):pj.award.add(i); renderProj(); }
+}
+function renderProj(){
+  const o=$("#proj"); if(!o) return;
+  const board=`<div class="pj-board">${pj.teams.slice(0,pj.n).map((t,i)=>`<div class="pj-team ${pj.award.has(i)?"on":""}"><b>${pj.scores[i]||0}</b><span>${esc(t)}</span></div>`).join("")}</div>`;
+  const top=`<div class="pj-top"><b>📽️ Projector mode</b><span class="spacer"></span><button class="btn ghost" id="pjFull">⛶ Full screen</button><button class="btn ghost" id="pjClose">✕ Close</button></div>`;
+  if(pj.phase==="setup"){
+    const n=pool().filter(d=>d.a.length<=180 && d.t!=="Exam skills").length;
+    o.innerHTML=`${top}<div class="pj-setup"><h2>Team quiz for the board</h2><p class="muted">Uses the topics selected on the main page (${store.sel.map(k=>TMAP[k].name).join(", ")||"none"}): ${n} questions available. Students' XP isn't affected.</p>
+      <h3>Teams</h3><div class="pj-row">${[2,3,4,5,6].map(k=>`<button class="pj-pill ${pj.n===k?"on":""}" data-n="${k}">${k}</button>`).join("")}</div>
+      <div class="pj-names">${pj.teams.slice(0,pj.n).map((t,i)=>`<input class="search" data-t="${i}" value="${esc(t)}" aria-label="Team ${i+1} name">`).join("")}</div>
+      <h3>Questions</h3><div class="pj-row">${[10,15,20,30].map(k=>`<button class="pj-pill ${pj.q===k?"on":""}" data-q="${k}">${k}</button>`).join("")}</div>
+      <h3>Timer</h3><div class="pj-row">${[[0,"Off"],[15,"15s"],[30,"30s"],[45,"45s"],[60,"60s"]].map(([k,l])=>`<button class="pj-pill ${pj.secs===k?"on":""}" data-s="${k}">${l}</button>`).join("")}</div>
+      <button class="btn big" id="pjGo" ${n?"":"disabled"}>Start the quiz</button>
+      <p class="muted" style="margin-top:14px;font-size:15px">Keys: <b>Space</b> reveals the answer, then moves on · <b>1–${pj.n}</b> award a point to a team · <b>Esc</b> leaves.</p></div>`;
+    o.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>{ pj.n=+b.dataset.n; renderProj(); });
+    o.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{ pj.q=+b.dataset.q; renderProj(); });
+    o.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{ pj.secs=+b.dataset.s; renderProj(); });
+    o.querySelectorAll("[data-t]").forEach(i=>i.oninput=()=>{ pj.teams[+i.dataset.t]=i.value||("Team "+"ABCDEF"[+i.dataset.t]); });
+    $("#pjGo").onclick=projStart;
+  } else if(pj.phase==="q"){
+    const d=pj.qs[pj.i], t=TMAP[d.t];
+    o.innerHTML=`${top}<div class="pj-q" style="--c:${t.c}"><div class="pj-meta"><span>${esc(t.name)}</span><span>Question ${pj.i+1} of ${pj.qs.length}</span>${pj.secs?`<span class="pj-time" id="pjTime">${Math.ceil(Math.max(0,pj.end-Date.now())/1000)}</span>`:""}</div>
+      ${pj.secs?`<div class="pj-bar"><i id="pjBar" style="width:${Math.max(0,pj.end-Date.now())/(pj.secs*1000)*100}%"></i></div>`:""}
+      <div class="pj-text">${esc(d.q)}</div>
+      ${pj.revealed?`<div class="pj-ans">${esc(d.a)}</div><p class="pj-hint">Who got it? Tap the teams (or press 1–${pj.n}), then Next.</p>
+        <div class="pj-award">${pj.teams.slice(0,pj.n).map((tm,i)=>`<button class="pj-pill ${pj.award.has(i)?"on":""}" data-a="${i}">${i+1}. ${esc(tm)}</button>`).join("")}</div>
+        <button class="btn big" id="pjNext">${pj.i+1>=pj.qs.length?"Final scores":"Next question"} (Space)</button>`
+      :`<button class="btn big" id="pjReveal">Reveal answer (Space)</button>`}</div>${board}`;
+    const rv=$("#pjReveal"); if(rv) rv.onclick=()=>{ pj.revealed=true; clearInterval(pj.timer); renderProj(); };
+    const nx=$("#pjNext"); if(nx) nx.onclick=projNext;
+    o.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.a; pj.award.has(i)?pj.award.delete(i):pj.award.add(i); renderProj(); });
+  } else {
+    const order=pj.teams.slice(0,pj.n).map((t,i)=>({t,s:pj.scores[i]})).sort((a,b)=>b.s-a.s);
+    o.innerHTML=`${top}<div class="pj-end"><h2>🏆 Final scores</h2><div class="podium">${order.map((x,i)=>`<div class="pod p${Math.min(i,3)}"><span>${["🥇","🥈","🥉"][i]||"🎖️"}</span><b>${esc(x.t)}</b><strong>${x.s}</strong></div>`).join("")}</div>
+      <button class="btn big" id="pjAgain">Play again</button></div>`;
+    $("#pjAgain").onclick=()=>{ pj.phase="setup"; renderProj(); };
+  }
+  $("#pjClose").onclick=closeProjector;
+  $("#pjFull").onclick=()=>{ if(document.fullscreenElement) document.exitFullscreen().catch(()=>{}); else o.requestFullscreen&&o.requestFullscreen().catch(()=>{}); };
+}
+
+/* ---- 🔗 study matcher, 🧩 put it in order ---- */
+const MATCH_RE=/^What did (.+?) find(?: about [^?]+)?\??$/i;
+function matchPairs(){
+  const sel=new Set(store.sel); let src=DATA.filter(d=>d.t!=="Exam skills" && MATCH_RE.test(d.q) && d.a.length>=25 && d.a.length<=140);
+  const mine=src.filter(d=>sel.has(d.t)); if(mine.length>=15) src=mine;
+  const seen=new Set(), out=[];
+  for(const d of shuffle(src)){ const who=d.q.match(MATCH_RE)[1].replace(/^the /,"The "); const k=who.toLowerCase().replace(/\s*\(\d{4}\)/,""); if(seen.has(k)) continue; seen.add(k); out.push({id:d.id, who, find:d.a, c:TMAP[d.t].c}); if(out.length===15) break; }
+  return out;
+}
+const mg={phase:"", pairs:[], round:0, left:[], right:[], sel:null, matched:new Set(), wrong:0, xp:0, t0:0, seqs:[], si:0, picked:[], checked:false, right2:0};
+function startMatch(){ mg.pairs=matchPairs(); mg.round=0; mg.wrong=0; mg.xp=0; mg.t0=Date.now(); mg.phase="match"; arc.phase="mini"; arc.mode="match"; setupRound(); renderArcade(); }
+function setupRound(){ const r=mg.pairs.slice(mg.round*5, mg.round*5+5); mg.left=shuffle(r); mg.right=shuffle(r); mg.sel=null; mg.matched=new Set(); }
+function startOrder(){ const sel=new Set(store.sel); let s=SEQUENCES.filter(x=>sel.has(x.t)); if(s.length<5) s=SEQUENCES; mg.seqs=shuffle(s).slice(0,5); mg.si=0; mg.picked=[]; mg.checked=false; mg.right2=0; mg.xp=0; mg.phase="order"; arc.phase="mini"; arc.mode="order"; mg.shuffled=shuffle(mg.seqs[0].steps); renderArcade(); }
+function renderMini(area){
+  if(mg.phase==="match"){
+    const n=Math.ceil(mg.pairs.length/5);
+    area.innerHTML=`<div class="arc-top"><span class="big">🔗 Study matcher</span><span class="spacer"></span><span>Round</span><span class="big">${mg.round+1}/${n}</span></div>
+      <p class="arc-note" style="margin:0 0 10px">Tap a researcher, then the finding that goes with it.</p>
+      <div class="match"><div>${mg.left.map(p=>`<button class="mcard who ${mg.matched.has(p.id)?"done":""} ${mg.sel===p.id?"sel":""}" data-w="${p.id}" style="--c:${p.c}" ${mg.matched.has(p.id)?"disabled":""}>${esc(p.who)}</button>`).join("")}</div>
+      <div>${mg.right.map(p=>`<button class="mcard find ${mg.matched.has(p.id)?"done":""}" data-f="${p.id}" ${mg.matched.has(p.id)?"disabled":""}>${esc(p.find)}</button>`).join("")}</div></div>
+      <p style="text-align:right;margin-top:10px"><button class="linkbtn" id="mgQuit">End game</button></p>`;
+    area.querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>{ mg.sel=+b.dataset.w; renderArcade(); });
+    area.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{
+      if(mg.sel==null){ toast("🔗","Pick a researcher first",""); return; }
+      const ok=+b.dataset.f===mg.sel; recAcc(mg.sel,ok); mg.xp+=answer({ok, el:b, mode:"arcade"});
+      if(ok){ mg.matched.add(mg.sel); mg.sel=null; if(mg.matched.size===mg.left.length){ mg.round++; if(mg.round*5>=mg.pairs.length){ return finishMini(); } setTimeout(()=>{ setupRound(); renderArcade(); },400); } }
+      else { mg.wrong++; b.classList.add("shake"); }
+      renderArcade();
+    });
+    $("#mgQuit").onclick=finishMini; return;
+  }
+  if(mg.phase==="order"){
+    const s=mg.seqs[mg.si], t=TMAP[s.t];
+    const avail=mg.shuffled.filter(x=>!mg.picked.includes(x));
+    area.innerHTML=`<div class="arc-top"><span class="big">🧩 Put it in order</span><span class="spacer"></span><span>Sequence</span><span class="big">${mg.si+1}/${mg.seqs.length}</span></div>
+      <div class="quiz-q" style="--c:${t.c}"><div class="tag">${esc(t.name)}</div><div class="q" style="font-size:clamp(20px,2.6vw,26px);margin:8px 0 12px">${esc(s.title)}</div>
+      <p class="muted" style="margin:0 0 10px">Tap the steps in the right order${mg.checked?"":". Tap a placed step to put it back."}</p>
+      <ol class="order-done">${mg.picked.map((x,i)=>`<li class="${mg.checked?(x===s.steps[i]?"ok":"no"):""}"><button data-un="${i}" ${mg.checked?"disabled":""}>${esc(x)}</button>${mg.checked&&x!==s.steps[i]?`<small>Should be: ${esc(s.steps[i])}</small>`:""}</li>`).join("")}</ol>
+      <div class="order-avail">${avail.map(x=>`<button class="opt" data-pick="${esc(x)}">${esc(x)}</button>`).join("")}</div>
+      ${mg.picked.length===s.steps.length&&!mg.checked?`<div class="card-actions"><button class="btn" id="ordCheck">Check order</button></div>`:""}
+      ${mg.checked?`<div class="card-actions"><button class="btn" id="ordNext">${mg.si+1>=mg.seqs.length?"See results":"Next sequence"}</button></div>`:""}</div>
+      <p style="text-align:right;margin-top:10px"><button class="linkbtn" id="mgQuit">End game</button></p>`;
+    area.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>{ mg.picked.push(b.dataset.pick); renderArcade(); });
+    area.querySelectorAll("[data-un]").forEach(b=>b.onclick=()=>{ mg.picked.splice(+b.dataset.un,1); renderArcade(); });
+    const ck=$("#ordCheck"); if(ck) ck.onclick=()=>{ mg.checked=true; const ok=mg.picked.every((x,i)=>x===s.steps[i]); if(ok) mg.right2++; mg.xp+=answer({ok, el:ck, mode:"quiz"}); renderArcade(); };
+    const nx=$("#ordNext"); if(nx) nx.onclick=()=>{ mg.si++; if(mg.si>=mg.seqs.length) return finishMini(); mg.picked=[]; mg.checked=false; mg.shuffled=shuffle(mg.seqs[mg.si].steps); renderArcade(); };
+    $("#mgQuit").onclick=finishMini; return;
+  }
+  // results
+  area.innerHTML=`<div class="empty"><h3>${mg.phase==="matchdone"?"🔗 Study matcher":"🧩 Put it in order"} over</h3>
+    ${mg.phase==="matchdone"?`<p class="score">${mg.matchedTotal}/${mg.pairs.length}</p><p class="muted">pairs matched · ${mg.wrong} wrong guess${mg.wrong===1?"":"es"} · ${fmtTime(Date.now()-mg.t0)}</p>`:`<p class="score">${mg.right2}/${mg.seqs.length}</p><p class="muted">sequences in perfect order</p>`}
+    <p style="margin-top:10px">+${mg.xp} XP earned</p><button class="btn" id="mgAgain">Play again</button> <button class="btn ghost" id="arcMenu">Arcade menu</button></div>`;
+  $("#mgAgain").onclick=()=>mg.phase==="matchdone"?startMatch():startOrder();
+  $("#arcMenu").onclick=()=>{ arc.phase="menu"; renderArcade(); };
+}
+function finishMini(){
+  if(mg.phase==="match"){ mg.matchedTotal=mg.round*5+(mg.round*5<mg.pairs.length?mg.matched.size:0); const bonus=mg.matchedTotal*2; mg.xp+=bonus; addXP(bonus,false); G.st.matchBest=Math.max(G.st.matchBest||0,mg.matchedTotal); if(mg.matchedTotal>=15 && mg.wrong===0) G.st.matchPerfect=1; mg.phase="matchdone"; }
+  else if(mg.phase==="order"){ const bonus=mg.right2*10; mg.xp+=bonus; addXP(bonus,false); G.st.orderBest=Math.max(G.st.orderBest||0,mg.right2); G.st.orders=(G.st.orders||0)+1; mg.phase="orderdone"; }
+  if(mg.xp>0) confetti(90);
+  palCheck(); checkBadges(); save(); renderArcade();
+}
+
+/* ---- 📝 mini mock papers ---- */
+const PAPERS={1:{name:"Paper 1",sub:"Introductory topics",t:["Social Influence","Memory","Attachment","Psychopathology"]},2:{name:"Paper 2",sub:"Psychology in context",t:["Approaches","Biopsychology","RM"]},3:{name:"Paper 3",sub:"Issues and options",t:["Issues and Debates part I","Relationships","Schizophrenia","Forensic Psychology"]}};
+const mk={phase:"pick", paper:0, items:[], end:0, timer:null, res:null};
+function buildMock(p){
+  const P=PAPERS[p], rng=Math.random, items=[];
+  P.t.forEach(k=>{
+    const cards=shuffle(DATA.filter(d=>d.t===k && mcOK(d)));
+    cards.slice(0,2).forEach(d=>{ const q=qFromCard(d,rng); items.push({type:"mc", t:k, ao:1, marks:1, q:q.q, opts:q.opts, correct:q.correct, id:d.id}); });
+    const sa=cards.find((d,i)=>i>=2 && d.a.length>=40 && d.a.length<=220);
+    if(sa) items.push({type:"short", t:k, ao:1, marks:2, q:sa.q, model:sa.a, id:sa.id});
+    const ap=APPLY.filter(a=>a[0]===k); if(ap.length){ const a=ap[Math.floor(rng()*ap.length)]; const o=shuffleR([a[2],...a[3]],rng); items.push({type:"mc", t:k, ao:2, marks:1, q:"Apply it: "+a[1]+" Which concept does this best show?", opts:o, correct:o.indexOf(a[2]), explain:a[4]}); }
+    if(k==="RM") for(let i=0;i<3;i++){ const s=statsQ(rng); items.push({type:"mc", t:k, ao:2, marks:1, q:s.q, opts:s.opts, correct:s.correct, explain:s.explain}); }
+  });
+  const es=ESSAY_BANK.map((e,i)=>({...e,id:"e"+i})).filter(e=>e.m===8 && P.t.includes(e.t)); const e=es[Math.floor(rng()*es.length)];
+  if(e) items.push({type:"essay", t:e.t, marks:8, essay:e});
+  return items;
+}
+function renderMock(area,seg){
+  const total=mk.items.reduce((a,x)=>a+x.marks,0);
+  if(mk.phase==="pick"){
+    area.innerHTML=`${seg}<div class="empty" style="text-align:left"><h3 style="text-align:center">📝 Mini mock paper</h3><p style="text-align:center">A short timed paper in the style of the real exam: multiple choice, short answers, Apply it, maths (Paper 2) and an 8-mark essay. About 25–30 marks and 35 minutes. Multiple choice marks itself; you self-mark the rest against model answers.</p>
+      <div class="designs">${Object.entries(PAPERS).map(([k,P])=>`<button class="dcard" data-p="${k}"><b>${P.name}: ${esc(P.sub)}</b><span>${P.t.map(x=>TMAP[x].name).join(" · ")}</span>${(G.mocks||[]).filter(m=>m[0]==+k).length?`<small>Best: ${Math.max(...G.mocks.filter(m=>m[0]==+k).map(m=>Math.round(m[1]/m[2]*100)))}%</small>`:""}</button>`).join("")}</div></div>`;
+    area.querySelectorAll("[data-wm]").forEach(b=>b.onclick=()=>{ wr.mode=b.dataset.wm; renderWriting(); });
+    area.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{ mk.paper=+b.dataset.p; mk.items=buildMock(mk.paper); mk.phase="sit"; const mins=Math.round(mk.items.reduce((a,x)=>a+x.marks,0)*1.25); mk.end=Date.now()+mins*60000; clearInterval(mk.timer); mk.timer=setInterval(()=>{ const c=$("#mkClock"); if(!c){ return; } const l=mk.end-Date.now(); c.textContent=l>0?fmtTime(l):"Time's up"; if(l<=0){ clearInterval(mk.timer); toast("⏱","Time's up","Finish your sentence, then submit."); } },500); renderWriting(); });
+    return;
+  }
+  const P=PAPERS[mk.paper];
+  if(mk.phase==="sit"){
+    let n=0;
+    area.innerHTML=`${seg}<div class="mock-head"><b>📝 ${P.name} mini mock</b><span>${total} marks</span><span class="mock-clock">⏱ <span id="mkClock">${fmtTime(Math.max(0,mk.end-Date.now()))}</span></span></div>
+      <form id="mkForm">${mk.items.map((it,i)=>{ n++; const t=TMAP[it.t];
+        if(it.type==="mc") return `<div class="mq" style="--c:${t.c}"><div class="mq-h"><b>${n}.</b> <span class="muted">${esc(t.name)} · ${it.marks} mark</span></div><p class="pre">${esc(it.q)}</p>${it.opts.map((o,j)=>`<label class="mopt"><input type="radio" name="m${i}" value="${j}"> ${esc(o)}</label>`).join("")}</div>`;
+        if(it.type==="short") return `<div class="mq" style="--c:${t.c}"><div class="mq-h"><b>${n}.</b> <span class="muted">${esc(t.name)} · 2 marks</span></div><p>${esc(it.q)}</p><textarea name="s${i}" style="min-height:80px" placeholder="Your answer"></textarea></div>`;
+        return `<div class="mq" style="--c:${t.c}"><div class="mq-h"><b>${n}.</b> <span class="muted">${esc(t.name)} · 8 marks</span></div><p><b>${esc(it.essay.q)}</b></p>${it.essay.sc?`<div class="stem">${esc(it.essay.sc)}</div>`:""}<textarea name="e${i}" class="essaytext" placeholder="Your answer"></textarea></div>`;
+      }).join("")}</form>
+      <div class="card-actions"><button class="btn" id="mkSubmit">Submit and mark</button><button class="btn ghost" id="mkQuit">Abandon</button></div>`;
+    area.querySelectorAll("[data-wm]").forEach(b=>b.onclick=()=>{ wr.mode=b.dataset.wm; renderWriting(); });
+    $("#mkQuit").onclick=()=>{ if(confirm("Abandon this mock?")){ clearInterval(mk.timer); mk.phase="pick"; renderWriting(); } };
+    $("#mkSubmit").onclick=()=>{
+      const f=$("#mkForm");
+      mk.items.forEach((it,i)=>{ if(it.type==="mc"){ const v=f.querySelector(`input[name=m${i}]:checked`); it.ans=v?+v.value:-1; it.got=it.ans===it.correct?1:0; if(it.id) recAcc(it.id,!!it.got); } else it.text=(f.querySelector(`[name=${it.type==="short"?"s":"e"}${i}]`)||{}).value||""; });
+      clearInterval(mk.timer); mk.phase="mark"; renderWriting(); window.scrollTo({top:$("#wrArea").offsetTop-80,behavior:reduced()?"auto":"smooth"});
+    };
+    return;
+  }
+  if(mk.phase==="mark"){
+    let n=0;
+    area.innerHTML=`${seg}<div class="mock-head"><b>📝 Mark your ${P.name} mini mock</b><span>Multiple choice is marked. Mark the rest yourself.</span></div>
+      ${mk.items.map((it,i)=>{ n++; const t=TMAP[it.t];
+        if(it.type==="mc") return `<div class="mq ${it.got?"ok":"no"}" style="--c:${t.c}"><div class="mq-h"><b>${n}.</b> ${it.got?"✅ 1/1":"❌ 0/1"}</div><p class="pre">${esc(it.q)}</p><p><b>Answer:</b> ${esc(it.opts[it.correct])}${it.explain?` <span class="muted">${esc(it.explain)}</span>`:""}</p></div>`;
+        if(it.type==="short") return `<div class="mq" style="--c:${t.c}"><div class="mq-h"><b>${n}.</b> Self-mark out of 2</div><p>${esc(it.q)}</p><div class="compare"><div><h4>Your answer</h4>${it.text?esc(it.text):'<span class="muted">Blank</span>'}</div><div class="model"><h4>Model answer</h4>${esc(it.model)}</div></div><div class="pj-row" style="margin-top:8px">${[0,1,2].map(v=>`<button class="pj-pill ${it.got===v?"on":""}" data-sm="${i}" data-v="${v}">${v}</button>`).join("")}</div></div>`;
+        const L=ESSAY_LEVELS[8]; return `<div class="mq" style="--c:${t.c}"><div class="mq-h"><b>${n}.</b> 8-mark essay: pick a level and mark</div><p><b>${esc(it.essay.q)}</b></p><div class="plan"><b>AO1</b>${it.essay.a1.map(x=>`<div>• ${esc(x)}</div>`).join("")}</div>${it.essay.a2?`<div class="plan"><b>AO2</b>${it.essay.a2.map(x=>`<div>• ${esc(x)}</div>`).join("")}</div>`:""}<div class="plan"><b>AO3</b>${it.essay.a3.map(x=>`<div>• ${esc(x)}</div>`).join("")}</div>
+          <div class="pj-row">${Array.from({length:9},(_,v)=>`<button class="pj-pill ${it.got===v?"on":""}" data-sm="${i}" data-v="${v}">${v}</button>`).join("")}</div><p class="muted" style="font-size:13px">${L.map(l=>l[0]+" "+l[1]).join(" · ")}</p></div>`;
+      }).join("")}
+      <div class="card-actions"><button class="btn" id="mkDone">See my results</button></div>`;
+    area.querySelectorAll("[data-wm]").forEach(b=>b.onclick=()=>{ wr.mode=b.dataset.wm; renderWriting(); });
+    area.querySelectorAll("[data-sm]").forEach(b=>b.onclick=()=>{ mk.items[+b.dataset.sm].got=+b.dataset.v; area.querySelectorAll(`[data-sm="${b.dataset.sm}"]`).forEach(x=>x.classList.toggle("on",x===b)); });
+    $("#mkDone").onclick=()=>{
+      if(mk.items.some(it=>it.type!=="mc" && it.got==null)){ toast("✏️","Mark every question first","Pick a mark for each short answer and the essay."); return; }
+      const score=mk.items.reduce((a,x)=>a+x.got,0), byT={}, byAO={1:[0,0],2:[0,0],3:[0,0]};
+      mk.items.forEach(it=>{ (byT[it.t]=byT[it.t]||[0,0]); byT[it.t][0]+=it.got; byT[it.t][1]+=it.marks;
+        if(it.type==="essay"){ const sp=aoSplit(it.essay), f=it.got/8; [1,2,3].forEach((a,j)=>{ byAO[a][0]+=sp[j]*f; byAO[a][1]+=sp[j]; }); } else { byAO[it.ao][0]+=it.got; byAO[it.ao][1]+=it.marks; } });
+      const xp=(40+score*3)*WRITING_BOOST; G.mocks=(G.mocks||[]).concat([[mk.paper,score,total,today()]]).slice(-30); if(score/total>=0.8) G.st.mock80=1;
+      mk.res={score, byT, byAO, xp}; mk.phase="done"; addXP(xp,false); confetti(140); sfx("lvl"); save(); checkBadges(); renderWriting(); window.scrollTo({top:$("#wrArea").offsetTop-80,behavior:reduced()?"auto":"smooth"});
+    };
+    return;
+  }
+  const r=mk.res, pct=Math.round(r.score/total*100);
+  const bar=(name,a,b,c)=>`<div class="wrow"><span class="wl">${esc(name)}</span><span class="wb"><i style="width:${b?Math.round(a/b*100):0}%;background:${c}"></i></span><span class="wv">${Math.round(a*10)/10}/${b}</span></div>`;
+  area.innerHTML=`${seg}<div class="empty"><h3>📝 ${P.name} mini mock</h3><p class="score">${r.score}/${total}</p><p class="muted">${pct}% · +${r.xp} XP (double XP for long writing)</p>
+    <div style="text-align:left;max-width:560px;margin:16px auto 0"><h4>By topic</h4>${Object.entries(r.byT).map(([k,v])=>bar(TMAP[k].name,v[0],v[1],TMAP[k].c)).join("")}
+    <h4>By assessment objective</h4>${[["AO1 knowledge",1],["AO2 application",2],["AO3 evaluation",3]].filter(([,a])=>r.byAO[a][1]).map(([nm,a])=>bar(nm,r.byAO[a][0],r.byAO[a][1],"var(--ink)")).join("")}</div>
+    <div class="card-actions" style="justify-content:center"><button class="btn" id="mkAgain">Another mock</button></div></div>`;
+  area.querySelectorAll("[data-wm]").forEach(b=>b.onclick=()=>{ wr.mode=b.dataset.wm; renderWriting(); });
+  $("#mkAgain").onclick=()=>{ mk.phase="pick"; renderWriting(); };
+}
+
 /* ---- save codes ---- */
 function b64u(bytes){ let s=""; for(let i=0;i<bytes.length;i+=0x8000) s+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000)); return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
 function unb64u(str){ str=str.replace(/-/g,"+").replace(/_/g,"/"); while(str.length%4) str+="="; const bin=atob(str), out=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i); return out; }
@@ -2410,6 +2857,7 @@ function renderTrophies(){
       return `<div class="box" id="weakBox"><h3>Weak spots <small>How often you get each topic right</small></h3>${ts.length?ts.map(x=>bar(x.name,x.acc,x.n,x.c)).join("")+(ys.length?`<h4 class="wh">By type of question</h4>`+ys.map(([k,v])=>bar(k,v[0]/v[1],v[1],"var(--ink)")).join(""):"")+(weakest(1).length?`<div class="btnrow" style="margin-top:12px"><button class="btn" id="weakGo">🎯 Fix my weak spots</button></div>`:`<p class="muted" style="margin:10px 0 0;font-size:14px">Answer at least ${WEAK_MIN} questions in a topic to unlock Fix my weak spots.</p>`):`<p class="muted" style="margin:0">Answer some flashcards, quizzes or Arcade questions and your strongest and weakest topics will appear here.</p>`}</div>`; })()}
     <div class="box"><h3>Themes <small>Unlock more as you level up</small></h3><div class="skins">${SKINS.filter(k=>!k.hidden||allScrolls()).map(k=>{ const ok=k.hidden?true:n>=k.lvl, on=(store.theme||"auto")===k.id;
       return `<button class="skin ${on?"on":""}" data-skin="${k.id}" ${ok?"":"disabled"} aria-pressed="${on}"><span class="sw" style="background:linear-gradient(135deg,${k.sw[0]} 50%,${k.sw[1]} 50%)"></span><b>${esc(k.name)}</b><span>${ok?esc(k.desc):"🔒 Level "+k.lvl}</span></button>`; }).join("")}</div></div>
+    <div class="box" id="certBox"><h3>🏅 Certificates <small>Print them or save as a PDF</small></h3><div class="scrolls">${CERTS.map(c=>c.ok()?`<button class="scr got" data-cert="${c.id}"><span>🏅</span><b>${esc(c.title)}</b><small>${esc(c.sub())}</small></button>`:`<div class="scr"><span>🔒</span><b>${esc(c.title)}</b><small>${c.id==="bosses"?"Beat every topic boss":"Reach "+esc(c.title.toLowerCase())}</small></div>`).join("")}</div></div>
     <div class="box" id="a11yBox"><h3>Reading and accessibility</h3>
       <div class="bar-row" style="margin:0"><div class="seg" role="group" aria-label="Font">${[["std","Standard font"],["lexend","Easy-read font (Lexend)"]].map(([v,l])=>`<button aria-pressed="${store.a11y.font===v}" data-font="${v}">${l}</button>`).join("")}</div>
       <div class="seg" role="group" aria-label="Text size">${[[0.9,"A−"],[1,"A"],[1.15,"A+"],[1.3,"A++"]].map(([v,l])=>`<button aria-pressed="${store.a11y.size===v}" data-size="${v}" aria-label="Text size ${l}">${l}</button>`).join("")}</div></div>
@@ -2440,6 +2888,7 @@ function renderTrophies(){
   $("#repCopy").onclick=async()=>{ const code=await makeReport(), m=$("#repMsg"); save(); checkBadges();
     try{ await navigator.clipboard.writeText(code); m.className="savemsg ok"; m.textContent=`Copied ✓ Paste it to your teacher. (${code})`; }
     catch(e){ m.className="savemsg ok"; m.textContent="Copy this code and send it to your teacher: "+code; } };
+  document.querySelectorAll("[data-cert]").forEach(b=>b.onclick=()=>showCert(b.dataset.cert));
   document.querySelectorAll("[data-scroll]").forEach(b=>b.onclick=()=>showScroll(+b.dataset.scroll,true));
   const ug=$("#useGoal"); if(ug) ug.onclick=()=>{ G.goal=+ug.dataset.g; if((G.hist[t]||0)>=G.goal && G.last!==t) goalMet(); save(); renderHud(); renderTrophies(); toast("🎯",`Daily goal set to ${G.goal}`,"You can change it any time below."); };
   const wg=$("#weakGo"); if(wg) wg.onclick=()=>{ goTab("cards"); setFilter("weak"); document.querySelector("#p-cards").scrollIntoView({behavior:reduced()?"auto":"smooth"}); };
