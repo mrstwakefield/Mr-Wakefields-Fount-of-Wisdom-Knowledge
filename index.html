@@ -664,6 +664,27 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 :root[data-skin="bullring"] .top h1{color:#E9EDF3;text-shadow:0 1px 0 #6B7584}
 :root[data-skin="bullring"] .top h1::before{content:"🐂 "}
 :root[data-skin="bullring"] .xpbar i{background:linear-gradient(90deg,#8A5A2B,#C68B4E,#E9C08A)}
+:root[data-skin="dreams"]{--paper:#141233;--card:#1E1B4B;--ink:#EEEAFF;--muted:#ABA3D9;--line:#322E6B;--soft:#26225A;--good:#7EE2B8;--good-bg:#173A33;--warn:#FFB86B;--warn-bg:#3D2A16;color-scheme:dark}
+:root[data-skin="dreams"] body{background:radial-gradient(circle at 20% 30%,#fff9 0 1px,transparent 2px) 0 0/110px 110px,radial-gradient(circle at 70% 60%,#fff6 0 1.2px,transparent 2px) 0 0/160px 160px,var(--paper)}
+:root[data-skin="dreams"] .top h1{color:#D9CFFF}
+:root[data-skin="dreams"] .top h1::before{content:"😴 "}
+:root[data-skin="dreams"] .xpbar i{background:linear-gradient(90deg,#6D5BD0,#B9A7FF,#FFE9A8)}
+:root[data-skin="secret"]{--paper:#E9DDBF;--card:#F7EFD9;--ink:#2A2418;--muted:#6B5F45;--line:#D6C69E;--soft:#EFE4C6;--good:#2E6B3A;--good-bg:#DCE9D2;--warn:#B3261E;--warn-bg:#F5D6D1;color-scheme:light}
+:root[data-skin="secret"] .top h1{font-family:"Courier New",ui-monospace,monospace;letter-spacing:-.02em}
+:root[data-skin="secret"] .top h1::before{content:"CLASSIFIED";display:block;width:max-content;font-size:14px;letter-spacing:.2em;color:#B3261E;border:2px solid #B3261E;padding:2px 8px;margin-bottom:8px;transform:rotate(-3deg)}
+:root[data-skin="secret"] .top h1 span{font-family:var(--body)}
+:root[data-skin="secret"] .xpbar i{background:#2A2418}
+:root[data-skin="pavlov"]{--paper:#F6E7D2;--card:#FFF8EE;--ink:#3A2414;--muted:#7A5B43;--line:#E8D2B4;--soft:#F1DEC3;--good:#2E7D4F;--good-bg:#DCEFE0;--warn:#B4441C;--warn-bg:#F8DCCD;color-scheme:light}
+:root[data-skin="pavlov"] .top h1::before{content:"🔔 "}
+:root[data-skin="pavlov"] .top h1{color:#7A3E12}
+:root[data-skin="pavlov"] .top h1 span{color:var(--muted)}
+:root[data-skin="pavlov"] .xpbar i{background:repeating-linear-gradient(90deg,#A0602C 0 14px,#C98A4F 14px 18px)}
+:root[data-skin="graph"]{--paper:#FBFDFF;--card:#FFFFFF;--ink:#14213D;--muted:#55627D;--line:#D5E2F5;--soft:#EEF4FC;--good:#1C8A5E;--good-bg:#DDF3E8;--warn:#D6336C;--warn-bg:#FBE0EA;color-scheme:light}
+:root[data-skin="graph"] body{background:linear-gradient(#C9DBF588 1px,transparent 1px) 0 0/20px 20px,linear-gradient(90deg,#C9DBF588 1px,transparent 1px) 0 0/20px 20px,linear-gradient(#9DBDEB88 1px,transparent 1px) 0 0/100px 100px,linear-gradient(90deg,#9DBDEB88 1px,transparent 1px) 0 0/100px 100px,var(--paper)}
+:root[data-skin="graph"] .top h1{color:#1D4ED8}
+:root[data-skin="graph"] .top h1::before{content:"📈 "}
+:root[data-skin="graph"] .top h1 span{color:var(--muted)}
+:root[data-skin="graph"] .xpbar i{background:#2563EB}
 :root[data-skin="arcade8"]{--paper:#0B0B1E;--card:#15153A;--ink:#F4F1FF;--muted:#A9A6E8;--line:#2E2B6E;--soft:#1F1D52;--good:#39FF9A;--good-bg:#0F3A2E;--warn:#FF2E9A;--warn-bg:#3D0F2C;color-scheme:dark}
 :root[data-skin="arcade8"] .top h1{font-family:"Press Start 2P",var(--display);font-size:clamp(20px,3.6vw,34px);line-height:1.35;letter-spacing:0;color:#FFE14D;text-shadow:3px 3px 0 #FF2E9A}
 :root[data-skin="arcade8"] .top h1::before{content:"🎮 "}
@@ -874,6 +895,10 @@ const SKINS=[
   {id:"fool", name:"April Fool", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[9], sw:["#FFF7E0","#E8458B"], desc:"Every answer is C 🃏"},
   {id:"graduate", name:"Graduation", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[10], sw:["#0E1B3A","#E2B84B"], desc:"Basically Mr Wakefield 🎓"},
   {id:"bullring", name:"Bullring", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[7], sw:["#1E4FA8","#C9CED6"], desc:"Meet you by the bull 🐂"},
+  {id:"dreams", name:"Sweet Dreams", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[2], sw:["#1A1640","#B9A7FF"], desc:"Not consolidating, just sleeping 😴"},
+  {id:"secret", name:"Top Secret", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[5], sw:["#EBD9AE","#B3261E"], desc:"For true stans only 🗂️"},
+  {id:"pavlov", name:"Pavlov's Dog", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[8], sw:["#F6E7D2","#A0602C"], desc:"Ding! Feeling hungry? 🔔"},
+  {id:"graph", name:"Graph Paper", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[11], sw:["#FBFDFF","#2563EB"], desc:"p ≤ 0.05 📈"},
   {id:"arcade8", name:"8-bit Arcade", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[6], sw:["#0B0B1E","#FF2E9A"], desc:"Unlocked by the rarest scroll 🎮"},
   {id:"wakefield", name:"Wakefield Mode", lvl:999, hidden:true, sw:["#0F3D2E","#D4AF37"], desc:"Keeper of the Scrolls ✦"}
 ];
@@ -1159,16 +1184,16 @@ $("#resetBtn").onclick=()=>{ if(confirm("Clear all your known and still-learning
    trigger is how each one is found (the code that checks it lives further down; changing the words below is safe). */
 const SECRET_SCROLLS = [
   {id:1, theme:"snowdome", trigger:"title5", title:"Welcome to the inner circle", text:"You clicked my name five times. That's either dedication or a cry for help. Either way, welcome to the inner circle. Tell no one. — Mr W", hint:"Show the title some love"},
-  {id:2, trigger:"ring10", title:"Wake up!", text:"This is your official reminder that sleeping in my lesson is NOT 'consolidating your memories', however convincingly you argue it. (Sleep does help memory, mind — do it at night.) — Mr W", hint:"Is this thing on?"},
+  {id:2, theme:"dreams", trigger:"ring10", title:"Wake up!", text:"This is your official reminder that sleeping in my lesson is NOT 'consolidating your memories', however convincingly you argue it. (Sleep does help memory, mind — do it at night.) — Mr W", hint:"Is this thing on?"},
   {id:3, theme:"veggie", trigger:"wakefield", title:"A message from the management", text:"Mr W and Romeo have one message for you: eat your vegetables. Your brain runs on them. No arguments. — Mr W (and Romeo)", hint:"Say my name (keyboard required)"},
   {id:4, theme:"volts", trigger:"milgram", title:"450 volts", text:"Please continue. The experiment requires that you continue. It is absolutely essential that you continue… revising. No volts were harmed in the making of this scroll. — Mr W", hint:"A shocking surname (keyboard required)"},
-  {id:5, trigger:"stan", title:"Classified lore", text:"Only true stans know this: Mr W has never, ever crashed out after a bad line-up. Any eyewitnesses who say otherwise are clearly reconstructing their memories. — Mr W", hint:"What are you? Type it. (keyboard required)"},
+  {id:5, theme:"secret", trigger:"stan", title:"Classified lore", text:"Only true stans know this: Mr W has never, ever crashed out after a bad line-up. Any eyewitnesses who say otherwise are clearly reconstructing their memories. — Mr W", hint:"What are you? Type it. (keyboard required)"},
   {id:6, trigger:"konami", theme:"arcade8", title:"The rarest scroll", text:"You found the rarest scroll of all. Honestly? Being this deep in a revision website is exactly the kind of effort that gets grades. I'm proud of you. Now go and smash it in May. — Mr W", hint:"Up, up, down, down… (keyboard required)"},
   {id:7, theme:"bullring", trigger:"blues", title:"Keep Right On", text:"Keep right on to the end of the road. It's the Blues anthem and, it turns out, the best revision advice ever written. Up the Blues! 💙 (Villa fans: this scroll is not for you.) — Mr W", hint:"Keep right on… (keyboard required)"},
-  {id:8, trigger:"pavlov", title:"Ding!", text:"Did you just get hungry? That's classical conditioning. Pavlov's dogs drooled at a bell — you drool at XP. We are not so different. — Mr W", hint:"Ring a bell? Try the gap fills."},
+  {id:8, theme:"pavlov", trigger:"pavlov", title:"Ding!", text:"Did you just get hungry? That's classical conditioning. Pavlov's dogs drooled at a bell — you drool at XP. We are not so different. — Mr W", hint:"Ring a bell? Try the gap fills."},
   {id:9, theme:"fool", trigger:"april1", title:"Insider exam tip", text:"Every answer in this year's exam is C. … April Fool. Please, PLEASE do not put C for everything. — Mr W", hint:"Some days, nothing is what it seems"},
   {id:10, theme:"graduate", trigger:"level59", title:"The handover", text:"You are now Basically Mr Wakefield. I have nothing left to teach you. Please don't take my lanyard. One step remains: Dedicated Wakefield Stan. — Mr W", hint:"Become the teacher"},
-  {id:11, trigger:"error", title:"Statistically significant", text:"You found the secret. Now go and find the difference between a Type I and a Type II error. — Mr W", hint:"To err is human (keyboard required)"}
+  {id:11, theme:"graph", trigger:"error", title:"Statistically significant", text:"You found the secret. Now go and find the difference between a Type I and a Type II error. — Mr W", hint:"To err is human (keyboard required)"}
 ];
 const ymd = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const today = () => ymd(new Date());
