@@ -624,6 +624,17 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 :root[data-skin="neon"]{--paper:#0D0221;--card:#1A0B3D;--ink:#F5F0FF;--muted:#B6A6E0;--line:#34206B;--soft:#261454;--good:#3CF2A0;--good-bg:#0F3B2E;--warn:#FF8A5B;--warn-bg:#3D1C10;color-scheme:dark}
 :root[data-skin="exam"]{--paper:#0E0E10;--card:#18181B;--ink:#F4F4F5;--muted:#A1A1AA;--line:#2E2E33;--soft:#232327;--good:#4CC896;--good-bg:#14352A;--warn:#FF6B6B;--warn-bg:#3A1717;color-scheme:dark}
 :root[data-skin="sunset"]{--paper:#2A1320;--card:#3A1B2C;--ink:#FDEEF3;--muted:#D3A6B8;--line:#55283F;--soft:#47223A;--good:#5BD6A0;--good-bg:#173B2E;--warn:#FF9F6E;--warn-bg:#4A2414;color-scheme:dark}
+/* themes added in v2 of the theme set */
+:root[data-skin="peach"]{--paper:#FFF1E8;--card:#FFFFFF;--ink:#3A1F12;--muted:#7A5444;--line:#F4D7C6;--soft:#FBE3D5;--good:#1C8A5E;--good-bg:#DDF3E8;--warn:#B4531B;--warn-bg:#FBE7D9;color-scheme:light}
+:root[data-skin="sky"]{--paper:#EAF4FD;--card:#FFFFFF;--ink:#0F2A44;--muted:#4B6684;--line:#CFE2F5;--soft:#DCEBFA;--good:#1C8A5E;--good-bg:#DDF3E8;--warn:#B4531B;--warn-bg:#FBE7D9;color-scheme:light}
+:root[data-skin="lavender"]{--paper:#F3EEFC;--card:#FFFFFF;--ink:#271A45;--muted:#62558A;--line:#E0D6F5;--soft:#E9E1F8;--good:#1C8A5E;--good-bg:#DDF3E8;--warn:#B4531B;--warn-bg:#FBE7D9;color-scheme:light}
+:root[data-skin="blues"]{--paper:#0A1F8F;--card:#13299E;--ink:#FFFFFF;--muted:#C6D0FF;--line:#2F45B8;--soft:#1C34AD;--good:#7CE0A8;--good-bg:#173A6B;--warn:#FFC37A;--warn-bg:#3A2A6A;color-scheme:dark}
+:root[data-skin="grape"]{--paper:#1E1033;--card:#2A1747;--ink:#F3EAFF;--muted:#BBA6DE;--line:#3E2766;--soft:#341E58;--good:#5BD6A0;--good-bg:#173B2E;--warn:#FF9F6E;--warn-bg:#4A2414;color-scheme:dark}
+:root[data-skin="terminal"]{--paper:#050805;--card:#0B120B;--ink:#C8FFD4;--muted:#6FBF82;--line:#1A3320;--soft:#102014;--good:#39FF6A;--good-bg:#0F2E17;--warn:#FFB347;--warn-bg:#33240D;color-scheme:dark}
+:root[data-skin="cocoa"]{--paper:#1F1612;--card:#2B1F19;--ink:#FBEEE2;--muted:#CDB19B;--line:#433128;--soft:#372820;--good:#7EDC9F;--good-bg:#1C3424;--warn:#F2A65A;--warn-bg:#3E2A16;color-scheme:dark}
+:root[data-skin="terminal"] body{font-family:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace}
+:root[data-skin="blues"] .xpbar i{background:linear-gradient(90deg,#FFFFFF,#9FB3FF)}
+:root[data-skin="terminal"] .xpbar i{background:#39FF6A}
 :root[data-skin="stan"]{--paper:#12100A;--card:#1E1A0F;--ink:#FFF6D6;--muted:#CDBB85;--line:#3B3218;--soft:#2C2614;--good:#7EDC9F;--good-bg:#1C3424;--warn:#F2C14E;--warn-bg:#3A2E10;color-scheme:dark}
 :root[data-skin="stan"] .xpbar i,:root[data-skin="gold"] .xpbar i{background:linear-gradient(90deg,#B8860B,#F2C14E,#FFE9A3)}
 :root[data-skin="neon"] .xpbar i{background:linear-gradient(90deg,#3CF2A0,#00D1FF,#B26BFF)}
@@ -644,10 +655,10 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 
   <div class="hud" id="hud">
     <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="xpGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B5BE0"/><stop offset=".55" stop-color="#D6478F"/><stop offset="1" stop-color="#F39A3C"/></linearGradient></defs></svg>
-    <button class="lvl" id="hudLvl" aria-label="Your level. Open trophies"><svg viewBox="0 0 50 50"><circle class="ring-bg" cx="25" cy="25" r="20"/><circle class="ring-fg" id="hudLvlRing" cx="25" cy="25" r="20" stroke-dasharray="125.7" stroke-dashoffset="125.7"/></svg><b id="hudLvlNum">1</b><small>LVL</small></button>
+    <button class="lvl" id="hudLvl" aria-label="Your level. Open Progress"><svg viewBox="0 0 50 50"><circle class="ring-bg" cx="25" cy="25" r="20"/><circle class="ring-fg" id="hudLvlRing" cx="25" cy="25" r="20" stroke-dasharray="125.7" stroke-dashoffset="125.7"/></svg><b id="hudLvlNum">1</b><small>LVL</small></button>
     <div class="xpbox"><div class="xprow"><b id="rankName">Lab Rat</b><span id="xpText"></span></div><div class="xpbar"><i id="xpFill"></i></div></div>
     <div class="hud-stat" id="hudStreak"><span class="ico">🔥</span><span><span id="hudStreakN">0</span><span class="lab">streak</span></span></div>
-    <button class="hud-stat" id="hudGoal" aria-label="Today's goal. Open trophies"><svg class="goalring" viewBox="0 0 30 30"><circle class="ring-bg" cx="15" cy="15" r="12" style="stroke-width:4"/><circle class="ring-fg" id="hudGoalRing" cx="15" cy="15" r="12" style="stroke-width:4" stroke-dasharray="75.4" stroke-dashoffset="75.4"/></svg><span><span id="hudGoalN">0/30</span><span class="lab">today</span></span></button>
+    <button class="hud-stat" id="hudGoal" aria-label="Today's goal. Open Progress"><svg class="goalring" viewBox="0 0 30 30"><circle class="ring-bg" cx="15" cy="15" r="12" style="stroke-width:4"/><circle class="ring-fg" id="hudGoalRing" cx="15" cy="15" r="12" style="stroke-width:4" stroke-dasharray="75.4" stroke-dashoffset="75.4"/></svg><span><span id="hudGoalN">0/30</span><span class="lab">today</span></span></button>
     <button class="hud-stat examc" id="hudExam" aria-label="Exam countdown" hidden><span class="ico">⏳</span><span><span id="hudExamN">0</span><span class="lab" id="hudExamL">days</span></span></button>
     <button class="hud-stat duebtn" id="hudDue" aria-label="Cards due today" title="Cards due for review today" hidden><span class="ico">📅</span><span><span id="hudDueN">0</span><span class="lab">due today</span></span></button>
     <div class="combo" id="combo" aria-live="polite"></div>
@@ -807,13 +818,20 @@ const SKINS=[
   {id:"auto", name:"Auto", lvl:1, sw:["#EEF1F7","#121829"], desc:"Follows your device"},
   {id:"light", name:"Light", lvl:1, sw:["#EEF1F7","#FFFFFF"], desc:"Always light"},
   {id:"dark", name:"Dark", lvl:1, sw:["#121829","#1B233B"], desc:"Always dark"},
-  {id:"mint", name:"Mint", lvl:5, sw:["#E6F5EF","#1C8A5E"], desc:"Fresh start"},
-  {id:"gold", name:"Gold", lvl:10, sw:["#FBF4E2","#C99A17"], desc:"For the top of the class"},
-  {id:"ocean", name:"Deep Ocean", lvl:15, sw:["#0B1C2C","#3BA7D9"], desc:"Calm and focused"},
-  {id:"neon", name:"Neon Synapse", lvl:20, sw:["#0D0221","#3CF2A0"], desc:"Firing on all cylinders"},
-  {id:"exam", name:"Exam Season", lvl:25, sw:["#0E0E10","#E5484D"], desc:"No distractions"},
-  {id:"sunset", name:"Sunset", lvl:35, sw:["#2A1320","#FF9F6E"], desc:"Golden hour revision"},
+  {id:"mint", name:"Mint", lvl:4, sw:["#E6F5EF","#1C8A5E"], desc:"Fresh start"},
+  {id:"peach", name:"Peach", lvl:8, sw:["#FFF1E8","#F08A5D"], desc:"Warm and calm"},
+  {id:"sky", name:"Sky", lvl:12, sw:["#EAF4FD","#3B8ED8"], desc:"Clear-headed"},
+  {id:"gold", name:"Gold", lvl:16, sw:["#FBF4E2","#C99A17"], desc:"For the top of the class"},
+  {id:"lavender", name:"Lavender", lvl:20, sw:["#F3EEFC","#8B6BD9"], desc:"Relaxed revision"},
+  {id:"ocean", name:"Deep Ocean", lvl:24, sw:["#0B1C2C","#3BA7D9"], desc:"Calm and focused"},
+  {id:"neon", name:"Neon Synapse", lvl:28, sw:["#0D0221","#3CF2A0"], desc:"Firing on all cylinders"},
+  {id:"exam", name:"Exam Season", lvl:32, sw:["#0E0E10","#E5484D"], desc:"No distractions"},
+  {id:"blues", name:"Keep Right On", lvl:36, sw:["#0A1F8F","#FFFFFF"], desc:"Royal blue and white 💙"},
+  {id:"sunset", name:"Sunset", lvl:40, sw:["#2A1320","#FF9F6E"], desc:"Golden hour revision"},
   {id:"pink", name:"Pink Pen", lvl:44, sw:["#FCEEF4","#D6478F"], desc:"Mr Wakefield approved"},
+  {id:"grape", name:"Grape", lvl:48, sw:["#1E1033","#B57BFF"], desc:"Deep purple focus"},
+  {id:"terminal", name:"Terminal", lvl:52, sw:["#050805","#39FF6A"], desc:"Hacker mode"},
+  {id:"cocoa", name:"Cocoa", lvl:56, sw:["#1F1612","#D9A066"], desc:"Hot chocolate and flashcards"},
   {id:"stan", name:"Stan Gold", lvl:60, sw:["#12100A","#F2C14E"], desc:"Dedicated Wakefield Stans only"},
   {id:"wakefield", name:"Wakefield Mode", lvl:999, hidden:true, sw:["#0F3D2E","#D4AF37"], desc:"Keeper of the Scrolls ✦"}
 ];
@@ -1233,7 +1251,7 @@ function levelUp(n){
   sfx("lvl"); confetti(200);
   const o=document.createElement("div"); o.className="overlay";
   o.innerHTML=`<div class="levelup" role="dialog" aria-modal="true" aria-label="Level up"><div class="kick">Level up!</div><div class="num">${n}</div>
-    <h3>${r!==old?"New rank: "+esc(r):esc(r)}</h3>${[10,20,30,40,50,60].includes(n)?`<p class="unlock">🏅 New certificate unlocked! Print it from Trophies.</p>`:""}${SKINS.filter(k=>k.lvl===n).map(k=>`<p class="unlock">🎨 New theme unlocked: <b>${esc(k.name)}</b>. Pick it in Trophies.</p>`).join("")}<p>${lvlStart(n+1)-G.xp} XP to level ${n+1}. Keep it going.</p><button class="btn" id="luOk">Let's go</button></div>`;
+    <h3>${r!==old?"New rank: "+esc(r):esc(r)}</h3>${[10,20,30,40,50,60].includes(n)?`<p class="unlock">🏅 New certificate unlocked! Print it from the Badges tab.</p>`:""}${SKINS.filter(k=>k.lvl===n).map(k=>`<p class="unlock">🎨 New theme unlocked: <b>${esc(k.name)}</b>. Pick it in the Themes tab.</p>`).join("")}<p>${lvlStart(n+1)-G.xp} XP to level ${n+1}. Keep it going.</p><button class="btn" id="luOk">Let's go</button></div>`;
   document.body.appendChild(o);
   const close=()=>{ o.remove(); document.removeEventListener("keydown",esc2,true); };
   const esc2=e=>{ if(e.key==="Tab") return; e.stopPropagation(); if(e.key==="Escape"||e.key==="Enter"||e.key===" "){ e.preventDefault(); close(); } };
@@ -2134,7 +2152,7 @@ function showScroll(id, reread){
   o.innerHTML=`<div class="parch ${blues?"blues":""}" role="dialog" aria-modal="true" aria-labelledby="scT"><div class="rod"></div><div class="pbody">
     <div class="kick">📜 Secret scroll · ${found} of ${SECRET_SCROLLS.length} found${first?" · +30 XP":""}</div>
     <h3 id="scT">${esc(sc.title)}</h3><p>${esc(sc.text)}</p>
-    ${first&&allScrolls()?`<p class="unlock">✦ You found every scroll! The secret <b>Wakefield Mode</b> theme is now in Trophies.</p>`:""}
+    ${first&&allScrolls()?`<p class="unlock">✦ You found every scroll! The secret <b>Wakefield Mode</b> theme is now in the Themes tab.</p>`:""}
     <button class="btn" id="scOk">Roll it up</button></div><div class="rod"></div></div>`;
   document.body.appendChild(o);
   const close=()=>{ o.remove(); document.removeEventListener("keydown",k2,true); };
@@ -2999,7 +3017,7 @@ function renderTrophies(){
       return `<div class="box" id="weakBox"><h3>Weak spots <small>How often you get each topic right</small></h3>${ts.length?ts.map(x=>bar(x.name,x.acc,x.n,x.c)).join("")+(ys.length?`<h4 class="wh">By type of question</h4>`+ys.map(([k,v])=>bar(k,v[0]/v[1],v[1],"var(--ink)")).join(""):"")+(weakest(1).length?`<div class="btnrow" style="margin-top:12px"><button class="btn" id="weakGo">🎯 Fix my weak spots</button></div>`:`<p class="muted" style="margin:10px 0 0;font-size:14px">Answer at least ${WEAK_MIN} questions in a topic to unlock Fix my weak spots.</p>`):`<p class="muted" style="margin:0">Answer some flashcards, quizzes or Arcade questions and your strongest and weakest topics will appear here.</p>`}</div>`; })()}
     </section>
 <section data-sec="themes" class="ts-themes">
-    <div class="box"><h3>Themes <small>Unlock more as you level up</small></h3><div class="skins">${SKINS.filter(k=>!k.hidden||allScrolls()).map(k=>{ const ok=k.hidden?true:n>=k.lvl, on=(store.theme||"auto")===k.id;
+    <div class="box"><h3>Themes <small>A new one every 4 levels, up to level 60</small></h3><div class="skins">${SKINS.filter(k=>!k.hidden||allScrolls()).map(k=>{ const ok=k.hidden?true:(n>=k.lvl||store.theme===k.id), on=(store.theme||"auto")===k.id;
       return `<button class="skin ${on?"on":""}" data-skin="${k.id}" ${ok?"":"disabled"} aria-pressed="${on}"><span class="sw" style="background:linear-gradient(135deg,${k.sw[0]} 50%,${k.sw[1]} 50%)"></span><b>${esc(k.name)}</b><span>${ok?esc(k.desc):"🔒 Level "+k.lvl}</span></button>`; }).join("")}</div></div>
     </section>
 <section data-sec="badges" class="ts-certs">
@@ -3078,7 +3096,7 @@ renderMeter(); renderChips(); newDeck(); renderQuiz(); renderHud(); renderArcade
 (()=>{ const dn=dueCount(true);
   if(dn) setTimeout(()=>toast("📅",`${dn} card${dn===1?"":"s"} due for review today`,"Review them now, just before you forget them."),1200);
   const lv=lvlFor(G.xp), stale=!G.lastBackup || dayNum(today())-dayNum(G.lastBackup)>14;
-  if(lv>=3 && stale && G.nudgeDay!==today()){ G.nudgeDay=today(); save(); setTimeout(()=>toast("💾","Back up your progress",`Don't lose your level ${lv}. Trophies → Copy my save code.`),dn?4200:1500); }
+  if(lv>=3 && stale && G.nudgeDay!==today()){ G.nudgeDay=today(); save(); setTimeout(()=>toast("💾","Back up your progress",`Don't lose your level ${lv}. Saves tab → Copy my save code.`),dn?4200:1500); }
 })();
 </script>
 </body>
