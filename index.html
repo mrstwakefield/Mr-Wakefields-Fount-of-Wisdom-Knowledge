@@ -354,6 +354,24 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .weekban div span{font-size:14px;color:var(--muted)}
 .weekban i{font-style:normal;font-weight:800;background:var(--c);color:#fff;border-radius:99px;padding:6px 14px;white-space:nowrap}
 
+/* trophies pages */
+#trophyArea{display:flex;flex-direction:column}
+#trophyArea > section{display:none}
+#trophyArea[data-sec="progress"] > section[data-sec="progress"],#trophyArea[data-sec="badges"] > section[data-sec="badges"],#trophyArea[data-sec="themes"] > section[data-sec="themes"],#trophyArea[data-sec="settings"] > section[data-sec="settings"]{display:block}
+.ts-profile{order:1}.ts-tiles{order:2}.ts-exam{order:3}.ts-weak{order:4}.ts-heat{order:5}.ts-goal{order:6}
+.ts-badges{order:1}.ts-scrolls{order:2}.ts-certs{order:3}
+.ts-a11y{order:1}.ts-report{order:2}.ts-backup{order:3}
+.tseg{order:0;align-self:flex-start;margin-bottom:14px;max-width:100%;overflow-x:auto;flex-wrap:nowrap}
+.tseg button{white-space:nowrap;font-weight:700;padding:9px 14px}
+.tseg small{opacity:.7;font-weight:400}
+.bseg{margin-bottom:12px}
+.morestats{margin:-4px 0 14px}
+@media (max-width:560px){ .ts-badges .badges{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px} .ts-badges .badge{padding:8px 6px} .ts-badges .badge .bi{font-size:26px} .ts-badges .badge b{font-size:12.5px;line-height:1.2} .ts-badges .badge span{font-size:11px} }
+.morestats summary{cursor:pointer;color:var(--muted);font-weight:700;padding:4px 2px;font-size:15px;list-style:none}
+.morestats summary::before{content:"▸ "} .morestats[open] summary::before{content:"▾ "}
+.morestats .tiles{margin-top:8px}
+@media (max-width:560px){ .tseg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;align-self:stretch} .tseg button{padding:8px 2px;font-size:12.5px} .tseg small{display:none} }
+
 /* batch 3 */
 .seg[aria-label="Which cards"]{flex-wrap:wrap}
 .evban{display:flex;align-items:center;gap:8px;background:linear-gradient(90deg,#F2C14E,#F39A3C);color:#2B1D0A;border-radius:12px;padding:8px 14px;margin:-8px 0 12px;font-size:14.5px;flex-wrap:wrap}
@@ -715,7 +733,7 @@ const KEY = "rr-psych-v1";
 let store = {p:{}, sel:TOPICS.map(t=>t.key), all:TOPICS.map(t=>t.key)};
 try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s && s.p){ store.p = s.p; if(Array.isArray(s.sel)){ const seen=new Set(Array.isArray(s.all)?s.all:s.sel.concat(["Social Influence","Memory","Attachment","Psychopathology","Approaches","Biopsychology","RM","Issues and Debates part I"])); store.sel = [...new Set(s.sel.map(k=>k.startsWith("Issues and Debates")?"Issues and Debates part I":k))].filter(k=>TMAP[k]).concat(TOPICS.map(t=>t.key).filter(k=>!seen.has(k))); } } }catch(e){}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} }
-try{ const s0=JSON.parse(localStorage.getItem(KEY)||"null"); if(s0) ["sr","theme","gapMode","srMig","a11y","reportName"].forEach(k=>{ if(s0[k]!==undefined) store[k]=s0[k]; }); }catch(e){}
+try{ const s0=JSON.parse(localStorage.getItem(KEY)||"null"); if(s0) ["sr","theme","gapMode","srMig","a11y","reportName","trophyTab"].forEach(k=>{ if(s0[k]!==undefined) store[k]=s0[k]; }); }catch(e){}
 const status = id => store.p[id] || "";
 
 /* ---------- spaced repetition: Got it → back in 1, 3, 7, 21, then 60 days ---------- */
@@ -1395,9 +1413,9 @@ function renderHud(){
   $("#soundBtn").setAttribute("aria-label", G.sound?"Mute sounds":"Turn sounds on");
 }
 $("#soundBtn").onclick=()=>{ G.sound=!G.sound; save(); renderHud(); if(G.sound) sfx("ok"); };
-$("#hudLvl").onclick=()=>goTab("trophies");
-$("#hudGoal").onclick=()=>goTab("trophies");
-$("#hudExam").onclick=()=>{ goTab("trophies"); setTimeout(()=>{ const b=$("#examBox"); if(b) b.scrollIntoView({behavior:reduced()?"auto":"smooth"}); },50); };
+$("#hudLvl").onclick=()=>{ trophyTab="progress"; goTab("trophies"); };
+$("#hudGoal").onclick=()=>{ trophyTab="progress"; goTab("trophies"); };
+$("#hudExam").onclick=()=>{ trophyTab="progress"; goTab("trophies"); setTimeout(()=>{ const b=$("#examBox"); if(b) b.scrollIntoView({behavior:reduced()?"auto":"smooth"}); },50); };
 $("#hudDue").onclick=()=>{ if(dueCount()===0){ store.sel=TOPICS.map(t=>t.key); save(); renderChips(); } goTab("cards"); setFilter("due"); document.querySelector("#p-cards").scrollIntoView({behavior:reduced()?"auto":"smooth"}); };
 
 /* ================= QUESTION GENERATORS (stats lab, exam skills, gap fill) =================
@@ -2817,9 +2835,10 @@ function wireBackup(){
   $("#loadSave").onclick=()=>{ const v=$("#loadCode").value.trim(); if(!v){ msg.className="savemsg no"; msg.textContent="Paste a save code into the box first."; return; } loadSave(v); };
   $("#loadFile").onchange=e=>{ const f=e.target.files[0]; if(!f) return; f.text().then(loadSave); };
 }
-$("#backupLink").onclick=()=>{ goTab("trophies"); setTimeout(()=>{ const b=$("#backupBox"); if(b) b.scrollIntoView({behavior:reduced()?"auto":"smooth"}); },50); };
+$("#backupLink").onclick=()=>{ trophyTab="settings"; goTab("trophies"); setTimeout(()=>{ const b=$("#backupBox"); if(b) b.scrollIntoView({behavior:reduced()?"auto":"smooth"}); },50); };
 
 /* ---- trophies ---- */
+let trophyTab=store.trophyTab||"progress", badgeFilter="all";
 function renderTrophies(){
   const n=lvlFor(G.xp), s=lvlStart(n), e=lvlStart(n+1), frac=(G.xp-s)/(e-s), t=today();
   const acc = G.st.cards ? Math.round(G.st.right/G.st.cards*100) : 0;
@@ -2831,13 +2850,21 @@ function renderTrophies(){
     const l= v===0?"": v<G.goal/2?"l1": v<G.goal?"l2":"l3";
     cells+=`<i class="${l} ${k===t?"today":""}" ${future?'style="visibility:hidden"':""} title="${k}: ${v} answered"></i>`;
   }
-  $("#trophyArea").innerHTML=`
+  const ta=$("#trophyArea"); ta.dataset.sec=trophyTab;
+  ta.innerHTML=`
+    <div class="seg tseg" role="tablist" aria-label="Trophies pages">${[["progress","📊 Progress"],["badges","🏆 Badges"],["themes","🎨 Themes"],["settings","⚙️ Settings"]].map(([k,l])=>`<button role="tab" aria-selected="${trophyTab===k}" aria-pressed="${trophyTab===k}" data-tt="${k}">${l}${k==="badges"?` <small>${got}/${BADGES.length}</small>`:""}</button>`).join("")}</div>
+
+<section data-sec="progress" class="ts-exam">
     ${(()=>{ const tg=dailyTarget();
       return `<div class="box" id="examBox"><h3>Exam countdown <small>AQA A-level Psychology, summer 2027</small></h3><div class="exams">${EXAMS.map(([nm,d,sub])=>{ const dd=daysUntil(d); return `<div class="exam ${dd<0?"past":""}"><b>${dd<0?"✓":dd}</b><span>${dd<0?"Done":dd===0?"Today!":dd===1?"day to go":"days to go"}</span><strong>${nm}</strong><small>${new Date(d+"T12:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"long"})} · ${sub}</small></div>`; }).join("")}</div>
         ${tg?`<p class="target">You have <b>${tg.unknown.toLocaleString()}</b> cards not yet known and <b>${tg.days}</b> days until Paper 1. Learning about <b>${tg.perDay}</b> new card${tg.perDay===1?"":"s"} a day gets you through them all. With reviews, a daily goal of <b>${tg.goal}</b> answers would cover it${G.goal===tg.goal?" (that's your goal already ✓)":""}.</p>${G.goal!==tg.goal?`<button class="btn ghost" id="useGoal" data-g="${tg.goal}">Set my daily goal to ${tg.goal}</button>`:""}`:`<p class="target">All three papers are done. Brilliant work. 🎉</p>`}</div>`; })()}
+    </section>
+<section data-sec="progress" class="ts-profile">
     <div class="profile"><div class="bigring"><svg viewBox="0 0 110 110"><circle class="ring-bg" cx="55" cy="55" r="48" style="stroke-width:9"/><circle class="ring-fg" cx="55" cy="55" r="48" style="stroke-width:9" ${ring(48,frac)}/></svg><b>${n}</b></div>
       <div><h2>${esc(rankFor(n))}</h2><p>Level ${n} · ${G.xp.toLocaleString()} XP total · ${e-G.xp} XP to level ${n+1}</p>
       <p>${(()=>{const nx=RANKS.find(r=>r[0]>n); return nx?`Next rank: <b>${esc(nx[1])}</b> at level ${nx[0]}`:"You've reached the top rank. Legend."})()}</p></div></div>
+    </section>
+<section data-sec="progress" class="ts-tiles">
     <div class="tiles">
       <div class="tile"><b>🔥 ${G.last===t||(G.last&&dayNum(t)-dayNum(G.last)===1)?G.streak:0}</b><span>Day streak (best ${G.best})</span></div>
       <div class="tile"><b>🧊 ${G.freeze}</b><span>Streak freezes (earn one every 7 days)</span></div>
@@ -2845,27 +2872,48 @@ function renderTrophies(){
       <div class="tile"><b>${knownTotal()}</b><span>Cards known of ${DATA.length}</span></div>
       <div class="tile"><b>${G.st.cards.toLocaleString()}</b><span>Questions answered</span></div>
       <div class="tile"><b>${acc}%</b><span>Accuracy</span></div>
+    </div>
+    <details class="morestats"><summary>More stats</summary><div class="tiles">
       <div class="tile"><b>${G.st.combo}</b><span>Best combo</span></div>
       <div class="tile"><b>${G.st.blitz.toLocaleString()}</b><span>Blitz best</span></div>
       <div class="tile"><b>${G.st.surv}</b><span>Survival best</span></div>
       <div class="tile"><b>🎓 ${G.st.exam}/10</b><span>Exam Skills best (${G.st.examRounds} rounds)</span></div>
       <div class="tile"><b>🧮 ${G.st.stats}/10</b><span>Stats Lab best (${G.st.statsRounds} rounds)</span></div>
       <div class="tile"><b>${G.st.gap.toLocaleString()}</b><span>Gap Fill best</span></div>
-    </div>
+      <div class="tile"><b>🔎 ${G.st.flawBest||0}/8</b><span>Spot the Flaw best</span></div>
+      <div class="tile"><b>🔗 ${G.st.matchBest||0}/15</b><span>Study Matcher best</span></div>
+      <div class="tile"><b>🧩 ${G.st.orderBest||0}/5</b><span>Put It in Order best</span></div>
+      <div class="tile"><b>👹 ${Object.keys(G.st.bosses||{}).length}/${TOPICS.length}</b><span>Bosses beaten</span></div>
+      <div class="tile"><b>✍️ ${G.st.essays||0}</b><span>Essays self-marked</span></div>
+      <div class="tile"><b>📝 ${(G.mocks||[]).length}</b><span>Mini mocks done</span></div>
+      <div class="tile"><b>🩹 ${G.st.mistakesFixed||0}</b><span>Mistakes fixed</span></div>
+    </div></details>
+    </section>
+<section data-sec="progress" class="ts-weak">
     ${(()=>{ const ts=topicStats().filter(x=>x.n>0).sort((a,b)=>a.acc-b.acc), ys=Object.entries(G.acc.y).filter(([,v])=>v[1]>0).sort((a,b)=>a[1][0]/a[1][1]-b[1][0]/b[1][1]);
       const bar=(name,acc,n,c)=>`<div class="wrow"><span class="wl">${esc(name)}</span><span class="wb"><i style="width:${Math.round(acc*100)}%;background:${c}"></i></span><span class="wv">${Math.round(acc*100)}% <small>(${n})</small></span></div>`;
       return `<div class="box" id="weakBox"><h3>Weak spots <small>How often you get each topic right</small></h3>${ts.length?ts.map(x=>bar(x.name,x.acc,x.n,x.c)).join("")+(ys.length?`<h4 class="wh">By type of question</h4>`+ys.map(([k,v])=>bar(k,v[0]/v[1],v[1],"var(--ink)")).join(""):"")+(weakest(1).length?`<div class="btnrow" style="margin-top:12px"><button class="btn" id="weakGo">🎯 Fix my weak spots</button></div>`:`<p class="muted" style="margin:10px 0 0;font-size:14px">Answer at least ${WEAK_MIN} questions in a topic to unlock Fix my weak spots.</p>`):`<p class="muted" style="margin:0">Answer some flashcards, quizzes or Arcade questions and your strongest and weakest topics will appear here.</p>`}</div>`; })()}
+    </section>
+<section data-sec="themes" class="ts-themes">
     <div class="box"><h3>Themes <small>Unlock more as you level up</small></h3><div class="skins">${SKINS.filter(k=>!k.hidden||allScrolls()).map(k=>{ const ok=k.hidden?true:n>=k.lvl, on=(store.theme||"auto")===k.id;
       return `<button class="skin ${on?"on":""}" data-skin="${k.id}" ${ok?"":"disabled"} aria-pressed="${on}"><span class="sw" style="background:linear-gradient(135deg,${k.sw[0]} 50%,${k.sw[1]} 50%)"></span><b>${esc(k.name)}</b><span>${ok?esc(k.desc):"🔒 Level "+k.lvl}</span></button>`; }).join("")}</div></div>
+    </section>
+<section data-sec="badges" class="ts-certs">
     <div class="box" id="certBox"><h3>🏅 Certificates <small>Print them or save as a PDF</small></h3><div class="scrolls">${CERTS.map(c=>c.ok()?`<button class="scr got" data-cert="${c.id}"><span>🏅</span><b>${esc(c.title)}</b><small>${esc(c.sub())}</small></button>`:`<div class="scr"><span>🔒</span><b>${esc(c.title)}</b><small>${c.id==="bosses"?"Beat every topic boss":"Reach "+esc(c.title.toLowerCase())}</small></div>`).join("")}</div></div>
+    </section>
+<section data-sec="settings" class="ts-a11y">
     <div class="box" id="a11yBox"><h3>Reading and accessibility</h3>
       <div class="bar-row" style="margin:0"><div class="seg" role="group" aria-label="Font">${[["std","Standard font"],["lexend","Easy-read font (Lexend)"]].map(([v,l])=>`<button aria-pressed="${store.a11y.font===v}" data-font="${v}">${l}</button>`).join("")}</div>
       <div class="seg" role="group" aria-label="Text size">${[[0.9,"A−"],[1,"A"],[1.15,"A+"],[1.3,"A++"]].map(([v,l])=>`<button aria-pressed="${store.a11y.size===v}" data-size="${v}" aria-label="Text size ${l}">${l}</button>`).join("")}</div></div>
       <p class="muted" style="margin:10px 0 0;font-size:14px">${canSpeak?"Tap 🔈 on a flashcard or quiz question to hear it read aloud.":"Read aloud isn't available in this browser."}</p></div>
+    </section>
+<section data-sec="settings" class="ts-report">
     <div class="box" id="reportBox"><h3>📨 Send your progress to your teacher</h3>
       <p class="muted" style="margin:0 0 10px">Makes a short code with your level, streak, cards known and how you're doing in each topic. Paste it into Google Classroom, Teams or an email to your teacher. Nothing is uploaded anywhere.</p>
       <div class="bar-row" style="margin:0"><input class="search" id="repName" maxlength="30" placeholder="Your name or initials" value="${esc(store.reportName||"")}" aria-label="Your name or initials" style="flex:1 1 200px"><button class="btn" id="repCopy">📋 Copy progress report code</button></div>
       <p id="repMsg" class="savemsg" aria-live="polite"></p></div>
+    </section>
+<section data-sec="settings" class="ts-backup">
     <div class="box" id="backupBox"><h3>Back up or move your progress <small>Last backed up: ${G.lastBackup?G.lastBackup.split("-").reverse().join("/"):"never"}</small></h3>
       <p class="muted" style="margin:0 0 12px">Your progress is saved in this browser only, so clearing your browser data wipes it. Copy your save code and keep it safe, e.g. email it to yourself. To carry on on another device (school PC, phone, laptop), paste the code there. The code holds your progress only: no name, no login, no personal data.</p>
       <div class="btnrow"><button class="btn" id="copySave">📋 Copy my save code</button><button class="btn ghost" id="dlSave">💾 Download backup file</button></div>
@@ -2873,15 +2921,29 @@ function renderTrophies(){
       <textarea id="loadCode" placeholder="Paste a save code here (it starts with F1)" spellcheck="false"></textarea>
       <div class="btnrow"><button class="btn ghost" id="loadSave">Load save code</button><label class="btn ghost filebtn">📂 Load backup file<input type="file" id="loadFile" accept=".txt,text/plain" hidden></label></div>
       <p id="saveMsg" class="savemsg" aria-live="polite"></p></div>
+    </section>
+<section data-sec="progress" class="ts-goal">
     <div class="box"><h3>Daily goal <small>Answer this many questions a day to keep your streak</small></h3>
       <div class="seg" role="group" aria-label="Daily goal">${[[15,"Chill"],[30,"Steady"],[50,"Serious"],[100,"Beast mode"]].map(([v,l])=>`<button aria-pressed="${G.goal===v}" data-goal="${v}">${l} · ${v}</button>`).join("")}</div></div>
+    </section>
+<section data-sec="progress" class="ts-heat">
     <div class="box"><h3>Last 12 weeks <small>Darker = closer to your goal</small></h3><div class="heat">${cells}</div></div>
+    </section>
+<section data-sec="badges" class="ts-scrolls">
     <div class="box" id="scrollBox"><h3>📜 Secret scrolls <small>${SECRET_SCROLLS.filter(x=>G.scrolls[x.id]).length} of ${SECRET_SCROLLS.length} found</small></h3><div class="scrolls">${SECRET_SCROLLS.map(x=>G.scrolls[x.id]?`<button class="scr got" data-scroll="${x.id}"><span>📜</span><b>${esc(x.title)}</b><small>Tap to read again</small></button>`:`<div class="scr"><span>🔒</span><b>Sealed scroll</b><small>${esc(x.hint)}</small></div>`).join("")}</div></div>
-    <div class="box"><h3>Badges <small>${got} of ${BADGES.length} unlocked</small></h3><div class="badges">${[...BADGES.filter(b=>!b[5]),...BADGES.filter(b=>b[5])].map(([id,ic,name,desc,,secret,hint])=>{
+    </section>
+<section data-sec="badges" class="ts-badges">
+    <div class="box"><h3>Badges <small>${got} of ${BADGES.length} unlocked</small></h3>
+      <div class="seg bseg" role="group" aria-label="Show badges">${[["all","All"],["got","Earned"],["locked","Not yet"]].map(([k,l])=>`<button aria-pressed="${badgeFilter===k}" data-bf="${k}">${l}</button>`).join("")}</div>
+      <div class="badges">${[...BADGES.filter(b=>!b[5]&&G.badges[b[0]]),...BADGES.filter(b=>!b[5]&&!G.badges[b[0]]),...BADGES.filter(b=>b[5]&&G.badges[b[0]]),...BADGES.filter(b=>b[5]&&!G.badges[b[0]])].filter(b=>badgeFilter==="all"||(badgeFilter==="got")===!!G.badges[b[0]]).map(([id,ic,name,desc,,secret,hint])=>{
       const has=G.badges[id]; if(!has && secret) return `<div class="badge locked secret"><div class="bi">❓</div><b>Secret badge</b><span>${esc(hint||"Keep revising to find it")}</span></div>`;
-      return `<div class="badge ${has?"got":"locked"}"><div class="bi">${ic}</div><b>${esc(name)}</b><span>${esc(desc)}</span></div>`; }).join("")}</div></div>`;
+      return `<div class="badge ${has?"got":"locked"}"><div class="bi">${ic}</div><b>${esc(name)}</b><span>${esc(desc)}</span></div>`; }).join("")}</div></div>
+    </section>
+`;
   document.querySelectorAll(".skin[data-skin]").forEach(b=>b.onclick=()=>{ store.theme=b.dataset.skin; if(!G.themesTried.includes(store.theme)) G.themesTried.push(store.theme); applySkin(store.theme); save(); checkBadges(); renderTrophies(); });
   wireBackup();
+  ta.querySelectorAll("[data-tt]").forEach(b=>b.onclick=()=>{ trophyTab=b.dataset.tt; store.trophyTab=trophyTab; save(); renderTrophies(); });
+  ta.querySelectorAll("[data-bf]").forEach(b=>b.onclick=()=>{ badgeFilter=b.dataset.bf; renderTrophies(); });
   document.querySelectorAll("[data-font]").forEach(b=>b.onclick=()=>{ store.a11y.font=b.dataset.font; applyA11y(); save(); renderTrophies(); });
   document.querySelectorAll("#a11yBox [data-size]").forEach(b=>b.onclick=()=>{ store.a11y.size=+b.dataset.size; applyA11y(); save(); renderTrophies(); });
   $("#repName").oninput=e=>{ store.reportName=e.target.value; save(); };
