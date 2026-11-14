@@ -315,6 +315,45 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .bosshp i{display:block;height:100%;background:linear-gradient(90deg,#B91C1C,#E0533D);transition:width .4s}
 .bosshp span{position:absolute;inset:0;display:flex;align-items:center;padding:0 10px;font-weight:800;font-size:14px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5)}
 
+/* writing, weekly, accessibility */
+.wrap{zoom:var(--zoom,1)}
+:root[data-font="lexend"] body,:root[data-font="lexend"] button,:root[data-font="lexend"] input,:root[data-font="lexend"] textarea,:root[data-font="lexend"] select{font-family:"Lexend","Atkinson Hyperlegible",system-ui,sans-serif;letter-spacing:.01em}
+.ttsq{border:0;background:none;padding:0 4px;font-size:15px;cursor:pointer}
+.wrseg{margin-bottom:12px}
+.wrfilters select{margin-left:6px;border:1px solid var(--line);border-radius:8px;background:var(--card);padding:6px 8px;font-size:15px}
+.essay .q{font-size:clamp(20px,2.8vw,28px)}
+.stem{background:var(--soft);border-left:4px solid var(--c);border-radius:10px;padding:10px 12px;margin:0 0 12px;font-size:16px;line-height:1.5}
+.stem b{display:block;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--c)}
+.essaybar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px}
+.essaybar .btn{padding:7px 12px;font-size:14px}
+.essaytext{min-height:220px}
+.marking h4,.quiz-q h4{font-family:var(--display);margin:18px 0 8px}
+.plan{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.plan b{display:block;margin-bottom:4px}
+.chk2{display:flex;gap:8px;align-items:flex-start;padding:4px 0;font-size:15px;line-height:1.4;cursor:pointer}
+.chk2 input{margin-top:3px;flex:none;width:18px;height:18px}
+.levels{display:grid;gap:6px}
+.lvlopt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;font-size:14.5px;background:var(--paper)}
+.lvlopt b{display:block;font-size:15px}
+.lvlopt:has(input:checked){border-color:var(--c);box-shadow:0 0 0 2px var(--c) inset}
+.marked{text-align:center;margin-top:14px}
+.designs{display:grid;gap:10px;margin-top:10px}
+.dcard{display:flex;flex-direction:column;gap:4px;text-align:left;border:2px solid var(--line);background:var(--card);border-radius:14px;padding:14px 16px}
+.dcard b{font-family:var(--display);font-size:18px}
+.dcard span{color:var(--muted);font-size:15px}
+.dcard small{color:var(--good);font-weight:700}
+.opts.one{grid-template-columns:1fr}
+.opt.okay{border-color:#C99A17;background:color-mix(in srgb,#F2C14E 18%,var(--card))}
+.explain.meh{background:color-mix(in srgb,#F2C14E 22%,var(--card))}
+.model li{margin:8px 0;line-height:1.5}
+.warnt{color:var(--warn)}
+.weekban{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:2px solid var(--c);background:color-mix(in srgb,var(--c) 12%,var(--card));border-radius:16px;padding:12px 16px;margin-bottom:12px}
+.weekban > span{font-size:28px}
+.weekban div{flex:1;min-width:0}
+.weekban b{display:block;font-family:var(--display);font-size:17px}
+.weekban div span{font-size:14px;color:var(--muted)}
+.weekban i{font-style:normal;font-weight:800;background:var(--c);color:#fff;border-radius:99px;padding:6px 14px;white-space:nowrap}
+
 /* secret scrolls */
 .scroll-ov{z-index:98}
 .parch{width:min(440px,100%);filter:drop-shadow(0 18px 40px rgba(0,0,0,.4));animation:unroll .7s cubic-bezier(.2,1,.3,1)}
@@ -483,6 +522,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
     <button role="tab" aria-selected="false" data-tab="quiz" id="tab-quiz" aria-controls="p-quiz">Quiz</button>
     <button role="tab" aria-selected="false" data-tab="arcade" id="tab-arcade" aria-controls="p-arcade">🕹️ Arcade</button>
     <button role="tab" aria-selected="false" data-tab="browse" id="tab-browse" aria-controls="p-browse">Browse</button>
+    <button role="tab" aria-selected="false" data-tab="writing" id="tab-writing" aria-controls="p-writing">✍️ Writing</button>
     <button role="tab" aria-selected="false" data-tab="trophies" id="tab-trophies" aria-controls="p-trophies">🏆 Trophies</button>
   </div>
 
@@ -519,6 +559,11 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
   <!-- ARCADE -->
   <section class="panel" id="p-arcade" role="tabpanel" aria-labelledby="tab-arcade" hidden>
     <div id="arcArea"></div>
+  </section>
+
+  <!-- WRITING -->
+  <section class="panel" id="p-writing" role="tabpanel" aria-labelledby="tab-writing" hidden>
+    <div id="wrArea"></div>
   </section>
 
   <!-- TROPHIES -->
@@ -568,7 +613,7 @@ const KEY = "rr-psych-v1";
 let store = {p:{}, sel:TOPICS.map(t=>t.key), all:TOPICS.map(t=>t.key)};
 try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s && s.p){ store.p = s.p; if(Array.isArray(s.sel)){ const seen=new Set(Array.isArray(s.all)?s.all:s.sel.concat(["Social Influence","Memory","Attachment","Psychopathology","Approaches","Biopsychology","RM","Issues and Debates part I"])); store.sel = [...new Set(s.sel.map(k=>k.startsWith("Issues and Debates")?"Issues and Debates part I":k))].filter(k=>TMAP[k]).concat(TOPICS.map(t=>t.key).filter(k=>!seen.has(k))); } } }catch(e){}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} }
-try{ const s0=JSON.parse(localStorage.getItem(KEY)||"null"); if(s0) ["sr","theme","gapMode","srMig"].forEach(k=>{ if(s0[k]!==undefined) store[k]=s0[k]; }); }catch(e){}
+try{ const s0=JSON.parse(localStorage.getItem(KEY)||"null"); if(s0) ["sr","theme","gapMode","srMig","a11y","reportName"].forEach(k=>{ if(s0[k]!==undefined) store[k]=s0[k]; }); }catch(e){}
 const status = id => store.p[id] || "";
 
 /* ---------- spaced repetition: Got it → back in 1, 3, 7, 21, then 60 days ---------- */
@@ -576,6 +621,21 @@ const SR_DAYS=[1,3,7,21,60];
 const addDays=n=>{ const d=new Date(); d.setDate(d.getDate()+n); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
 const todayStr=()=>addDays(0);
 store.sr = store.sr || {};
+/* ---------- accessibility: easy-read font and text size ---------- */
+store.a11y = Object.assign({font:"std", size:1}, store.a11y||{});
+function applyA11y(){
+  const r=document.documentElement; r.dataset.font=store.a11y.font; r.style.setProperty("--zoom", store.a11y.size);
+  if(store.a11y.font==="lexend" && !document.getElementById("lexendCss")){ const l=document.createElement("link"); l.id="lexendCss"; l.rel="stylesheet"; l.href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap"; document.head.appendChild(l); }
+}
+applyA11y();
+const canSpeak = "speechSynthesis" in window;
+function speak(text){
+  if(!canSpeak) return; const ss=window.speechSynthesis;
+  if(ss.speaking){ ss.cancel(); return; }
+  const u=new SpeechSynthesisUtterance(String(text).replace(/\s+/g," ")); u.lang="en-GB"; u.rate=0.95;
+  const v=ss.getVoices().find(v=>/en-GB/i.test(v.lang)); if(v) u.voice=v;
+  ss.speak(u);
+}
 if(!store.srMig){ // first run: spread existing known cards over the next week so nobody gets an avalanche
   store.srMig=1;
   Object.entries(store.p).forEach(([id,v])=>{ store.sr[id] = v==="k" ? {b:0, due:addDays(1+(+id%7))} : {b:-1, due:todayStr()}; });
@@ -673,6 +733,7 @@ function goTab(name){
   if(tab==="browse") renderBrowse();
   if(tab==="arcade") renderArcade();
   if(tab==="trophies") renderTrophies();
+  if(tab==="writing") renderWriting();
 }
 document.querySelectorAll("[role=tab]").forEach(b=>b.addEventListener("click",()=>goTab(b.dataset.tab)));
 
@@ -745,12 +806,13 @@ function renderCard(){
       </div>
     </div>
     <div class="card-actions">
-      <div class="nav"><button id="prevC" aria-label="Previous card" ${pos===0?"disabled":""}>‹</button><button id="nextC" aria-label="Skip to next card">›</button></div>
+      <div class="nav">${canSpeak?`<button id="ttsC" aria-label="Read aloud" title="Read aloud">🔈</button>`:""}<button id="prevC" aria-label="Previous card" ${pos===0?"disabled":""}>‹</button><button id="nextC" aria-label="Skip to next card">›</button></div>
       <span id="acts" style="display:contents">${actionsHTML()}</span>
     </div>`;
   const card=$("#card");
   card.onclick=flip; card.onkeydown=e=>{ if(e.key==="Enter"){e.preventDefault();flip();} };
   $("#prevC").onclick=()=>{ if(pos>0){pos--;flipped=false;renderCard();} };
+  const tt=$("#ttsC"); if(tt) tt.onclick=()=>{ const g2=gapMode?gapById(d.id):null; speak(flipped ? (g2 ? g2.term+". "+g2.def.replace(/_____/g,g2.term) : d.q+". "+d.a) : (g2 ? "Fill the gap. Blank: "+g2.def.replace(/_____/g,"blank") : d.q)); };
   $("#nextC").onclick=()=>{ pos++;flipped=false;renderCard(); };
   wireActions();
   const gi=$("#gapIn");
@@ -812,7 +874,7 @@ function renderQuiz(){
     area.innerHTML=`
       <div class="progressline"><i style="width:${quiz.i/quiz.items.length*100}%"></i></div>
       <div class="quiz-q" style="--c:${t.c}">
-        <div class="tag">${esc(t.name)} <span class="muted">Question ${quiz.i+1} of ${quiz.items.length}</span></div>
+        <div class="tag">${esc(t.name)} <span class="muted">${canSpeak?`<button class="ttsq" id="ttsQ" aria-label="Read aloud">🔈</button> `:""}Question ${quiz.i+1} of ${quiz.items.length}</span></div>
         <div class="q pre ${d.q.length>150?"long":""}">${esc(d.q)}</div>
         ${quiz.shown
           ? `<div class="compare"><div><h4>Your answer</h4>${mine?esc(mine).replace(/\n/g,"<br>"):'<span class="muted">You didn\'t write anything.</span>'}</div><div class="model"><h4>Model answer</h4><div class="a" style="font-size:17px">${fmtAnswer(d.a,d.id)}</div></div></div>
@@ -823,6 +885,7 @@ function renderQuiz(){
       </div>
       <p style="text-align:right;margin-top:10px"><button class="linkbtn" id="qQuit">Quit quiz</button></p>`;
     $("#qQuit").onclick=()=>{quiz.phase="setup";renderQuiz();};
+    const tq=$("#ttsQ"); if(tq) tq.onclick=()=>speak(quiz.shown ? d.q+". Model answer: "+d.a : d.q);
     if(quiz.shown){
       const next=ok=>{ quiz.marks[quiz.i]=ok; recAcc(d.id,ok); noteLearn(d.id,ok); srReview(d.id,ok); mark(d.id, ok?"k":"l"); answer({ok, el:$(ok?"#qYes":"#qNo"), mode:"quiz"}); quiz.i++; quiz.shown=false; if(quiz.i>=quiz.items.length){ quiz.phase="done"; quizDone(); } renderQuiz(); const ta=$("#qAns"); if(ta) ta.focus(); };
       $("#qYes").onclick=()=>next(true); $("#qNo").onclick=()=>next(false);
@@ -1179,6 +1242,13 @@ const BADGES = [
   ["stats10","📊","Stats whizz","Score 10/10 in Stats Lab",()=>G.st.stats>=10],
   ["gap20","✏️","Word perfect","Get 20 right in one Gap Fill",()=>G.st.gapR>=20],
   ["weak25","🎯","Weak spot fixer","Answer 25 cards in Fix my weak spots",()=>(G.st.weakDone||0)>=25],
+  ["essay1","✍️","First draft","Self-mark an essay in Writing",()=>(G.st.essays||0)>=1],
+  ["essay10","📚","Essay machine","Self-mark 10 essays",()=>(G.st.essays||0)>=10],
+  ["essayL4","🏅","Top band","Self-mark a 16-marker in Level 4",()=>!!G.st.essayL4],
+  ["design1","🔬","Lead researcher","Complete a Design a study",()=>(G.st.designs||0)>=1],
+  ["weekly1","🏁","Weekly warrior","Finish a Weekly Challenge",()=>(G.st.weeklies||0)>=1],
+  ["weekly15","🏆","Perfect week","Score 15/15 in a Weekly Challenge",()=>!!G.st.weeklyPerfect],
+  ["report","📨","Team player","Send your teacher a progress report code",()=>(G.st.reports||0)>=1],
   ["app","📲","Pocket psychologist","Open the app from your home screen",()=>!!G.st.standalone],
 ];
 function checkBadges(){
@@ -1630,12 +1700,21 @@ const MODES = {
   blitz:{icon:"⚡", name:"Blitz", c:"#E0533D", kind:"blitz", src:"cards", desc:"60 seconds. Answer as many as you can. Wrong answers cost 3 seconds. Combos multiply your score."},
   surv:{icon:"❤️", name:"Survival", c:"#7B5BE0", kind:"surv", src:"cards", desc:"Three lives, 12 seconds per question. How far can you get?"},
   boss:{icon:"👹", name:"Boss Battles", c:"#B91C1C", kind:"boss", src:"boss", desc:"One boss per topic. Land 15 hits with hard questions before you lose 3 lives. Beat a boss to earn its badge."},
+  weekly:{icon:"🏁", name:"Weekly Challenge", c:"#C2410C", kind:"weekly", n:15, src:"weekly", desc:"This week's topic, the same 15 questions for everyone in the class. One scored go per week, so make it count."},
   daily:{icon:"📰", name:"Daily 10", c:"#1C8A5E", kind:"daily", src:"daily", desc:"The same 10 questions for everyone today, including exam skills and a stats question. One go. Compare with your class."},
 };
 const arc={phase:"menu", mode:null, qs:[], i:0, score:0, right:0, lives:3, end:0, qEnd:0, timer:null, cur:null, locked:false, log:[], t0:0, xp:0, best:false, seen:new Set(), fb:false};
 const dailyNo = () => dayNum(today())-dayNum("2026-01-01")+1;
 const M = () => MODES[arc.mode];
+/* weekly challenge: rotates through the content topics every Monday */
+const WEEK_TOPICS=TOPICS.filter(t=>t.key!=="Exam skills");
+function weekStart(){ const d=new Date(); d.setDate(d.getDate()-((d.getDay()+6)%7)); return ymd(d); }
+const weekNo=()=>Math.floor((dayNum(weekStart())-dayNum("2026-01-05"))/7)+1;
+const weekTopic=()=>WEEK_TOPICS[((weekNo()%WEEK_TOPICS.length)+WEEK_TOPICS.length)%WEEK_TOPICS.length];
+function weeklyQs(){ const t=weekTopic(), rng=rngFrom("weekly-"+weekStart()), c=shuffleR(DATA.filter(d=>d.t===t.key&&mcOK(d)),rng).slice(0,15); return c.map(d=>qFromCard(d,rng)); }
+function weeklyShare(){ const w=G.weekly[weekStart()]; return `Fount of Wisdom A-level Weekly #${weekNo()} · ${weekTopic().name}\n${w.score}/15 · ${fmtTime(w.time)}\n${w.log.map(x=>x?"🟩":"🟥").join("")}`; }
 function bestLabel(k){
+  if(k==="weekly"){ const w=(G.weekly||{})[weekStart()]; return w&&w.done?`Done this week: ${w.score}/15 ✓`:`This week: ${weekTopic().name}`; }
   const st=G.st;
   return k==="blitz" ? (st.blitz?`Best: ${st.blitz.toLocaleString()} points`:"No score yet")
     : k==="surv" ? (st.surv?`Best: ${st.surv} questions`:"No score yet")
@@ -1650,12 +1729,15 @@ function renderArcade(){
   if(arc.phase==="menu"){
     const dd=G.daily[today()], nCards=pool().filter(mcOK).length, sel=new Set(store.sel), nGap=gaps().filter(g=>sel.has(g.t)).length;
     const examToday=(G.st.examDay===today());
-    area.innerHTML=`${examToday?"":`<div class="focus"><span>🎯</span><div><b>Today's focus: exam skills</b><span>Do one Exam Skills round today for double XP. It's where the easy marks are.</span></div></div>`}
+    const wk=(G.weekly||{})[weekStart()], daysLeft=6-((new Date().getDay()+6)%7);
+    const weekBanner=`<button class="weekban" id="weekBan" style="--c:${weekTopic().c}"><span>🏁</span><div><b>Weekly Challenge #${weekNo()}: ${esc(weekTopic().name)}</b><span>${wk&&wk.done?`You scored ${wk.score}/15 this week. New topic on Monday.`:`15 questions, one go. Ends ${daysLeft===0?"tonight":daysLeft===1?"tomorrow":"in "+daysLeft+" days"}.`}</span></div><i>${wk&&wk.done?"See result":"Play"}</i></button>`;
+    area.innerHTML=weekBanner+`${examToday?"":`<div class="focus"><span>🎯</span><div><b>Today's focus: exam skills</b><span>Do one Exam Skills round today for double XP. It's where the easy marks are.</span></div></div>`}
       <div class="modes">${Object.entries(MODES).map(([k,m])=>{
       const dis = (m.src==="cards" && !nCards) || (m.src==="gap" && nGap<4);
       const tag = m.featured ? `<span class="new">2× XP</span>` : (k==="daily"&&!(dd&&dd.done)) ? '<span class="new">NEW</span>' : "";
       return `<button class="mode ${m.featured?"featured":""}" style="--c:${m.c}" data-mode="${k}" ${dis?"disabled":""}>${tag}<span class="mi">${m.icon}</span><h3>${m.name}${m.featured?' <small>Featured</small>':""}</h3><p>${m.desc}</p><span class="best">${bestLabel(k)}</span></button>`; }).join("")}</div>
       <p class="arc-note">Blitz, Survival and Gap Fill use the topics you've selected above${nCards?"":", so pick at least one"}. Exam Skills and Stats Lab cover the whole course. Wrong answers on revision cards are added to your still-learning pile. Use keys 1 to 4 to answer, and Enter for the next question.</p>`;
+    $("#weekBan").onclick=()=>startArc("weekly");
     area.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{ if(b.dataset.mode==="boss"){ arc.phase="bossmenu"; renderArcade(); } else startArc(b.dataset.mode); });
     return;
   }
@@ -1674,6 +1756,7 @@ function renderArcade(){
       : k==="boss" ? `<span class="hearts" aria-label="${arc.lives} lives left">${"❤️".repeat(arc.lives)}${"🖤".repeat(3-arc.lives)}</span>`
       : k==="surv" ? `<span class="hearts" aria-label="${arc.lives} lives left">${"❤️".repeat(arc.lives)}${"🖤".repeat(3-arc.lives)}</span><span class="big">${arc.right}</span>`
       : `<span>Question</span><span class="big">${arc.i+1}/${k==="daily"?10:m.n}</span>`;
+    const once = k==="daily"||k==="weekly";
     const timed = k==="blitz"||k==="surv";
     const bossBar = k==="boss" ? `<div class="bosshp" aria-label="Boss health"><i style="width:${(BOSS_HP-arc.right)/BOSS_HP*100}%"></i><span>${BOSSES[arc.bossTopic][1]} ${esc(BOSSES[arc.bossTopic][0])} · ${BOSS_HP-arc.right} HP</span></div>` : "";
     area.innerHTML=`<div class="arc-top"><span class="big">${k==="boss"?"👹 Boss battle":m.icon+" "+m.name}</span>${m.boost?'<span class="boost">2× XP</span>':""}<span class="spacer"></span>${right}${timed?`<span class="big" id="arcTime" style="min-width:2.2em;text-align:right"></span>`:""}</div>
@@ -1681,7 +1764,7 @@ function renderArcade(){
       <div class="quiz-q" style="--c:${q.c}"><div class="tag">${esc(q.tname)}</div><div class="q pre ${q.q.length>150?"long":""}">${esc(q.q)}</div>
       <div class="opts">${q.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${i+1}</span><span>${esc(o)}</span></button>`).join("")}</div>
       <div id="fb"></div></div>
-      <p style="text-align:right;margin-top:10px"><button class="linkbtn" id="arcQuit">${k==="daily"?"Stop (counts as your go)":"End game"}</button></p>`;
+      <p style="text-align:right;margin-top:10px"><button class="linkbtn" id="arcQuit">${once?"Stop (counts as your go)":"End game"}</button></p>`;
     area.querySelectorAll(".opt").forEach(b=>b.onclick=()=>arcPick(+b.dataset.i));
     $("#arcQuit").onclick=()=>arcFinish();
     arcTick();
@@ -1694,19 +1777,24 @@ function renderArcade(){
   if(arc.mode==="surv") head=`<p class="score">${arc.right}</p><p class="muted">questions survived</p>`;
   if(k==="boss"){ const [bn,bi]=BOSSES[arc.bossTopic]; head = arc.won ? `<p class="score">${bi}💥</p><p><b>You defeated ${esc(bn)}!</b>${arc.firstWin?" New badge unlocked.":""}</p>` : `<p class="score">${arc.right}/${BOSS_HP}</p><p class="muted">${esc(bn)} survived with ${BOSS_HP-arc.right} HP. Revise the ones below and try again.</p>`; }
   if(k==="round") head=`<p class="score">${arc.right}/${m.n}</p><p class="muted">${arc.right===m.n?"Flawless.":arc.right>=7?"Strong round.":"Go through the ones below, then try again."}</p>`;
+  if(k==="weekly"){
+    const w=G.weekly[weekStart()];
+    head=`<p class="score">${w.score}/15</p><p class="muted">Weekly Challenge #${weekNo()} · ${esc(weekTopic().name)} · ${fmtTime(w.time)}</p>`;
+    extra=`<div class="share" id="shareTxt">${esc(weeklyShare())}</div><br><button class="btn ghost" id="copyShare">Copy result</button> `;
+  }
   if(k==="daily"){
     const dd=G.daily[today()];
     head=`<p class="score">${dd.score}/10</p><p class="muted">Daily 10 #${dailyNo()} · ${fmtTime(dd.time)}</p>`;
     extra=`<div class="share" id="shareTxt">${esc(shareText())}</div><br><button class="btn ghost" id="copyShare">Copy result</button> `;
   }
   area.innerHTML=`<div class="empty">${arc.best&&k!=="boss"?'<div class="newbest">🏆 NEW PERSONAL BEST</div>':""}<h3>${k==="boss"?(arc.won?"🏆 Boss defeated":"👹 The boss wins this time"):m.icon+" "+m.name+" over"}</h3>${head}
-    <p style="margin-top:10px">+${arc.xp} XP earned${m.boost?" (double XP)":""}${k==="daily"?". Next Daily 10 in "+untilMidnight()+".":""}</p>${extra}
-    ${k!=="daily"?`<button class="btn" id="arcAgain">${k==="boss"?(arc.won?"Fight again":"Rematch"):"Play again"}</button> `:""}${k==="boss"?`<button class="btn ghost" id="bossPick">Pick another boss</button> `:""}<button class="btn ghost" id="arcMenu">Arcade menu</button>
+    <p style="margin-top:10px">+${arc.xp} XP earned${m.boost?" (double XP)":""}${k==="daily"?". Next Daily 10 in "+untilMidnight()+".":k==="weekly"?". A new topic starts on Monday.":""}</p>${extra}
+    ${k!=="daily"&&k!=="weekly"?`<button class="btn" id="arcAgain">${k==="boss"?(arc.won?"Fight again":"Rematch"):"Play again"}</button> `:""}${k==="boss"?`<button class="btn ghost" id="bossPick">Pick another boss</button> `:""}<button class="btn ghost" id="arcMenu">Arcade menu</button>
     ${missed.length?`<ul class="results" style="margin-top:22px"><li style="padding-left:14px;background:none;border:0"><b>Learn from these:</b></li>${missed.slice(0,20).map(x=>`<li class="no"><b>${esc(x.q)}</b><div class="ans">${esc(x.a)}</div></li>`).join("")}</ul>`:""}</div>`;
   const a=$("#arcAgain"); if(a) a.onclick=()=>startArc(arc.mode);
   $("#arcMenu").onclick=()=>{ arc.phase="menu"; renderArcade(); };
   const bp=$("#bossPick"); if(bp) bp.onclick=()=>{ arc.phase="bossmenu"; renderArcade(); };
-  const c=$("#copyShare"); if(c) c.onclick=()=>{ navigator.clipboard && navigator.clipboard.writeText(shareText()).then(()=>{ c.textContent="Copied ✓"; }).catch(()=>{}); };
+  const c=$("#copyShare"); if(c) c.onclick=()=>{ navigator.clipboard && navigator.clipboard.writeText(k==="weekly"?weeklyShare():shareText()).then(()=>{ c.textContent="Copied ✓"; }).catch(()=>{}); };
 }
 function fmtTime(ms){ const s=Math.round(ms/1000); return Math.floor(s/60)+":"+String(s%60).padStart(2,"0"); }
 function untilMidnight(){ const n=new Date(), m=new Date(n); m.setHours(24,0,0,0); const h=Math.floor((m-n)/36e5), mi=Math.floor((m-n)%36e5/6e4); return h?`${h}h ${mi}m`:`${mi}m`; }
@@ -1722,7 +1810,7 @@ function bossQs(key){
 }
 function nextQ(){
   const m=M(), rng=Math.random;
-  if(m.kind==="daily"||m.kind==="boss") return arc.qs[arc.i];
+  if(m.kind==="daily"||m.kind==="boss"||m.kind==="weekly") return arc.qs[arc.i];
   for(let tries=0;tries<25;tries++){
     let q;
     if(m.src==="exam") q=qExam(rng); else if(m.src==="stats") q=qStats(rng); else if(m.src==="gap") q=qGap(rng);
@@ -1731,6 +1819,10 @@ function nextQ(){
   }
 }
 function startArc(mode){
+  if(mode==="weekly"){
+    G.weekly=G.weekly||{}; const w=G.weekly[weekStart()];
+    if(w && (w.done || w.started)){ if(!w.done){ w.done=true; save(); } arc.mode="weekly"; arc.phase="done"; arc.xp=0; arc.best=false; arc.log=(w.qa||[]).map((x,i)=>({q:x[0],a:x[1],ok:w.log[i]})); renderArcade(); return; }
+  }
   if(mode==="daily"){
     const dd=G.daily[today()];
     if(dd && (dd.done || dd.started)){ if(!dd.done){ dd.done=true; save(); } arc.mode="daily"; arc.phase="done"; arc.xp=0; arc.best=false; arc.log=(dd.qa||[]).map((x,i)=>({q:x[0],a:x[1],ok:dd.log[i]})); renderArcade(); return; }
@@ -1740,6 +1832,7 @@ function startArc(mode){
   resetCombo();
   const m=M();
   if(m.kind==="boss") arc.qs=bossQs(arc.bossTopic);
+  if(m.kind==="weekly"){ arc.qs=weeklyQs(); G.weekly[weekStart()]={started:true, done:false, score:0, time:0, log:[], qa:arc.qs.map(q=>[q.q,q.opts[q.correct]])}; save(); }
   if(m.kind==="daily"){
     arc.qs=dailyQs();
     G.daily[today()]={started:true, done:false, score:0, time:0, log:[], qa:arc.qs.map(q=>[q.q,q.opts[q.correct]])}; save();
@@ -1769,6 +1862,7 @@ function arcPick(i){
   const m=M(), q=arc.cur, ok=i===q.correct, btns=[...document.querySelectorAll(".opt")];
   btns.forEach((b,j)=>{ b.disabled=true; if(j===q.correct) b.classList.add("right"); else if(j===i) b.classList.add("wrong"); else b.classList.add("dim"); });
   arc.log.push({q:q.q, a:q.opts[q.correct]+(q.explain&&q.explain!==q.opts[q.correct]?" — "+q.explain:""), ok});
+  if(m.kind==="weekly"){ const w=G.weekly[weekStart()]; if(w){ w.log=arc.qs.map((x,j)=>arc.log[j]?arc.log[j].ok:false); w.score=w.log.filter(Boolean).length; w.time=Date.now()-arc.t0; } }
   if(m.kind==="daily"){ const dd=G.daily[today()]; if(dd){ dd.log=arc.qs.map((x,j)=>arc.log[j]?arc.log[j].ok:false); dd.score=dd.log.filter(Boolean).length; dd.time=Date.now()-arc.t0; } }
   if(q.id && BY_ID[q.id]) recAcc(q.id,ok);
   arc.xp += answer({ok, el:btns[i]||btns[q.correct], mode:m.kind==="round"?"quiz":"arcade", boost:m.boost});
@@ -1783,7 +1877,7 @@ function arcPick(i){
     if(arc.phase!=="play") return;
     arc.i++;
     if(m.kind==="boss" && (arc.right>=BOSS_HP || arc.lives<=0 || arc.i>=arc.qs.length)) return arcFinish();
-    if((m.kind==="surv" && arc.lives<=0) || (m.kind==="daily" && arc.i>=10) || (m.kind==="round" && arc.i>=m.n)) return arcFinish();
+    if((m.kind==="surv" && arc.lives<=0) || (m.kind==="daily" && arc.i>=10) || (m.kind==="weekly" && arc.i>=15) || (m.kind==="round" && arc.i>=m.n)) return arcFinish();
     if(m.kind==="blitz" && arc.end<=Date.now()) return arcFinish();
     arcNewQ(); renderArcade();
   };
@@ -1814,6 +1908,13 @@ function arcFinish(){
     if(arc.mode==="exam"){ if(done){ st.examRounds++; st.examDay=today(); } if(arc.right>st.exam){ st.exam=arc.right; arc.best=true; } bonus=done?20+arc.right*3:0; }
     if(arc.mode==="stats"){ if(done) st.statsRounds++; if(arc.right>st.stats){ st.stats=arc.right; arc.best=true; } bonus=done?15+arc.right*3:0; }
     if(m.boost) bonus*=m.boost;
+  }
+  if(m.kind==="weekly"){
+    const log=arc.qs.map((q,i)=>arc.log[i]?arc.log[i].ok:false), score=log.filter(Boolean).length;
+    G.weekly[weekStart()]={started:true, done:true, score, time:Date.now()-arc.t0, log, qa:arc.qs.map(q=>[q.q,q.opts[q.correct]])};
+    arc.log=arc.qs.map((q,i)=>({q:q.q, a:q.opts[q.correct], ok:log[i]}));
+    G.st.weeklies=(G.st.weeklies||0)+1; if(score===15) G.st.weeklyPerfect=1;
+    bonus=40+score*5; if(score===15) bonus+=60; if(score>=12) arc.best=true;
   }
   if(m.kind==="daily"){
     const log=arc.qs.map((q,i)=>arc.log[i]?arc.log[i].ok:false), score=log.filter(Boolean).length;
@@ -1881,12 +1982,346 @@ document.addEventListener("keydown",e=>{
   for(const [w,id] of Object.entries(WORDS)){ if(tail(w.length).join("")===w){ keyBuf=[]; showScroll(id); return; } }
 });
 
+/* ===== ✍️ ESSAY BANK: 16- and 8-mark questions with a plan to self-mark against.
+   t = topic key, m = marks, sc = scenario (stem) or "", a1 = AO1 to cover, a2 = how to apply the stem, a3 = AO3 points.
+   Social influence and forensic questions are adapted from Mr Wakefield's 16-mark essay bank. ===== */
+const ESSAY_BANK = [
+  {t:"Social Influence", m:16, q:"Discuss explanations for conformity.", sc:"",
+   a1:["Normative social influence: conforming to be liked or accepted, usually public compliance","Informational social influence: conforming to be right, especially in ambiguous or difficult situations","Deutsch and Gerard's (1955) two-process model"],
+   a3:["Asch found conformity fell when answers were written privately, which supports NSI","Lucas et al. (2006) found more conformity on harder maths problems, which supports ISI","NSI and ISI often work together, so the two-process model is too simple","Individual differences: people high in need for affiliation conform more under NSI"]},
+  {t:"Social Influence", m:16, q:"Discuss research into conformity, including variables affecting conformity.", sc:"",
+   a1:["Asch (1951): line-judgement task with confederates; 36.8% conforming responses, 75% conformed at least once","Group size: conformity rose up to 3 confederates then levelled off","Unanimity: one dissenter cut conformity to about 5.5%","Task difficulty: conformity increased when the lines were more similar"],
+   a3:["A 'child of its time': Perrin and Spencer (1980) found much lower conformity","Artificial task, so low ecological validity","All-male American sample; Bond and Smith (1996) found higher conformity in collectivist cultures","Ethical issues: deception and possible distress"]},
+  {t:"Social Influence", m:16, q:"Discuss research into obedience.", sc:"",
+   a1:["Milgram (1963): 'teacher' gave shocks to a 'learner' up to 450V","65% went to 450V and 100% went to 300V","Prods were used to keep participants going","Variations: proximity, location and uniform"],
+   a3:["Orne and Holland (1968) argued participants did not believe the shocks were real; Perry (2013) supports this","Sheridan and King (1972) used real shocks on a puppy and still found high obedience","Hofling et al. (1966) supports the findings in a real hospital setting","Ethical issues: deception and the right to withdraw","Haslam's social identity reinterpretation is an alternative explanation"]},
+  {t:"Social Influence", m:16, q:"Discuss situational explanations of obedience.", sc:"",
+   a1:["Agentic state: an agentic shift from autonomy, binding factors and moral strain","Legitimacy of authority: a social hierarchy we learn in childhood; destructive authority"],
+   a3:["Blass and Schmitt (2001): students blamed the experimenter, which supports the agentic state","Rank and Jacobson (1977): 16 out of 18 nurses disobeyed, which the agentic state cannot explain","Cultural differences in obedience support legitimacy of authority (Kilham and Mann, 1974)","Legitimacy cannot explain why some people disobey within a hierarchy"]},
+  {t:"Social Influence", m:16, q:"Discuss explanations of resistance to social influence. Refer to Kai in your answer.",
+   sc:"Kai's friends all started vaping at a party. Kai refused, even though everyone else joined in, and later his friend Leah also said no. Kai says he always makes his own decisions.",
+   a1:["Social support: a dissenter breaks unanimity and acts as a model of resistance","Locus of control: internals believe they control what happens to them and resist more (Rotter, 1966)"],
+   a2:["Leah refusing is social support: she breaks the unanimity of the group","'Makes his own decisions' suggests an internal locus of control"],
+   a3:["Asch's dissenter condition and Gamson et al. (1982) support social support","Albrecht et al. (2006): peer mentors helped teenagers resist pressure","Holland (1967): 37% of internals resisted compared with 23% of externals","Twenge et al. (2004): people became more external yet more resistant, which challenges locus of control"]},
+  {t:"Social Influence", m:8, q:"Discuss research into minority influence.", sc:"",
+   a1:["Consistency (synchronic and diachronic), commitment (augmentation principle) and flexibility","Moscovici (1969): blue/green slides study"],
+   a3:["Moscovici found 8.42% green answers with a consistent minority, but 1.25% with an inconsistent one","Nemeth (1986) found flexibility mattered","Artificial tasks: real minorities face far greater costs"]},
+  {t:"Memory", m:16, q:"Discuss the multi-store model of memory.", sc:"",
+   a1:["Sensory register, STM and LTM, linked by attention and rehearsal","Coding, capacity and duration of each store","Maintenance rehearsal transfers information from STM to LTM"],
+   a3:["Case study of HM supports separate STM and LTM stores","Baddeley (1966) supports different coding in STM and LTM","KF suggests STM is not one unitary store, which led to the working memory model","Research used artificial materials, e.g. consonant syllables, so may lack validity"]},
+  {t:"Memory", m:16, q:"Discuss the working memory model.", sc:"",
+   a1:["Central executive: allocates attention, limited capacity","Phonological loop: phonological store and articulatory process","Visuo-spatial sketchpad and episodic buffer (added in 2000)"],
+   a3:["KF (Shallice and Warrington) had poor verbal but intact visual STM, supporting separate components","Dual-task studies (Baddeley et al., 1975) support separate slave systems","The central executive is vague and hard to test","Lab tasks may lack mundane realism"]},
+  {t:"Memory", m:16, q:"Discuss explanations for forgetting. Refer to Ruby in your answer.",
+   sc:"Ruby learned French in Year 9 and Spanish in Year 10. In her Spanish exam she keeps writing French words. She also remembers more vocabulary when she revises in the room where she had her lessons.",
+   a1:["Proactive and retroactive interference","Retrieval failure due to absence of cues: encoding specificity, context- and state-dependent forgetting"],
+   a2:["French interfering with Spanish is proactive interference (old learning disrupts new)","Remembering more in the same room is context-dependent recall"],
+   a3:["Lab studies (e.g. McGeoch and McDonald) support interference","Tulving and Psotka (1971): cues removed the effect of interference, which supports retrieval failure","Godden and Baddeley (1975) divers support context-dependent forgetting","Context effects may be weak in real life unless contexts are very different"]},
+  {t:"Memory", m:8, q:"Discuss factors affecting the accuracy of eyewitness testimony.", sc:"",
+   a1:["Leading questions: Loftus and Palmer (1974), 'smashed' vs 'contacted'","Post-event discussion: Gabbert et al. (2003)","Anxiety: weapon focus and the Yerkes–Dodson law"],
+   a3:["Lab studies may lack realism: Yuille and Cutshall found real witnesses were accurate","Demand characteristics may explain leading question effects","Anxiety research is mixed: it can harm or improve recall"]},
+  {t:"Attachment", m:16, q:"Discuss Bowlby's monotropic theory of attachment.", sc:"",
+   a1:["Monotropy: one special attachment, usually the mother","Critical period of about 2.5 years","Social releasers trigger caregiving","Internal working model: a template for later relationships"],
+   a3:["Lorenz's imprinting research supports a critical period","Schaffer and Emerson found many babies formed multiple attachments, which challenges monotropy","Hazan and Shaver (1987) support the internal working model","Temperament may explain attachment instead (Kagan)","Socially sensitive: places pressure and blame on mothers"]},
+  {t:"Attachment", m:16, q:"Discuss Ainsworth's Strange Situation and cultural variations in attachment.", sc:"",
+   a1:["Controlled observation with 8 episodes, measuring proximity seeking, exploration, stranger and separation anxiety, and reunion behaviour","Secure (about 66%), insecure-avoidant (about 22%) and insecure-resistant (about 12%)","Van IJzendoorn and Kroonenberg's meta-analysis of 32 studies in 8 countries"],
+   a3:["High inter-rater reliability","A fourth, disorganised type was added later (Main and Solomon)","Culture-bound: Japanese infants rarely separated from mothers (Takahashi)","Countries are not the same as cultures, so the meta-analysis may hide variation","Imposed etic: Western ideas of attachment applied to all cultures"]},
+  {t:"Attachment", m:16, q:"Discuss the effects of institutionalisation. Refer to Ana in your answer.",
+   sc:"Ana spent her first three years in an orphanage with little individual care before being adopted. She is now very friendly with strangers and is behind her classmates at school.",
+   a1:["The English and Romanian Adoptees project (Rutter): adoption before 6 months led to better outcomes","Zeanah et al. (2005): Bucharest Early Intervention Project","Effects: disinhibited attachment and intellectual disability"],
+   a2:["Being very friendly with strangers is disinhibited attachment","Being adopted after 6 months fits the poorer intellectual outcomes found in the ERA project"],
+   a3:["Few confounding variables, because children were adopted from the same conditions","Real-world application: key workers and better institutional care","Natural experiment: children could not be randomly allocated","Romanian orphanages were extreme, so findings may not generalise"]},
+  {t:"Attachment", m:8, q:"Discuss Bowlby's theory of maternal deprivation.", sc:"",
+   a1:["Separation from the mother in the critical period (to about 2.5 years) can cause lasting harm","Effects: affectionless psychopathy and intellectual problems","44 thieves study"],
+   a3:["The 44 thieves study had researcher bias and was correlational","Lewis (1954) failed to replicate the link","Rutter: Bowlby confused deprivation with privation"]},
+  {t:"Psychopathology", m:16, q:"Discuss definitions in the field of mental health.", sc:"",
+   a1:["Deviation from ideal mental health (Jahoda's criteria)","Deviation from social/cultural norms","Failure to function adequately (Rosenhan and Seligman's features)","Statistical infrequency"],
+   a3:["Ideal mental health is unrealistic and ethnocentric","Social/cultural norms vary over time and between cultures, and can justify human rights abuses","Judging failure to function adequately is subjective","Some statistically rare traits are desirable, e.g. a high IQ, and the cut-off is arbitrary"]},
+  {t:"Psychopathology", m:16, q:"Discuss the cognitive approach to explaining and treating depression.", sc:"",
+   a1:["Beck's negative triad, negative schemas and cognitive biases","Ellis's ABC model: irrational beliefs","CBT: challenging irrational thoughts"],
+   a3:["Grazioli and Terry (2000) support cognitive vulnerability","The ABC model explains reactive depression better than depression with no clear trigger","March et al. (2007): CBT was as effective as antidepressants","CBT needs motivation and may focus too much on the person rather than their circumstances"]},
+  {t:"Psychopathology", m:16, q:"Discuss the behavioural approach to explaining and treating phobias. Refer to Max in your answer.",
+   sc:"Max was stuck in a lift as a child. Now he always takes the stairs and panics if he has to use a lift.",
+   a1:["Two-process model: phobias are acquired by classical conditioning and maintained by operant conditioning","Systematic desensitisation: relaxation and an anxiety hierarchy","Flooding: immediate exposure until anxiety falls"],
+   a2:["The lift (neutral stimulus) was paired with fear when he was trapped","Taking the stairs avoids anxiety, which negatively reinforces the phobia","A hierarchy could build from pictures of lifts to riding one"],
+   a3:["Little Albert supports classical conditioning of fear","The model ignores cognitive factors and not every phobia follows a trauma","Gilroy et al. (2003): systematic desensitisation was effective for spider phobias","Flooding is quick and cost-effective but can be traumatic"]},
+  {t:"Psychopathology", m:8, q:"Discuss the biological approach to explaining OCD.", sc:"",
+   a1:["Genetic explanations: candidate genes such as COMT and SERT; OCD is polygenic","Neural explanations: low serotonin and abnormal activity in the frontal lobes (worry circuit)"],
+   a3:["Nestadt et al. (2010): 68% concordance in identical twins, 31% in non-identical twins","Environmental risk factors also matter, e.g. trauma","SSRIs reduce symptoms, which supports a serotonin link, but neural evidence is correlational"]},
+  {t:"Approaches", m:16, q:"Discuss social learning theory.", sc:"",
+   a1:["Imitation, identification and vicarious reinforcement","Mediational processes: attention, retention, reproduction and motivation","Bandura's Bobo doll research"],
+   a3:["Adds cognitive factors that behaviourism ignores","Lab research such as the Bobo doll study may involve demand characteristics","Reciprocal determinism: we influence our environment too","Real-world application, e.g. explaining media influence"]},
+  {t:"Approaches", m:16, q:"Discuss the biological approach in psychology.", sc:"",
+   a1:["The genetic basis of behaviour: genotype, phenotype and evolution","Influence of biological structures and neurochemistry on behaviour","Cognitive neuroscience"],
+   a3:["Scientific methods, e.g. brain scans and twin studies","Real-world applications, e.g. drug treatments","Deterministic: ignores free will","Biologically reductionist, and much evidence is correlational"]},
+  {t:"Approaches", m:16, q:"Discuss the psychodynamic approach. Refer to Sam in your answer.",
+   sc:"Sam has no memory of a car crash he was in. Since then he often snaps at his younger brother after a bad day at school.",
+   a1:["The role of the unconscious","Id, ego and superego","Defence mechanisms: repression, denial and displacement","Psychosexual stages"],
+   a2:["Having no memory of the crash suggests repression","Snapping at his brother after a bad day is displacement"],
+   a3:["Unfalsifiable: concepts like the unconscious are hard to test","Based on case studies such as Little Hans, which are subjective","Psychic determinism ignores free will","Explanatory power: it explains a wide range of behaviour and led to new therapies"]},
+  {t:"Approaches", m:8, q:"Compare the behaviourist approach and the humanistic approach.", sc:"",
+   a1:["Behaviourist: behaviour is learned through classical and operant conditioning","Humanistic: free will, self-actualisation and congruence"],
+   a3:["Determinism versus free will","Scientific lab methods versus a rejection of scientific methods","Different applications, e.g. token economies versus client-centred therapy"]},
+  {t:"Biopsychology", m:16, q:"Discuss localisation of function in the brain.", sc:"",
+   a1:["Motor, somatosensory, visual and auditory centres","Broca's area (speech production) and Wernicke's area (language comprehension)"],
+   a3:["Brain scans show different areas active for different tasks (e.g. Petersen et al., 1988)","Case studies of brain damage support localisation","Lashley's equipotentiality theory challenges strict localisation","Plasticity shows functions can move after damage"]},
+  {t:"Biopsychology", m:16, q:"Discuss plasticity and functional recovery of the brain after trauma.", sc:"",
+   a1:["Plasticity: the brain changes with experience (Maguire et al., 2000, taxi drivers)","Functional recovery: axonal sprouting, denervation super-sensitivity and recruitment of homologous areas"],
+   a3:["Maguire's taxi driver research supports plasticity","Real-world application: neurorehabilitation","Recovery may be better in younger people","Cognitive reserve: more education linked to better recovery (Schneider et al., 2014)","Plasticity can be negative, e.g. phantom limb pain"]},
+  {t:"Biopsychology", m:16, q:"Discuss hemispheric lateralisation and split-brain research. Refer to Pat in your answer.",
+   sc:"After surgery to cut his corpus callosum, Pat cannot name an object shown only to his left visual field, but he can pick it out with his left hand.",
+   a1:["Lateralisation: language is usually in the left hemisphere","Sperry's split-brain research: information shown to one visual field"],
+   a2:["The left visual field sends information to the right hemisphere, which has no language centres, so Pat can't name it","The right hemisphere controls the left hand, so he can still pick it out"],
+   a3:["Sperry used standardised, controlled procedures","Small, unusual sample of epileptic patients","Lateralisation may be overstated: the hemispheres usually work together","Individual differences in lateralisation"]},
+  {t:"Biopsychology", m:8, q:"Discuss ways of studying the brain.", sc:"",
+   a1:["fMRI, EEG, ERPs and post-mortem examinations"],
+   a3:["fMRI has good spatial resolution but poor temporal resolution","EEG and ERPs have excellent temporal resolution but show only surface activity","Post-mortems allow detailed study but the brain may have changed after death"]},
+  {t:"Issues and Debates part I", m:16, q:"Discuss gender bias in psychology.", sc:"",
+   a1:["Universality","Alpha bias: exaggerating differences between men and women","Beta bias: ignoring or minimising differences","Androcentrism"],
+   a3:["Examples: Freud's theory (alpha bias); fight or flight research on men (beta bias)","Bias can be used to justify discrimination","Feminist psychology tries to correct it","Reflexivity: researchers reflecting on their own biases"]},
+  {t:"Issues and Debates part I", m:16, q:"Discuss the nature–nurture debate in psychology.", sc:"",
+   a1:["Heredity versus environment","The interactionist approach, including the diathesis-stress model"],
+   a3:["Implications: nativist views risk eugenics, while nurture views can blame parents","It is hard to separate the effects of nature and nurture","Twin and adoption studies estimate the role of genes","Epigenetics shows genes and environment interact"]},
+  {t:"Issues and Debates part I", m:16, q:"Discuss free will and determinism. Refer to the comments in your answer.",
+   sc:"In a debate, Jo says, 'People who commit crimes chose to do it.' Ali replies, 'Their genes and upbringing made them do it.'",
+   a1:["Free will","Hard and soft determinism","Biological, environmental and psychic determinism","The scientific emphasis on causal explanations"],
+   a2:["Jo is arguing for free will and personal responsibility","Ali is arguing for biological (genes) and environmental (upbringing) determinism"],
+   a3:["Determinism fits the scientific search for causes","Hard determinism is incompatible with legal responsibility","Free will has face validity, and an internal locus of control is linked to better mental health","Soft determinism offers a middle ground"]},
+  {t:"Issues and Debates part I", m:8, q:"Discuss social sensitivity in psychological research.", sc:"",
+   a1:["Research with potential consequences for participants or the groups they represent","Sieber and Stanley's concerns: the research question, the methods and how findings are used"],
+   a3:["Benefits: research can help marginalised groups","Risks: findings may be used to justify discrimination","Researchers should not avoid important topics, but must take care"]},
+  {t:"Relationships", m:16, q:"Discuss social exchange theory and equity theory.", sc:"",
+   a1:["Social exchange theory: rewards minus costs; comparison level and comparison level for alternatives","Equity theory: fairness matters; under- and over-benefited partners are dissatisfied"],
+   a3:["Social exchange theory ignores fairness, which equity theory adds","Utne et al. (1984) support equity theory","Cultural differences: communal relationships may not track rewards (Clark and Mills)","Direction of cause: dissatisfaction may come before thinking about costs"]},
+  {t:"Relationships", m:16, q:"Discuss Rusbult's investment model of relationships.", sc:"",
+   a1:["Commitment depends on satisfaction, comparison with alternatives and investment size","Intrinsic and extrinsic investments"],
+   a3:["Le and Agnew (2003) meta-analysis supports the model","Explains why people stay in abusive relationships (Rusbult and Martz, 1995)","Mostly correlational and self-report research","Investment may include future plans, not just past investment (Goodfriend and Agnew)"]},
+  {t:"Relationships", m:16, q:"Discuss Duck's phase model of relationship breakdown. Refer to Mia in your answer.",
+   sc:"Mia has been quietly unhappy with her boyfriend for months. She finally tells him, they argue, and she starts confiding in her friends. After they split up, she tells everyone it was 'just not meant to be'.",
+   a1:["Intra-psychic phase","Dyadic phase","Social phase","Grave-dressing phase (and the later resurrection phase)"],
+   a2:["Quietly unhappy = intra-psychic; telling him and arguing = dyadic","Confiding in friends = social; 'just not meant to be' = grave-dressing"],
+   a3:["Describes rather than explains why relationships break down","Rollie and Duck (2006) added the resurrection phase","Based on Western, individualist relationships","Research often relies on retrospective accounts"]},
+  {t:"Relationships", m:8, q:"Discuss online relationships.", sc:"",
+   a1:["Self-disclosure online: reduced cues theory and the hyperpersonal model","Use of deception","Effects of absence of gating"],
+   a3:["The hyperpersonal model is supported by Whitty and Joinson (2009)","Reduced cues theory ignores emojis and other online cues","Absence of gating can help socially anxious people (McKenna and Bargh, 1999)"]},
+  {t:"Schizophrenia", m:16, q:"Discuss biological explanations for schizophrenia.", sc:"",
+   a1:["Genetics: family studies (Gottesman, 1991) and polygenic risk","The dopamine hypothesis: high dopamine in the subcortex, low in the prefrontal cortex","Neural correlates, e.g. enlarged ventricles"],
+   a3:["Strong family and twin evidence, but families share environments","Ripke et al. (2014): 108 genetic variations linked to schizophrenia","Antipsychotics that block dopamine reduce symptoms, which supports the dopamine hypothesis","Neural correlates may be an effect rather than a cause"]},
+  {t:"Schizophrenia", m:16, q:"Discuss drug therapy and cognitive behaviour therapy as treatments for schizophrenia.", sc:"",
+   a1:["Typical antipsychotics, e.g. chlorpromazine, block dopamine receptors","Atypical antipsychotics, e.g. clozapine, affect dopamine and serotonin","CBT: normalisation and reality testing"],
+   a3:["Thornley et al. (2003): drugs reduced symptoms compared with a placebo","Side effects, e.g. tardive dyskinesia, and ethical concerns about a 'chemical cosh'","Jauhar et al. (2014): CBT has only a small effect","CBT helps people cope but does not cure the condition"]},
+  {t:"Schizophrenia", m:16, q:"Discuss the diathesis-stress model of schizophrenia. Refer to Jordan in your answer.",
+   sc:"Jordan's mother has schizophrenia. Jordan smoked a lot of cannabis at university and had a very stressful final year, when he started hearing voices.",
+   a1:["Diathesis: a vulnerability, e.g. genetic risk (Meehl's original model) or early trauma","Stress: triggers such as cannabis use, life events and family dysfunction"],
+   a2:["His mother's schizophrenia suggests a genetic diathesis","Cannabis use and a stressful final year are stressors that may have triggered symptoms"],
+   a3:["Tienari et al. (2004) adoption study supports the interaction of genes and environment","Leads to combined treatment, e.g. drugs plus CBT (Tarrier et al., 2004)","The original model was too simple: diathesis is polygenic and can include trauma","The role of stress is hard to measure"]},
+  {t:"Schizophrenia", m:8, q:"Discuss issues in the diagnosis of schizophrenia.", sc:"",
+   a1:["Co-morbidity","Culture bias","Gender bias","Symptom overlap"],
+   a3:["Buckley et al. (2009): about 50% of people with schizophrenia also have depression","Culture bias: e.g. African-Caribbean people in the UK are more likely to be diagnosed","Symptom overlap with bipolar disorder (Ophoff et al., 2011, found genetic overlap)"]},
+  {t:"Forensic Psychology", m:16, q:"Discuss the typology approach to offender profiling.", sc:"",
+   a1:["The FBI approach: organised versus disorganised offenders","Stages: data assimilation, crime scene classification, crime reconstruction and profile generation"],
+   a3:["Based on interviews with only 36 offenders, who may have been manipulative","Canter et al. (2004) found organised features but no distinct disorganised type","Godwin (2002): too simplistic, and offenders change over time","Only suits some crimes, e.g. murder and rape","Copson (1995): profiling led to an accurate arrest in only 3% of cases"]},
+  {t:"Forensic Psychology", m:16, q:"Discuss the data-driven approach to offender profiling.", sc:"",
+   a1:["Investigative psychology: statistical analysis, interpersonal coherence, forensic awareness, time and place","Geographical profiling: Canter's circle theory, marauders and commuters"],
+   a3:["Canter and Heritage (1990) used smallest space analysis","Lundrigan and Canter (2001): offenders' bases were often central to their crimes","More objective and scientific than the typology approach","Not always useful in practice, as Copson's findings show"]},
+  {t:"Forensic Psychology", m:16, q:"Discuss genetic and neural explanations of offending. Refer to Dylan in your answer.",
+   sc:"Dylan has been convicted of several violent offences. His father and uncle both have violent criminal records, and a brain scan showed reduced activity in his prefrontal cortex.",
+   a1:["Genetic: twin studies (Christiansen, 1977), the MAOA and CDH13 genes","Neural: antisocial personality disorder and reduced prefrontal cortex activity (Raine et al., 2000)"],
+   a2:["Offending in his father and uncle suggests a genetic link","Reduced prefrontal activity fits Raine's neural explanation"],
+   a3:["Twin studies cannot separate genes from shared environment","Tiihonen et al. (2015): MAOA and CDH13 linked to violent crime","Keysers (2011): psychopaths could empathise when asked to, which challenges the neural explanation","Biologically reductionist and deterministic, with implications for how responsibility is judged in court"]},
+  {t:"Forensic Psychology", m:16, q:"Discuss cognitive explanations of offending.", sc:"",
+   a1:["Level of moral reasoning: Kohlberg; offenders often at the pre-conventional level","Cognitive distortions: hostile attribution bias and minimalisation"],
+   a3:["Palmer and Hollin (1998): offenders showed less mature moral reasoning","Schönenberg and Jusyte (2014): violent offenders saw ambiguous faces as hostile","Barbaree (1991): 54% of rapists denied the offence and 40% minimised harm","These explanations describe rather than explain, and the direction of cause is unclear"]},
+  {t:"Forensic Psychology", m:16, q:"Discuss two or more ways of dealing with offending behaviour.", sc:"",
+   a1:["Behaviour modification in custody: token economies","Anger management: cognitive preparation, skill acquisition and application practice","Restorative justice: offender and victim meet"],
+   a3:["Behaviour modification is easy to run but changes may not last after release","Anger management tackles causes, but long-term effects are unclear","Strang (2013): restorative justice reduced reoffending and victims' PTSD symptoms","Compare costs, ethics and which methods treat underlying causes"]},
+  {t:"Forensic Psychology", m:8, q:"Discuss Eysenck's theory of the criminal personality.", sc:"",
+   a1:["Extraversion, neuroticism and psychoticism","Biological basis and the role of socialisation"],
+   a3:["Dunlop et al. (2012): extraversion and psychoticism predicted delinquency","Farrington et al. (1982): offenders scored high on psychoticism but not on extraversion or neuroticism","Cultural differences undermine its universality"]},
+  {t:"Forensic Psychology", m:8, q:"Discuss differential association theory.", sc:"",
+   a1:["Sutherland (1947): offending is learned through association with others","Learning attitudes and techniques"],
+   a3:["Osborn and West (1979): 40% of sons of criminal fathers offended, compared with 13% of others","Hard to test scientifically","Ignores biological factors"]}
+];
+const ESSAY_LEVELS = {
+  16:[["Level 4","13–16","Accurate, detailed knowledge; thorough, effective evaluation; clear, coherent and focused; specialist terms used effectively."],["Level 3","9–12","Evident knowledge with occasional inaccuracy; mostly effective evaluation; mostly clear and organised."],["Level 2","5–8","Limited knowledge; partly effective evaluation; lacks clarity in places."],["Level 1","1–4","Knowledge is very limited or inaccurate; evaluation is limited, poorly focused or absent."]],
+  8:[["Level 4","7–8","Accurate, detailed knowledge; effective evaluation; clear and well organised."],["Level 3","5–6","Evident knowledge; evaluation is mostly effective; mostly clear."],["Level 2","3–4","Limited knowledge; evaluation is partly effective."],["Level 1","1–2","Very limited knowledge; evaluation is limited or absent."]]
+};
+
+/* ===== 🔬 DESIGN A STUDY (12 marks): step-by-step choices with feedback. g: 2 = strong, 1 = okay, 0 = weak ===== */
+const DESIGNS = [
+  {id:"music", title:"Music and memory", brief:"A psychologist wants to know whether background music affects how many words students remember. Design a study to investigate this.",
+   steps:[
+    {s:"Aim", o:[["To investigate whether listening to music while learning affects the number of words recalled",2,"Clear and focused: it names the IV (music) and the DV (words recalled)."],["To find out if music is good for you",0,"Too vague: 'good for you' can't be measured."],["To prove that music improves memory",0,"Research tests ideas; it can't 'prove' them, and the aim shouldn't assume the answer."]]},
+    {s:"Method", o:[["Lab experiment",2,"Gives the most control over extraneous variables, so cause and effect can be established."],["Field experiment in a normal lesson",1,"More realistic, but noise and distractions are harder to control."],["Questionnaire about music habits",0,"A questionnaire can't manipulate the IV, so it can't show cause and effect."]]},
+    {s:"Design", o:[["Repeated measures, with two equivalent word lists and counterbalancing",2,"Removes participant variables; counterbalancing and different lists deal with order effects."],["Independent groups",1,"Avoids order effects, but differences between the groups' memory ability could affect the results."],["Matched pairs",1,"Reduces participant variables, but matching on memory ability is time-consuming."]]},
+    {s:"Sample", o:[["Random sample of 30 sixth formers, using a random number generator on the register",2,"Everyone has an equal chance of selection, which reduces bias."],["Opportunity sample of whoever is in the common room",1,"Quick, but likely to be biased towards certain students."],["Volunteers who answer a poster",1,"Easy, but volunteers may be more motivated than others (volunteer bias)."]]},
+    {s:"Procedure", o:[["Each participant has 2 minutes to learn 20 words, with or without the same pop song at the same volume through headphones, then 2 minutes to write down as many as they can",2,"Replicable: timings, materials and the DV are all specified."],["Participants learn some words and are then tested",0,"Too vague to replicate: how many words, how long, what music?"],["Participants choose their own music",0,"Different music becomes an extraneous variable."]]},
+    {s:"Controls", o:[["Standardised instructions, the same quiet room, and word lists matched for length and familiarity",2,"These keep everything the same apart from the IV."],["Only control the time of day",1,"Helpful, but many other variables are left uncontrolled."],["Let participants revise however they like",0,"Their revision method becomes an extraneous variable."]]},
+    {s:"Ethics", o:[["Informed consent, the right to withdraw, a full debrief and anonymised results",2,"Covers the main BPS ethical guidelines."],["No ethics needed because it's harmless",0,"Every study needs consent, the right to withdraw and confidentiality."],["Deceive them about the aim so they don't guess",0,"Deception isn't needed here, so it can't be justified."]]},
+    {s:"Hypothesis", o:[["There will be a difference in the number of words recalled from a list of 20 when learning with music compared with learning in silence",2,"Fully operationalised and non-directional, which suits a study without strong previous findings."],["Music affects memory",0,"Not operationalised: how are music and memory measured?"],["Students like music",0,"This isn't a testable prediction about the IV and DV."]]}
+   ]},
+  {id:"social", title:"Social media and self-esteem", brief:"A psychologist wants to know whether there is a relationship between time spent on social media and self-esteem in teenagers. Design a study to investigate this.",
+   steps:[
+    {s:"Aim", o:[["To investigate whether there is a relationship between daily time on social media and self-esteem in 16–18 year olds",2,"Names both co-variables and the population."],["To show that social media is bad",0,"Biased and vague: it assumes the answer."],["To see what teenagers think of social media",1,"Interesting, but it doesn't test a relationship between two variables."]]},
+    {s:"Method", o:[["Correlational study using self-report and screen-time data",2,"Measures two co-variables without manipulating them, which is the right method for a relationship."],["Lab experiment that makes some teens use social media more",0,"Manipulating social media use could harm self-esteem, so it's unethical."],["Naturalistic observation",1,"Possible for usage, but self-esteem can't be observed directly."]]},
+    {s:"Design", o:[["Measure both co-variables for every participant",2,"Correlations need a pair of scores from each person."],["Independent groups: heavy users versus light users",1,"Turns it into a comparison and loses information about the full range of use."],["Repeated measures",0,"There are no conditions to repeat in a correlational study."]]},
+    {s:"Sample", o:[["Stratified sample from each year group, in proportion to their size",2,"Representative of the sixth form, so findings generalise better."],["Opportunity sample in the canteen",1,"Quick, but may miss some groups of students."],["Your own friends",0,"Very biased and not representative."]]},
+    {s:"Procedure", o:[["Collect a week of screen-time data from phone settings, then use a standardised self-esteem questionnaire scored out of 30",2,"Objective usage data plus a reliable standardised measure."],["Ask 'Do you use social media a lot?'",0,"Vague and subjective, so it's unreliable."],["Ask participants to estimate their usage in a diary",1,"Better than one question, but estimates can be inaccurate."]]},
+    {s:"Controls", o:[["Standardised instructions and anonymous answers to reduce social desirability bias",2,"Anonymity makes honest answers more likely."],["Tell participants the hypothesis first",0,"This creates demand characteristics."],["No controls are needed in a correlation",0,"Self-report still needs standardisation and anonymity."]]},
+    {s:"Ethics", o:[["Consent, the right to withdraw, anonymity, and a debrief with details of where to get support",2,"Self-esteem is sensitive, so support information matters."],["Share individual self-esteem scores with teachers",0,"Breaks confidentiality."],["Only debrief if someone seems upset",1,"Everyone should be debriefed, not just some participants."]]},
+    {s:"Hypothesis", o:[["There will be a negative correlation between daily minutes on social media (from screen-time data) and self-esteem score out of 30",2,"Operationalised and directional, based on previous research."],["Social media causes low self-esteem",0,"A correlation can't show cause."],["Teens use social media",0,"Not a testable prediction about a relationship."]]}
+   ]},
+  {id:"play", title:"Playground behaviour", brief:"A psychologist wants to compare the amount of verbal and physical aggression in a school playground at lunchtime. Design a study to investigate this.",
+   steps:[
+    {s:"Aim", o:[["To investigate whether verbal aggression is more common than physical aggression in a secondary school playground at lunchtime",2,"Specific about the behaviours, the setting and the time."],["To watch children play",0,"Too vague: no behaviours or comparison are stated."],["To find out why children are aggressive",1,"Interesting, but observation shows what happens, not why."]]},
+    {s:"Method", o:[["Covert naturalistic observation",2,"Behaviour is natural, and participants don't change it because they know they're being watched."],["Overt observation with the observer standing among the students",1,"Possible, but students may change their behaviour (reactivity)."],["Interviews with students about aggression",0,"Self-report may not match what really happens."]]},
+    {s:"Design", o:[["Behavioural categories with time sampling every 30 seconds",2,"Operationalised categories (e.g. pushing, name-calling) make the data reliable and quantitative."],["Write down everything that happens",0,"Too much to record accurately, so data will be unreliable."],["Event sampling of any behaviour the observer finds interesting",1,"Event sampling can work, but the behaviours need defining first."]]},
+    {s:"Sample", o:[["Year 7–9 playground at lunchtime on five different days",2,"Several days give a more representative picture."],["One lunchtime only",1,"Quick, but that day might not be typical."],["Only the students who are known to be aggressive",0,"Biased sample that won't represent the playground."]]},
+    {s:"Procedure", o:[["Two observers watch from a classroom window, tallying the categories, after a pilot study to test the categories",2,"The pilot study refines the categories; two observers allow reliability checks."],["One observer guesses totals at the end",0,"Not systematic or reliable."],["Film students without permission and post the clips",0,"Unethical and breaches privacy."]]},
+    {s:"Controls", o:[["Check inter-observer reliability by correlating the two observers' tallies (aim for +0.8 or higher)",2,"Shows the observation is consistent between observers."],["Each observer uses their own categories",0,"The data can't be compared or combined."],["Observe at different times of day each time",1,"Adds variety, but time of day may become an extraneous variable."]]},
+    {s:"Ethics", o:[["Observe in a public place, record no names, and get permission from the school",2,"Observation in public is acceptable if individuals can't be identified."],["Tell students they are being watched for aggression",1,"This is ethical but may cause reactivity, so the school's permission and anonymity are usually enough."],["Record names of aggressive students for the head of year",0,"Breaks confidentiality."]]},
+    {s:"Hypothesis", o:[["There will be more instances of verbal aggression (e.g. name-calling, shouting insults) than physical aggression (e.g. pushing, hitting) at lunchtime",2,"Operationalised and directional."],["Students are aggressive",0,"Not a comparison and not operationalised."],["Physical aggression is bad",0,"A value judgement, not a testable prediction."]]}
+   ]}
+];
+
+/* ---- ✍️ writing: essays and design a study ---- */
+const DRAFT_KEY="rr-psych-drafts";
+function drafts(){ try{ return JSON.parse(localStorage.getItem(DRAFT_KEY)||"{}"); }catch(e){ return {}; } }
+function saveDraft(id,txt){ const d=drafts(); if(txt) d[id]=txt; else delete d[id]; try{ localStorage.setItem(DRAFT_KEY,JSON.stringify(d)); }catch(e){} }
+const wr={mode:"essay", topic:"", marks:"", cur:null, revealed:false, timerEnd:0, timer:null, design:null, step:0, picks:[], done:false, result:null};
+const aoSplit=e=>e.m===16?(e.sc?[6,4,6]:[6,0,10]):(e.sc?[3,2,3]:[3,0,5]);
+function pickEssay(){
+  let pool=ESSAY_BANK.map((e,i)=>({...e,id:"e"+i})).filter(e=>(!wr.topic||e.t===wr.topic)&&(!wr.marks||e.m===+wr.marks));
+  if(wr.cur && pool.length>1) pool=pool.filter(e=>e.id!==wr.cur.id);
+  wr.cur=pool[Math.floor(Math.random()*pool.length)]||null; wr.revealed=false; wr.result=null; stopTimer();
+}
+function stopTimer(){ clearInterval(wr.timer); wr.timer=null; wr.timerEnd=0; }
+function renderWriting(){
+  const area=$("#wrArea");
+  const seg=`<div class="seg wrseg" role="group" aria-label="Writing practice"><button aria-pressed="${wr.mode==="essay"}" data-wm="essay">16 & 8-mark essays</button><button aria-pressed="${wr.mode==="design"}" data-wm="design">Design a study (12)</button></div>`;
+  if(wr.mode==="design") return renderDesign(area,seg);
+  const topics=[...new Set(ESSAY_BANK.map(e=>e.t))];
+  let body="";
+  if(!wr.cur){
+    body=`<div class="empty"><h3>Essay practice</h3><p>Get an exam-style 16- or 8-mark question, write your answer here (it saves as you type), then mark it yourself against a plan and the AQA mark bands.</p><button class="btn" id="wrNew">Give me a question</button></div>`;
+  } else {
+    const e=wr.cur, t=TMAP[e.t], sp=aoSplit(e), mins=e.m===16?20:10, draft=drafts()[e.id]||"";
+    const words=draft.trim()?draft.trim().split(/\s+/).length:0;
+    body=`<div class="quiz-q essay" style="--c:${t.c}">
+      <div class="tag">${esc(t.name)} · ${e.m} marks <span class="muted">AO1 ${sp[0]} · AO2 ${sp[1]} · AO3 ${sp[2]}</span></div>
+      <div class="q">${esc(e.q)}</div>
+      ${e.sc?`<div class="stem"><b>Scenario</b> ${esc(e.sc)}</div>`:""}
+      <div class="essaybar"><button class="btn ghost" id="wrTimer">${wr.timerEnd?"⏱ <span id='wrClock'></span> · Stop":"⏱ Start "+mins+"-minute timer"}</button>${canSpeak?`<button class="btn ghost" id="wrTts">🔈 Read aloud</button>`:""}<span class="muted" id="wrWords">${words} words</span></div>
+      <label for="wrText" class="muted" style="display:block;margin:4px 0 6px;font-size:15px">Your answer (or a plan). It's saved on this device as you type.</label>
+      <textarea id="wrText" class="essaytext" placeholder="Start with accurate AO1, then develop your evaluation points…">${esc(draft)}</textarea>
+      ${wr.revealed?essayMarking(e):`<div class="card-actions"><button class="btn" id="wrReveal">I'm done: show the plan and mark it</button><button class="btn ghost" id="wrSkip">Different question</button></div>`}
+    </div>`;
+  }
+  area.innerHTML=`${seg}<div class="bar-row wrfilters"><label class="muted">Topic <select id="wrTopic"><option value="">All topics</option>${topics.map(k=>`<option value="${esc(k)}" ${wr.topic===k?"selected":""}>${esc(TMAP[k].name)}</option>`).join("")}</select></label>
+    <label class="muted">Marks <select id="wrMarks"><option value="">Any</option><option value="16" ${wr.marks==="16"?"selected":""}>16 marks</option><option value="8" ${wr.marks==="8"?"selected":""}>8 marks</option></select></label>
+    <span class="muted" style="font-size:14px">${G.st.essays||0} essays self-marked</span></div>${body}
+    <p class="muted" style="font-size:13px;margin-top:10px">This is self-marked practice. For a proper mark, hand your essay to your teacher.</p>`;
+  area.querySelectorAll("[data-wm]").forEach(b=>b.onclick=()=>{ wr.mode=b.dataset.wm; stopTimer(); renderWriting(); });
+  $("#wrTopic").onchange=e=>{ wr.topic=e.target.value; pickEssay(); renderWriting(); };
+  $("#wrMarks").onchange=e=>{ wr.marks=e.target.value; pickEssay(); renderWriting(); };
+  const nb=$("#wrNew"); if(nb) nb.onclick=()=>{ pickEssay(); renderWriting(); };
+  if(!wr.cur) return;
+  const e=wr.cur, ta=$("#wrText");
+  ta.oninput=()=>{ saveDraft(e.id, ta.value); const w=ta.value.trim()?ta.value.trim().split(/\s+/).length:0; $("#wrWords").textContent=w+" words"; };
+  $("#wrTimer").onclick=()=>{ if(wr.timerEnd){ stopTimer(); renderWriting(); return; } wr.timerEnd=Date.now()+(e.m===16?20:10)*60000; renderWriting(); wr.timer=setInterval(tickTimer,500); tickTimer(); };
+  if(wr.timerEnd && !wr.timer){ wr.timer=setInterval(tickTimer,500); } tickTimer();
+  const ts=$("#wrTts"); if(ts) ts.onclick=()=>speak((e.sc?"Scenario. "+e.sc+" ":"")+e.q);
+  const rv=$("#wrReveal"); if(rv) rv.onclick=()=>{ wr.revealed=true; renderWriting(); $("#wrMark").scrollIntoView({behavior:reduced()?"auto":"smooth",block:"start"}); };
+  const sk=$("#wrSkip"); if(sk) sk.onclick=()=>{ pickEssay(); renderWriting(); };
+  if(wr.revealed) wireMarking(e);
+}
+function tickTimer(){ const c=$("#wrClock"); if(!wr.timerEnd||!c) return; const left=Math.max(0,wr.timerEnd-Date.now()); c.textContent=fmtTime(left); if(left<=0){ stopTimer(); toast("⏱","Time's up","Finish your sentence, then mark it."); sfx("tick"); renderWriting(); } }
+function essayMarking(e){
+  const L=ESSAY_LEVELS[e.m], chk=(arr,k)=>arr.map((x,i)=>`<label class="chk2"><input type="checkbox" data-pt="${k}${i}"> ${esc(x)}</label>`).join("");
+  if(wr.result) return `<div class="marked" id="wrMark"><p class="score">${wr.result.mark}/${e.m}</p><p><b>${esc(wr.result.level)}</b> (self-marked) · +${wr.result.xp} XP</p><div class="card-actions"><button class="btn" id="wrNext">Next question</button></div></div>`;
+  return `<div class="marking" id="wrMark">
+    <h4>Tick what you covered</h4>
+    <div class="plan"><b>AO1: knowledge (${aoSplit(e)[0]} marks)</b>${chk(e.a1,"a")}</div>
+    ${e.sc&&e.a2?`<div class="plan"><b>AO2: applying it to the scenario (${aoSplit(e)[1]} marks)</b>${chk(e.a2,"b")}<label class="chk2"><input type="checkbox" data-pt="bx"> I linked to the scenario throughout, not just once</label></div>`:""}
+    <div class="plan"><b>AO3: evaluation (${aoSplit(e)[2]} marks)</b>${chk(e.a3,"c")}<label class="chk2"><input type="checkbox" data-pt="cx"> Each point was developed: point, evidence, explain, link back</label></div>
+    <h4>Which level is it?</h4>
+    <div class="levels">${L.map(([nm,band,desc],i)=>`<label class="lvlopt"><input type="radio" name="wrLvl" value="${i}"><span><b>${nm} · ${band}</b>${esc(desc)}</span></label>`).join("")}</div>
+    <div class="bar-row" style="margin-top:10px"><label class="muted">My mark <select id="wrMarkSel" disabled><option>Pick a level first</option></select></label><button class="btn" id="wrSave" disabled>Save my mark</button></div>
+  </div>`;
+}
+function wireMarking(e){
+  const nx=$("#wrNext"); if(nx){ nx.onclick=()=>{ pickEssay(); renderWriting(); window.scrollTo({top:$("#wrArea").offsetTop-80,behavior:reduced()?"auto":"smooth"}); }; return; }
+  const sel=$("#wrMarkSel"), sv=$("#wrSave");
+  document.querySelectorAll('input[name="wrLvl"]').forEach(r=>r.onchange=()=>{ const [lo,hi]=ESSAY_LEVELS[e.m][+r.value][1].split("–").map(Number); sel.innerHTML=Array.from({length:hi-lo+1},(_,i)=>`<option ${i===hi-lo?"selected":""}>${lo+i}</option>`).join(""); sel.disabled=false; sv.disabled=false; });
+  sv.onclick=()=>{
+    const ticks=document.querySelectorAll('#wrMark input[type=checkbox]:checked').length, mark=+sel.value, li=+document.querySelector('input[name="wrLvl"]:checked').value;
+    const xp=Math.min(100, 30+ticks*5);
+    G.st.essays=(G.st.essays||0)+1; if(e.m===16 && mark>=13) G.st.essayL4=1;
+    G.essayLog=(G.essayLog||[]).concat([[e.id,mark,e.m,today()]]).slice(-30);
+    wr.result={mark, level:ESSAY_LEVELS[e.m][li][0], xp};
+    addXP(xp,false); toast("✍️","Essay self-marked: "+mark+"/"+e.m,"+"+xp+" XP. Great practice."); confetti(90); save(); checkBadges(); renderWriting();
+  };
+}
+function renderDesign(area,seg){
+  if(!wr.design){
+    area.innerHTML=`${seg}<div class="empty" style="text-align:left"><h3 style="text-align:center">Design a study (12 marks)</h3><p style="text-align:center">Build a study one decision at a time. Each choice gets feedback, and you'll practise justifying it, which is where the marks are. You finish with a model answer to compare against.</p>
+      <div class="designs">${DESIGNS.map((d,i)=>`<button class="dcard" data-d="${i}"><b>🔬 ${esc(d.title)}</b><span>${esc(d.brief)}</span>${(G.designsDone||[]).includes(d.id)?'<small>✓ Done</small>':""}</button>`).join("")}</div></div>`;
+    area.querySelectorAll("[data-wm]").forEach(b=>b.onclick=()=>{ wr.mode=b.dataset.wm; renderWriting(); });
+    area.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{ wr.design=DESIGNS[+b.dataset.d]; wr.step=0; wr.picks=[]; wr.done=false; renderWriting(); });
+    return;
+  }
+  const D=wr.design, n=D.steps.length;
+  if(wr.done){
+    const score=wr.picks.reduce((a,p,i)=>a+D.steps[i].o[p][1],0), max=n*2;
+    area.innerHTML=`${seg}<div class="quiz-q" style="--c:${ST_C}"><div class="tag">🔬 ${esc(D.title)} <span class="muted">Your design: ${score}/${max} strong choices</span></div>
+      <h3 style="font-family:var(--display);margin:10px 0">Model answer</h3><p class="muted" style="margin-top:0">A strong 12-mark answer makes each of these decisions and justifies it in the context of the study.</p>
+      <ol class="model">${D.steps.map((st,i)=>{ const best=st.o.find(o=>o[1]===2), mine=st.o[wr.picks[i]]; return `<li><b>${st.s}:</b> ${esc(best[0])}. <span class="muted">${esc(best[2])}</span>${mine[1]<2?`<br><small class="warnt">You chose: ${esc(mine[0])}</small>`:""}</li>`; }).join("")}</ol>
+      <h4>Self-check</h4>
+      ${["Is there enough detail for someone else to replicate it?","Did you justify each choice, not just name it?","Is everything linked to this study (its variables and participants)?","Did you cover the IV and DV, controls and ethics?"].map(x=>`<label class="chk2"><input type="checkbox"> ${x}</label>`).join("")}
+      <div class="card-actions"><button class="btn" id="dAgain">Try another study</button></div></div>`;
+    area.querySelectorAll("[data-wm]").forEach(b=>b.onclick=()=>{ wr.mode=b.dataset.wm; renderWriting(); });
+    $("#dAgain").onclick=()=>{ wr.design=null; renderWriting(); };
+    return;
+  }
+  const st=D.steps[wr.step], picked=wr.picks[wr.step];
+  area.innerHTML=`${seg}<div class="progressline"><i style="width:${wr.step/n*100}%"></i></div>
+    <div class="quiz-q" style="--c:${ST_C}"><div class="tag">🔬 ${esc(D.title)} <span class="muted">Step ${wr.step+1} of ${n}: ${st.s}</span></div>
+    <p class="stem" style="margin-top:10px">${esc(D.brief)}</p>
+    <div class="q" style="font-size:clamp(20px,2.6vw,26px);margin:10px 0 14px">Choose the best ${st.s.toLowerCase()} for this study.</div>
+    <div class="opts one">${st.o.map((o,i)=>`<button class="opt ${picked===i?(o[1]===2?"right":o[1]===1?"okay":"wrong"):""}" data-o="${i}"><span class="k">${i+1}</span><span>${esc(o[0])}</span></button>`).join("")}</div>
+    ${picked!=null?`<div class="explain ${st.o[picked][1]===2?"ok":st.o[picked][1]===1?"meh":"no"}"><b>${st.o[picked][1]===2?"✓ Strong choice":st.o[picked][1]===1?"Okay, but there's a better option":"✗ Weak choice"}</b> ${esc(st.o[picked][2])}</div>
+      <label class="muted" for="dJust" style="display:block;margin:12px 0 6px;font-size:15px">Justify it in one sentence, using the study's details (this is what earns marks):</label>
+      <textarea id="dJust" class="essaytext" style="min-height:70px" placeholder="I chose this because…"></textarea>
+      <div class="card-actions"><button class="btn" id="dNext">${wr.step+1>=n?"See the model answer":"Next step"}</button></div>`:""}
+    </div><p style="text-align:right;margin-top:10px"><button class="linkbtn" id="dQuit">Choose a different study</button></p>`;
+  area.querySelectorAll("[data-wm]").forEach(b=>b.onclick=()=>{ wr.mode=b.dataset.wm; renderWriting(); });
+  area.querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>{ wr.picks[wr.step]=+b.dataset.o; sfx(st.o[+b.dataset.o][1]===2?"ok":"no"); renderWriting(); });
+  $("#dQuit").onclick=()=>{ wr.design=null; renderWriting(); };
+  const dn=$("#dNext"); if(dn) dn.onclick=()=>{
+    if(wr.step+1>=n){ wr.done=true; const score=wr.picks.reduce((a,p,i)=>a+D.steps[i].o[p][1],0); G.designsDone=[...new Set((G.designsDone||[]).concat(D.id))]; G.st.designs=(G.st.designs||0)+1; addXP(40+score*3,false); toast("🔬","Study designed","+"+(40+score*3)+" XP"); confetti(90); save(); checkBadges(); }
+    else wr.step++;
+    renderWriting(); window.scrollTo({top:$("#wrArea").offsetTop-80,behavior:reduced()?"auto":"smooth"});
+  };
+}
+
+/* ---- 📨 progress report codes for the teacher (nothing is uploaded) ---- */
+function chk4(str){ let h=7; for(const ch of str) h=(h*31+ch.charCodeAt(0))%1679616; return h.toString(36).padStart(4,"0"); }
+async function makeReport(){
+  const t=today(), live=G.last===t||(G.last&&dayNum(t)-dayNum(G.last)===1)?G.streak:0, ts=topicStats();
+  const active=Object.keys(G.hist).filter(k=>G.hist[k]>0 && dayNum(t)-dayNum(k)<14).length;
+  const arr=[1,(store.reportName||"").trim().slice(0,30),dayNum(t),G.xp,live,G.best,knownTotal(),G.st.cards,G.st.cards?Math.round(G.st.right/G.st.cards*100):0,G.st.exam,G.st.stats,Object.keys(G.st.bosses||{}).length,active,G.st.essays||0,TOPICS.length,ts.map(x=>[Math.round(x.known*100),x.n?Math.round(x.acc*100):-1,Math.min(x.n,9999)])];
+  let bytes=new TextEncoder().encode(JSON.stringify(arr)), pre="FR1";
+  try{ if(window.CompressionStream){ bytes=new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream("deflate-raw"))).arrayBuffer()); pre="FR1Z"; } }catch(e){ bytes=new TextEncoder().encode(JSON.stringify(arr)); pre="FR1"; }
+  const body=b64u(bytes); G.st.reports=(G.st.reports||0)+1;
+  return `${pre}.${body}.${chk4(pre+body)}`;
+}
+
 /* ---- save codes ---- */
 function b64u(bytes){ let s=""; for(let i=0;i<bytes.length;i+=0x8000) s+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000)); return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
 function unb64u(str){ str=str.replace(/-/g,"+").replace(/_/g,"/"); while(str.length%4) str+="="; const bin=atob(str), out=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i); return out; }
 async function makeSaveCode(){
   G.lastBackup=today();
-  const json=JSON.stringify({v:1, p:store.p, sel:store.sel, sr:store.sr, g:G, theme:store.theme||"auto", gapMode:!!store.gapMode});
+  const json=JSON.stringify({v:1, p:store.p, sel:store.sel, sr:store.sr, g:G, theme:store.theme||"auto", gapMode:!!store.gapMode, a11y:store.a11y});
   let bytes=new TextEncoder().encode(json), pre="F1R";
   try{ if(window.CompressionStream){ bytes=new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream("deflate"))).arrayBuffer()); pre="F1Z"; } }catch(e){ bytes=new TextEncoder().encode(json); pre="F1R"; }
   return pre+b64u(bytes);
@@ -1905,7 +2340,7 @@ async function loadSave(code){
   try{
     const d=await readSaveCode(code), nl=lvlFor(d.g.xp), ol=lvlFor(G.xp);
     if(!confirm(`Replace the progress on this device (Level ${ol}, ${G.xp.toLocaleString()} XP) with the saved progress (Level ${nl}, ${d.g.xp.toLocaleString()} XP)?`)) return;
-    localStorage.setItem(KEY, JSON.stringify({p:d.p, sel:Array.isArray(d.sel)?d.sel:TOPICS.map(t=>t.key), all:TOPICS.map(t=>t.key), g:d.g, sr:d.sr||{}, srMig:1, theme:d.theme||"auto", gapMode:!!d.gapMode}));
+    localStorage.setItem(KEY, JSON.stringify({p:d.p, sel:Array.isArray(d.sel)?d.sel:TOPICS.map(t=>t.key), all:TOPICS.map(t=>t.key), g:d.g, sr:d.sr||{}, srMig:1, theme:d.theme||"auto", gapMode:!!d.gapMode, a11y:d.a11y||{font:"std",size:1}, reportName:store.reportName||""}));
     location.reload();
   }catch(e){ msg.className="savemsg no"; msg.textContent=e && e.message && !/JSON|atob|decod|base64/i.test(e.message) ? e.message : "Sorry, that code couldn't be read. Make sure you copied all of it."; }
 }
@@ -1965,6 +2400,14 @@ function renderTrophies(){
       return `<div class="box" id="weakBox"><h3>Weak spots <small>How often you get each topic right</small></h3>${ts.length?ts.map(x=>bar(x.name,x.acc,x.n,x.c)).join("")+(ys.length?`<h4 class="wh">By type of question</h4>`+ys.map(([k,v])=>bar(k,v[0]/v[1],v[1],"var(--ink)")).join(""):"")+(weakest(1).length?`<div class="btnrow" style="margin-top:12px"><button class="btn" id="weakGo">🎯 Fix my weak spots</button></div>`:`<p class="muted" style="margin:10px 0 0;font-size:14px">Answer at least ${WEAK_MIN} questions in a topic to unlock Fix my weak spots.</p>`):`<p class="muted" style="margin:0">Answer some flashcards, quizzes or Arcade questions and your strongest and weakest topics will appear here.</p>`}</div>`; })()}
     <div class="box"><h3>Themes <small>Unlock more as you level up</small></h3><div class="skins">${SKINS.filter(k=>!k.hidden||allScrolls()).map(k=>{ const ok=k.hidden?true:n>=k.lvl, on=(store.theme||"auto")===k.id;
       return `<button class="skin ${on?"on":""}" data-skin="${k.id}" ${ok?"":"disabled"} aria-pressed="${on}"><span class="sw" style="background:linear-gradient(135deg,${k.sw[0]} 50%,${k.sw[1]} 50%)"></span><b>${esc(k.name)}</b><span>${ok?esc(k.desc):"🔒 Level "+k.lvl}</span></button>`; }).join("")}</div></div>
+    <div class="box" id="a11yBox"><h3>Reading and accessibility</h3>
+      <div class="bar-row" style="margin:0"><div class="seg" role="group" aria-label="Font">${[["std","Standard font"],["lexend","Easy-read font (Lexend)"]].map(([v,l])=>`<button aria-pressed="${store.a11y.font===v}" data-font="${v}">${l}</button>`).join("")}</div>
+      <div class="seg" role="group" aria-label="Text size">${[[0.9,"A−"],[1,"A"],[1.15,"A+"],[1.3,"A++"]].map(([v,l])=>`<button aria-pressed="${store.a11y.size===v}" data-size="${v}" aria-label="Text size ${l}">${l}</button>`).join("")}</div></div>
+      <p class="muted" style="margin:10px 0 0;font-size:14px">${canSpeak?"Tap 🔈 on a flashcard or quiz question to hear it read aloud.":"Read aloud isn't available in this browser."}</p></div>
+    <div class="box" id="reportBox"><h3>📨 Send your progress to your teacher</h3>
+      <p class="muted" style="margin:0 0 10px">Makes a short code with your level, streak, cards known and how you're doing in each topic. Paste it into Google Classroom, Teams or an email to your teacher. Nothing is uploaded anywhere.</p>
+      <div class="bar-row" style="margin:0"><input class="search" id="repName" maxlength="30" placeholder="Your name or initials" value="${esc(store.reportName||"")}" aria-label="Your name or initials" style="flex:1 1 200px"><button class="btn" id="repCopy">📋 Copy progress report code</button></div>
+      <p id="repMsg" class="savemsg" aria-live="polite"></p></div>
     <div class="box" id="backupBox"><h3>Back up or move your progress <small>Last backed up: ${G.lastBackup?G.lastBackup.split("-").reverse().join("/"):"never"}</small></h3>
       <p class="muted" style="margin:0 0 12px">Your progress is saved in this browser only, so clearing your browser data wipes it. Copy your save code and keep it safe, e.g. email it to yourself. To carry on on another device (school PC, phone, laptop), paste the code there. The code holds your progress only: no name, no login, no personal data.</p>
       <div class="btnrow"><button class="btn" id="copySave">📋 Copy my save code</button><button class="btn ghost" id="dlSave">💾 Download backup file</button></div>
@@ -1981,6 +2424,12 @@ function renderTrophies(){
       return `<div class="badge ${has?"got":"locked"}"><div class="bi">${ic}</div><b>${esc(name)}</b><span>${esc(desc)}</span></div>`; }).join("")}</div></div>`;
   document.querySelectorAll(".skin[data-skin]").forEach(b=>b.onclick=()=>{ store.theme=b.dataset.skin; if(!G.themesTried.includes(store.theme)) G.themesTried.push(store.theme); applySkin(store.theme); save(); checkBadges(); renderTrophies(); });
   wireBackup();
+  document.querySelectorAll("[data-font]").forEach(b=>b.onclick=()=>{ store.a11y.font=b.dataset.font; applyA11y(); save(); renderTrophies(); });
+  document.querySelectorAll("#a11yBox [data-size]").forEach(b=>b.onclick=()=>{ store.a11y.size=+b.dataset.size; applyA11y(); save(); renderTrophies(); });
+  $("#repName").oninput=e=>{ store.reportName=e.target.value; save(); };
+  $("#repCopy").onclick=async()=>{ const code=await makeReport(), m=$("#repMsg"); save(); checkBadges();
+    try{ await navigator.clipboard.writeText(code); m.className="savemsg ok"; m.textContent=`Copied ✓ Paste it to your teacher. (${code})`; }
+    catch(e){ m.className="savemsg ok"; m.textContent="Copy this code and send it to your teacher: "+code; } };
   document.querySelectorAll("[data-scroll]").forEach(b=>b.onclick=()=>showScroll(+b.dataset.scroll,true));
   const ug=$("#useGoal"); if(ug) ug.onclick=()=>{ G.goal=+ug.dataset.g; if((G.hist[t]||0)>=G.goal && G.last!==t) goalMet(); save(); renderHud(); renderTrophies(); toast("🎯",`Daily goal set to ${G.goal}`,"You can change it any time below."); };
   const wg=$("#weakGo"); if(wg) wg.onclick=()=>{ goTab("cards"); setFilter("weak"); document.querySelector("#p-cards").scrollIntoView({behavior:reduced()?"auto":"smooth"}); };

@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Class progress</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#EEF1F7;--card:#FFFFFF;--ink:#18203A;--muted:#566082;--line:#D3D9E6;--soft:#E3E8F2;--good:#1C8A5E;--warn:#B4531B;--warn-bg:#FBE7D9;color-scheme:light;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;--body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#121829;--card:#1B233B;--ink:#E9EDF7;--muted:#9CA6C2;--line:#2B3557;--soft:#232C49;--good:#4CC896;--warn:#F39A63;--warn-bg:#3E2616;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#121829;--card:#1B233B;--ink:#E9EDF7;--muted:#9CA6C2;--line:#2B3557;--soft:#232C49;--good:#4CC896;--warn:#F39A63;--warn-bg:#3E2616;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 var(--body)}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 16px 60px}
+h1{font-family:var(--display);font-size:clamp(28px,5vw,42px);margin:0 0 4px;line-height:1.05}
+h2{font-family:var(--display);font-size:20px;margin:0 0 10px}
+.lede{color:var(--muted);margin:0 0 18px;max-width:70ch}
+.box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:14px}
+textarea{width:100%;min-height:120px;border:2px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);padding:10px 12px;font:13px/1.4 ui-monospace,Menlo,monospace}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+.btn{border:2px solid var(--ink);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:12px;font:700 15px var(--body);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink)}
+.note{font-size:14px;color:var(--muted)}
+.msg{font-weight:700;margin:8px 0 0}
+.msg.no{color:var(--warn)} .msg.ok{color:var(--good)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.tile{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px}
+.tile b{display:block;font-family:var(--display);font-size:26px;line-height:1.1}
+.tile span{font-size:13.5px;color:var(--muted)}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{position:sticky;top:0;background:var(--card);cursor:pointer;user-select:none}
+th[aria-sort]::after{content:" ↕";color:var(--muted);font-size:11px}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
+tr.inactive td:first-child::after{content:" 💤";}
+.heat td.h{text-align:center;min-width:54px;font-variant-numeric:tabular-nums;border:2px solid var(--card);border-radius:6px}
+.heat th.tp{writing-mode:vertical-rl;transform:rotate(180deg);height:130px;white-space:nowrap;font-weight:400;font-size:13px;cursor:default}
+.weak li{margin:6px 0}
+.weak b{font-family:var(--display)}
+.badge{display:inline-block;font-size:12px;border-radius:99px;padding:1px 8px;background:var(--warn-bg);color:var(--warn);font-weight:700;margin-left:6px}
+label.chk{display:inline-flex;gap:6px;align-items:center;font-size:14px}
+@media print{ .noprint{display:none!important} body{background:#fff;color:#000} .box{border-color:#ccc;break-inside:avoid} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Class progress</h1>
+  <p class="lede">Paste the progress report codes your students send you (from Trophies → "Send your progress to your teacher"). Everything is decoded here in your browser: <b>nothing is uploaded or sent anywhere</b>. Codes are self-reported, so treat them as a guide.</p>
+
+  <div class="box noprint">
+    <h2>Paste codes</h2>
+    <textarea id="codes" placeholder="Paste one or many codes (they start with FR1). You can paste a whole email or Classroom thread: the codes are picked out automatically." spellcheck="false"></textarea>
+    <div class="row">
+      <button class="btn" id="go">Show my class</button>
+      <button class="btn ghost" id="csv" disabled>Download CSV</button>
+      <button class="btn ghost" onclick="window.print()">Print</button>
+      <label class="chk"><input type="checkbox" id="remember"> Remember these codes on this device</label>
+      <button class="btn ghost" id="clear">Clear saved codes</button>
+    </div>
+    <p class="msg" id="msg" aria-live="polite"></p>
+  </div>
+
+  <div id="out"></div>
+  <p class="note">If two codes have the same name, the newest one is used. "💤" marks students with no revision in the last 7 days of their report, or whose report is more than 14 days old.</p>
+</div>
+<script>
+/* Must match the TOPICS order in index.html */
+const TOPICS=[["Social influence","#E0533D"],["Memory","#3B7DD8"],["Attachment","#D6478F"],["Clinical psychology & mental health","#7B5BE0"],["Approaches","#D98E0F"],["Biopsychology","#1E9E74"],["Research methods","#2596B0"],["Issues & debates","#9A7440"],["Relationships","#6E9E1E"],["Schizophrenia","#4A58B8"],["Forensic","#52525B"],["Exam skills","#0F766E"]];
+const SAVE_KEY="rr-psych-teacher-codes";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const dayToDate=n=>new Date((n-0.5)*864e5);
+const todayNum=()=>{ const d=new Date(); return Math.round(new Date(d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")+"T12:00:00").getTime()/864e5); };
+function chk4(str){ let h=7; for(const ch of str) h=(h*31+ch.charCodeAt(0))%1679616; return h.toString(36).padStart(4,"0"); }
+function unb64u(str){ str=str.replace(/-/g,"+").replace(/_/g,"/"); while(str.length%4) str+="="; const bin=atob(str), out=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i); return out; }
+async function decode(code){
+  const [pre,body,sum]=code.split(".");
+  if(chk4(pre+body)!==sum) throw new Error("checksum");
+  let bytes=unb64u(body);
+  if(pre==="FR1Z") bytes=new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).arrayBuffer());
+  const a=JSON.parse(new TextDecoder().decode(bytes));
+  if(a[0]!==1) throw new Error("version");
+  return {name:a[1]||"(no name)", day:a[2], xp:a[3], streak:a[4], best:a[5], known:a[6], answered:a[7], acc:a[8], exam:a[9], stats:a[10], bosses:a[11], active:a[12], essays:a[13], topics:a[15]};
+}
+let rows=[], sortKey="name", sortDir=1;
+async function run(){
+  const text=$("#codes").value, found=[...new Set(text.match(/FR1Z?\.[A-Za-z0-9_-]+\.[a-z0-9]{4}/g)||[])], msg=$("#msg");
+  if(!found.length){ msg.className="msg no"; msg.textContent="No codes found. They start with FR1."; return; }
+  const out={}; let bad=0;
+  for(const c of found){ try{ const r=await decode(c); const k=r.name.trim().toLowerCase(); if(!out[k]||out[k].day<=r.day) out[k]=r; }catch(e){ bad++; } }
+  rows=Object.values(out);
+  msg.className="msg "+(bad?"no":"ok"); msg.textContent=`${rows.length} student${rows.length===1?"":"s"} loaded`+(bad?`. ${bad} code${bad===1?" was":"s were"} incomplete or mistyped and skipped.`:".");
+  if($("#remember").checked) try{ localStorage.setItem(SAVE_KEY,text); }catch(e){}
+  $("#csv").disabled=!rows.length; render();
+}
+const lvlFor=xp=>{ let n=1; while(xp>=50*n*(n+1)) n++; return n; };
+const heat=v=>v<0?"transparent":`hsl(${Math.round(v*1.2)},65%,${document.documentElement.matches(':root') && matchMedia("(prefers-color-scheme: dark)").matches?32:78}%)`;
+function render(){
+  if(!rows.length){ $("#out").innerHTML=""; return; }
+  const t=todayNum(), inactive=r=>r.active===0 || t-r.day>14;
+  const avgKnown=TOPICS.map((_,i)=>rows.reduce((a,r)=>a+(r.topics[i]?r.topics[i][0]:0),0)/rows.length);
+  const accRows=TOPICS.map((_,i)=>rows.filter(r=>r.topics[i]&&r.topics[i][1]>=0&&r.topics[i][2]>=8));
+  const avgAcc=accRows.map((rs,i)=>rs.length?rs.reduce((a,r)=>a+r.topics[i][1],0)/rs.length:null);
+  const weak=TOPICS.map((tp,i)=>({i,name:tp[0],acc:avgAcc[i],known:avgKnown[i]})).filter(x=>x.name!=="Exam skills").sort((a,b)=>(a.acc??999)-(b.acc??999)||a.known-b.known).slice(0,3);
+  const sorted=rows.slice().sort((a,b)=>{ const A=a[sortKey],B=b[sortKey]; return (typeof A==="string"?A.localeCompare(B):A-B)*sortDir; });
+  const cols=[["name","Student"],["level","Level"],["xp","XP"],["known","Cards known"],["acc","Accuracy %"],["streak","Streak"],["active","Days active (14)"],["essays","Essays"],["day","Report date"]];
+  rows.forEach(r=>r.level=lvlFor(r.xp));
+  $("#out").innerHTML=`
+  <div class="box"><h2>Class summary</h2><div class="tiles">
+    <div class="tile"><b>${rows.length}</b><span>students</span></div>
+    <div class="tile"><b>${Math.round(rows.reduce((a,r)=>a+r.known,0)/rows.length)}</b><span>average cards known</span></div>
+    <div class="tile"><b>${Math.round(rows.reduce((a,r)=>a+r.acc,0)/rows.length)}%</b><span>average accuracy</span></div>
+    <div class="tile"><b>${rows.filter(inactive).length}</b><span>look inactive 💤</span></div>
+  </div></div>
+  <div class="box"><h2>Weakest topics for the class</h2><ol class="weak">${weak.map(w=>`<li><b>${esc(w.name)}</b>: ${w.acc==null?"not enough answers yet":Math.round(w.acc)+"% average accuracy"}, ${Math.round(w.known)}% of cards known on average</li>`).join("")}</ol>
+    <p class="note">Accuracy only counts students who have answered at least 8 questions in a topic.</p></div>
+  <div class="box"><h2>Students</h2><div class="scroll"><table id="tbl"><thead><tr>${cols.map(([k,l])=>`<th data-k="${k}" aria-sort="${sortKey===k?(sortDir>0?"ascending":"descending"):"none"}">${l}</th>`).join("")}</tr></thead><tbody>
+    ${sorted.map(r=>`<tr class="${inactive(r)?"inactive":""}"><td>${esc(r.name)}</td><td class="n">${r.level}</td><td class="n">${r.xp.toLocaleString()}</td><td class="n">${r.known.toLocaleString()}</td><td class="n">${r.acc}</td><td class="n">${r.streak}</td><td class="n">${r.active}</td><td class="n">${r.essays}</td><td>${dayToDate(r.day).toLocaleDateString("en-GB")}</td></tr>`).join("")}
+  </tbody></table></div></div>
+  <div class="box"><h2>Cards known by topic (%)</h2><div class="scroll"><table class="heat"><thead><tr><th style="cursor:default">Student</th>${TOPICS.map(t=>`<th class="tp">${esc(t[0])}</th>`).join("")}</tr></thead><tbody>
+    ${sorted.map(r=>`<tr><td>${esc(r.name)}</td>${TOPICS.map((_,i)=>{ const v=r.topics[i]?r.topics[i][0]:0, a=r.topics[i]?r.topics[i][1]:-1; return `<td class="h" style="background:${heat(v)}" title="${v}% known${a>=0?", "+a+"% accuracy":""}">${v}</td>`; }).join("")}</tr>`).join("")}
+    <tr><td><b>Class average</b></td>${avgKnown.map(v=>`<td class="h" style="background:${heat(v)}"><b>${Math.round(v)}</b></td>`).join("")}</tr>
+  </tbody></table></div></div>`;
+  document.querySelectorAll("#tbl th").forEach(th=>th.onclick=()=>{ const k=th.dataset.k; if(sortKey===k) sortDir*=-1; else { sortKey=k; sortDir=k==="name"?1:-1; } render(); });
+}
+$("#go").onclick=run;
+$("#csv").onclick=()=>{
+  const head=["Student","Level","XP","Cards known","Accuracy %","Streak","Best streak","Days active (14)","Essays","Bosses beaten","Exam Skills best","Stats Lab best","Report date",...TOPICS.map(t=>t[0]+" % known")];
+  const lines=[head,...rows.map(r=>[r.name,lvlFor(r.xp),r.xp,r.known,r.acc,r.streak,r.best,r.active,r.essays,r.bosses,r.exam,r.stats,dayToDate(r.day).toLocaleDateString("en-GB"),...TOPICS.map((_,i)=>r.topics[i]?r.topics[i][0]:"")])];
+  const csv=lines.map(l=>l.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download="class-progress.csv"; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),500);
+};
+$("#clear").onclick=()=>{ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} $("#remember").checked=false; $("#msg").className="msg ok"; $("#msg").textContent="Saved codes cleared from this device."; };
+try{ const saved=localStorage.getItem(SAVE_KEY); if(saved){ $("#codes").value=saved; $("#remember").checked=true; run(); } }catch(e){}
+</script>
+</body>
+</html>
