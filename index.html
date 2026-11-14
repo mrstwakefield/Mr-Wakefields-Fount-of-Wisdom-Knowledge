@@ -354,6 +354,23 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .weekban div span{font-size:14px;color:var(--muted)}
 .weekban i{font-style:normal;font-weight:800;background:var(--c);color:#fff;border-radius:99px;padding:6px 14px;white-space:nowrap}
 
+/* parent mode */
+.parent .pm-topics{display:flex;flex-wrap:wrap;gap:8px}
+.parent .pm-topics .pj-pill.on{background:var(--c);border-color:var(--c);color:#fff}
+.pm-tips{margin-top:22px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px;font-size:15px}
+.pm-tips ul{margin:6px 0 0;padding-left:1.2em} .pm-tips li{margin:4px 0}
+.pm-ask{margin:14px 0 0;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-size:14px}
+.pm-q .pj-text{margin:1vh 0 2vh}
+.pm-q .pj-ans{text-align:left}
+.pm-q .pj-ans ul{margin:0;padding-left:1.1em}
+.pm-marks{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.pm-marks .btn{font-size:19px;padding:13px 22px}
+.pm-yes{background:var(--good);border-color:var(--good);color:#fff}
+.pm-part{background:#F2C14E;border-color:#F2C14E;color:#3A2E00}
+.pm-no{background:transparent;border-color:var(--warn);color:var(--warn)}
+.pm-score{text-align:center;font-weight:800;font-size:18px;margin-top:auto;padding-top:16px}
+@media (max-width:560px){ .pm-marks .btn{flex:1 1 100%} }
+
 /* one tab bar */
 @media (min-width:700px){ .tabs{flex-wrap:wrap;width:auto;max-width:100%;overflow:visible} .tabs button{padding:9px 14px} }
 @media (max-width:699px){ .tabs{-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent);padding-right:28px} }
@@ -711,7 +728,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 
   <footer class="foot">
     <span>Your progress is saved in this browser only.</span>
-    <span><button class="linkbtn" id="installBtn" hidden>📲 Install the app</button> <button class="linkbtn" id="backupLink">💾 Back up or move my progress</button> <button class="linkbtn" id="resetBtn">Reset my progress</button></span>
+    <span><button class="linkbtn" id="parentLink">👪 Parent mode</button> <button class="linkbtn" id="installBtn" hidden>📲 Install the app</button> <button class="linkbtn" id="backupLink">💾 Back up or move my progress</button> <button class="linkbtn" id="resetBtn">Reset my progress</button></span>
   </footer>
 </div>
 <canvas id="fx" aria-hidden="true"></canvas>
@@ -1392,6 +1409,7 @@ const BADGES = [
   ["mock1","📝","Mock ready","Complete a mini mock paper",()=>(G.mocks||[]).length>=1],
   ["mock80","🎯","80% club","Score 80% or more on a mini mock",()=>!!G.st.mock80],
   ["focus3","🧘","In the zone","Complete 3 focus sessions",()=>(G.st.focus||0)>=3],
+  ["parent1","👪","Family affair","Get quizzed in Parent mode",()=>(G.st.parentRounds||0)>=1],
   ["app","📲","Pocket psychologist","Open the app from your home screen",()=>!!G.st.standalone],
 ];
 function checkBadges(){
@@ -1849,6 +1867,7 @@ const MODES = {
   mistakes:{icon:"🩹", name:"Fix My Mistakes", c:"#B4531B", kind:"round", n:10, src:"mistakes", desc:"Questions you've got wrong before. Each one leaves your mistakes bank once it's right twice in a row."},
   boss:{icon:"👹", name:"Boss Battles", c:"#B91C1C", kind:"boss", src:"boss", desc:"One boss per topic. Land 15 hits with hard questions before you lose 3 lives. Beat a boss to earn its badge."},
   weekly:{icon:"🏁", name:"Weekly Challenge", c:"#C2410C", kind:"weekly", n:15, src:"weekly", desc:"This week's topic, the same 15 questions for everyone in the class. One scored go per week, so make it count."},
+  parent:{icon:"👪", name:"Parent Mode", c:"#1C8A5E", kind:"parent", src:"parent", desc:"For parents and carers: quiz your young person with the answers in front of you. No psychology knowledge needed."},
   proj:{icon:"📽️", name:"Projector Mode", c:"#18203A", kind:"proj", src:"proj", desc:"For teachers: a team quiz for the board, with a timer, scoreboard and podium. Doesn't affect anyone's XP."},
   daily:{icon:"📰", name:"Daily 10", c:"#1C8A5E", kind:"daily", src:"daily", desc:"The same 10 questions for everyone today, including exam skills and a stats question. One go. Compare with your class."},
 };
@@ -1875,6 +1894,7 @@ function bestLabel(k){
     : k==="order" ? (st.orderBest!=null&&st.orders?`Best: ${st.orderBest}/5 perfect`:"Not played yet")
     : k==="mistakes" ? `${mistakeIds().length} in your mistakes bank`
     : k==="proj" ? "Teacher-led, no XP"
+    : k==="parent" ? ((G.st.parentRounds||0)?`${G.st.parentRounds} parent quiz${G.st.parentRounds===1?"":"zes"} done`:"Hand the phone to a grown-up")
     : k==="boss" ? `${Object.keys(G.st.bosses).filter(x=>BOSSES[x]).length} of ${TOPICS.length} bosses beaten`
     : (G.daily[today()]&&G.daily[today()].done ? `Done today: ${G.daily[today()].score}/10 ✓` : "Ready to play");
 }
@@ -1892,7 +1912,7 @@ function renderArcade(){
       return `<button class="mode ${m.featured?"featured":""}" style="--c:${m.c}" data-mode="${k}" ${dis?"disabled":""}>${tag}<span class="mi">${m.icon}</span><h3>${m.name}${m.featured?' <small>Featured</small>':""}</h3><p>${m.desc}</p><span class="best">${bestLabel(k)}</span></button>`; }).join("")}</div>
       <p class="arc-note">Blitz, Survival and Gap Fill use the topics you've selected above${nCards?"":", so pick at least one"}. Exam Skills and Stats Lab cover the whole course. Wrong answers on revision cards are added to your still-learning pile. Use keys 1 to 4 to answer, and Enter for the next question.</p>`;
     $("#weekBan").onclick=()=>startArc("weekly");
-    area.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{ const md=b.dataset.mode; if(md==="boss"){ arc.phase="bossmenu"; renderArcade(); } else if(md==="match") startMatch(); else if(md==="order") startOrder(); else if(md==="proj") openProjector(); else startArc(md); });
+    area.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{ const md=b.dataset.mode; if(md==="boss"){ arc.phase="bossmenu"; renderArcade(); } else if(md==="match") startMatch(); else if(md==="order") startOrder(); else if(md==="proj") openProjector(); else if(md==="parent") openParent(); else startArc(md); });
     return;
   }
   if(arc.phase==="bossmenu"){
@@ -2803,6 +2823,78 @@ function renderMock(area,seg){
   $("#mkAgain").onclick=()=>{ mk.phase="pick"; renderWriting(); };
 }
 
+
+/* ---- 👪 parent mode: a parent or carer quizzes the student, no psychology knowledge needed ---- */
+const pm={phase:"setup", topics:null, n:10, which:"all", count:true, qs:[], i:0, shown:false, res:[]};
+function openParent(){ pm.phase="setup"; if(!pm.topics) pm.topics=store.sel.filter(k=>k!=="Exam skills"); let o=$("#parentOv"); if(!o){ o=document.createElement("div"); o.id="parentOv"; o.className="proj parent"; document.body.appendChild(o); document.addEventListener("keydown",parentKeys,true); } renderParent(); }
+function closeParent(){ const o=$("#parentOv"); if(o) o.remove(); document.removeEventListener("keydown",parentKeys,true); renderMeter(); renderChips(); renderHud(); newDeck(); }
+function parentPool(){ let p=DATA.filter(d=>pm.topics.includes(d.t) && d.a.length<=260); if(pm.which==="notknown") p=p.filter(d=>status(d.id)!=="k"); if(pm.which==="learning") p=p.filter(d=>status(d.id)==="l"||d.id in G.mistakes); return p; }
+function parentStart(){ pm.qs=shuffle(parentPool()).slice(0,pm.n); pm.i=0; pm.shown=false; pm.res=[]; pm.phase="q"; renderParent(); }
+function parentMark(v){ // 2 = got it, 1 = partly, 0 = not yet
+  const d=pm.qs[pm.i], ok=v===2; pm.res.push({id:d.id, v});
+  if(pm.count){ recAcc(d.id,ok); noteLearn(d.id,ok); srReview(d.id,ok); mark(d.id, ok?"k":"l"); answer({ok, el:false, mode:"quiz"}); }
+  pm.i++; pm.shown=false; if(pm.i>=pm.qs.length){ pm.phase="end"; G.st.parentRounds=(G.st.parentRounds||0)+1; save(); checkBadges(); const sc=pm.res.filter(r=>r.v===2).length; if(sc/pm.res.length>=0.7) confetti(200); sfx("lvl"); } else sfx(ok?"ok":"no");
+  renderParent();
+}
+function parentKeys(e){
+  if(!$("#parentOv")) return;
+  if(e.target.matches && e.target.matches("input,textarea,select")) return;
+  e.stopPropagation();
+  if(e.key==="Escape"){ e.preventDefault(); if(pm.phase!=="q"||confirm("Stop the quiz?")) closeParent(); return; }
+  if(pm.phase!=="q") return;
+  if(!pm.shown && (e.key===" "||e.key==="Enter")){ e.preventDefault(); pm.shown=true; renderParent(); }
+  else if(pm.shown && ["1","2","3"].includes(e.key)){ e.preventDefault(); parentMark({"1":2,"2":1,"3":0}[e.key]); }
+}
+function parentSummary(){ const sc=pm.res.filter(r=>r.v===2).length, part=pm.res.filter(r=>r.v===1).length; const todo=pm.res.filter(r=>r.v<2).map(r=>BY_ID[r.id]);
+  return `Psychology quiz (${new Date().toLocaleDateString("en-GB")}): ${sc}/${pm.res.length} correct${part?`, ${part} partly`:""}.\n`+(todo.length?"To go over:\n"+todo.map(d=>"• "+d.q).join("\n"):"Everything was right!"); }
+function renderParent(){
+  const o=$("#parentOv"); if(!o) return;
+  const top=`<div class="pj-top"><b>👪 Parent mode</b><span class="spacer"></span><button class="btn ghost" id="pmClose">✕ Close</button></div>`;
+  if(pm.phase==="setup"){
+    const n=parentPool().length, content=TOPICS.filter(t=>t.key!=="Exam skills");
+    o.innerHTML=`${top}<div class="pj-setup"><h2>Quiz your young person</h2>
+      <p class="muted">You don't need to know any psychology. You'll see a question to ask, then the answer to check against. Just decide whether they got it.</p>
+      <h3>Topics</h3><div class="pm-topics">${content.map(t=>`<button class="pj-pill ${pm.topics.includes(t.key)?"on":""}" data-pt="${esc(t.key)}" style="--c:${t.c}">${esc(t.name)}</button>`).join("")}</div>
+      <p style="margin:6px 0 0"><button class="linkbtn" id="pmAll">Select all</button> <button class="linkbtn" id="pmNone">Clear</button></p>
+      <h3>Which questions?</h3><div class="pj-row">${[["all","Any"],["notknown","Ones they don't know yet"],["learning","Ones they're struggling with"]].map(([k,l])=>`<button class="pj-pill ${pm.which===k?"on":""}" data-pw="${k}">${l}</button>`).join("")}</div>
+      <h3>How many?</h3><div class="pj-row">${[10,20,30].map(k=>`<button class="pj-pill ${pm.n===k?"on":""}" data-pn="${k}">${k}</button>`).join("")}</div>
+      <label class="chk2" style="margin-top:16px"><input type="checkbox" id="pmCount" ${pm.count?"checked":""}> Count the results towards their progress (cards they get right are scheduled for review; ones they miss go into their mistakes pile)</label>
+      <button class="btn big" id="pmGo" ${n?"":"disabled"}>Start (${Math.min(n,pm.n)} questions)</button>
+      ${n?"":`<p class="muted">No questions match. Try more topics or "Any".</p>`}
+      <div class="pm-tips"><b>Tips</b><ul><li>Let them answer out loud before you show the answer.</li><li>They don't need the exact words: the key idea is what counts.</li><li>"Partly" is fine for answers that are on the right track but missing something.</li><li>Keys: <b>Space</b> shows the answer, then <b>1</b> got it, <b>2</b> partly, <b>3</b> not yet.</li></ul></div></div>`;
+    o.querySelectorAll("[data-pt]").forEach(b=>b.onclick=()=>{ const k=b.dataset.pt; pm.topics=pm.topics.includes(k)?pm.topics.filter(x=>x!==k):[...pm.topics,k]; renderParent(); });
+    $("#pmAll").onclick=()=>{ pm.topics=content.map(t=>t.key); renderParent(); };
+    $("#pmNone").onclick=()=>{ pm.topics=[]; renderParent(); };
+    o.querySelectorAll("[data-pw]").forEach(b=>b.onclick=()=>{ pm.which=b.dataset.pw; renderParent(); });
+    o.querySelectorAll("[data-pn]").forEach(b=>b.onclick=()=>{ pm.n=+b.dataset.pn; renderParent(); });
+    $("#pmCount").onchange=e=>{ pm.count=e.target.checked; };
+    $("#pmGo").onclick=parentStart;
+  } else if(pm.phase==="q"){
+    const d=pm.qs[pm.i], t=TMAP[d.t];
+    o.innerHTML=`${top}<div class="pj-q pm-q" style="--c:${t.c}"><div class="pj-meta"><span>${esc(t.name)}</span><span>Question ${pm.i+1} of ${pm.qs.length}</span></div>
+      <div class="pj-bar"><i style="width:${pm.i/pm.qs.length*100}%"></i></div>
+      <p class="pm-ask">Ask them:</p><div class="pj-text">${esc(d.q)}</div>
+      ${pm.shown?`<p class="pm-ask">The answer:</p><div class="pj-ans">${fmtAnswer(d.a,d.id)}</div>
+        <p class="pj-hint">Listen for the main idea. Did they get it?</p>
+        <div class="pm-marks"><button class="btn pm-yes" data-pmv="2">✅ Got it <kbd>1</kbd></button><button class="btn pm-part" data-pmv="1">🤏 Partly <kbd>2</kbd></button><button class="btn pm-no" data-pmv="0">❌ Not yet <kbd>3</kbd></button></div>`
+      :`<button class="btn big" id="pmShow">Show the answer (Space)</button>`}</div>
+      <div class="pm-score">✅ ${pm.res.filter(r=>r.v===2).length} &nbsp; 🤏 ${pm.res.filter(r=>r.v===1).length} &nbsp; ❌ ${pm.res.filter(r=>r.v===0).length}</div>`;
+    const sh=$("#pmShow"); if(sh) sh.onclick=()=>{ pm.shown=true; renderParent(); };
+    o.querySelectorAll("[data-pmv]").forEach(b=>b.onclick=()=>parentMark(+b.dataset.pmv));
+  } else {
+    const sc=pm.res.filter(r=>r.v===2).length, pct=sc/pm.res.length, todo=pm.res.filter(r=>r.v<2);
+    o.innerHTML=`${top}<div class="pj-setup" style="text-align:center"><h2>${pct>=0.9?"Superb! 🌟":pct>=0.7?"Great work! 👏":pct>=0.4?"Good effort 👍":"A good start 💪"}</h2>
+      <p class="score">${sc}/${pm.res.length}</p><p class="muted">${todo.length?"Here's what to go over together:":"They got everything right."}${pm.count?" These results have been added to their progress.":""}</p>
+      ${todo.length?`<ul class="results" style="text-align:left">${todo.map(r=>{ const d=BY_ID[r.id]; return `<li class="no"><b>${esc(d.q)}</b>${r.v===1?' <small class="muted">(partly)</small>':""}<div class="ans">${esc(d.a)}</div></li>`; }).join("")}</ul>`:""}
+      <div class="card-actions" style="justify-content:center"><button class="btn" id="pmAgain">Another quiz</button><button class="btn ghost" id="pmCopy">📋 Copy a summary</button><button class="btn ghost" id="pmDone">Finish</button></div>
+      <p id="pmMsg" class="savemsg"></p></div>`;
+    $("#pmAgain").onclick=()=>{ pm.phase="setup"; renderParent(); };
+    $("#pmDone").onclick=closeParent;
+    $("#pmCopy").onclick=async()=>{ const t=parentSummary(), m=$("#pmMsg"); try{ await navigator.clipboard.writeText(t); m.className="savemsg ok"; m.textContent="Copied ✓ You could paste it into a message to their teacher."; }catch(e){ m.className="savemsg ok"; m.textContent=t; } };
+  }
+  $("#pmClose").onclick=()=>{ if(pm.phase!=="q"||confirm("Stop the quiz?")) closeParent(); };
+}
+
 /* ---- save codes ---- */
 function b64u(bytes){ let s=""; for(let i=0;i<bytes.length;i+=0x8000) s+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000)); return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
 function unb64u(str){ str=str.replace(/-/g,"+").replace(/_/g,"/"); while(str.length%4) str+="="; const bin=atob(str), out=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i); return out; }
@@ -2847,6 +2939,7 @@ function wireBackup(){
   $("#loadSave").onclick=()=>{ const v=$("#loadCode").value.trim(); if(!v){ msg.className="savemsg no"; msg.textContent="Paste a save code into the box first."; return; } loadSave(v); };
   $("#loadFile").onchange=e=>{ const f=e.target.files[0]; if(!f) return; f.text().then(loadSave); };
 }
+$("#parentLink").onclick=()=>openParent();
 $("#backupLink").onclick=()=>{ goTab("saves"); setTimeout(()=>{ const b=$("#backupBox"); if(b) b.scrollIntoView({behavior:reduced()?"auto":"smooth"}); },50); };
 
 /* ---- trophies ---- */
