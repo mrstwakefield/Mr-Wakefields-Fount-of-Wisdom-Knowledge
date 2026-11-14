@@ -502,6 +502,15 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .parch p{font-size:17px;line-height:1.55;margin:0 0 16px;font-style:italic}
 .parch .unlock{font-style:normal;background:rgba(255,255,255,.55);color:#2B1D0A!important}
 .parch .btn{background:#5C3A17;border-color:#5C3A17;color:#FBF1D6}
+.parch .btn.ghost{background:transparent;color:#5C3A17}
+.chal-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.chal{width:min(580px,100%);max-height:calc(100vh - 32px);overflow:auto;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:20px;padding:20px 20px 18px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.chal-kick{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.chal-meta{font-size:13px;color:var(--muted);margin:6px 0 4px}
+.chal-q{font-size:19px;line-height:1.35;margin:0 0 14px}
+.chal-fb{margin-top:12px;text-align:center}.chal-fb p{margin:0 0 10px;font-weight:700}
+.chal-done{text-align:center;padding:10px 0 4px}.chal-done h3{font-size:22px;margin:6px 0 8px}.chal-done p{color:var(--muted);margin:0 0 16px}
+.chal-big{font-size:44px}
 .parch.blues .rod{background:linear-gradient(#3B5BDB,#0A1F8F 60%,#3B5BDB)}
 .parch.blues .pbody{background:radial-gradient(ellipse at 50% 40%,#FFFFFF 0%,#E6ECFF 75%,#C9D5FF 100%);color:#0A1F8F}
 .parch.blues h3,.parch.blues .kick{color:#1F3FBF}
@@ -890,17 +899,17 @@ const SKINS=[
   {id:"terminal", name:"Terminal", lvl:52, sw:["#050805","#39FF6A"], desc:"Hacker mode"},
   {id:"cocoa", name:"Cocoa", lvl:56, sw:["#1F1612","#D9A066"], desc:"Hot chocolate and flashcards"},
   {id:"stan", name:"Stan Gold", lvl:60, sw:["#12100A","#F2C14E"], desc:"Dedicated Wakefield Stans only"},
-  {id:"snowdome", name:"SnowDome", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[1], sw:["#F3EFDF","#4FA79C"], desc:"Tamworth's indoor slopes ❄️"},
-  {id:"veggie", name:"Veggie Patch", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[3], sw:["#EEF7E6","#4C9A2A"], desc:"Eat your vegetables 🥦"},
-  {id:"volts", name:"450 Volts", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[4], sw:["#111111","#FFD400"], desc:"Please continue… ⚡"},
-  {id:"fool", name:"April Fool", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[9], sw:["#FFF7E0","#E8458B"], desc:"Every answer is C 🃏"},
-  {id:"graduate", name:"Graduation", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[10], sw:["#0E1B3A","#E2B84B"], desc:"Basically Mr Wakefield 🎓"},
-  {id:"bullring", name:"Bullring", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[7], sw:["#1E4FA8","#C9CED6"], desc:"Meet you by the bull 🐂"},
-  {id:"dreams", name:"Sweet Dreams", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[2], sw:["#1A1640","#B9A7FF"], desc:"Not consolidating, just sleeping 😴"},
-  {id:"coffee", name:"Coffee Break", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[5], sw:["#2A1A12","#D9A066"], desc:"IV: coffee. DV: marking ☕"},
-  {id:"pavlov", name:"Pavlov's Dog", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[8], sw:["#F6E7D2","#A0602C"], desc:"Ding! Feeling hungry? 🔔"},
-  {id:"graph", name:"Graph Paper", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[11], sw:["#FBFDFF","#2563EB"], desc:"p ≤ 0.05 📈"},
-  {id:"arcade8", name:"8-bit Arcade", lvl:999, hidden:true, unlock:()=>!!(G.scrolls||{})[6], sw:["#0B0B1E","#FF2E9A"], desc:"Unlocked by the rarest scroll 🎮"},
+  {id:"snowdome", name:"SnowDome", lvl:999, hidden:true, unlock:()=>chalDone(1), sw:["#F3EFDF","#4FA79C"], desc:"Tamworth's indoor slopes ❄️"},
+  {id:"veggie", name:"Veggie Patch", lvl:999, hidden:true, unlock:()=>chalDone(3), sw:["#EEF7E6","#4C9A2A"], desc:"Eat your vegetables 🥦"},
+  {id:"volts", name:"450 Volts", lvl:999, hidden:true, unlock:()=>chalDone(4), sw:["#111111","#FFD400"], desc:"Please continue… ⚡"},
+  {id:"fool", name:"April Fool", lvl:999, hidden:true, unlock:()=>chalDone(9), sw:["#FFF7E0","#E8458B"], desc:"Every answer is C 🃏"},
+  {id:"graduate", name:"Graduation", lvl:999, hidden:true, unlock:()=>chalDone(10), sw:["#0E1B3A","#E2B84B"], desc:"Basically Mr Wakefield 🎓"},
+  {id:"bullring", name:"Bullring", lvl:999, hidden:true, unlock:()=>chalDone(7), sw:["#1E4FA8","#C9CED6"], desc:"Meet you by the bull 🐂"},
+  {id:"dreams", name:"Sweet Dreams", lvl:999, hidden:true, unlock:()=>chalDone(2), sw:["#1A1640","#B9A7FF"], desc:"Not consolidating, just sleeping 😴"},
+  {id:"coffee", name:"Coffee Break", lvl:999, hidden:true, unlock:()=>chalDone(5), sw:["#2A1A12","#D9A066"], desc:"IV: coffee. DV: marking ☕"},
+  {id:"pavlov", name:"Pavlov's Dog", lvl:999, hidden:true, unlock:()=>chalDone(8), sw:["#F6E7D2","#A0602C"], desc:"Ding! Feeling hungry? 🔔"},
+  {id:"graph", name:"Graph Paper", lvl:999, hidden:true, unlock:()=>chalDone(11), sw:["#FBFDFF","#2563EB"], desc:"p ≤ 0.05 📈"},
+  {id:"arcade8", name:"8-bit Arcade", lvl:999, hidden:true, unlock:()=>chalDone(6), sw:["#0B0B1E","#FF2E9A"], desc:"Unlocked by the rarest scroll 🎮"},
   {id:"wakefield", name:"Wakefield Mode", lvl:999, hidden:true, sw:["#0F3D2E","#D4AF37"], desc:"Keeper of the Scrolls ✦"}
 ];
 function applySkin(id){ if(id==="arcade8" && !document.getElementById("pixelCss")){ const l=document.createElement("link"); l.id="pixelCss"; l.rel="stylesheet"; l.href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"; document.head.appendChild(l); } const r=document.documentElement; r.removeAttribute("data-skin"); r.removeAttribute("data-theme"); if(id==="light"||id==="dark") r.setAttribute("data-theme",id); else if(id && id!=="auto") r.setAttribute("data-skin",id); }
@@ -1205,8 +1214,9 @@ try{ const s=JSON.parse(localStorage.getItem(KEY)||"null"); if(s && s.g) store.g
 store.g = Object.assign({}, GDEF, store.g||{}); store.g.st = Object.assign({}, GDEF.st, store.g.st||{});
 const G = store.g;
 if(!G.st.bosses || typeof G.st.bosses!=="object") G.st.bosses={};
-function initG(){ if(!G.acc||!G.acc.t) G.acc={t:{},y:{}}; if(!G.sec) G.sec={}; if(!G.scrolls) G.scrolls={}; if(!G.lc) G.lc={}; if(!Array.isArray(G.themesTried)) G.themesTried=[]; if(!G.mistakes) G.mistakes={}; }
+function initG(){ if(!G.acc||!G.acc.t) G.acc={t:{},y:{}}; if(!G.sec) G.sec={}; if(!G.scrolls) G.scrolls={}; if(!G.chal) G.chal={}; if(!G.lc) G.lc={}; if(!Array.isArray(G.themesTried)) G.themesTried=[]; if(!G.mistakes) G.mistakes={}; }
 initG();
+{ const sc=SECRET_SCROLLS.find(x=>x.theme && x.theme===store.theme); if(sc && G.scrolls[sc.id] && !G.chal[sc.id]){ G.chal[sc.id]=today(); save(); } } // already using a bonus theme: keep it
 
 /* ---------- weak spots: accuracy by topic and by type of card ---------- */
 function cardType(d){
@@ -2211,25 +2221,96 @@ syncInstall();
 
 /* ---- secret scrolls ---- */
 const allScrolls=()=>SECRET_SCROLLS.every(x=>G.scrolls[x.id]);
+/* Each scroll's theme is earned with 3 questions. t = topic key (blank = any topic), re = prefer cards matching this. */
+const SCROLL_QUIZ = {
+  1:{label:"any topic"},
+  2:{t:"Memory", label:"memory"},
+  3:{t:"Psychopathology", label:"clinical psychology"},
+  4:{t:"Social Influence", re:/obedien|milgram/i, label:"obedience"},
+  5:{t:"RM", label:"research methods"},
+  6:{t:"Biopsychology", label:"biopsychology"},
+  7:{t:"Attachment", label:"attachment"},
+  8:{t:"Approaches", re:/classical conditioning|pavlov|operant|behaviouris/i, label:"the behaviourist approach"},
+  9:{t:"Issues and Debates part I", label:"issues and debates"},
+  10:{label:"any topic"},
+  11:{t:"RM", re:/type (1|2|i|ii)\b|significan|probability/i, label:"significance and errors"}
+};
+const CHAL_N=3;
+function chalDone(n){ return !!((G.scrolls||{})[n] && (G.chal||{})[n]); }
+function chalQs(n){
+  const sp=SCROLL_QUIZ[n]||{};
+  let pool=DATA.filter(d=>mcOK(d) && d.t!=="Exam skills" && (!sp.t || d.t===sp.t));
+  if(sp.re){ const f=pool.filter(d=>sp.re.test(d.q+" "+d.a)); if(f.length>=CHAL_N) pool=f; }
+  return shuffle(pool).slice(0,CHAL_N).map(d=>qFromCard(d,Math.random));
+}
+function startChallenge(n){
+  const sc=SECRET_SCROLLS.find(x=>x.id===n), sk=sc && SKINS.find(k=>k.id===sc.theme);
+  if(!sk || document.querySelector(".overlay")) return;
+  const qs=chalQs(n); let i=0, right=0;
+  const o=document.createElement("div"); o.className="overlay chal-ov";
+  o.innerHTML=`<div class="chal" role="dialog" aria-modal="true" aria-labelledby="chQ"></div>`;
+  const box=o.firstChild; document.body.appendChild(o);
+  const close=()=>{ o.remove(); document.removeEventListener("keydown",k2,true); if(inTrophies()) renderTrophies(); };
+  const k2=e=>{ if(e.key==="Tab") return; e.stopPropagation();
+    if(e.key==="Escape"){ e.preventDefault(); close(); return; }
+    if(/^[1-4]$/.test(e.key)){ const b=box.querySelectorAll(".opt:not(:disabled)")[+e.key-1]; if(b){ e.preventDefault(); b.click(); } } };
+  document.addEventListener("keydown",k2,true);
+  o.onclick=e=>{ if(e.target===o) close(); };
+  const kick=`<div class="chal-kick">🎨 Theme challenge · ${esc(sk.name)}</div>`;
+  function ask(){
+    const q=qs[i]; box.style.setProperty("--c",q.c||"var(--ink)");
+    box.innerHTML=`${kick}<div class="chal-meta">Question ${i+1} of ${qs.length} · ${esc(q.tname)}</div>
+      <h3 id="chQ" class="chal-q">${esc(q.q)}</h3>
+      <div class="opts one">${q.opts.map((t,j)=>`<button class="opt" data-i="${j}"><span class="k">${j+1}</span><span>${esc(t)}</span></button>`).join("")}</div>
+      <div class="chal-fb" aria-live="polite"></div>`;
+    box.querySelectorAll(".opt").forEach(b=>b.onclick=()=>pick(+b.dataset.i));
+    box.querySelector(".opt").focus();
+  }
+  function pick(j){
+    const q=qs[i], ok=j===q.correct;
+    box.querySelectorAll(".opt").forEach((b,k)=>{ b.disabled=true; b.classList.add(k===q.correct?"right":k===j?"wrong":"dim"); });
+    sfx(ok?"ok":"no"); if(ok) right++;
+    const last=!ok || i===qs.length-1;
+    box.querySelector(".chal-fb").innerHTML=`<p>${ok?"✅ Correct!":"❌ Not quite. The right answer is highlighted."}</p><button class="btn" id="chNext">${last?"See result":"Next question"}</button>`;
+    const nb=$("#chNext"); nb.onclick=()=>{ if(last) finish(); else { i++; ask(); } }; nb.focus();
+  }
+  function finish(){
+    if(right===qs.length){
+      G.chal[n]=today(); save(); sfx("lvl"); confetti(160);
+      box.innerHTML=`${kick}<div class="chal-done"><div class="chal-big">🎉</div><h3 id="chQ">${esc(sk.name)} unlocked!</h3><p>${qs.length} out of ${qs.length}. The theme is now in the Themes tab.</p>
+        <div class="chal-btns"><button class="btn" id="chUse">Use it now</button><button class="btn ghost" id="chClose">Close</button></div></div>`;
+      $("#chUse").onclick=()=>{ store.theme=sk.id; if(!G.themesTried.includes(sk.id)) G.themesTried.push(sk.id); applySkin(sk.id); save(); checkBadges(); close(); };
+      $("#chClose").onclick=close; $("#chUse").focus(); checkBadges();
+    } else {
+      box.innerHTML=`${kick}<div class="chal-done"><div class="chal-big">📚</div><h3 id="chQ">So close</h3><p>You need all ${qs.length} right to unlock <b>${esc(sk.name)}</b>. You get new questions every try.</p>
+        <div class="chal-btns"><button class="btn" id="chAgain">Try again</button><button class="btn ghost" id="chClose">Later</button></div></div>`;
+      $("#chAgain").onclick=()=>{ close(); startChallenge(n); }; $("#chClose").onclick=close; $("#chAgain").focus();
+    }
+  }
+  ask();
+}
 function showScroll(id, reread){
   const sc=SECRET_SCROLLS.find(x=>x.id===id); if(!sc || document.querySelector(".scroll-ov")) return;
   const first=!G.scrolls[id] && !reread;
   if(first){ G.scrolls[id]=today(); save(); }
   const blues=sc.trigger==="blues", found=SECRET_SCROLLS.filter(x=>G.scrolls[x.id]).length;
   if(first){ sfx("lvl"); confetti(sc.trigger==="konami"?360:160, blues?["#1F3FBF","#FFFFFF","#4F6FE8","#0A1F8F"]:null); } else sfx("badge");
+  const chal=!!sc.theme && !chalDone(sc.id), themeName=(SKINS.find(k=>k.id===sc.theme)||{}).name||"";
   const o=document.createElement("div"); o.className="overlay scroll-ov";
   o.innerHTML=`<div class="parch ${blues?"blues":""}" role="dialog" aria-modal="true" aria-labelledby="scT"><div class="rod"></div><div class="pbody">
     <div class="kick">📜 Secret scroll · ${found} of ${SECRET_SCROLLS.length} found${first?" · +30 XP":""}</div>
     <h3 id="scT">${esc(sc.title)}</h3><p>${esc(sc.text)}</p>
-    ${first&&sc.theme?`<p class="unlock">🎨 Bonus theme unlocked: <b>${esc((SKINS.find(k=>k.id===sc.theme)||{}).name||"")}</b>. Pick it in the Themes tab.</p>`:""}
+    ${sc.theme&&!chalDone(sc.id)?`<p class="unlock">🎨 Answer ${CHAL_N} questions on <b>${esc((SCROLL_QUIZ[sc.id]||{}).label||"any topic")}</b> to unlock the <b>${esc(themeName)}</b> theme.</p>`:""}
     ${first&&allScrolls()?`<p class="unlock">✦ You found every scroll! The secret <b>Wakefield Mode</b> theme is now in the Themes tab.</p>`:""}
-    <button class="btn" id="scOk">Roll it up</button></div><div class="rod"></div></div>`;
+    ${chal?`<div class="chal-btns"><button class="btn" id="scGo">Start the challenge</button><button class="btn ghost" id="scOk">Later</button></div>`:`<button class="btn" id="scOk">Roll it up</button>`}</div><div class="rod"></div></div>`;
   document.body.appendChild(o);
   const close=()=>{ o.remove(); document.removeEventListener("keydown",k2,true); };
-  const k2=e=>{ if(e.key==="Tab") return; e.stopPropagation(); if(e.key==="Escape"||e.key==="Enter"||e.key===" "){ e.preventDefault(); close(); } };
+  const k2=e=>{ if(e.key==="Tab") return; e.stopPropagation();
+    if(e.key==="Escape"){ e.preventDefault(); close(); }
+    else if((e.key==="Enter"||e.key===" ") && !(chal && document.activeElement && document.activeElement.closest(".scroll-ov button"))){ e.preventDefault(); close(); } };
   document.addEventListener("keydown",k2,true);
-  o.onclick=e=>{ if(e.target===o||e.target.id==="scOk") close(); };
-  $("#scOk").focus();
+  o.onclick=e=>{ if(e.target===o||e.target.id==="scOk") close(); else if(e.target.id==="scGo"){ close(); setTimeout(()=>startChallenge(id),first?250:0); } };
+  (chal?$("#scGo"):$("#scOk")).focus();
   if(first){ addXP(30,false); checkBadges(); if(inTrophies()) setTimeout(renderTrophies,50); }
 }
 // clicking the title 5 times / tapping the level ring 10 times
@@ -3122,7 +3203,7 @@ function renderTrophies(){
     <div class="box"><h3>Last 12 weeks <small>Darker = closer to your goal</small></h3><div class="heat">${cells}</div></div>
     </section>
 <section data-sec="scrolls" class="ts-scrolls">
-    <div class="box" id="scrollBox"><h3>📜 Secret scrolls <small>${SECRET_SCROLLS.filter(x=>G.scrolls[x.id]).length} of ${SECRET_SCROLLS.length} found</small></h3><p class="scrnote">🎨 Every scroll unlocks a bonus theme. Find one, then pick its theme in the Themes tab.</p><div class="scrolls">${[...SECRET_SCROLLS].sort((a,b)=>(G.scrolls[a.id]?1:0)-(G.scrolls[b.id]?1:0)).map(x=>G.scrolls[x.id]?`<button class="scr got" data-scroll="${x.id}"><span>📜</span><b>${esc(x.title)}</b><small>Theme: ${esc((SKINS.find(k=>k.id===x.theme)||{}).name||"")} · tap to read again</small></button>`:`<div class="scr"><span>🔒</span><b>Sealed scroll</b><small>${esc(x.hint)}</small></div>`).join("")}</div></div>
+    <div class="box" id="scrollBox"><h3>📜 Secret scrolls <small>${SECRET_SCROLLS.filter(x=>G.scrolls[x.id]).length} of ${SECRET_SCROLLS.length} found</small></h3><p class="scrnote">🎨 Every scroll has a bonus theme. Find the scroll, then answer 3 questions to unlock it.</p><div class="scrolls">${[...SECRET_SCROLLS].sort((a,b)=>(G.scrolls[a.id]?1:0)-(G.scrolls[b.id]?1:0)).map(x=>G.scrolls[x.id]?`<button class="scr got" data-scroll="${x.id}"><span>📜</span><b>${esc(x.title)}</b><small>${chalDone(x.id)?`Theme: ${esc((SKINS.find(k=>k.id===x.theme)||{}).name||"")} ✓ · tap to read again`:`🔒 Theme: ${esc((SKINS.find(k=>k.id===x.theme)||{}).name||"")} · tap to unlock`}</small></button>`:`<div class="scr"><span>🔒</span><b>Sealed scroll</b><small>${esc(x.hint)}</small></div>`).join("")}</div></div>
     </section>
 <section data-sec="badges" class="ts-badges">
     <div class="box"><h3>Badges <small>${got} of ${BADGES.length} unlocked</small></h3>
