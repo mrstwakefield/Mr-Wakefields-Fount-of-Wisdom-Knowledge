@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mr Wakefield's Fount of Knowledge and Wisdom</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#18203A">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fount of Wisdom">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
@@ -468,7 +474,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 
   <footer class="foot">
     <span>Your progress is saved in this browser only.</span>
-    <span><button class="linkbtn" id="backupLink">💾 Back up or move my progress</button> <button class="linkbtn" id="resetBtn">Reset my progress</button></span>
+    <span><button class="linkbtn" id="installBtn" hidden>📲 Install the app</button> <button class="linkbtn" id="backupLink">💾 Back up or move my progress</button> <button class="linkbtn" id="resetBtn">Reset my progress</button></span>
   </footer>
 </div>
 <canvas id="fx" aria-hidden="true"></canvas>
@@ -1007,6 +1013,7 @@ const BADGES = [
   ["stats1","🧮","Number cruncher","Finish a Stats Lab round",()=>G.st.statsRounds>=1],
   ["stats10","📊","Stats whizz","Score 10/10 in Stats Lab",()=>G.st.stats>=10],
   ["gap20","✏️","Word perfect","Get 20 right in one Gap Fill",()=>G.st.gapR>=20],
+  ["app","📲","Pocket psychologist","Open the app from your home screen",()=>!!G.st.standalone],
 ];
 function checkBadges(){
   let delay=0;
@@ -1583,6 +1590,21 @@ function arcFinish(){
   if(arc.best || (m.kind==="daily" && G.daily[today()].score>=8) || (m.kind==="round" && arc.right===m.n)){ confetti(200); sfx("lvl"); }
   checkBadges(); save(); renderArcade();
 }
+
+/* ---- installable offline app ---- */
+let installPrompt=null;
+const isStandalone=()=>matchMedia("(display-mode: standalone)").matches || navigator.standalone===true;
+const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
+function syncInstall(){ const b=$("#installBtn"); if(b) b.hidden = isStandalone() || !(installPrompt || isIOS()); }
+addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); installPrompt=e; syncInstall(); });
+addEventListener("appinstalled",()=>{ installPrompt=null; syncInstall(); toast("📲","App installed","Open it from your home screen, even with no signal."); });
+$("#installBtn").onclick=async()=>{
+  if(installPrompt){ installPrompt.prompt(); try{ await installPrompt.userChoice; }catch(e){} installPrompt=null; syncInstall(); }
+  else if(isIOS()) toast("📲","Add to your home screen","In Safari, tap Share ⬆️ then 'Add to Home Screen'.");
+};
+if(isStandalone()){ G.st.standalone=1; }
+if("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+syncInstall();
 
 /* ---- save codes ---- */
 function b64u(bytes){ let s=""; for(let i=0;i<bytes.length;i+=0x8000) s+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000)); return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
