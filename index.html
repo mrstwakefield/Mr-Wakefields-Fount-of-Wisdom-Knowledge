@@ -100,6 +100,11 @@ kbd{font-family:var(--body);font-size:12px;border:1px solid currentColor;border-
 .tag{font-size:14px;font-weight:700;color:var(--c);display:flex;justify-content:space-between;gap:10px;position:relative}
 .tag .muted{font-weight:400}
 .q{font-family:var(--display);font-weight:700;font-size:clamp(24px,3.6vw,36px);line-height:1.15;letter-spacing:-.01em;margin:auto 0;padding:20px 0}
+.cardopts{margin-top:14px;position:relative}.cardopts .opt{font-size:15px}
+.cardin{width:100%;margin-top:14px;font:inherit;font-size:16px;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);resize:vertical;position:relative}
+.cardin:focus{outline:none;border-color:var(--c)}.cardin.need{border-color:var(--warn);animation:shake .35s}
+.yours{position:relative;margin:0 0 10px;padding:10px 12px;border-radius:12px;background:var(--soft);font-size:15px}
+.why{position:relative;margin:10px 0 0;padding:8px 12px;border-radius:10px;background:var(--soft);font-size:15px}
 .face.back .q-small{font-size:15px;color:var(--muted);margin:14px 0 10px;position:relative}
 .a{font-size:clamp(18px,2.2vw,21px);line-height:1.55;position:relative;margin-bottom:auto}
 .a ul{margin:0;padding-left:1.1em}
@@ -869,7 +874,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
         <button aria-pressed="false" data-filter="notknown">Not known yet</button>
         <button aria-pressed="false" data-filter="learning">Still learning</button>
       </div>
-      <button class="btn ghost gapbtn" id="gapBtn" aria-pressed="false" style="padding:8px 14px">✏️ Gap fill mode</button>
+      <button class="btn ghost gapbtn" id="styleBtn" style="padding:8px 14px">🔘 Answer: multiple choice</button><button class="btn ghost gapbtn" id="gapBtn" aria-pressed="false" style="padding:8px 14px">✏️ Gap fill mode</button>
       <span class="spacer"></span>
       <button class="btn ghost" id="shuffleBtn" style="padding:8px 14px">Shuffle a new deck</button>
     </div>
@@ -939,7 +944,7 @@ const KEY = "rr-psych-v1";
 let store = {p:{}, sel:TOPICS.map(t=>t.key), all:TOPICS.map(t=>t.key)};
 try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s && s.p){ store.p = s.p; if(Array.isArray(s.sel)){ const seen=new Set(Array.isArray(s.all)?s.all:s.sel.concat(["Social Influence","Memory","Attachment","Psychopathology","Approaches","Biopsychology","RM","Issues and Debates part I"])); store.sel = [...new Set(s.sel.map(k=>k.startsWith("Issues and Debates")?"Issues and Debates part I":k))].filter(k=>TMAP[k]).concat(TOPICS.map(t=>t.key).filter(k=>!seen.has(k))); } } }catch(e){}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} }
-try{ const s0=JSON.parse(localStorage.getItem(KEY)||"null"); if(s0) ["sr","theme","gapMode","srMig","a11y","reportName","trophyTab"].forEach(k=>{ if(s0[k]!==undefined) store[k]=s0[k]; }); }catch(e){}
+try{ const s0=JSON.parse(localStorage.getItem(KEY)||"null"); if(s0) ["sr","theme","gapMode","srMig","a11y","reportName","trophyTab","cardStyle"].forEach(k=>{ if(s0[k]!==undefined) store[k]=s0[k]; }); }catch(e){}
 const status = id => store.p[id] || "";
 
 /* ---------- spaced repetition: Got it → back in 1, 3, 7, 21, then 60 days ---------- */
@@ -1123,6 +1128,10 @@ document.querySelectorAll("[data-filter]").forEach(b=>b.addEventListener("click"
 }));
 $("#shuffleBtn").onclick=newDeck;
 let gapMode=!!store.gapMode, gapTyped="", gapCardId=null, _gm=null;
+/* flashcards need an answer: multiple choice (default) or typing an attempt. Cards too long for multiple choice always use typing. */
+let cardStyle=store.cardStyle==="type"?"type":"mc", cardMC=null, cardTyped="", cardDone=false;
+const cardUsesMC=d=>cardStyle==="mc" && mcOK(d);
+function syncStyleBtn(){ const b=$("#styleBtn"); if(b) b.textContent=cardStyle==="mc"?"🔘 Answer: multiple choice":"⌨️ Answer: type it"; }
 const gapById=id=>(_gm||(_gm=Object.fromEntries(gaps().map(g=>[g.id,g]))))[id];
 const normT=x=>x.toLowerCase().replace(/[^a-z0-9]/g,"");
 function lev(a,b){ const m=[]; for(let i=0;i<=a.length;i++){ m[i]=[i]; } for(let j=1;j<=b.length;j++) m[0][j]=j;
@@ -1134,6 +1143,8 @@ function gapVerdict(typed,term){ const a=normT(typed), b=normT(term);
   return ["no","✗ Not quite. You wrote: "+typed]; }
 function syncGapBtn(){ const b=$("#gapBtn"); if(b){ b.setAttribute("aria-pressed",gapMode); b.textContent=gapMode?"✏️ Gap fill mode: on":"✏️ Gap fill mode"; } }
 $("#gapBtn").onclick=()=>{ gapMode=!gapMode; store.gapMode=gapMode; save(); syncGapBtn(); newDeck(); };
+$("#styleBtn").onclick=()=>{ cardStyle=cardStyle==="mc"?"type":"mc"; store.cardStyle=cardStyle; save(); syncStyleBtn(); cardMC=null; cardTyped=""; cardDone=false; flipped=false; renderCard(); };
+syncStyleBtn();
 function newDeck(){
   syncGapBtn(); renderWeak();
   let p = pool();
@@ -1163,7 +1174,9 @@ function renderCard(){
     $("#againAll").onclick=newDeck; return;
   }
   const d=BY_ID[deck[pos]], t=TMAP[d.t], st=status(d.id), gold=golds.has(d.id), g=gapMode?gapById(d.id):null;
-  if(gapCardId!==d.id){ gapCardId=d.id; gapTyped=""; }
+  if(gapCardId!==d.id){ gapCardId=d.id; gapTyped=""; cardTyped=""; cardDone=false; cardMC=null; }
+  const useMC=!g && cardUsesMC(d);
+  if(useMC && (!cardMC || cardMC.id!==d.id)){ const m=mcFor(d); cardMC={id:d.id, opts:m.opts, correct:m.correct, picked:null}; }
   const stLabel = st==="k"?'<span class="pill k">Known</span>':st==="l"?'<span class="pill l">Still learning</span>':'';
   area.innerHTML=`
     <div class="progressline"><i style="width:${pos/deck.length*100}%"></i></div>
@@ -1174,14 +1187,20 @@ function renderCard(){
           ${g?`<div class="gapdef">“<b class="blank">_____</b>: ${esc(g.def).replace(/_____/g,'<b class="blank">_____</b>')}”</div>
           <input class="gapin" id="gapIn" type="text" placeholder="Type the missing key term" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Type the missing key term" value="${esc(gapTyped)}">
           <div class="hint">Type the missing key term, then press Enter to check. ${stLabel}</div>`
-          :`<div class="q pre ${d.q.length>150?"long":""}">${esc(d.q)}</div>
-          <div class="hint">Say or write your answer, then tap the card to check. ${stLabel}</div>`}
+          : useMC ? `<div class="q pre ${d.q.length>150?"long":""}">${esc(d.q)}</div>
+          <div class="opts one cardopts">${cardMC.opts.map((o,i)=>{ const pk=cardMC.picked; const cls=pk==null?"":i===cardMC.correct?"right":i===pk?"wrong":"dim"; return `<button class="opt ${cls}" data-co="${i}" ${pk!=null?"disabled":""}><span class="k">${i+1}</span><span>${esc(o)}</span></button>`; }).join("")}</div>
+          <div class="hint">${cardMC.picked==null?"Pick the right answer (keys 1–4).":cardMC.picked===cardMC.correct?"✅ Correct!":"❌ Not quite: the right answer is highlighted."} ${stLabel}</div>${cardMC.picked!=null&&d.y?`<p class="why">💡 ${esc(d.y)}</p>`:""}`
+          : `<div class="q pre ${d.q.length>150?"long":""}">${esc(d.q)}</div>
+          <textarea class="cardin" id="cardIn" rows="3" placeholder="Type your answer, then press Enter to check" aria-label="Type your answer">${esc(cardTyped)}</textarea>
+          <div class="hint">Have a go first: type at least a few words, then check. ${stLabel}</div>`}
         </div>
         <div class="face back" aria-hidden="${!flipped}">
           <div class="tag">Answer <span class="muted">${nextReview(d.id)?nextReview(d.id)+" · ":""}Card ${pos+1} of ${deck.length}</span></div>
           ${g?`<div class="q gapterm">${esc(g.term)}</div><div class="gapres" id="gapRes"></div><div class="a"><p style="margin:0">${esc(g.def.replace(/_____/g,g.term))}</p></div>`
           :`<div class="q-small">${esc(d.q)}</div>
-          <div class="a">${fmtAnswer(d.a,d.id)}</div>`}
+          ${cardTyped?`<div class="yours"><b>Your answer:</b> ${esc(cardTyped)}</div>`:""}
+          <div class="a">${fmtAnswer(d.a,d.id)}</div>${d.y?`<p class="why">💡 ${esc(d.y)}</p>`:""}
+          <div class="hint">Be honest: did your answer cover the key points?</div>`}
         </div>
       </div>
     </div>
@@ -1190,7 +1209,12 @@ function renderCard(){
       <span id="acts" style="display:contents">${actionsHTML()}</span>
     </div>`;
   const card=$("#card");
-  card.onclick=flip; card.onkeydown=e=>{ if(e.key==="Enter"){e.preventDefault();flip();} };
+  card.onclick=useMC?null:flip; card.onkeydown=e=>{ if(e.key==="Enter" && !useMC){e.preventDefault();flip();} };
+  if(useMC){ card.style.cursor="default"; area.querySelectorAll("[data-co]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); pickCardMC(+b.dataset.co); }); }
+  const ci=$("#cardIn");
+  if(ci){ ci.onclick=e=>e.stopPropagation(); ci.oninput=()=>{ cardTyped=ci.value; };
+    ci.onkeydown=e=>{ e.stopPropagation(); if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); flip(); } };
+    if(!flipped && matchMedia("(hover:hover)").matches) ci.focus({preventScroll:true}); }
   $("#prevC").onclick=()=>{ if(pos>0){pos--;flipped=false;renderCard();} };
   const tt=$("#ttsC"); if(tt) tt.onclick=()=>{ const g2=gapMode?gapById(d.id):null; speak(flipped ? (g2 ? g2.term+". "+g2.def.replace(/_____/g,g2.term) : d.q+". "+d.a) : (g2 ? "Fill the gap. Blank: "+g2.def.replace(/_____/g,"blank") : d.q)); };
   $("#nextC").onclick=()=>{ pos++;flipped=false;renderCard(); };
@@ -1203,12 +1227,20 @@ function renderCard(){
     if(flipped) showGapResult(); else if(matchMedia("(hover:hover)").matches) gi.focus({preventScroll:true});
   }
 }
-function actionsHTML(){ return flipped
+function curUsesMC(){ const d=BY_ID[deck[pos]]; return d && !(gapMode&&gapById(d.id)) && cardUsesMC(d); }
+function actionsHTML(){
+  if(curUsesMC()) return cardMC&&cardMC.picked!=null ? `<button class="btn" id="nextCardBtn">Next card<kbd>Enter</kbd></button>` : "";
+  return flipped
   ? `<button class="btn warn" id="learnBtn">Still learning<kbd>1</kbd></button><button class="btn good" id="gotBtn">Got it<kbd>2</kbd></button>`
-  : `<button class="btn" id="flipBtn">Show answer<kbd>Space</kbd></button>`; }
-function wireActions(){ if(flipped){ $("#learnBtn").onclick=()=>rate("l"); $("#gotBtn").onclick=()=>rate("k"); } else $("#flipBtn").onclick=flip; }
+  : `<button class="btn" id="flipBtn">${gapMode&&gapById(deck[pos])?"Check":"Check my answer"}<kbd>Enter</kbd></button>`; }
+function wireActions(){ const nb=$("#nextCardBtn"); if(nb){ nb.onclick=()=>{ pos++; flipped=false; renderCard(); }; return; }
+  if(flipped){ $("#learnBtn").onclick=()=>rate("l"); $("#gotBtn").onclick=()=>rate("k"); } else { const fb=$("#flipBtn"); if(fb) fb.onclick=flip; } }
+function pickCardMC(i){ if(!cardMC || cardMC.picked!=null) return; cardMC.picked=i; const ok=i===cardMC.correct; rate(ok?"k":"l", false); renderCard(); const nb=$("#nextCardBtn"); if(nb) nb.focus({preventScroll:true}); }
 function flip(){
   const c=$("#card"); if(!c) return;
+  if(curUsesMC()) return;
+  if(!flipped && $("#cardIn") && cardTyped.trim().length<3){ const ci=$("#cardIn"); ci.classList.add("need"); ci.placeholder="Have a go first: type at least a few words"; ci.focus(); setTimeout(()=>ci.classList.remove("need"),600); return; }
+  if(!flipped && $("#cardIn")){ flipped=true; renderCard(); const c2=$("#card"); if(c2){ c2.classList.remove("flipped"); void c2.offsetWidth; c2.classList.add("flipped"); } const gb=$("#gotBtn"); if(gb) gb.focus({preventScroll:true}); return; }
   const hadFocus = document.activeElement && ["flipBtn","gotBtn","learnBtn"].includes(document.activeElement.id);
   flipped=!flipped; c.classList.toggle("flipped",flipped);
   c.querySelector(".front").setAttribute("aria-hidden",flipped); c.querySelector(".back").setAttribute("aria-hidden",!flipped);
@@ -1218,14 +1250,17 @@ function flip(){
   if($("#gapIn")){ if(flipped){ showGapResult(); $("#gotBtn").focus({preventScroll:true}); } else $("#gapIn").focus({preventScroll:true}); }
 }
 function showGapResult(){ const g=gapById(deck[pos]), r=$("#gapRes"); if(!g||!r) return; if(normT(gapTyped)==="pavlov") setTimeout(()=>showScroll(8),700); const [cls,msg]=gapVerdict(gapTyped,g.term); r.className="gapres "+cls; r.textContent=msg; }
-function rate(s){ const id=deck[pos]; sessionRes[id]=s; recAcc(id,s==="k"); noteLearn(id,s==="k"); if(filter==="weak") G.st.weakDone=(G.st.weakDone||0)+1; srReview(id,s==="k"); mark(id,s);
-  deckXP+=answer({ok:s==="k", el:$(s==="k"?"#gotBtn":"#learnBtn"), mode:"cards", gold:golds.has(id)});
+function rate(s, advance=true){ const id=deck[pos]; sessionRes[id]=s; recAcc(id,s==="k"); noteLearn(id,s==="k"); if(filter==="weak") G.st.weakDone=(G.st.weakDone||0)+1; srReview(id,s==="k"); mark(id,s);
+  deckXP+=answer({ok:s==="k", el:$(s==="k"?"#gotBtn":"#learnBtn")||$("#card"), mode:"cards", gold:golds.has(id)});
   deckCombo = s==="k" ? deckCombo+1 : 0; if(deckCombo>deckBest) deckBest=deckCombo;
+  if(!advance) return;
   pos++; flipped=false; renderCard(); const b=$("#flipBtn"); if(b) b.focus({preventScroll:true}); }
 document.addEventListener("keydown",e=>{
   if(tab!=="cards" || e.target.matches("input,textarea") || e.metaKey||e.ctrlKey||e.altKey) return;
   if(pos>=deck.length) return;
-  if(e.key===" "){ e.preventDefault(); flip(); }
+  if(curUsesMC()){ if(cardMC && cardMC.picked==null && /^[1-4]$/.test(e.key)){ e.preventDefault(); pickCardMC(+e.key-1); return; }
+    if(cardMC && cardMC.picked!=null && (e.key==="Enter"||e.key===" ")){ e.preventDefault(); pos++; flipped=false; renderCard(); return; } }
+  else if(e.key===" "||(e.key==="Enter"&&!flipped)){ e.preventDefault(); flip(); }
   else if(flipped && e.key==="1") rate("l");
   else if(flipped && e.key==="2") rate("k");
   else if(e.key==="ArrowRight"){ pos++; flipped=false; renderCard(); }
