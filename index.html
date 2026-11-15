@@ -1291,7 +1291,7 @@ $("#resetBtn").onclick=()=>{ if(confirm("Clear all your known and still-learning
 /* ===== 📜 SECRET SCROLLS — hidden messages from Mr W. Edit the titles, messages and hints here. =====
    trigger is how each one is found (the code that checks it lives further down; changing the words below is safe). */
 const SECRET_SCROLLS = [
-  {id:1, theme:"inner", trigger:"title5", title:"Welcome to the inner circle", text:"You clicked my name five times. That's either dedication or a cry for help. Either way, welcome to the inner circle. — Mr W", hint:"Click, click, click, click, click…"},
+  {id:1, theme:"inner", trigger:"title5", title:"Welcome to the inner circle", text:"You clicked my name five times. That's either dedication or a cry for help. Either way, welcome to the inner circle. — Mr W", hint:"Show the title some love"},
   {id:2, theme:"dreams", trigger:"ring10", title:"Wake up!", text:"This is your official wake-up call. Tapping your level ring won't make it go up any faster (I've tried). Answering questions will. And a proper night's sleep really does help your memory, so get one before the exam. — Mr W", hint:"Is this thing on?"},
   {id:3, theme:"veggie", trigger:"wakefield", title:"A message from the management", text:"Mr W and Romeo have one message for you: eat your vegetables. Your brain runs on them. No arguments. — Mr W (and Romeo)", hint:"Say my name (keyboard required)"},
   {id:4, theme:"volts", trigger:"milgram", title:"450 volts", text:"Please continue. The experiment requires that you continue. It is absolutely essential that you continue… revising. No volts were harmed in the making of this scroll. — Mr W", hint:"A shocking surname (keyboard required)"},
@@ -1374,7 +1374,7 @@ if(!G.migrated){
 }
 let combo = 0;
 
-const RANKS = [[1,"Lab Rat"],[2,"Wakefield Minion"],[3,"Tabula Rasa"],[4,"Naive Participant"],[5,"Front-Row Note Taker"],[6,"Classical Conditioner"],[7,"Wakefield's Homework Hero"],[8,"Magic Number 7±2"],[9,"Chunking Champion"],[10,"Observational Learner"],[11,"Wakefield's Star Student"],[12,"Extraneous Variable"],[13,"Phonological Looper"],[14,"Mr Wallace"],[15,"Wakefield's Whiteboard Helper"],[16,"Demand Characteristic"],[17,"Agentic State Agent"],[18,"Asch's Lone Dissenter"],[19,"Strange Situation Survivor"],[20,"Wakefield's Hall Monitor"],[21,"Attachment Analyst"],[22,"Null Hypothesis Rejecter"],[23,"Type I Error Dodger"],[24,"Sign Test Sorcerer"],[25,"Wakefield's Quiz Champion"],[26,"Neuroplastic Fantastic"],[27,"Hemisphere Hero"],[28,"Fight or Flight Fanatic"],[29,"Synapse Surfer"],[30,"Wakefield's Lab Assistant"],[31,"Superego in Charge"],[32,"Self-Actualiser"],[33,"Cognitive Distortion Detector"],[34,"Data-Driven Detective"],[35,"Wakefield's Essay Expert"],[36,"Diathesis-Stress Defuser"],[37,"Dopamine Decoder"],[38,"Rusbult's Investor"],[39,"Evaluation Expert"],[40,"Keeper of the Fount"],[41,"Peer Reviewer"],[42,"Spearman's Rho Pro"],[43,"Pearson's Pal"],[44,"Wakefield's Pink Pen"],[45,"AO3 Ace"],[46,"PEEL Master"],[47,"Level 4 Essay Machine"],[48,"Wakefield's Right-Hand Researcher"],[49,"Chartered Psychologist"],[50,"Mr Wakefield in Training"],[51,"Lord of the Long-Term Store"],[52,"Head of Department"],[53,"Wakefield's Understudy"],[54,"Paradigm Shifter"],[55,"Grand Master of the Mind"],[56,"Fount of Wisdom (Junior)"],[57,"Wakefield's Head Researcher"],[58,"Working Memory Wizard"],[59,"Episodic Buffer"],[60,"Wakefield's Seating Plan Survivor"],[61,"Cognitive Interviewer"],[62,"Monotropy Master"],[63,"Attachment Authority"],[64,"Internal Working Model"],[65,"Wakefield's Register Taker"],[66,"Social Learning Superstar"],[67,"Vicarious Reinforcer"],[68,"Schema Shaper"],[69,"Validity Verifier"],[70,"Wakefield's Mock Marker"],[71,"Free Will Philosopher"],[72,"Determinism Debater"],[73,"Nature-Nurture Negotiator"],[74,"Holism Hero"],[75,"Wakefield's Tea Maker"],[76,"Idiographic Insider"],[77,"Token Economy Tycoon"],[78,"Dopamine Hypothesis Debunker"],[79,"Family Therapy Facilitator"],[80,"Wakefield's Exam Invigilator"],[81,"CBT Champion"],[82,"Offender Profiler"],[83,"Offender Typologist"],[84,"Eysenck's Extrovert"],[85,"Wakefield's Report Writer"],[86,"Anger Management Mentor"],[87,"Social Exchange Scholar"],[88,"Duck's Dissolution Expert"],[89,"Filter Theory Thinker"],[90,"Wakefield's Department Deputy"],[91,"Plasticity Pioneer"],[92,"Neural Pathway Navigator"],[93,"Split-Brain Scholar"],[94,"Localisation Legend"],[95,"Wakefield's Parents' Evening Star"],[96,"Research Methods Mastermind"],[97,"Professor of Psychology"],[98,"Walking Textbook"],[99,"Basically Mr Wakefield"],[100,"Dedicated Wakefield Stan"]];
+const RANKS = [[1,"Lab Rat"],[2,"Wakefield Minion"],[3,"Tabula Rasa"],[4,"Naive Participant"],[5,"Front-Row Note Taker"],[6,"Classical Conditioner"],[7,"Wakefield's Homework Hero"],[8,"Magic Number 7±2"],[9,"Chunking Champion"],[10,"Bobo Doll Bystander"],[11,"Teacher's Pet (Wakefield Edition)"],[12,"Extraneous Variable"],[13,"Phonological Looper"],[14,"Mr Wallace"],[15,"Wakefield's Whiteboard Wizard"],[16,"Demand Characteristic"],[17,"Agentic State Agent"],[18,"Asch's Lone Dissenter"],[19,"Strange Situation Survivor"],[20,"Wakefield's Hall Monitor"],[21,"Attachment Analyst"],[22,"Null Hypothesis Rejecter"],[23,"Type I Error Dodger"],[24,"Sign Test Sorcerer"],[25,"Wakefield's Quiz Champion"],[26,"Neuroplastic Fantastic"],[27,"Hemisphere Hero"],[28,"Fight or Flight Fanatic"],[29,"Synapse Surfer"],[30,"Wakefield's Lab Assistant"],[31,"Superego in Charge"],[32,"Self-Actualiser"],[33,"Cognitive Distortion Detector"],[34,"Data-Driven Detective"],[35,"Wakefield's Essay Expert"],[36,"Diathesis-Stress Defuser"],[37,"Dopamine Decoder"],[38,"Rusbult's Investor"],[39,"Evaluation Expert"],[40,"Keeper of the Fount"],[41,"Peer Reviewer"],[42,"Spearman's Rho Pro"],[43,"Pearson's Pal"],[44,"Wakefield's Pink Pen"],[45,"AO3 Ace"],[46,"PEEL Master"],[47,"Level 4 Essay Machine"],[48,"Wakefield's Researcher"],[49,"Chartered Psychologist"],[50,"Mr Wakefield in Training"],[51,"Lord of the Long-Term Store"],[52,"Head of Department"],[53,"Wakefield's Understudy"],[54,"Paradigm Shifter"],[55,"Grand Master of the Mind"],[56,"Fount of Wisdom (Junior)"],[57,"Wakefield's Head Researcher"],[58,"Working Memory Wizard"],[59,"Episodic Buffer"],[60,"Wakefield's Seating Plan Survivor"],[61,"Cognitive Interviewer"],[62,"Monotropy Master"],[63,"Attachment Authority"],[64,"Internal Working Model"],[65,"Wakefield's Register Taker"],[66,"Social Learning Superstar"],[67,"Vicarious Reinforcer"],[68,"Schema Shaper"],[69,"Validity Verifier"],[70,"Wakefield's Mock Marker"],[71,"Free Will Philosopher"],[72,"Determinism Debater"],[73,"Nature-Nurture Negotiator"],[74,"Holism Hero"],[75,"Wakefield's Tea Maker"],[76,"Idiographic Insider"],[77,"Token Economy Tycoon"],[78,"Dopamine Hypothesis Debunker"],[79,"Family Therapy Facilitator"],[80,"Wakefield's Exam Invigilator"],[81,"CBT Champion"],[82,"Offender Profiler"],[83,"Offender Typologist"],[84,"Eysenck's Extrovert"],[85,"Wakefield's Report Writer"],[86,"Anger Management Mentor"],[87,"Social Exchange Scholar"],[88,"Duck's Dissolution Expert"],[89,"Filter Theory Thinker"],[90,"Wakefield's Department Deputy"],[91,"Plasticity Pioneer"],[92,"Neural Pathway Navigator"],[93,"Split-Brain Scholar"],[94,"Localisation Legend"],[95,"Wakefield's Parents' Evening Star"],[96,"Research Methods Mastermind"],[97,"Professor of Psychology"],[98,"Walking Textbook"],[99,"Basically Mr Wakefield"],[100,"Dedicated Wakefield Stan"]];
 const lvlStart = n => 50*(n-1)*n;           // XP needed to reach level n
 function lvlFor(xp){ let n=1; while(xp>=lvlStart(n+1)) n++; return n; }
 function rankFor(n){ let r=RANKS[0][1]; RANKS.forEach(([l,name])=>{ if(n>=l) r=name; }); return r; }
@@ -1539,7 +1539,7 @@ function onKnown(id, prevPct){
 const BADGES = [
   ["first","🌱","First steps","Answer your first question",()=>G.st.cards>=1],
   ["c100","📚","Century","Answer 100 questions",()=>G.st.cards>=100],
-  ["c1000","🏛️","One thousand!","Answer 1,000 questions",()=>G.st.cards>=1000],
+  ["c1000","🏛️","Thousand club","Answer 1,000 questions",()=>G.st.cards>=1000],
   ["combo10","🔥","On fire","Get 10 right in a row",()=>G.st.combo>=10],
   ["combo25","⚡","Unstoppable","Get 25 right in a row",()=>G.st.combo>=25],
   ["combo50","☄️","Legendary","Get 50 right in a row",()=>G.st.combo>=50],
@@ -1554,7 +1554,7 @@ const BADGES = [
   ["kall","⛲","Fount of wisdom","Know every single card",()=>knownTotal()>=DATA.length],
   ["topic","🥇","Topic master","Know every card in one topic",()=>TOPICS.some(t=>DATA.filter(d=>d.t===t.key).every(d=>status(d.id)==="k"))],
   ["perfect","💯","Flawless","Full marks in a quiz",()=>G.st.perfect>=1],
-  ["blitz20","⏱️","Quick fire","20 right in one Blitz",()=>G.st.blitzR>=20],
+  ["blitz20","⏱️","Speed demon","20 right in one Blitz",()=>G.st.blitzR>=20],
   ["surv25","❤️","Survivor","Reach 25 in Survival",()=>G.st.surv>=25],
   ["daily","📰","Daily driver","Finish a Daily 10",()=>Object.keys(G.daily).some(k=>G.daily[k].done)],
   ["daily10","🎯","Daily perfection","Score 10/10 on a Daily 10",()=>Object.values(G.daily).some(v=>v.done&&v.score===10)],
@@ -1565,7 +1565,7 @@ const BADGES = [
   ["starall","✨","Star collector","Get at least 1 mastery star in every topic",()=>TOPICS.every(t=>mastery(t.key).s>=1)],
   ["l50","🫡","Certified stan","Reach level 100: Dedicated Wakefield Stan",()=>lvlFor(G.xp)>=100],
   ["gold1","✨","Lucky find","Get a golden card right",()=>G.st.gold>=1, true, "Not all cards are created equal…"],
-  ["gold10","🪙","Treasure hunter","Get 10 golden cards right",()=>G.st.gold>=10, true, "…and some people collect them"],
+  ["gold10","💰","Gold digger","Get 10 golden cards right",()=>G.st.gold>=10, true, "…and some people collect them"],
   ["weekend","🛋️","Weekend warrior","Revise on a Saturday or Sunday",()=>[0,6].includes(new Date().getDay()) && G.st.cards>0, true, "Saturday? Sunday? Still here."],
   ["lark","🐦","Early bird","Revise before 7am",()=>new Date().getHours()<7 && G.st.cards>0, true, "The early bird catches the… mark scheme"],
   ["miller","🧠","Miller's magic number","End a combo at exactly 7",()=>!!G.sec.miller, true, "7 ± 2"],
@@ -1573,10 +1573,10 @@ const BADGES = [
   ["comeback","💪","Comeback kid","Defeat a boss with only 1 life left",()=>!!G.sec.comeback, true, "Hanging on by a thread"],
   ["ouch","🙈","Ouch","Lose all 3 lives in the first 3 questions of a boss battle",()=>!!G.sec.ouch, true, "That escalated quickly"],
   ["finally","🔁","Finally!","Get a card right after marking it still learning 3+ times",()=>!!G.sec.finally, true, "Fourth time lucky"],
-  ["honest","😇","Honesty pays","Mark 50 cards as still learning",()=>(G.st.learnMarks||0)>=50, true, "Honesty is the best policy"],
-  ["rage","🏃","Quick exit","End an Arcade game within 5 seconds of starting it",()=>!!G.sec.rage, true, "Nope. Not today."],
+  ["honest","😇","Honest Abe","Mark 50 cards as still learning",()=>(G.st.learnMarks||0)>=50, true, "Honesty is the best policy"],
+  ["rage","🏃","Rage quit","End an Arcade game within 5 seconds of starting it",()=>!!G.sec.rage, true, "Nope. Not today."],
   ["fashion","🎨","Fashionista","Try 4 different themes",()=>G.themesTried.length>=4, true, "Dress for the job you want"],
-  ["title5","🎂","Stan in training","Click the site title 5 times quickly",()=>!!G.sec.title, true, "Click, click, click, click, click…"],
+  ["title5","🎂","Stan in training","Click the site title 5 times quickly",()=>!!G.sec.title, true, "Show the title some love"],
   ["ring10","👆","Ring the bell","Tap the level ring 10 times quickly",()=>!!G.sec.ring, true, "Is this thing on?"],
   ["eve","🌙","Exam eve","Revise the day before a paper",()=>!!G.sec.eve, true, "Big day tomorrow…"],
   ["survivor","🎓","Exam survivor","Come back after the exams, having revised before them",()=>!!G.sec.survivor, true, "You made it through"],
@@ -1585,14 +1585,14 @@ const BADGES = [
   ["pal","🔢","Palindrome","Finish a game with a total XP that reads the same backwards",()=>!!G.sec.pal, true, "Racecar, kayak, 12321"],
   ["offline","📵","Offline scholar","Revise with no internet connection",()=>!!G.sec.offline, true, "No signal? No problem."],
   ["lunch","🍕","Lunchtime legend","Revise at lunchtime on a weekday",()=>!!G.sec.lunch, true, "Revision with a side of chips"],
-  ["owl","🦉","Night owl","Revise between 9pm and midnight",()=>!!G.sec.owl, true, "Hoo hoo"],
+  ["owl","🦉","Night owl","Revise between 9pm and midnight",()=>!!G.sec.owl, true, "Twit twoo"],
   ["recall","🧠","Total recall","Answer 100 questions in one day",()=>!!G.sec.recall, true, "Three figures. One day."],
   ["welcome","👋","Welcome back","Come back after 7 days away",()=>!!G.sec.welcome, true, "Long time no see"],
   ["spooky","🎃","Spooky scholar","Revise on Halloween",()=>!!G.sec.spooky, true, "Trick or treat… or revise"],
   ["f13","🐈‍⬛","Unlucky for some","Revise on a Friday the 13th",()=>!!G.sec.f13, true, "Not everyone's lucky day"],
   ["pi","🥧","Pi day","Revise on 14 March",()=>!!G.sec.pi, true, "3.14…"],
   ["keeper","📜","Keeper of the Scrolls","Find all the secret scrolls",()=>allScrolls(), true, "Collect them all"],
-  ["sr7","📅","Well spaced","Get a card right 3 reviews in a row (a 21-day card)",()=>Object.values(store.sr).some(e=>e.b>=3)],
+  ["sr7","📅","Spaced out","Get a card right 3 reviews in a row (a 21-day card)",()=>Object.values(store.sr).some(e=>e.b>=3)],
   ["sr60","🧠","Long-term store","Get a card to the 60-day review",()=>Object.values(store.sr).some(e=>e.b>=4)],
   ["backup","💾","Safe and sound","Back up your progress with a save code",()=>!!G.lastBackup],
   ["theme","🎨","Make it yours","Choose a theme",()=>!!store.theme && store.theme!=="auto"],
@@ -1602,7 +1602,7 @@ const BADGES = [
   ["exam10","📝","Full-mark technique","Score 10/10 in Exam Skills",()=>G.st.exam>=10],
   ["exam25","🧑‍🏫","Chief examiner","Finish 25 Exam Skills rounds",()=>G.st.examRounds>=25],
   ["stats1","🧮","Number cruncher","Finish a Stats Lab round",()=>G.st.statsRounds>=1],
-  ["stats10","📊","Stats ace","Score 10/10 in Stats Lab",()=>G.st.stats>=10],
+  ["stats10","📊","Stats whizz","Score 10/10 in Stats Lab",()=>G.st.stats>=10],
   ["gap20","✏️","Word perfect","Get 20 right in one Gap Fill",()=>G.st.gapR>=20],
   ["weak25","🎯","Weak spot fixer","Answer 25 cards in Fix my weak spots",()=>(G.st.weakDone||0)>=25],
   ["essay1","✍️","First draft","Self-mark an essay in Writing",()=>(G.st.essays||0)>=1],
@@ -1615,10 +1615,10 @@ const BADGES = [
   ["plan7","📋","Planner","Complete Today's plan on 7 days",()=>(G.st.plans||0)>=7],
   ["fix50","🩹","Mistake mender","Fix 50 mistakes",()=>(G.st.mistakesFixed||0)>=50],
   ["flaw8","🔎","Methodologist","Score 8/8 in Spot the Flaw",()=>(G.st.flawBest||0)>=8],
-  ["match15","🔗","Spot on","Match all 15 studies with no wrong guesses",()=>!!G.st.matchPerfect],
+  ["match15","🔗","Perfect match","Match all 15 studies with no wrong guesses",()=>!!G.st.matchPerfect],
   ["order5","🧩","In order","Get all 5 sequences right in Put It in Order",()=>(G.st.orderBest||0)>=5],
   ["mock1","📝","Mock ready","Complete a mini mock paper",()=>(G.mocks||[]).length>=1],
-  ["mock80","🎯","80% achiever","Score 80% or more on a mini mock",()=>!!G.st.mock80],
+  ["mock80","🎯","80% club","Score 80% or more on a mini mock",()=>!!G.st.mock80],
   ["focus3","🧘","In the zone","Complete 3 focus sessions",()=>(G.st.focus||0)>=3],
   ["parent1","👪","Family quiz night","Get quizzed in Parent mode",()=>(G.st.parentRounds||0)>=1],
   ["app","📲","Pocket psychologist","Open the app from your home screen",()=>!!G.st.standalone],
