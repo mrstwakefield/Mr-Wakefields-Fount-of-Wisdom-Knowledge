@@ -265,6 +265,17 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 
 /* arcade */
 .modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.modes-grouped{display:none}
+@media (max-width:640px){
+  .modes-flat{display:none}.modes-grouped{display:grid;gap:10px}
+  .mgroup{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:0 12px}
+  .mgroup>summary{list-style:none;display:flex;align-items:center;gap:10px;padding:14px 2px;font-weight:800;font-size:17px;cursor:pointer}
+  .mgroup>summary::-webkit-details-marker{display:none}
+  .mgroup>summary small{margin-left:auto;font-weight:600;color:var(--muted);font-size:13px}
+  .mgroup>summary::after{content:"▾";color:var(--muted);transition:transform .2s}
+  .mgroup:not([open])>summary::after{transform:rotate(-90deg)}
+  .mgroup>.modes{padding:0 0 12px}
+}
 .mode{--c:#7B5BE0;position:relative;text-align:left;border:2px solid var(--line);background:var(--card);border-radius:20px;padding:20px 20px 18px;display:flex;flex-direction:column;gap:6px;transition:transform .15s,border-color .15s}
 .mode:hover{transform:translateY(-3px);border-color:var(--c)}
 .mode .mi{font-size:40px;line-height:1}
@@ -333,6 +344,8 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .boss-say{display:flex;gap:8px;align-items:center;margin:-6px 0 14px;padding:8px 12px;border-radius:14px;background:var(--soft);font-weight:700;font-style:italic;font-size:15px;position:relative;animation:fade .25s}
 .boss-say::before{content:"";position:absolute;top:-6px;left:22px;border:6px solid transparent;border-top:0;border-bottom-color:var(--soft)}
 .boss-say span{font-style:normal;font-size:20px}
+.whatsnew{text-align:left;max-width:520px}.whatsnew h3{text-align:center}.whatsnew .kick{text-align:center}
+.whatsnew ul{margin:10px 0 16px;padding-left:1.1em;display:grid;gap:8px;font-size:15px;line-height:1.45}.whatsnew .btn{display:block;margin:0 auto}
 .boss-quote{font-style:italic;font-weight:700;font-size:18px;margin:0 0 6px}
 .hardtog{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px}.hardtog span{color:var(--muted);font-size:14px}
 .bossc.hard:not(:disabled){box-shadow:0 0 0 2px #F97316 inset}
@@ -951,7 +964,7 @@ const KEY = "rr-psych-v1";
 let store = {p:{}, sel:TOPICS.map(t=>t.key), all:TOPICS.map(t=>t.key)};
 try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s && s.p){ store.p = s.p; if(Array.isArray(s.sel)){ const seen=new Set(Array.isArray(s.all)?s.all:s.sel.concat(["Social Influence","Memory","Attachment","Psychopathology","Approaches","Biopsychology","RM","Issues and Debates part I"])); store.sel = [...new Set(s.sel.map(k=>k.startsWith("Issues and Debates")?"Issues and Debates part I":k))].filter(k=>TMAP[k]).concat(TOPICS.map(t=>t.key).filter(k=>!seen.has(k))); } } }catch(e){}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} }
-try{ const s0=JSON.parse(localStorage.getItem(KEY)||"null"); if(s0) ["sr","theme","gapMode","srMig","a11y","reportName","trophyTab","cardStyle"].forEach(k=>{ if(s0[k]!==undefined) store[k]=s0[k]; }); }catch(e){}
+try{ const s0=JSON.parse(localStorage.getItem(KEY)||"null"); if(s0) ["sr","theme","gapMode","srMig","a11y","reportName","trophyTab","cardStyle","seenNew"].forEach(k=>{ if(s0[k]!==undefined) store[k]=s0[k]; }); }catch(e){}
 const status = id => store.p[id] || "";
 
 /* ---------- spaced repetition: Got it → back in 1, 3, 7, 21, then 60 days ---------- */
@@ -2243,6 +2256,8 @@ const MODES = {
 const arc={phase:"menu", mode:null, qs:[], i:0, score:0, right:0, lives:3, end:0, qEnd:0, timer:null, cur:null, locked:false, log:[], t0:0, xp:0, best:false, seen:new Set(), fb:false};
 const dailyNo = () => dayNum(today())-dayNum("2026-01-01")+1;
 const M = () => MODES[arc.mode];
+/* how the arcade menu is grouped on phones (desktop shows one grid in the MODES order) */
+const ARC_GROUPS=[["📰","Daily and weekly",["daily","weekly","exam"]],["⚡","Quick play",["blitz","surv","gap","match","sort","timeline","order"]],["🕵️","Study skills",["stats","flaw","detective","whoami","mistakes"]],["👹","Challenges",["boss"]],["👪","For teachers and parents",["parent","proj"]]];
 const GOTD_POOL=["blitz","surv","gap","stats","flaw","match","order","detective","whoami","sort","timeline"];
 const gotd=()=>GOTD_POOL[((dayNum(today())%GOTD_POOL.length)+GOTD_POOL.length)%GOTD_POOL.length];
 /* weekly challenge: rotates through the content topics every Monday */
@@ -2282,10 +2297,14 @@ function renderArcade(){
     const weekBanner=`<button class="weekban" id="weekBan" style="--c:${weekTopic().c}"><span>🏁</span><div><b>Weekly Challenge #${weekNo()}: ${esc(weekTopic().name)}</b><span>${wk&&wk.done?`You scored ${wk.score}/15 this week. New topic on Monday.`:`15 questions, one go. Ends ${daysLeft===0?"tonight":daysLeft===1?"tomorrow":"in "+daysLeft+" days"}.`}</span></div><i>${wk&&wk.done?"See result":"Play"}</i></button>`;
     const gm=MODES[gotd()];
     area.innerHTML=weekBanner+`<button class="gotdban" id="gotdBan" style="--c:${gm.c}"><span>🎲</span><div><b>Game of the day: ${gm.icon} ${esc(gm.name)}</b><span>Double XP on every right answer, today only. A new game tomorrow.</span></div></button>`+`${examToday?"":`<div class="focus"><span>🎯</span><div><b>Today's focus: exam skills</b><span>Do one Exam Skills round today for double XP. It's where the easy marks are.</span></div></div>`}
-      <div class="modes">${Object.entries(MODES).map(([k,m])=>{
-      const dis = (m.src==="cards" && !nCards) || (m.src==="gap" && nGap<4) || (m.src==="mistakes" && !mistakeIds().filter(id=>mcOK(BY_ID[id])).length);
-      const tag = k===gotd() ? `<span class="new gotd">🎲 Today 2×</span>` : m.featured ? `<span class="new">2× XP</span>` : (k==="daily"&&!(dd&&dd.done)) ? '<span class="new">NEW</span>' : "";
-      return `<button class="mode ${m.featured?"featured":""} ${k===gotd()?"gotd":""}" style="--c:${m.c}" data-mode="${k}" ${dis?"disabled":""}>${tag}<span class="mi">${m.icon}</span><h3>${m.name}${m.featured?' <small>Featured</small>':""}</h3><p>${m.desc}</p><span class="best">${bestLabel(k)}</span></button>`; }).join("")}</div>
+      ${(()=>{ const card=k=>{ const m=MODES[k];
+        const dis = (m.src==="cards" && !nCards) || (m.src==="gap" && nGap<4) || (m.src==="mistakes" && !mistakeIds().filter(id=>mcOK(BY_ID[id])).length);
+        const tag = k===gotd() ? `<span class="new gotd">🎲 Today 2×</span>` : m.featured ? `<span class="new">2× XP</span>` : (k==="daily"&&!(dd&&dd.done)) ? '<span class="new">NEW</span>' : "";
+        return `<button class="mode ${m.featured?"featured":""} ${k===gotd()?"gotd":""}" style="--c:${m.c}" data-mode="${k}" ${dis?"disabled":""}>${tag}<span class="mi">${m.icon}</span><h3>${m.name}${m.featured?' <small>Featured</small>':""}</h3><p>${m.desc}</p><span class="best">${bestLabel(k)}</span></button>`; };
+        const used=new Set(ARC_GROUPS.flatMap(g=>g[2])), rest=Object.keys(MODES).filter(k=>!used.has(k));
+        const groups=ARC_GROUPS.map(g=>[g[0],g[1],g[2].filter(k=>MODES[k])]).concat(rest.length?[["✨","More",rest]]:[]);
+        return `<div class="modes modes-flat">${Object.keys(MODES).map(card).join("")}</div>
+        <div class="modes-grouped">${groups.map((g,i)=>`<details class="mgroup" ${i<2||g[2].includes(gotd())?"open":""}><summary><span>${g[0]}</span>${g[1]}<small>${g[2].length}</small></summary><div class="modes">${g[2].map(card).join("")}</div></details>`).join("")}</div>`; })()}
       <p class="arc-note">Blitz, Survival and Gap Fill use the topics you've selected above${nCards?"":", so pick at least one"}. Exam Skills and Stats Lab cover the whole course. Wrong answers on revision cards are added to your still-learning pile. Use keys 1 to 4 to answer, and Enter for the next question.</p>`;
     $("#weekBan").onclick=()=>startArc("weekly");
     $("#gotdBan").onclick=()=>{ const g=gotd(); if(g==="match") startMatch(); else if(g==="order") startOrder(); else if(g==="sort") startSort(); else if(g==="timeline") startTimeline(); else startArc(g); };
@@ -3904,6 +3923,29 @@ document.addEventListener("keydown",e=>{
   if(lvlFor(G.xp)>=99 && !G.scrolls[10]) setTimeout(()=>showScroll(10),2600);
 })();
 checkStreak(); checkBadges(); save();
+/* ✨ what's new: shown once to returning students after a big update (bump WHATS_NEW_ID for the next one) */
+const WHATS_NEW_ID="2026-11";
+(()=>{ const returning=(G.xp||0)>0 || Object.keys(store.p).length>0;
+  if(store.seenNew===WHATS_NEW_ID) return;
+  if(!returning){ store.seenNew=WHATS_NEW_ID; save(); return; }
+  setTimeout(()=>{ if(document.querySelector(".overlay")){ return; }
+    const o=document.createElement("div"); o.className="overlay";
+    o.innerHTML=`<div class="levelup whatsnew" role="dialog" aria-modal="true" aria-labelledby="wnT"><div class="kick">Big update</div><h3 id="wnT">✨ What's new</h3>
+      <ul>
+        <li><b>🃏 Flashcards ask for an answer.</b> Pick from four options, or switch to <i>Type it</i> for double XP. They're marked for you.</li>
+        <li><b>🕵️ New games:</b> Study Detective, Who Am I?, Sort It and Timeline, plus a 🎲 Game of the Day with double XP.</li>
+        <li><b>👹 Bosses talk back,</b> and there's a hard mode once you've beaten one.</li>
+        <li><b>🐀 Meet Professor Squeaks,</b> your lab rat. Revise to feed him and help him grow.</li>
+        <li><b>⭐ Mastery stars:</b> earn up to 3 in every topic (see Progress).</li>
+        <li><b>🏅 100 levels</b> and lots of new themes to unlock.</li>
+      </ul><button class="btn" id="wnOk">Let's go</button></div>`;
+    document.body.appendChild(o);
+    const close=()=>{ o.remove(); store.seenNew=WHATS_NEW_ID; save(); document.removeEventListener("keydown",k2,true); };
+    const k2=e=>{ if(e.key==="Tab") return; e.stopPropagation(); if(e.key==="Escape"||e.key==="Enter"||e.key===" "){ e.preventDefault(); close(); } };
+    document.addEventListener("keydown",k2,true);
+    o.onclick=e=>{ if(e.target===o||e.target.id==="wnOk") close(); };
+    $("#wnOk").focus();
+  },900); })();
 
 if(dueCount()>0){ filter="due"; document.querySelectorAll("[data-filter]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.filter==="due")); }
 renderMeter(); renderChips(); newDeck(); renderQuiz(); renderHud(); renderArcade();
