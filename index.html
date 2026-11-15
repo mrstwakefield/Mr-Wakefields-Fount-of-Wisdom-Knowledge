@@ -104,6 +104,12 @@ kbd{font-family:var(--body);font-size:12px;border:1px solid currentColor;border-
 .cardin{width:100%;margin-top:14px;font:inherit;font-size:16px;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);resize:vertical;position:relative}
 .cardin:focus{outline:none;border-color:var(--c)}.cardin.need{border-color:var(--warn);animation:shake .35s}
 .yours{position:relative;margin:0 0 10px;padding:10px 12px;border-radius:12px;background:var(--soft);font-size:15px}
+.automark{position:relative;margin:0 0 10px;padding:10px 12px;border-radius:12px;border:2px solid var(--line);font-size:15px}
+.automark.ok{border-color:var(--good);background:var(--good-bg)}.automark.no{border-color:var(--warn);background:var(--warn-bg)}
+.automark span{color:var(--muted);margin-left:4px}
+.kterms{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.kterms i{font-style:normal;font-size:13px;padding:2px 8px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--muted)}
+.kterms i.hit{color:var(--good);border-color:var(--good);font-weight:700}
+#qAns.need,.gapin.need{border-color:var(--warn)!important;animation:shake .35s}
 .why{position:relative;margin:10px 0 0;padding:8px 12px;border-radius:10px;background:var(--soft);font-size:15px}
 .face.back .q-small{font-size:15px;color:var(--muted);margin:14px 0 10px;position:relative}
 .a{font-size:clamp(18px,2.2vw,21px);line-height:1.55;position:relative;margin-bottom:auto}
@@ -1129,7 +1135,7 @@ document.querySelectorAll("[data-filter]").forEach(b=>b.addEventListener("click"
 $("#shuffleBtn").onclick=newDeck;
 let gapMode=!!store.gapMode, gapTyped="", gapCardId=null, _gm=null;
 /* flashcards need an answer: multiple choice (default) or typing an attempt. Cards too long for multiple choice always use typing. */
-let cardStyle=store.cardStyle==="type"?"type":"mc", cardMC=null, cardTyped="", cardDone=false;
+let cardStyle=store.cardStyle==="type"?"type":"mc", cardMC=null, cardTyped="", cardDone=false, cardRes=null;
 const cardUsesMC=d=>cardStyle==="mc" && mcOK(d);
 function syncStyleBtn(){ const b=$("#styleBtn"); if(b) b.textContent=cardStyle==="mc"?"🔘 Answer: multiple choice":"⌨️ Answer: type it"; }
 const gapById=id=>(_gm||(_gm=Object.fromEntries(gaps().map(g=>[g.id,g]))))[id];
@@ -1141,6 +1147,35 @@ function gapVerdict(typed,term){ const a=normT(typed), b=normT(term);
   if(a===b) return ["ok","✓ Spot on"];
   if(lev(a,b)<=Math.max(1,Math.floor(b.length/6))) return ["close","Nearly: check your spelling"];
   return ["no","✗ Not quite. You wrote: "+typed]; }
+/* automatic marking of typed answers: the key terms of the model answer are found in what the student typed.
+   Short answers need 1 key term; longer ones need about 40% of them. */
+const AM_STOP=new Set("that this with from they their there which when what about into more less than then also such some other have been being were will would could should because example people person something someone things thing does doing make makes made used using based between within without through only very much many most each both either often usually likely whether where while after before over under same different rather just like them these those your what whom whose able ways help helps shows show showed study studies research participants participant wasn isn known finding findings roughly form forms getting reaction individual individuals others view addition generally typically certain particular instead".split(" "));
+const AM_SYN=[["disrupt","interfere","affect","block","impair","confuse","stop","prevent","hinder"],["recall","remember","retrieve","retrieval","memory"],["caregiver","carer","mother","parent","caretaker"],["infant","baby","child"],["change","changing","changes","alter"],["behaviour","behave","behaviours","actions","act"],["public","publicly","outwardly"],["private","privately","inwardly","inside"],["attachment","attached","bond","relationship"],["special","main","primary","important"],["fairness","fair","equal","balance","balanced"],["reward","rewards","benefit","benefits"],["cost","costs"],["anxiety","anxious","fear","stress"],["increase","more","higher","rise"],["decrease","less","lower","fall","reduce"],["learning","learnt","learned","learn","information","info"]];
+const AM_MAP=(()=>{ const m=new Map(); AM_SYN.forEach(g=>g.forEach(w=>m.set(w,g[0]))); return m; })();
+const amStem=w=>w.length>5?w.replace(/(ing|ed|es|s|ly)$/,""):w;
+const AM_MAP2=(()=>{ const m=new Map(); AM_SYN.forEach(g=>g.forEach(w=>{ m.set(w,g[0]); m.set(amStem(w),g[0]); })); return m; })();
+const amNorm=w=>{ for(const v of [w,w.replace(/s$/,""),w.replace(/es$/,""),w.replace(/ing$/,""),w.replace(/ing$/,"e"),w.replace(/ed$/,""),w.replace(/ed$/,"e"),w.replace(/d$/,""),w.replace(/ly$/,"")]) if(AM_MAP2.has(v)) return AM_MAP2.get(v); return amStem(w); };
+let AM_DF=null;
+function amDF(){ if(AM_DF) return AM_DF; AM_DF=new Map(); DATA.forEach(d=>{ new Set(String(d.a).toLowerCase().replace(/[^a-z0-9%\s-]/g," ").split(/[\s-]+/)).forEach(w=>AM_DF.set(w,(AM_DF.get(w)||0)+1)); }); return AM_DF; }
+function keyTerms(a){
+  const seen=new Set(), out=[], df=amDF();
+  String(a).toLowerCase().replace(/e\.g\.[^,;)]*/g," ").replace(/[^a-z0-9%\s-]/g," ").split(/[\s-]+/).forEach(w=>{
+    if(((w.length>=4 && !AM_STOP.has(w)) || /\d/.test(w)) && !seen.has(w)){ seen.add(w); out.push(w); } });
+  // keep the 6 most distinctive (rarest across the question bank), in their original order
+  const keep=new Set([...out].sort((x,y)=>(df.get(x)||0)-(df.get(y)||0)).slice(0,6));
+  return out.filter(w=>keep.has(w));
+}
+function autoMark(typed, a){
+  const words=String(typed||"").toLowerCase().replace(/[^a-z0-9%\s]/g," ").split(/\s+/).filter(Boolean);
+  const t=" "+words.join(" ")+" ", tn=new Set(words.map(amNorm));
+  const keys=keyTerms(a);
+  if(!keys.length) return {ok:String(typed||"").trim().length>=3, hit:[], miss:[], need:0};
+  const has=k=>{ const st=k.length>7?k.slice(0,k.length-2):k; return t.includes(" "+st) || tn.has(amNorm(k)) || (k.length>5 && words.some(w=>w.length>4 && w.slice(0,5)===k.slice(0,5))); };
+  const hit=keys.filter(has), miss=keys.filter(k=>!has(k)), need=keys.length<=2?1:keys.length<=4?2:Math.ceil(keys.length/3);
+  return {ok:hit.length>=need, hit, miss, need};
+}
+function markHTML(r){ return `<div class="automark ${r.ok?"ok":"no"}"><b>${r.ok?"✅ Got it":"📚 Needs work"}</b> <span>${r.hit.length} of ${r.hit.length+r.miss.length} key terms${r.ok?"":` (you needed ${r.need})`}</span>
+  ${r.hit.length+r.miss.length?`<div class="kterms">${r.hit.map(k=>`<i class="hit">✓ ${esc(k)}</i>`).join("")}${r.miss.map(k=>`<i>${esc(k)}</i>`).join("")}</div>`:""}</div>`; }
 function syncGapBtn(){ const b=$("#gapBtn"); if(b){ b.setAttribute("aria-pressed",gapMode); b.textContent=gapMode?"✏️ Gap fill mode: on":"✏️ Gap fill mode"; } }
 $("#gapBtn").onclick=()=>{ gapMode=!gapMode; store.gapMode=gapMode; save(); syncGapBtn(); newDeck(); };
 $("#styleBtn").onclick=()=>{ cardStyle=cardStyle==="mc"?"type":"mc"; store.cardStyle=cardStyle; save(); syncStyleBtn(); cardMC=null; cardTyped=""; cardDone=false; flipped=false; renderCard(); };
@@ -1174,7 +1209,7 @@ function renderCard(){
     $("#againAll").onclick=newDeck; return;
   }
   const d=BY_ID[deck[pos]], t=TMAP[d.t], st=status(d.id), gold=golds.has(d.id), g=gapMode?gapById(d.id):null;
-  if(gapCardId!==d.id){ gapCardId=d.id; gapTyped=""; cardTyped=""; cardDone=false; cardMC=null; }
+  if(gapCardId!==d.id){ gapCardId=d.id; gapTyped=""; cardTyped=""; cardDone=false; cardMC=null; cardRes=null; }
   const useMC=!g && cardUsesMC(d);
   if(useMC && (!cardMC || cardMC.id!==d.id)){ const m=mcFor(d); cardMC={id:d.id, opts:m.opts, correct:m.correct, picked:null}; }
   const stLabel = st==="k"?'<span class="pill k">Known</span>':st==="l"?'<span class="pill l">Still learning</span>':'';
@@ -1186,21 +1221,21 @@ function renderCard(){
           <div class="tag">${gold?'<span class="goldtag">✨ Golden card · 5× XP</span>':(g?"✏️ Gap fill · ":"")+esc(t.name)} <span class="muted">Card ${pos+1} of ${deck.length}</span></div>
           ${g?`<div class="gapdef">“<b class="blank">_____</b>: ${esc(g.def).replace(/_____/g,'<b class="blank">_____</b>')}”</div>
           <input class="gapin" id="gapIn" type="text" placeholder="Type the missing key term" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Type the missing key term" value="${esc(gapTyped)}">
-          <div class="hint">Type the missing key term, then press Enter to check. ${stLabel}</div>`
+          <div class="hint">Type the missing key term, then press Enter to check. It's marked for you. ${stLabel}</div>`
           : useMC ? `<div class="q pre ${d.q.length>150?"long":""}">${esc(d.q)}</div>
           <div class="opts one cardopts">${cardMC.opts.map((o,i)=>{ const pk=cardMC.picked; const cls=pk==null?"":i===cardMC.correct?"right":i===pk?"wrong":"dim"; return `<button class="opt ${cls}" data-co="${i}" ${pk!=null?"disabled":""}><span class="k">${i+1}</span><span>${esc(o)}</span></button>`; }).join("")}</div>
           <div class="hint">${cardMC.picked==null?"Pick the right answer (keys 1–4).":cardMC.picked===cardMC.correct?"✅ Correct!":"❌ Not quite: the right answer is highlighted."} ${stLabel}</div>${cardMC.picked!=null&&d.y?`<p class="why">💡 ${esc(d.y)}</p>`:""}`
           : `<div class="q pre ${d.q.length>150?"long":""}">${esc(d.q)}</div>
           <textarea class="cardin" id="cardIn" rows="3" placeholder="Type your answer, then press Enter to check" aria-label="Type your answer">${esc(cardTyped)}</textarea>
-          <div class="hint">Have a go first: type at least a few words, then check. ${stLabel}</div>`}
+          <div class="hint">Type your answer, then check. It's marked automatically on the key terms. ${stLabel}</div>`}
         </div>
         <div class="face back" aria-hidden="${!flipped}">
           <div class="tag">Answer <span class="muted">${nextReview(d.id)?nextReview(d.id)+" · ":""}Card ${pos+1} of ${deck.length}</span></div>
           ${g?`<div class="q gapterm">${esc(g.term)}</div><div class="gapres" id="gapRes"></div><div class="a"><p style="margin:0">${esc(g.def.replace(/_____/g,g.term))}</p></div>`
           :`<div class="q-small">${esc(d.q)}</div>
+          ${cardRes?markHTML(cardRes):""}
           ${cardTyped?`<div class="yours"><b>Your answer:</b> ${esc(cardTyped)}</div>`:""}
-          <div class="a">${fmtAnswer(d.a,d.id)}</div>${d.y?`<p class="why">💡 ${esc(d.y)}</p>`:""}
-          <div class="hint">Be honest: did your answer cover the key points?</div>`}
+          <div class="a">${fmtAnswer(d.a,d.id)}</div>${d.y?`<p class="why">💡 ${esc(d.y)}</p>`:""}`}
         </div>
       </div>
     </div>
@@ -1223,13 +1258,14 @@ function renderCard(){
   if(gi){
     gi.onclick=e=>e.stopPropagation();
     gi.oninput=()=>{ gapTyped=gi.value; };
-    gi.onkeydown=e=>{ e.stopPropagation(); if(e.key==="Enter"){ e.preventDefault(); flip(); } };
-    if(flipped) showGapResult(); else if(matchMedia("(hover:hover)").matches) gi.focus({preventScroll:true});
+    gi.onkeydown=e=>{ e.stopPropagation(); if(e.key==="Enter"){ e.preventDefault(); if(cardRes){ pos++; flipped=false; renderCard(); } else flip(); } };
+    if(flipped) showGapResult(); else if(matchMedia("(hover:hover)").matches && !cardRes) gi.focus({preventScroll:true});
   }
 }
 function curUsesMC(){ const d=BY_ID[deck[pos]]; return d && !(gapMode&&gapById(d.id)) && cardUsesMC(d); }
 function actionsHTML(){
   if(curUsesMC()) return cardMC&&cardMC.picked!=null ? `<button class="btn" id="nextCardBtn">Next card<kbd>Enter</kbd></button>` : "";
+  if(cardRes) return `<button class="btn" id="nextCardBtn">Next card<kbd>Enter</kbd></button>`;
   return flipped
   ? `<button class="btn warn" id="learnBtn">Still learning<kbd>1</kbd></button><button class="btn good" id="gotBtn">Got it<kbd>2</kbd></button>`
   : `<button class="btn" id="flipBtn">${gapMode&&gapById(deck[pos])?"Check":"Check my answer"}<kbd>Enter</kbd></button>`; }
@@ -1240,14 +1276,16 @@ function flip(){
   const c=$("#card"); if(!c) return;
   if(curUsesMC()) return;
   if(!flipped && $("#cardIn") && cardTyped.trim().length<3){ const ci=$("#cardIn"); ci.classList.add("need"); ci.placeholder="Have a go first: type at least a few words"; ci.focus(); setTimeout(()=>ci.classList.remove("need"),600); return; }
-  if(!flipped && $("#cardIn")){ flipped=true; renderCard(); const c2=$("#card"); if(c2){ c2.classList.remove("flipped"); void c2.offsetWidth; c2.classList.add("flipped"); } const gb=$("#gotBtn"); if(gb) gb.focus({preventScroll:true}); return; }
+  if(!flipped && $("#gapIn") && !cardRes){ if(!gapTyped.trim()){ const gi=$("#gapIn"); gi.classList.add("need"); gi.focus(); setTimeout(()=>gi.classList.remove("need"),600); return; }
+    const g=gapById(deck[pos]), v=gapVerdict(gapTyped,g.term)[0]; cardRes={ok:v==="ok"||v==="close", gap:true}; rate(cardRes.ok?"k":"l", false); }
+  if(!flipped && $("#cardIn") && !cardRes){ cardRes=autoMark(cardTyped, BY_ID[deck[pos]].a); rate(cardRes.ok?"k":"l", false); flipped=true; renderCard(); const c2=$("#card"); if(c2){ c2.classList.remove("flipped"); void c2.offsetWidth; c2.classList.add("flipped"); } const nb=$("#nextCardBtn"); if(nb) nb.focus({preventScroll:true}); return; }
   const hadFocus = document.activeElement && ["flipBtn","gotBtn","learnBtn"].includes(document.activeElement.id);
   flipped=!flipped; c.classList.toggle("flipped",flipped);
   c.querySelector(".front").setAttribute("aria-hidden",flipped); c.querySelector(".back").setAttribute("aria-hidden",!flipped);
   c.setAttribute("aria-label","Flashcard. Press to "+(flipped?"see the question":"reveal the answer"));
   $("#acts").innerHTML=actionsHTML(); wireActions();
   if(hadFocus) $(flipped?"#gotBtn":"#flipBtn").focus({preventScroll:true});
-  if($("#gapIn")){ if(flipped){ showGapResult(); $("#gotBtn").focus({preventScroll:true}); } else $("#gapIn").focus({preventScroll:true}); }
+  if($("#gapIn")){ if(flipped){ showGapResult(); const nb=$("#nextCardBtn"); if(nb) nb.focus({preventScroll:true}); } else $("#gapIn").focus({preventScroll:true}); }
 }
 function showGapResult(){ const g=gapById(deck[pos]), r=$("#gapRes"); if(!g||!r) return; if(normT(gapTyped)==="pavlov") setTimeout(()=>showScroll(8),700); const [cls,msg]=gapVerdict(gapTyped,g.term); r.className="gapres "+cls; r.textContent=msg; }
 function rate(s, advance=true){ const id=deck[pos]; sessionRes[id]=s; recAcc(id,s==="k"); noteLearn(id,s==="k"); if(filter==="weak") G.st.weakDone=(G.st.weakDone||0)+1; srReview(id,s==="k"); mark(id,s);
@@ -1260,9 +1298,8 @@ document.addEventListener("keydown",e=>{
   if(pos>=deck.length) return;
   if(curUsesMC()){ if(cardMC && cardMC.picked==null && /^[1-4]$/.test(e.key)){ e.preventDefault(); pickCardMC(+e.key-1); return; }
     if(cardMC && cardMC.picked!=null && (e.key==="Enter"||e.key===" ")){ e.preventDefault(); pos++; flipped=false; renderCard(); return; } }
+  else if(cardRes && (e.key==="Enter"||e.key===" ")){ e.preventDefault(); pos++; flipped=false; renderCard(); }
   else if(e.key===" "||(e.key==="Enter"&&!flipped)){ e.preventDefault(); flip(); }
-  else if(flipped && e.key==="1") rate("l");
-  else if(flipped && e.key==="2") rate("k");
   else if(e.key==="ArrowRight"){ pos++; flipped=false; renderCard(); }
   else if(e.key==="ArrowLeft" && pos>0){ pos--; flipped=false; renderCard(); }
 });
@@ -1293,7 +1330,7 @@ function renderQuiz(){
         <div class="q pre ${d.q.length>150?"long":""}">${esc(d.q)}</div>
         ${quiz.shown
           ? `<div class="compare"><div><h4>Your answer</h4>${mine?esc(mine).replace(/\n/g,"<br>"):'<span class="muted">You didn\'t write anything.</span>'}</div><div class="model"><h4>Model answer</h4><div class="a" style="font-size:17px">${fmtAnswer(d.a,d.id)}</div>${d.y?`<p class="why">💡 ${esc(d.y)}</p>`:""}</div></div>
-             <div class="card-actions"><button class="btn warn" id="qNo">Not quite</button><button class="btn good" id="qYes">I got it</button></div>`
+             ${quiz.res?markHTML(quiz.res):""}<div class="card-actions"><button class="btn" id="qNext">${quiz.i+1>=quiz.items.length?"See results":"Next question"}</button></div>`
           : `<label for="qAns" class="muted" style="display:block;margin-bottom:6px;font-size:15px">Your answer</label>
              <textarea id="qAns" placeholder="Write what you remember">${esc(mine)}</textarea>
              <div class="card-actions"><button class="btn" id="qShow">Check answer</button></div>`}
@@ -1302,11 +1339,13 @@ function renderQuiz(){
     $("#qQuit").onclick=()=>{quiz.phase="setup";renderQuiz();};
     const tq=$("#ttsQ"); if(tq) tq.onclick=()=>speak(quiz.shown ? d.q+". Model answer: "+d.a : d.q);
     if(quiz.shown){
-      const next=ok=>{ quiz.marks[quiz.i]=ok; recAcc(d.id,ok); noteLearn(d.id,ok); srReview(d.id,ok); mark(d.id, ok?"k":"l"); answer({ok, el:$(ok?"#qYes":"#qNo"), mode:"quiz"}); quiz.i++; quiz.shown=false; if(quiz.i>=quiz.items.length){ quiz.phase="done"; quizDone(); } renderQuiz(); const ta=$("#qAns"); if(ta) ta.focus(); };
-      $("#qYes").onclick=()=>next(true); $("#qNo").onclick=()=>next(false);
-      $("#qYes").focus({preventScroll:true});
+      $("#qNext").onclick=()=>{ quiz.i++; quiz.shown=false; quiz.res=null; if(quiz.i>=quiz.items.length){ quiz.phase="done"; quizDone(); } renderQuiz(); const ta=$("#qAns"); if(ta) ta.focus(); };
+      $("#qNext").focus({preventScroll:true});
     } else {
-      $("#qShow").onclick=()=>{ quiz.answers[quiz.i]=$("#qAns").value.trim(); quiz.shown=true; renderQuiz(); };
+      $("#qShow").onclick=()=>{ const v=$("#qAns").value.trim(); if(v.length<3){ const ta=$("#qAns"); ta.classList.add("need"); ta.placeholder="Have a go first: write at least a few words"; ta.focus(); setTimeout(()=>ta.classList.remove("need"),600); return; }
+        quiz.answers[quiz.i]=v; const r=autoMark(v,d.a), ok=r.ok; quiz.res=r;
+        quiz.marks[quiz.i]=ok; recAcc(d.id,ok); noteLearn(d.id,ok); srReview(d.id,ok); mark(d.id, ok?"k":"l"); answer({ok, el:$("#qShow"), mode:"quiz"});
+        quiz.shown=true; renderQuiz(); };
     }
     return;
   }
