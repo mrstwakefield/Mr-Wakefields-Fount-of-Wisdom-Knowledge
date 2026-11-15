@@ -999,20 +999,20 @@ const SKINS=[
   {id:"auto", name:"Auto", lvl:1, sw:["#EEF1F7","#121829"], desc:"Follows your device"},
   {id:"light", name:"Light", lvl:1, sw:["#EEF1F7","#FFFFFF"], desc:"Always light"},
   {id:"dark", name:"Dark", lvl:1, sw:["#121829","#1B233B"], desc:"Always dark"},
-  {id:"mint", name:"Mint", lvl:4, sw:["#E6F5EF","#1C8A5E"], desc:"Fresh start"},
-  {id:"peach", name:"Peach", lvl:8, sw:["#FFF1E8","#F08A5D"], desc:"Warm and calm"},
-  {id:"sky", name:"Sky", lvl:12, sw:["#EAF4FD","#3B8ED8"], desc:"Clear-headed"},
-  {id:"gold", name:"Gold", lvl:16, sw:["#FBF4E2","#C99A17"], desc:"For the top of the class"},
-  {id:"lavender", name:"Lavender", lvl:20, sw:["#F3EEFC","#8B6BD9"], desc:"Relaxed revision"},
-  {id:"ocean", name:"Deep Ocean", lvl:24, sw:["#0B1C2C","#3BA7D9"], desc:"Calm and focused"},
+  {id:"mint", name:"Tabula Rasa", lvl:4, sw:["#E6F5EF","#1C8A5E"], desc:"A blank slate, ready to learn 🌱"},
+  {id:"peach", name:"Cloth Mother", lvl:8, sw:["#FFF1E8","#F08A5D"], desc:"Soft and comforting, as Harlow's monkeys knew 🐒"},
+  {id:"sky", name:"Голубой (Goluboy)", lvl:12, sw:["#EAF4FD","#3B8ED8"], desc:"Russian has a separate word for light blue, and speakers spot the difference faster 🩵"},
+  {id:"gold", name:"Gold Standard", lvl:16, sw:["#FBF4E2","#C99A17"], desc:"The best kind of evidence ⭐"},
+  {id:"lavender", name:"Relaxation Response", lvl:20, sw:["#F3EEFC","#8B6BD9"], desc:"Calm, like the relaxation step in systematic desensitisation 💜"},
+  {id:"ocean", name:"The Iceberg", lvl:24, sw:["#0B1C2C","#3BA7D9"], desc:"Freud's mind: most of it lies below the surface 🧊"},
   {id:"neon", name:"Neon Synapse", lvl:28, sw:["#0D0221","#3CF2A0"], desc:"Firing on all cylinders"},
   {id:"exam", name:"Exam Season", lvl:32, sw:["#0E0E10","#E5484D"], desc:"No distractions"},
   {id:"blues", name:"Keep Right On", lvl:36, sw:["#0A1F8F","#FFFFFF"], desc:"Royal blue and white 💙"},
   {id:"tamworth", name:"Tamworth Castle", lvl:40, sw:["#EAD6B8","#A33B2B"], desc:"Sandstone walls and red brick 🏰"},
   {id:"pink", name:"Pink Pen", lvl:44, sw:["#FCEEF4","#D6478F"], desc:"Mr Wakefield approved"},
-  {id:"grape", name:"Grape", lvl:48, sw:["#1E1033","#B57BFF"], desc:"Deep purple focus"},
-  {id:"terminal", name:"Terminal", lvl:52, sw:["#050805","#39FF6A"], desc:"Hacker mode"},
-  {id:"cocoa", name:"Cocoa", lvl:56, sw:["#1F1612","#D9A066"], desc:"Hot chocolate and flashcards"},
+  {id:"grape", name:"Stroop Effect", lvl:48, sw:["#1E1033","#B57BFF"], desc:"Say the colour, not the word 🟣"},
+  {id:"terminal", name:"Computer Analogy", lvl:52, sw:["#050805","#39FF6A"], desc:"The cognitive approach: input → processing → output 💻"},
+  {id:"cocoa", name:"Positive Reinforcement", lvl:56, sw:["#1F1612","#D9A066"], desc:"Hot chocolate after revising makes revising more likely 🍫"},
   {id:"chalk", name:"Chalkboard", lvl:60, sw:["#1F3B2D","#F1F5EE"], desc:"Green board, chalky text 🖍️"},
   {id:"ink", name:"Ink & Quill", lvl:64, sw:["#F7F4EC","#1D3C8F"], desc:"Fountain-pen blue for the Fount 🖋️"},
   {id:"library", name:"Library", lvl:68, sw:["#1E2B22","#E2C178"], desc:"Green leather and brass 📚"},
@@ -1137,7 +1137,7 @@ let gapMode=!!store.gapMode, gapTyped="", gapCardId=null, _gm=null;
 /* flashcards need an answer: multiple choice (default) or typing an attempt. Cards too long for multiple choice always use typing. */
 let cardStyle=store.cardStyle==="type"?"type":"mc", cardMC=null, cardTyped="", cardDone=false, cardRes=null;
 const cardUsesMC=d=>cardStyle==="mc" && mcOK(d);
-function syncStyleBtn(){ const b=$("#styleBtn"); if(b) b.textContent=cardStyle==="mc"?"🔘 Answer: multiple choice":"⌨️ Answer: type it"; }
+function syncStyleBtn(){ const b=$("#styleBtn"); if(b) b.textContent=cardStyle==="mc"?"🔘 Answer: multiple choice":"⌨️ Answer: type it (2× XP)"; }
 const gapById=id=>(_gm||(_gm=Object.fromEntries(gaps().map(g=>[g.id,g]))))[id];
 const normT=x=>x.toLowerCase().replace(/[^a-z0-9]/g,"");
 function lev(a,b){ const m=[]; for(let i=0;i<=a.length;i++){ m[i]=[i]; } for(let j=1;j<=b.length;j++) m[0][j]=j;
@@ -1227,7 +1227,7 @@ function renderCard(){
           <div class="hint">${cardMC.picked==null?"Pick the right answer (keys 1–4).":cardMC.picked===cardMC.correct?"✅ Correct!":"❌ Not quite: the right answer is highlighted."} ${stLabel}</div>${cardMC.picked!=null&&d.y?`<p class="why">💡 ${esc(d.y)}</p>`:""}`
           : `<div class="q pre ${d.q.length>150?"long":""}">${esc(d.q)}</div>
           <textarea class="cardin" id="cardIn" rows="3" placeholder="Type your answer, then press Enter to check" aria-label="Type your answer">${esc(cardTyped)}</textarea>
-          <div class="hint">Type your answer, then check. It's marked automatically on the key terms. ${stLabel}</div>`}
+          <div class="hint">Type your answer, then check. It's marked automatically on the key terms, and typed answers earn 2× XP. ${stLabel}</div>`}
         </div>
         <div class="face back" aria-hidden="${!flipped}">
           <div class="tag">Answer <span class="muted">${nextReview(d.id)?nextReview(d.id)+" · ":""}Card ${pos+1} of ${deck.length}</span></div>
@@ -1289,7 +1289,7 @@ function flip(){
 }
 function showGapResult(){ const g=gapById(deck[pos]), r=$("#gapRes"); if(!g||!r) return; if(normT(gapTyped)==="pavlov") setTimeout(()=>showScroll(8),700); const [cls,msg]=gapVerdict(gapTyped,g.term); r.className="gapres "+cls; r.textContent=msg; }
 function rate(s, advance=true){ const id=deck[pos]; sessionRes[id]=s; recAcc(id,s==="k"); noteLearn(id,s==="k"); if(filter==="weak") G.st.weakDone=(G.st.weakDone||0)+1; srReview(id,s==="k"); mark(id,s);
-  deckXP+=answer({ok:s==="k", el:$(s==="k"?"#gotBtn":"#learnBtn")||$("#card"), mode:"cards", gold:golds.has(id)});
+  deckXP+=answer({ok:s==="k", el:$(s==="k"?"#gotBtn":"#learnBtn")||$("#card"), mode:"cards", gold:golds.has(id), boost:cardRes?2:undefined});
   deckCombo = s==="k" ? deckCombo+1 : 0; if(deckCombo>deckBest) deckBest=deckCombo;
   if(!advance) return;
   pos++; flipped=false; renderCard(); const b=$("#flipBtn"); if(b) b.focus({preventScroll:true}); }
