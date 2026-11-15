@@ -313,6 +313,14 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .bossc.won .bs{color:var(--good)}
 .bosshp{position:relative;height:26px;border-radius:9px;background:var(--soft);overflow:hidden;margin-bottom:14px}
 .bosshp i{display:block;height:100%;background:linear-gradient(90deg,#B91C1C,#E0533D);transition:width .4s}
+.bosshp.hard i{background:linear-gradient(90deg,#7C2D12,#F97316,#FACC15)}
+.bosshp.hit{animation:bosshit .45s}.bosshp.miss{animation:bossmiss .5s}
+@keyframes bosshit{20%{transform:translateX(-7px) rotate(-1deg)}40%{transform:translateX(6px) rotate(1deg)}60%{transform:translateX(-4px)}80%{transform:translateX(2px)}}
+@keyframes bossmiss{0%,100%{box-shadow:0 0 0 0 rgba(185,28,28,0)}40%{box-shadow:0 0 0 6px rgba(185,28,28,.35)}}
+@media (prefers-reduced-motion:reduce){.bosshp.hit,.bosshp.miss{animation:none}}
+.hardtog{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px}.hardtog span{color:var(--muted);font-size:14px}
+.bossc.hard:not(:disabled){box-shadow:0 0 0 2px #F97316 inset}
+.bossc:disabled{opacity:.4;cursor:not-allowed}
 .bosshp span{position:absolute;inset:0;display:flex;align-items:center;padding:0 10px;font-weight:800;font-size:14px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5)}
 
 /* writing, weekly, accessibility */
@@ -514,6 +522,13 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .sort-bin .k{flex:none;width:24px;height:24px;border-radius:7px;background:var(--soft);display:grid;place-items:center;font-size:13px}
 .sort-bin.right{border-color:var(--good);background:var(--good-bg)}.sort-bin.wrong{border-color:var(--warn);background:var(--warn-bg);animation:shake .35s}
 .sort-fb{min-height:1.6em;margin-top:12px;text-align:center;font-size:15px}
+.sort-card[draggable="true"]{cursor:grab}.sort-bin.drag-over{border-color:var(--c);background:color-mix(in srgb,var(--c) 12%,var(--card))}
+.order-done{min-height:44px;border-radius:12px}.order-done.drag-over{outline:2px dashed var(--c);outline-offset:4px}
+.order-avail [draggable="true"],.order-done [draggable="true"]{cursor:grab}
+.place-msg{text-align:center;font-weight:700;margin:10px 0 0}
+.gotdban{display:flex;gap:12px;align-items:center;width:100%;text-align:left;border:2px solid var(--c);background:color-mix(in srgb,var(--c) 10%,var(--card));border-radius:16px;padding:12px 14px;margin:0 0 12px;color:var(--ink)}
+.gotdban>span{font-size:28px}.gotdban div{display:flex;flex-direction:column;gap:2px}.gotdban div span{color:var(--muted);font-size:14px}
+.mode.gotd{box-shadow:0 0 0 2px var(--c) inset}
 .yr{color:var(--c);margin-left:6px}
 .petstrip{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:2px 14px 2px 4px;margin:0 0 14px;color:var(--ink);font-size:16px;line-height:1.35}
 .petstrip[hidden]{display:none}
@@ -1016,7 +1031,8 @@ applySkin(store.theme);
 
 /* ---------- boss battles ---------- */
 const BOSSES={"Social Influence":["The Unanimous Majority","👥"],"Memory":["The Forgetting Curve","🌀"],"Attachment":["The Strange Situation","🧸"],"Psychopathology":["The Negative Triad","🌧️"],"Approaches":["The Unruly Id","😈"],"Biopsychology":["The Rogue Neuron","⚡"],"RM":["The Null Hypothesis","🎲"],"Issues and Debates part I":["The Hard Determinist","⛓️"],"Relationships":["The Comparison Level for Alternatives","💔"],"Schizophrenia":["The Dopamine Hydra","🐉"],"Forensic Psychology":["The Disorganised Offender","🕵️"],"Exam skills":["The Chief Examiner","📝"]};
-const BOSS_HP=15;
+const BOSS_HP=15, BOSS_HP_HARD=20;
+const bossHP=()=>arc.hard?BOSS_HP_HARD:BOSS_HP;
 function topicPct(id){ const t=BY_ID[id].t, it=DATA.filter(x=>x.t===t); return it.filter(x=>status(x.id)==="k").length/it.length; }
 function mark(id, s){ const prev=store.p[id], pp=(s==="k"&&prev!=="k")?topicPct(id):0; if(s) store.p[id]=s; else delete store.p[id]; srMark(id,s); if(s==="k"&&prev!=="k") onKnown(id,pp); save(); renderMeter(); renderChips(); }
 
@@ -1507,6 +1523,7 @@ function answer({ok, el, mode, gold, boost}){
   if(gold && ok){ mult*=5; G.st.gold++; }
   if(boost && ok) mult*=boost;
   if(ok){ const em=eventMult(tab==="arcade"&&arc.mode==="boss"&&arc.phase==="play"?"boss":"all"); if(em>1) mult*=em; }
+  if(ok && tab==="arcade" && (arc.phase==="play"||arc.phase==="mini") && arc.mode===gotd()) mult*=2;
   const xp=Math.round(base*mult);
   G.hist[t]=(G.hist[t]||0)+1;
   secretOnAnswer(t);
@@ -2090,6 +2107,8 @@ const MODES = {
 const arc={phase:"menu", mode:null, qs:[], i:0, score:0, right:0, lives:3, end:0, qEnd:0, timer:null, cur:null, locked:false, log:[], t0:0, xp:0, best:false, seen:new Set(), fb:false};
 const dailyNo = () => dayNum(today())-dayNum("2026-01-01")+1;
 const M = () => MODES[arc.mode];
+const GOTD_POOL=["blitz","surv","gap","stats","flaw","match","order","detective","whoami","sort","timeline"];
+const gotd=()=>GOTD_POOL[((dayNum(today())%GOTD_POOL.length)+GOTD_POOL.length)%GOTD_POOL.length];
 /* weekly challenge: rotates through the content topics every Monday */
 const WEEK_TOPICS=TOPICS.filter(t=>t.key!=="Exam skills");
 function weekStart(){ const d=new Date(); d.setDate(d.getDate()-((d.getDay()+6)%7)); return ymd(d); }
@@ -2125,21 +2144,26 @@ function renderArcade(){
     const examToday=(G.st.examDay===today());
     const wk=(G.weekly||{})[weekStart()], daysLeft=6-((new Date().getDay()+6)%7);
     const weekBanner=`<button class="weekban" id="weekBan" style="--c:${weekTopic().c}"><span>🏁</span><div><b>Weekly Challenge #${weekNo()}: ${esc(weekTopic().name)}</b><span>${wk&&wk.done?`You scored ${wk.score}/15 this week. New topic on Monday.`:`15 questions, one go. Ends ${daysLeft===0?"tonight":daysLeft===1?"tomorrow":"in "+daysLeft+" days"}.`}</span></div><i>${wk&&wk.done?"See result":"Play"}</i></button>`;
-    area.innerHTML=weekBanner+`${examToday?"":`<div class="focus"><span>🎯</span><div><b>Today's focus: exam skills</b><span>Do one Exam Skills round today for double XP. It's where the easy marks are.</span></div></div>`}
+    const gm=MODES[gotd()];
+    area.innerHTML=weekBanner+`<button class="gotdban" id="gotdBan" style="--c:${gm.c}"><span>🎲</span><div><b>Game of the day: ${gm.icon} ${esc(gm.name)}</b><span>Double XP on every right answer, today only. A new game tomorrow.</span></div></button>`+`${examToday?"":`<div class="focus"><span>🎯</span><div><b>Today's focus: exam skills</b><span>Do one Exam Skills round today for double XP. It's where the easy marks are.</span></div></div>`}
       <div class="modes">${Object.entries(MODES).map(([k,m])=>{
       const dis = (m.src==="cards" && !nCards) || (m.src==="gap" && nGap<4) || (m.src==="mistakes" && !mistakeIds().filter(id=>mcOK(BY_ID[id])).length);
-      const tag = m.featured ? `<span class="new">2× XP</span>` : (k==="daily"&&!(dd&&dd.done)) ? '<span class="new">NEW</span>' : "";
-      return `<button class="mode ${m.featured?"featured":""}" style="--c:${m.c}" data-mode="${k}" ${dis?"disabled":""}>${tag}<span class="mi">${m.icon}</span><h3>${m.name}${m.featured?' <small>Featured</small>':""}</h3><p>${m.desc}</p><span class="best">${bestLabel(k)}</span></button>`; }).join("")}</div>
+      const tag = k===gotd() ? `<span class="new gotd">🎲 Today 2×</span>` : m.featured ? `<span class="new">2× XP</span>` : (k==="daily"&&!(dd&&dd.done)) ? '<span class="new">NEW</span>' : "";
+      return `<button class="mode ${m.featured?"featured":""} ${k===gotd()?"gotd":""}" style="--c:${m.c}" data-mode="${k}" ${dis?"disabled":""}>${tag}<span class="mi">${m.icon}</span><h3>${m.name}${m.featured?' <small>Featured</small>':""}</h3><p>${m.desc}</p><span class="best">${bestLabel(k)}</span></button>`; }).join("")}</div>
       <p class="arc-note">Blitz, Survival and Gap Fill use the topics you've selected above${nCards?"":", so pick at least one"}. Exam Skills and Stats Lab cover the whole course. Wrong answers on revision cards are added to your still-learning pile. Use keys 1 to 4 to answer, and Enter for the next question.</p>`;
     $("#weekBan").onclick=()=>startArc("weekly");
+    $("#gotdBan").onclick=()=>{ const g=gotd(); if(g==="match") startMatch(); else if(g==="order") startOrder(); else if(g==="sort") startSort(); else if(g==="timeline") startTimeline(); else startArc(g); };
     area.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{ const md=b.dataset.mode; if(md==="boss"){ arc.phase="bossmenu"; renderArcade(); } else if(md==="match") startMatch(); else if(md==="order") startOrder(); else if(md==="sort") startSort(); else if(md==="timeline") startTimeline(); else if(md==="proj") openProjector(); else if(md==="parent") openParent(); else startArc(md); });
     return;
   }
   if(arc.phase==="bossmenu"){
     area.innerHTML=`<div class="arc-top"><span class="big">👹 Boss Battles</span><span class="spacer"></span><button class="linkbtn" id="bossBack">← Arcade menu</button></div>
       <p class="arc-note" style="margin:0 0 12px">Pick a topic. Each boss has ${BOSS_HP} HP: every right answer is a hit. Three wrong answers and the boss wins. Questions are the harder cards in that topic, with tricky options. No timer, so read carefully.</p>
+      ${Object.keys(G.st.bosses||{}).length?`<div class="hardtog"><button class="btn ${arc.hard?"":"ghost"}" id="hardTog" aria-pressed="${!!arc.hard}">🔥 Hard mode ${arc.hard?"on":"off"}</button><span>Rematch a boss you've beaten: ${BOSS_HP_HARD} HP and only 2 lives.</span></div>`:""}
       <div class="bosses">${TOPICS.map(t=>{ const [bn,bi]=BOSSES[t.key], won=G.st.bosses[t.key], n=DATA.filter(d=>d.t===t.key&&mcOK(d)&&d.a.length>=35).length;
-        return `<button class="bossc ${won?"won":""}" style="--c:${t.c}" data-boss="${esc(t.key)}" ${n<BOSS_HP+2?"disabled":""}><span class="bi">${bi}</span><b>${esc(bn)}</b><span>${esc(t.name)}</span><span class="bs">${won?"✓ Defeated":"Not beaten yet"}</span></button>`; }).join("")}</div>`;
+        const hw=(G.st.bossesHard||{})[t.key], off=n<bossHP()+2 || (arc.hard && !won);
+        return `<button class="bossc ${won?"won":""} ${arc.hard?"hard":""}" style="--c:${t.c}" data-boss="${esc(t.key)}" ${off?"disabled":""}><span class="bi">${bi}</span><b>${esc(bn)}</b><span>${esc(t.name)}</span><span class="bs">${hw?"🔥 Hard mode beaten":won?"✓ Defeated":"Not beaten yet"}</span></button>`; }).join("")}</div>`;
+    const ht=$("#hardTog"); if(ht) ht.onclick=()=>{ arc.hard=!arc.hard; renderArcade(); };
     $("#bossBack").onclick=()=>{ arc.phase="menu"; renderArcade(); };
     area.querySelectorAll("[data-boss]").forEach(b=>b.onclick=()=>{ arc.bossTopic=b.dataset.boss; startArc("boss"); });
     return;
@@ -2148,13 +2172,13 @@ function renderArcade(){
   if(arc.phase==="play"){
     const q=arc.cur, m=M(), k=m.kind;
     const right = k==="blitz" ? `<span>Score</span><span class="big" id="arcScore">${arc.score.toLocaleString()}</span>`
-      : k==="boss" ? `<span class="hearts" aria-label="${arc.lives} lives left">${"❤️".repeat(arc.lives)}${"🖤".repeat(3-arc.lives)}</span>`
+      : k==="boss" ? `<span class="hearts" aria-label="${arc.lives} lives left">${"❤️".repeat(arc.lives)}${"🖤".repeat((arc.hard?2:3)-arc.lives)}</span>`
       : k==="surv" ? `<span class="hearts" aria-label="${arc.lives} lives left">${"❤️".repeat(arc.lives)}${"🖤".repeat(3-arc.lives)}</span><span class="big">${arc.right}</span>`
       : `<span>Question</span><span class="big">${arc.i+1}/${k==="daily"?10:m.n}</span>`;
     const once = k==="daily"||k==="weekly";
     const timed = k==="blitz"||k==="surv";
-    const bossBar = k==="boss" ? `<div class="bosshp" aria-label="Boss health"><i style="width:${(BOSS_HP-arc.right)/BOSS_HP*100}%"></i><span>${BOSSES[arc.bossTopic][1]} ${esc(BOSSES[arc.bossTopic][0])} · ${BOSS_HP-arc.right} HP</span></div>` : "";
-    area.innerHTML=`<div class="arc-top"><span class="big">${k==="boss"?"👹 Boss battle":m.icon+" "+m.name}</span>${m.boost?'<span class="boost">2× XP</span>':""}<span class="spacer"></span>${right}${timed?`<span class="big" id="arcTime" style="min-width:2.2em;text-align:right"></span>`:""}</div>
+    const bossBar = k==="boss" ? `<div class="bosshp ${arc.hard?"hard":""}" id="bossBar" aria-label="Boss health"><i style="width:${(bossHP()-arc.right)/bossHP()*100}%"></i><span>${BOSSES[arc.bossTopic][1]} ${esc(BOSSES[arc.bossTopic][0])}${arc.hard?" 🔥":""} · ${bossHP()-arc.right} HP</span></div>` : "";
+    area.innerHTML=`<div class="arc-top"><span class="big">${k==="boss"?"👹 Boss battle":m.icon+" "+m.name}</span>${m.boost?'<span class="boost">2× XP</span>':""}${arc.mode===gotd()?'<span class="boost">🎲 2× XP today</span>':""}<span class="spacer"></span>${right}${timed?`<span class="big" id="arcTime" style="min-width:2.2em;text-align:right"></span>`:""}</div>
       ${k==="boss"?bossBar:timed?`<div class="timebar" id="tb"><i id="tbFill"></i></div>`:`<div class="progressline"><i style="width:${arc.i/(k==="daily"?10:m.n)*100}%"></i></div>`}
       <div class="quiz-q" style="--c:${q.c}"><div class="tag">${esc(q.tname)}</div>${q.clues?`<div class="q">${esc(q.q)} <span class="clue-worth">${arc.locked?"":`Worth ×${[3,2,1.5,1][arc.clue-1]} XP`}</span></div><ol class="clues">${q.clues.slice(0,arc.locked?4:arc.clue).map(c=>`<li>${esc(c)}</li>`).join("")}</ol>${!arc.locked&&arc.clue<q.clues.length?`<button class="btn ghost clue-more" id="clueMore">Reveal another clue</button>`:""}`:`<div class="q pre ${q.q.length>150?"long":""}">${esc(q.q)}</div>`}
       <div class="opts">${q.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${i+1}</span><span>${esc(o)}</span></button>`).join("")}</div>
@@ -2171,7 +2195,7 @@ function renderArcade(){
   let head="", extra="";
   if(arc.mode==="blitz"||arc.mode==="gap") head=`<p class="score">${arc.score.toLocaleString()}</p><p class="muted">${arc.right} right in 60 seconds</p>`;
   if(arc.mode==="surv") head=`<p class="score">${arc.right}</p><p class="muted">questions survived</p>`;
-  if(k==="boss"){ const [bn,bi]=BOSSES[arc.bossTopic]; head = arc.won ? `<p class="score">${bi}💥</p><p><b>You defeated ${esc(bn)}!</b>${arc.firstWin?" New badge unlocked.":""}</p>` : `<p class="score">${arc.right}/${BOSS_HP}</p><p class="muted">${esc(bn)} survived with ${BOSS_HP-arc.right} HP. Revise the ones below and try again.</p>`; }
+  if(k==="boss"){ const [bn,bi]=BOSSES[arc.bossTopic]; head = arc.won ? `<p class="score">${bi}💥</p><p><b>You defeated ${esc(bn)}${arc.hard?" on hard mode 🔥":""}!</b>${arc.firstWin&&!arc.hard?" New badge unlocked.":""}</p>` : `<p class="score">${arc.right}/${bossHP()}</p><p class="muted">${esc(bn)} survived with ${bossHP()-arc.right} HP. Revise the ones below and try again.</p>`; }
   if(k==="round") head=`<p class="score">${arc.right}/${m.n}</p><p class="muted">${arc.right===m.n?"Flawless.":arc.right>=7?"Strong round.":"Go through the ones below, then try again."}</p>`;
   if(k==="weekly"){
     const w=G.weekly[weekStart()];
@@ -2202,7 +2226,7 @@ function dailyQs(){
 }
 function bossQs(key){
   const c=DATA.filter(d=>d.t===key && mcOK(d) && d.a.length>=35);
-  return shuffle(c).sort((a,b)=>(status(a.id)==="k")-(status(b.id)==="k")).slice(0,BOSS_HP+2).map(d=>{ const mm=mcFor(d,Math.random,8), t=TMAP[d.t]; return {q:d.q, opts:mm.opts, correct:mm.correct, tname:BOSSES[key][0]+" · "+t.name, c:"#B91C1C", id:d.id, explain:d.a}; });
+  return shuffle(c).sort((a,b)=>(status(a.id)==="k")-(status(b.id)==="k")).slice(0,bossHP()+2).map(d=>{ const mm=mcFor(d,Math.random,8), t=TMAP[d.t]; return {q:d.q, opts:mm.opts, correct:mm.correct, tname:BOSSES[key][0]+" · "+t.name, c:"#B91C1C", id:d.id, explain:d.a}; });
 }
 function nextQ(){
   const m=M(), rng=Math.random;
@@ -2230,7 +2254,7 @@ function startArc(mode){
   Object.assign(arc,{mode, phase:"play", i:0, score:0, right:0, lives:3, log:[], xp:0, best:false, locked:false, t0:Date.now(), seen:new Set(), fb:false});
   resetCombo();
   const m=M();
-  if(m.kind==="boss") arc.qs=bossQs(arc.bossTopic);
+  if(m.kind==="boss"){ arc.qs=bossQs(arc.bossTopic); if(arc.hard) arc.lives=2; }
   if(mode==="mistakes") MODES.mistakes.n=Math.max(1,Math.min(10,mistakeIds().filter(id=>mcOK(BY_ID[id])).length));
   if(m.kind==="weekly"){ arc.qs=weeklyQs(); G.weekly[weekStart()]={started:true, done:false, score:0, time:0, log:[], qa:arc.qs.map(q=>[q.q,q.opts[q.correct]])}; save(); }
   if(m.kind==="daily"){
@@ -2267,6 +2291,7 @@ function arcPick(i){
   if(q.id && BY_ID[q.id]) recAcc(q.id,ok);
   arc.xp += answer({ok, el:btns[i]||btns[q.correct], mode:m.kind==="round"?"quiz":"arcade", boost:q.clues?[3,2,1.5,1][arc.clue-1]:m.boost});
   if(q.clues){ const ol=document.querySelector(".clues"); if(ol) ol.innerHTML=q.clues.map(c=>`<li>${esc(c)}</li>`).join(""); const cm=$("#clueMore"); if(cm) cm.remove(); const w=document.querySelector(".clue-worth"); if(w) w.textContent=""; if(ok && arc.clue===1) G.st.whoFirst=(G.st.whoFirst||0)+1; }
+  if(m.kind==="boss"){ const bb=$("#bossBar"); if(bb){ bb.classList.remove("hit","miss"); void bb.offsetWidth; bb.classList.add(ok?"hit":"miss"); if(ok){ const fi=bb.querySelector("i"); if(fi) fi.style.width=Math.max(0,(bossHP()-arc.right-1)/bossHP()*100)+"%"; floater("−1 HP", bb, ""); } } }
   if(ok){ arc.right++; if(m.kind==="blitz"){ arc.score+=Math.round(100*comboMult()); const s=$("#arcScore"); if(s) s.textContent=arc.score.toLocaleString(); } }
   else {
     if(q.id && BY_ID[q.id] && status(q.id)!=="k") mark(q.id,"l");
@@ -2277,7 +2302,7 @@ function arcPick(i){
   const advance=()=>{
     if(arc.phase!=="play") return;
     arc.i++;
-    if(m.kind==="boss" && (arc.right>=BOSS_HP || arc.lives<=0 || arc.i>=arc.qs.length)) return arcFinish();
+    if(m.kind==="boss" && (arc.right>=bossHP() || arc.lives<=0 || arc.i>=arc.qs.length)) return arcFinish();
     if((m.kind==="surv" && arc.lives<=0) || (m.kind==="daily" && arc.i>=10) || (m.kind==="weekly" && arc.i>=15) || (m.kind==="round" && arc.i>=m.n)) return arcFinish();
     if(m.kind==="blitz" && arc.end<=Date.now()) return arcFinish();
     arcNewQ(); renderArcade();
@@ -2300,7 +2325,7 @@ function arcFinish(){ arcFinishHook();
   if(arc.mode==="blitz" && arc.score===450) G.sec.s450=1;
   if(arc.mode==="blitz"){ bonus=arc.right*2; if(arc.score>st.blitz && arc.score>0){ st.blitz=arc.score; arc.best=true; } if(arc.right>st.blitzR) st.blitzR=arc.right; }
   if(arc.mode==="gap"){ bonus=arc.right*2; if(arc.score>st.gap && arc.score>0){ st.gap=arc.score; arc.best=true; } if(arc.right>st.gapR) st.gapR=arc.right; }
-  if(m.kind==="boss"){ const won=arc.right>=BOSS_HP; arc.won=won; arc.firstWin=won && !G.st.bosses[arc.bossTopic]; if(won){ G.st.bosses[arc.bossTopic]=today(); bonus=arc.firstWin?150:75; arc.best=true;
+  if(m.kind==="boss"){ const won=arc.right>=bossHP(); arc.won=won; arc.firstWin=won && !(arc.hard?(G.st.bossesHard||{}):G.st.bosses)[arc.bossTopic]; if(won){ if(arc.hard){ G.st.bossesHard=G.st.bossesHard||{}; G.st.bossesHard[arc.bossTopic]=today(); } G.st.bosses[arc.bossTopic]=G.st.bosses[arc.bossTopic]||today(); bonus=(arc.firstWin?150:75)*(arc.hard?2:1); arc.best=true;
       if(arc.lives===1) G.sec.comeback=1;
       const bd=G.sec.bossday&&G.sec.bossday.d===today()?G.sec.bossday:{d:today(),s:[]}; if(!bd.s.includes(arc.bossTopic)) bd.s.push(arc.bossTopic); G.sec.bossday=bd; if(bd.s.length>=3) G.sec.bossday3=1;
     } else { bonus=arc.right*3; if(arc.log.length<=3) G.sec.ouch=1; } }
@@ -3141,22 +3166,25 @@ function startMatch(){ mg.pairs=matchPairs(); mg.round=0; mg.wrong=0; mg.xp=0; m
 function setupRound(){ const r=mg.pairs.slice(mg.round*5, mg.round*5+5); mg.left=shuffle(r); mg.right=shuffle(r); mg.sel=null; mg.matched=new Set(); }
 function startTimeline(){ const sel=new Set(store.sel); let s=TIMELINES.filter(x=>sel.has(x.t)); if(s.length<4) s=TIMELINES;
   mg.seqs=shuffle(s).slice(0,4).map(x=>({t:x.t, title:x.title, steps:x.items.map(i=>i[0]), years:Object.fromEntries(x.items)}));
-  mg.tl=true; mg.si=0; mg.picked=[]; mg.checked=false; mg.right2=0; mg.xp=0; mg.phase="order"; arc.phase="mini"; arc.mode="timeline"; mg.shuffled=shuffle(mg.seqs[0].steps); renderArcade(); }
+  mg.tl=true; mg.si=0; mg.picked=[]; mg.checked=false; mg.right2=0; mg.xp=0; mg.places=0; mg.placesTotal=0; mg.phase="order"; arc.phase="mini"; arc.mode="timeline"; mg.shuffled=shuffle(mg.seqs[0].steps); renderArcade(); }
 function startSort(){ const sel=new Set(store.sel); let s=SORT_SETS.filter(x=>sel.has(x.t)); if(s.length<3) s=SORT_SETS;
   mg.sets=shuffle(s).slice(0,3); mg.si=0; mg.items=shuffle(mg.sets[0].items); mg.ii=0; mg.right2=0; mg.total=mg.sets.reduce((a,x)=>a+x.items.length,0); mg.xp=0; mg.last=null; mg.busy=false;
   mg.phase="sort"; arc.phase="mini"; arc.mode="sort"; renderArcade(); }
-function startOrder(){ mg.tl=false; const sel=new Set(store.sel); let s=SEQUENCES.filter(x=>sel.has(x.t)); if(s.length<5) s=SEQUENCES; mg.seqs=shuffle(s).slice(0,5); mg.si=0; mg.picked=[]; mg.checked=false; mg.right2=0; mg.xp=0; mg.phase="order"; arc.phase="mini"; arc.mode="order"; mg.shuffled=shuffle(mg.seqs[0].steps); renderArcade(); }
+function startOrder(){ mg.tl=false; const sel=new Set(store.sel); let s=SEQUENCES.filter(x=>sel.has(x.t)); if(s.length<5) s=SEQUENCES; mg.seqs=shuffle(s).slice(0,5); mg.si=0; mg.picked=[]; mg.checked=false; mg.right2=0; mg.xp=0; mg.places=0; mg.placesTotal=0; mg.phase="order"; arc.phase="mini"; arc.mode="order"; mg.shuffled=shuffle(mg.seqs[0].steps); renderArcade(); }
 function renderMini(area){
   if(mg.phase==="sort"){
     const set=mg.sets[mg.si], t=TMAP[set.t], it=mg.items[mg.ii];
     area.innerHTML=`<div class="arc-top"><span class="big">🗂️ Sort it</span><span class="spacer"></span><span>Set</span><span class="big">${mg.si+1}/${mg.sets.length}</span></div>
       <div class="progressline"><i style="width:${mg.ii/set.items.length*100}%"></i></div>
       <div class="quiz-q" style="--c:${t.c}"><div class="tag">${esc(t.name)} · card ${mg.ii+1} of ${set.items.length}</div><div class="q" style="font-size:clamp(18px,2.2vw,22px);margin:8px 0 6px">${esc(set.title)}</div>
-      <div class="sort-card" id="sortCard">${esc(it[0])}</div>
+      <div class="sort-card" id="sortCard" draggable="true" title="Drag me into a box, or tap a box">${esc(it[0])}</div>
       <div class="sort-bins b${set.b.length}">${set.b.map((b,i)=>`<button class="sort-bin" data-bin="${i}"><span class="k">${i+1}</span>${esc(b)}</button>`).join("")}</div>
       <div class="sort-fb" aria-live="polite">${mg.last?mg.last:""}</div></div>
       <p style="text-align:right;margin-top:10px"><button class="linkbtn" id="mgQuit">End game</button></p>`;
-    area.querySelectorAll("[data-bin]").forEach(b=>b.onclick=()=>sortPick(+b.dataset.bin));
+    area.querySelectorAll("[data-bin]").forEach(b=>{ b.onclick=()=>sortPick(+b.dataset.bin);
+      b.addEventListener("dragover",e=>{ e.preventDefault(); b.classList.add("drag-over"); }); b.addEventListener("dragleave",()=>b.classList.remove("drag-over"));
+      b.addEventListener("drop",e=>{ e.preventDefault(); b.classList.remove("drag-over"); sortPick(+b.dataset.bin); }); });
+    const sc=$("#sortCard"); if(sc) sc.addEventListener("dragstart",e=>{ e.dataTransfer.setData("text/plain","sort"); e.dataTransfer.effectAllowed="move"; });
     $("#mgQuit").onclick=finishMini; return;
   }
   if(mg.phase==="match"){
@@ -3185,20 +3213,39 @@ function renderMini(area){
       <ol class="order-done">${mg.picked.map((x,i)=>`<li class="${mg.checked?(x===s.steps[i]?"ok":"no"):""}"><button data-un="${i}" ${mg.checked?"disabled":""}>${esc(x)}${mg.checked&&s.years?` <b class="yr">${s.years[x]}</b>`:""}</button>${mg.checked&&x!==s.steps[i]?`<small>Should be: ${esc(s.steps[i])}${s.years?" ("+s.years[s.steps[i]]+")":""}</small>`:""}</li>`).join("")}</ol>
       <div class="order-avail">${avail.map(x=>`<button class="opt" data-pick="${esc(x)}">${esc(x)}</button>`).join("")}</div>
       ${mg.picked.length===s.steps.length&&!mg.checked?`<div class="card-actions"><button class="btn" id="ordCheck">Check order</button></div>`:""}
-      ${mg.checked?`<div class="card-actions"><button class="btn" id="ordNext">${mg.si+1>=mg.seqs.length?"See results":mg.tl?"Next timeline":"Next sequence"}</button></div>`:""}</div>
+      ${mg.checked?`<p class="place-msg">${mg.lastPlaced===s.steps.length?"🎯 Perfect order!":`${mg.lastPlaced}/${s.steps.length} in the right place${mg.lastPlaced?` (+${mg.lastPlaced*3} XP)`:""}`}</p><div class="card-actions"><button class="btn" id="ordNext">${mg.si+1>=mg.seqs.length?"See results":mg.tl?"Next timeline":"Next sequence"}</button></div>`:""}</div>
       <p style="text-align:right;margin-top:10px"><button class="linkbtn" id="mgQuit">End game</button></p>`;
     area.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>{ mg.picked.push(b.dataset.pick); renderArcade(); });
+    if(!mg.checked) wireOrderDrag(area);
     area.querySelectorAll("[data-un]").forEach(b=>b.onclick=()=>{ mg.picked.splice(+b.dataset.un,1); renderArcade(); });
-    const ck=$("#ordCheck"); if(ck) ck.onclick=()=>{ mg.checked=true; const ok=mg.picked.every((x,i)=>x===s.steps[i]); if(ok) mg.right2++; mg.xp+=answer({ok, el:ck, mode:"quiz"}); renderArcade(); };
+    const ck=$("#ordCheck"); if(ck) ck.onclick=()=>{ mg.checked=true; const c=mg.picked.filter((x,i)=>x===s.steps[i]).length, ok=c===s.steps.length; if(ok) mg.right2++;
+      mg.places=(mg.places||0)+c; mg.placesTotal=(mg.placesTotal||0)+s.steps.length;
+      mg.xp+=answer({ok, el:ck, mode:"quiz"});
+      if(!ok && c>0){ const px=c*3; mg.xp+=px; addXP(px, ck, `+${px} XP · ${c}/${s.steps.length} in place`); }
+      mg.lastPlaced=c; renderArcade(); };
     const nx=$("#ordNext"); if(nx) nx.onclick=()=>{ mg.si++; if(mg.si>=mg.seqs.length) return finishMini(); mg.picked=[]; mg.checked=false; mg.shuffled=shuffle(mg.seqs[mg.si].steps); renderArcade(); };
     $("#mgQuit").onclick=finishMini; return;
   }
   // results
   area.innerHTML=`<div class="empty"><h3>${mg.phase==="matchdone"?"🔗 Study matcher":mg.phase==="sortdone"?"🗂️ Sort it":mg.tl?"📅 Timeline":"🧩 Put it in order"} over</h3>
-    ${mg.phase==="sortdone"?`<p class="score">${mg.right2}/${mg.total}</p><p class="muted">cards sorted correctly</p>`:mg.phase==="matchdone"?`<p class="score">${mg.matchedTotal}/${mg.pairs.length}</p><p class="muted">pairs matched · ${mg.wrong} wrong guess${mg.wrong===1?"":"es"} · ${fmtTime(Date.now()-mg.t0)}</p>`:`<p class="score">${mg.right2}/${mg.seqs.length}</p><p class="muted">${mg.tl?"timelines":"sequences"} in perfect order</p>`}
+    ${mg.phase==="sortdone"?`<p class="score">${mg.right2}/${mg.total}</p><p class="muted">cards sorted correctly</p>`:mg.phase==="matchdone"?`<p class="score">${mg.matchedTotal}/${mg.pairs.length}</p><p class="muted">pairs matched · ${mg.wrong} wrong guess${mg.wrong===1?"":"es"} · ${fmtTime(Date.now()-mg.t0)}</p>`:`<p class="score">${mg.right2}/${mg.seqs.length}</p><p class="muted">${mg.tl?"timelines":"sequences"} in perfect order · ${mg.places||0}/${mg.placesTotal||0} items in the right place</p>`}
     <p style="margin-top:10px">+${mg.xp} XP earned</p><button class="btn" id="mgAgain">Play again</button> <button class="btn ghost" id="arcMenu">Arcade menu</button></div>`;
   $("#mgAgain").onclick=()=>mg.phase==="matchdone"?startMatch():mg.phase==="sortdone"?startSort():mg.tl?startTimeline():startOrder();
   $("#arcMenu").onclick=()=>{ arc.phase="menu"; renderArcade(); };
+}
+function wireOrderDrag(area){
+  const ol=area.querySelector(".order-done"), av=area.querySelector(".order-avail"); if(!ol||!av) return;
+  area.querySelectorAll("[data-pick]").forEach(b=>{ b.draggable=true; b.addEventListener("dragstart",e=>{ e.dataTransfer.setData("text/plain",JSON.stringify({a:b.dataset.pick})); }); });
+  area.querySelectorAll("[data-un]").forEach(b=>{ b.draggable=true; b.addEventListener("dragstart",e=>{ e.dataTransfer.setData("text/plain",JSON.stringify({p:+b.dataset.un})); }); });
+  const read=e=>{ try{ return JSON.parse(e.dataTransfer.getData("text/plain")); }catch(x){ return null; } };
+  const at=e=>{ const li=e.target.closest(".order-done li"); if(!li) return mg.picked.length; const r=li.getBoundingClientRect(), i=[...ol.children].indexOf(li); return e.clientY>r.top+r.height/2 ? i+1 : i; };
+  ol.addEventListener("dragover",e=>{ e.preventDefault(); ol.classList.add("drag-over"); }); ol.addEventListener("dragleave",e=>{ if(!ol.contains(e.relatedTarget)) ol.classList.remove("drag-over"); });
+  ol.addEventListener("drop",e=>{ e.preventDefault(); ol.classList.remove("drag-over"); const d=read(e); if(!d) return; let i=at(e);
+    if(d.a!=null){ if(mg.picked.includes(d.a)) return; mg.picked.splice(i,0,d.a); }
+    else if(d.p!=null){ const [x]=mg.picked.splice(d.p,1); if(d.p<i) i--; mg.picked.splice(i,0,x); }
+    renderArcade(); });
+  av.addEventListener("dragover",e=>e.preventDefault());
+  av.addEventListener("drop",e=>{ e.preventDefault(); const d=read(e); if(d && d.p!=null){ mg.picked.splice(d.p,1); renderArcade(); } });
 }
 function sortPick(bin){
   if(mg.busy || mg.phase!=="sort") return;
