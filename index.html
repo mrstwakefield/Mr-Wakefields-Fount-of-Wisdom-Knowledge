@@ -318,6 +318,10 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 @keyframes bosshit{20%{transform:translateX(-7px) rotate(-1deg)}40%{transform:translateX(6px) rotate(1deg)}60%{transform:translateX(-4px)}80%{transform:translateX(2px)}}
 @keyframes bossmiss{0%,100%{box-shadow:0 0 0 0 rgba(185,28,28,0)}40%{box-shadow:0 0 0 6px rgba(185,28,28,.35)}}
 @media (prefers-reduced-motion:reduce){.bosshp.hit,.bosshp.miss{animation:none}}
+.boss-say{display:flex;gap:8px;align-items:center;margin:-6px 0 14px;padding:8px 12px;border-radius:14px;background:var(--soft);font-weight:700;font-style:italic;font-size:15px;position:relative;animation:fade .25s}
+.boss-say::before{content:"";position:absolute;top:-6px;left:22px;border:6px solid transparent;border-top:0;border-bottom-color:var(--soft)}
+.boss-say span{font-style:normal;font-size:20px}
+.boss-quote{font-style:italic;font-weight:700;font-size:18px;margin:0 0 6px}
 .hardtog{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px}.hardtog span{color:var(--muted);font-size:14px}
 .bossc.hard:not(:disabled){box-shadow:0 0 0 2px #F97316 inset}
 .bossc:disabled{opacity:.4;cursor:not-allowed}
@@ -1032,6 +1036,22 @@ applySkin(store.theme);
 /* ---------- boss battles ---------- */
 const BOSSES={"Social Influence":["The Unanimous Majority","👥"],"Memory":["The Forgetting Curve","🌀"],"Attachment":["The Strange Situation","🧸"],"Psychopathology":["The Negative Triad","🌧️"],"Approaches":["The Unruly Id","😈"],"Biopsychology":["The Rogue Neuron","⚡"],"RM":["The Null Hypothesis","🎲"],"Issues and Debates part I":["The Hard Determinist","⛓️"],"Relationships":["The Comparison Level for Alternatives","💔"],"Schizophrenia":["The Dopamine Hydra","🐉"],"Forensic Psychology":["The Disorganised Offender","🕵️"],"Exam skills":["The Chief Examiner","📝"]};
 const BOSS_HP=15, BOSS_HP_HARD=20;
+/* boss taunts: [when the battle starts, when you get one wrong, when it's defeated] */
+const BOSS_LINES={
+  "Social Influence":["Everyone else got it right. Sure you want to disagree?","See? You should've gone with the group.","Fine… we'll go along with you this time."],
+  "Memory":["I'll have wiped half of what you know by tomorrow.","Gone. Straight out of your short-term store.","Impossible… you rehearsed!"],
+  "Attachment":["Your caregiver has left the room. Good luck.","That answer was insecure-resistant.","Secure attachment… I never stood a chance."],
+  "Psychopathology":["Challenge me if you dare. I'm only irrational thoughts.","One irrational thought for me!","Challenged and disproved. CBT wins!"],
+  "Approaches":["I want XP and I want it NOW!","Ha! Pure pleasure principle.","Curse you, superego!"],
+  "Biopsychology":["I'm firing at random. Catch me if you can!","Signal lost at the synapse!","Inhibited… by a better neurotransmitter."],
+  "RM":["There's no difference. There never was.","Not significant! I'm retained!","p ≤ 0.05… I've been rejected."],
+  "Issues and Debates part I":["Your defeat was decided before you sat down.","Inevitable. Totally determined.","Free will?! That wasn't in my calculations."],
+  "Relationships":["You could be revising something better, you know.","Told you the alternatives look better.","Too much invested to walk away now."],
+  "Schizophrenia":["Cut off one head and two more neurotransmitters appear!","Too much dopamine in the mesolimbic pathway!","Blocked at the D2 receptors…"],
+  "Forensic Psychology":["No plan, no pattern. You'll never profile me.","Too chaotic for you!","Caught by a data-driven profile!"],
+  "Exam skills":["I've got the mark scheme. Have you?","Zero marks. Where's your AO3?","Level 4. Full marks… I'm impressed."]
+};
+const BOSS_HITS=["Ouch!","Direct hit!","Lucky guess…","That's going in the mark scheme…"];
 const bossHP=()=>arc.hard?BOSS_HP_HARD:BOSS_HP;
 function topicPct(id){ const t=BY_ID[id].t, it=DATA.filter(x=>x.t===t); return it.filter(x=>status(x.id)==="k").length/it.length; }
 function mark(id, s){ const prev=store.p[id], pp=(s==="k"&&prev!=="k")?topicPct(id):0; if(s) store.p[id]=s; else delete store.p[id]; srMark(id,s); if(s==="k"&&prev!=="k") onKnown(id,pp); save(); renderMeter(); renderChips(); }
@@ -2177,7 +2197,7 @@ function renderArcade(){
       : `<span>Question</span><span class="big">${arc.i+1}/${k==="daily"?10:m.n}</span>`;
     const once = k==="daily"||k==="weekly";
     const timed = k==="blitz"||k==="surv";
-    const bossBar = k==="boss" ? `<div class="bosshp ${arc.hard?"hard":""}" id="bossBar" aria-label="Boss health"><i style="width:${(bossHP()-arc.right)/bossHP()*100}%"></i><span>${BOSSES[arc.bossTopic][1]} ${esc(BOSSES[arc.bossTopic][0])}${arc.hard?" 🔥":""} · ${bossHP()-arc.right} HP</span></div>` : "";
+    const bossBar = k==="boss" ? `<div class="bosshp ${arc.hard?"hard":""}" id="bossBar" aria-label="Boss health"><i style="width:${(bossHP()-arc.right)/bossHP()*100}%"></i><span>${BOSSES[arc.bossTopic][1]} ${esc(BOSSES[arc.bossTopic][0])}${arc.hard?" 🔥":""} · ${bossHP()-arc.right} HP</span></div>`+(arc.say?`<div class="boss-say" id="bossSay"><span>${BOSSES[arc.bossTopic][1]}</span>“${esc(arc.say)}”</div>`:"") : "";
     area.innerHTML=`<div class="arc-top"><span class="big">${k==="boss"?"👹 Boss battle":m.icon+" "+m.name}</span>${m.boost?'<span class="boost">2× XP</span>':""}${arc.mode===gotd()?'<span class="boost">🎲 2× XP today</span>':""}<span class="spacer"></span>${right}${timed?`<span class="big" id="arcTime" style="min-width:2.2em;text-align:right"></span>`:""}</div>
       ${k==="boss"?bossBar:timed?`<div class="timebar" id="tb"><i id="tbFill"></i></div>`:`<div class="progressline"><i style="width:${arc.i/(k==="daily"?10:m.n)*100}%"></i></div>`}
       <div class="quiz-q" style="--c:${q.c}"><div class="tag">${esc(q.tname)}</div>${q.clues?`<div class="q">${esc(q.q)} <span class="clue-worth">${arc.locked?"":`Worth ×${[3,2,1.5,1][arc.clue-1]} XP`}</span></div><ol class="clues">${q.clues.slice(0,arc.locked?4:arc.clue).map(c=>`<li>${esc(c)}</li>`).join("")}</ol>${!arc.locked&&arc.clue<q.clues.length?`<button class="btn ghost clue-more" id="clueMore">Reveal another clue</button>`:""}`:`<div class="q pre ${q.q.length>150?"long":""}">${esc(q.q)}</div>`}
@@ -2195,7 +2215,7 @@ function renderArcade(){
   let head="", extra="";
   if(arc.mode==="blitz"||arc.mode==="gap") head=`<p class="score">${arc.score.toLocaleString()}</p><p class="muted">${arc.right} right in 60 seconds</p>`;
   if(arc.mode==="surv") head=`<p class="score">${arc.right}</p><p class="muted">questions survived</p>`;
-  if(k==="boss"){ const [bn,bi]=BOSSES[arc.bossTopic]; head = arc.won ? `<p class="score">${bi}💥</p><p><b>You defeated ${esc(bn)}${arc.hard?" on hard mode 🔥":""}!</b>${arc.firstWin&&!arc.hard?" New badge unlocked.":""}</p>` : `<p class="score">${arc.right}/${bossHP()}</p><p class="muted">${esc(bn)} survived with ${bossHP()-arc.right} HP. Revise the ones below and try again.</p>`; }
+  if(k==="boss"){ const [bn,bi]=BOSSES[arc.bossTopic]; head = arc.won ? `<p class="score">${bi}💥</p><p class="boss-quote">“${esc((BOSS_LINES[arc.bossTopic]||[])[2]||"")}”</p><p><b>You defeated ${esc(bn)}${arc.hard?" on hard mode 🔥":""}!</b>${arc.firstWin&&!arc.hard?" New badge unlocked.":""}</p>` : `<p class="score">${arc.right}/${bossHP()}</p><p class="muted">${esc(bn)} survived with ${bossHP()-arc.right} HP. Revise the ones below and try again.</p>`; }
   if(k==="round") head=`<p class="score">${arc.right}/${m.n}</p><p class="muted">${arc.right===m.n?"Flawless.":arc.right>=7?"Strong round.":"Go through the ones below, then try again."}</p>`;
   if(k==="weekly"){
     const w=G.weekly[weekStart()];
@@ -2254,7 +2274,7 @@ function startArc(mode){
   Object.assign(arc,{mode, phase:"play", i:0, score:0, right:0, lives:3, log:[], xp:0, best:false, locked:false, t0:Date.now(), seen:new Set(), fb:false});
   resetCombo();
   const m=M();
-  if(m.kind==="boss"){ arc.qs=bossQs(arc.bossTopic); if(arc.hard) arc.lives=2; }
+  if(m.kind==="boss"){ arc.qs=bossQs(arc.bossTopic); if(arc.hard) arc.lives=2; arc.say=(BOSS_LINES[arc.bossTopic]||[])[0]||""; }
   if(mode==="mistakes") MODES.mistakes.n=Math.max(1,Math.min(10,mistakeIds().filter(id=>mcOK(BY_ID[id])).length));
   if(m.kind==="weekly"){ arc.qs=weeklyQs(); G.weekly[weekStart()]={started:true, done:false, score:0, time:0, log:[], qa:arc.qs.map(q=>[q.q,q.opts[q.correct]])}; save(); }
   if(m.kind==="daily"){
@@ -2291,6 +2311,7 @@ function arcPick(i){
   if(q.id && BY_ID[q.id]) recAcc(q.id,ok);
   arc.xp += answer({ok, el:btns[i]||btns[q.correct], mode:m.kind==="round"?"quiz":"arcade", boost:q.clues?[3,2,1.5,1][arc.clue-1]:m.boost});
   if(q.clues){ const ol=document.querySelector(".clues"); if(ol) ol.innerHTML=q.clues.map(c=>`<li>${esc(c)}</li>`).join(""); const cm=$("#clueMore"); if(cm) cm.remove(); const w=document.querySelector(".clue-worth"); if(w) w.textContent=""; if(ok && arc.clue===1) G.st.whoFirst=(G.st.whoFirst||0)+1; }
+  if(m.kind==="boss"){ arc.say=ok?BOSS_HITS[Math.floor(Math.random()*BOSS_HITS.length)]:((BOSS_LINES[arc.bossTopic]||[])[1]||""); const sy=$("#bossSay"); if(sy) sy.innerHTML=`<span>${BOSSES[arc.bossTopic][1]}</span>“${esc(arc.say)}”`; }
   if(m.kind==="boss"){ const bb=$("#bossBar"); if(bb){ bb.classList.remove("hit","miss"); void bb.offsetWidth; bb.classList.add(ok?"hit":"miss"); if(ok){ const fi=bb.querySelector("i"); if(fi) fi.style.width=Math.max(0,(bossHP()-arc.right-1)/bossHP()*100)+"%"; floater("−1 HP", bb, ""); } } }
   if(ok){ arc.right++; if(m.kind==="blitz"){ arc.score+=Math.round(100*comboMult()); const s=$("#arcScore"); if(s) s.textContent=arc.score.toLocaleString(); } }
   else {
