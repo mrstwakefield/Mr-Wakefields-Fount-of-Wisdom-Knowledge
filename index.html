@@ -378,7 +378,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 #trophyArea{display:flex;flex-direction:column}
 #trophyArea > section{display:none}
 #trophyArea[data-sec="progress"] > section[data-sec="progress"],#trophyArea[data-sec="weak"] > section[data-sec="weak"],#trophyArea[data-sec="badges"] > section[data-sec="badges"],#trophyArea[data-sec="scrolls"] > section[data-sec="scrolls"],#trophyArea[data-sec="themes"] > section[data-sec="themes"],#trophyArea[data-sec="saves"] > section[data-sec="saves"]{display:block}
-.ts-profile{order:1}.ts-tiles{order:2}.ts-exam{order:3}.ts-weak{order:4}.ts-heat{order:5}.ts-goal{order:6}
+.ts-profile{order:1}.ts-tiles{order:2}.ts-exam{order:3}.ts-mastery{order:3}.ts-weak{order:4}.ts-heat{order:5}.ts-goal{order:6}
 .ts-badges{order:1}.ts-scrolls{order:2}.ts-certs{order:3}
 .ts-backup{order:1}.ts-report{order:2}.ts-a11y{order:3}
 .tseg{order:0;align-self:flex-start;margin-bottom:14px;max-width:100%;overflow-x:auto;flex-wrap:nowrap}
@@ -503,6 +503,30 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .parch .unlock{font-style:normal;background:rgba(255,255,255,.55);color:#2B1D0A!important}
 .parch .btn{background:#5C3A17;border-color:#5C3A17;color:#FBF1D6}
 .parch .btn.ghost{background:transparent;color:#5C3A17}
+.clues{margin:6px 0 12px;padding-left:1.3em;display:grid;gap:6px}.clues li{font-size:16px;line-height:1.45;color:var(--ink);animation:fade .3s}
+.clue-worth{font-size:13px;font-weight:800;color:var(--c);margin-left:8px;white-space:nowrap}
+.clue-more{margin:0 0 12px}
+.sort-card{border:2px solid var(--c);background:color-mix(in srgb,var(--c) 8%,var(--card));border-radius:16px;padding:22px 18px;font-size:clamp(19px,2.4vw,24px);font-weight:700;text-align:center;margin:10px 0 14px;animation:fade .25s}
+.sort-bins{display:grid;grid-template-columns:repeat(var(--n,2),1fr);gap:10px}.sort-bins.b2{--n:2}.sort-bins.b3{--n:3}
+@media (max-width:520px){.sort-bins.b3{grid-template-columns:1fr}}
+.sort-bin{display:flex;gap:8px;align-items:center;justify-content:center;border:2px solid var(--line);background:var(--card);border-radius:14px;padding:16px 12px;font-size:16px;font-weight:700;min-height:64px;color:var(--ink)}
+.sort-bin:hover:not(:disabled){border-color:var(--c)}
+.sort-bin .k{flex:none;width:24px;height:24px;border-radius:7px;background:var(--soft);display:grid;place-items:center;font-size:13px}
+.sort-bin.right{border-color:var(--good);background:var(--good-bg)}.sort-bin.wrong{border-color:var(--warn);background:var(--warn-bg);animation:shake .35s}
+.sort-fb{min-height:1.6em;margin-top:12px;text-align:center;font-size:15px}
+.yr{color:var(--c);margin-left:6px}
+.pet{display:flex;gap:12px;align-items:center;margin-top:12px;padding:10px 12px;border-radius:14px;background:var(--soft)}
+.pet-face{font-size:34px;line-height:1;animation:petbob 2.4s ease-in-out infinite}.pet.sleepy .pet-face{animation:none;filter:grayscale(.4);opacity:.75}
+@keyframes petbob{50%{transform:translateY(-3px)}}
+@media (prefers-reduced-motion:reduce){.pet-face{animation:none}}
+.pet-txt{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}.pet-txt span{font-size:14px;color:var(--muted)}
+.pet-name{font-weight:800;font-size:inherit;padding:0}
+.pet-food{display:block;height:6px;border-radius:9px;background:var(--card);overflow:hidden;margin-top:3px}.pet-food i{display:block;height:100%;background:linear-gradient(90deg,#F2C14E,#1C8A5E)}
+.chip .stars{font-size:12px;letter-spacing:1px;color:var(--muted);white-space:nowrap}.stars.s1,.stars.s2,.stars.s3{color:#D9A21B}
+.mastery{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.mrow{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:12px}
+.mrow .mdot{width:10px;height:10px;border-radius:3px;background:var(--c)}.mrow .stars{font-size:18px;letter-spacing:2px}
+.mrow small{grid-column:2 / 4;color:var(--muted);font-size:13px}
 .chal-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .chal{width:min(580px,100%);max-height:calc(100vh - 32px);overflow:auto;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:20px;padding:20px 20px 18px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
 .chal-kick{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
@@ -1002,7 +1026,7 @@ function renderChips(){
   $("#chips").innerHTML = TOPICS.map(t=>{
     const items = DATA.filter(d=>d.t===t.key); const k = items.filter(d=>status(d.id)==="k").length;
     const on = store.sel.includes(t.key);
-    return `<button class="chip" style="--c:${t.c}" aria-pressed="${on}" data-key="${esc(t.key)}"><span class="row"><span class="dot"></span>${esc(t.name)}${(()=>{const f=items.length?k/items.length:0;return f>=1?'<span class="medal" title="Gold: all known">🥇</span>':f>=.8?'<span class="medal" title="Silver: 80% known">🥈</span>':f>=.5?'<span class="medal" title="Bronze: 50% known">🥉</span>':""})()}</span><span class="foot2"><span class="bar"><i style="width:${items.length?k/items.length*100:0}%"></i></span><span class="n">${k}/${items.length}</span></span></button>`;
+    return `<button class="chip" style="--c:${t.c}" aria-pressed="${on}" data-key="${esc(t.key)}"><span class="row"><span class="dot"></span>${esc(t.name)}${(()=>{const f=items.length?k/items.length:0;return f>=1?'<span class="medal" title="Gold: all known">🥇</span>':f>=.8?'<span class="medal" title="Silver: 80% known">🥈</span>':f>=.5?'<span class="medal" title="Bronze: 50% known">🥉</span>':""})()}</span><span class="foot2"><span class="bar"><i style="width:${items.length?k/items.length*100:0}%"></i></span><span class="n">${k}/${items.length}</span><span class="stars s${mastery(t.key).s}" title="Mastery: ${mastery(t.key).s} of 3 stars">${starStr(mastery(t.key).s)}</span></span></button>`;
   }).join("");
 }
 $("#chips").addEventListener("click", e=>{
@@ -1278,7 +1302,19 @@ function cardType(d){
   if(/\(\d{4}\)|stud(y|ies)|research|found|find|procedure|sample|aim|conclu|investigat|experiment/i.test(d.q)) return "Studies";
   return "Concepts";
 }
-function recAcc(id, ok){ const d=BY_ID[id]; if(!d) return; noteMistake(id,ok); const pl=G.plan; if(pl && pl.d===today() && d.t===pl.weak) pl.weakN++; const a=G.acc, y=cardType(d);
+function recAcc(id, ok){ const d=BY_ID[id]; if(!d) return; const s0=mastery(d.t).s; G.rec=G.rec||{}; G.rec[d.t]=((G.rec[d.t]||"")+(ok?"1":"0")).slice(-MASTERY_WIN); recAcc2(id,ok,d); const s1=mastery(d.t).s;
+  if(s1>s0){ const t=TMAP[d.t]; setTimeout(()=>{ toast("⭐",`${t.name}: ${s1} star${s1>1?"s":""}!`, s1===3?"Topic mastered. Keep it topped up.":"See what's needed for the next star in Progress."); sfx("badge"); checkBadges(); if(typeof renderChips==="function") renderChips(); },500); } }
+const MASTERY_WIN=30;
+function mastery(key){
+  const [r,n]=G.acc.t[key]||[0,0], rec=(G.rec||{})[key]||"";
+  const acc=rec.length>=20 ? rec.split("").filter(c=>c==="1").length/rec.length : (n?r/n:0);
+  const items=DATA.filter(d=>d.t===key), known=items.length?items.filter(d=>status(d.id)==="k").length/items.length:0;
+  const tiers=[[20,.6,0],[40,.75,.25],[60,.9,.5]]; let s=0, need=[];
+  for(const [nn,aa,kk] of tiers){ if(n>=nn && acc>=aa && known>=kk) s++; else { if(n<nn) need.push(`answer ${nn-n} more`); if(acc<aa && n>=10) need.push(`get recent accuracy to ${Math.round(aa*100)}%`); if(known<kk) need.push(`mark ${Math.ceil(kk*items.length)-Math.round(known*items.length)} more cards as known`); break; } }
+  return {s, acc, n, known, need};
+}
+const starStr=s=>"★".repeat(s)+"☆".repeat(3-s);
+function recAcc2(id, ok, d){ noteMistake(id,ok); const pl=G.plan; if(pl && pl.d===today() && d.t===pl.weak) pl.weakN++; const a=G.acc, y=cardType(d);
   (a.t[d.t]=a.t[d.t]||[0,0])[1]++; if(ok) a.t[d.t][0]++;
   (a.y[y]=a.y[y]||[0,0])[1]++; if(ok) a.y[y][0]++; }
 function noteLearn(id, ok){ if(!ok){ G.lc[id]=(G.lc[id]||0)+1; G.st.learnMarks=(G.st.learnMarks||0)+1; } else if((G.lc[id]||0)>=3){ G.sec.finally=1; delete G.lc[id]; } else delete G.lc[id]; }
@@ -1501,6 +1537,8 @@ const BADGES = [
   ["l5","⭐","Rising star","Reach level 5",()=>lvlFor(G.xp)>=5],
   ["l10","🌟","Shining","Reach level 10",()=>lvlFor(G.xp)>=10],
   ["l20","🏆","Elite","Reach level 20",()=>lvlFor(G.xp)>=20],
+  ["star3","🌟","Three-star topic","Get 3 mastery stars in any topic",()=>TOPICS.some(t=>mastery(t.key).s===3)],
+  ["starall","✨","Star collector","Get at least 1 mastery star in every topic",()=>TOPICS.every(t=>mastery(t.key).s>=1)],
   ["l50","🫡","Certified stan","Reach level 100: Dedicated Wakefield Stan",()=>lvlFor(G.xp)>=100],
   ["gold1","✨","Lucky find","Get a golden card right",()=>G.st.gold>=1, true, "Not all cards are created equal…"],
   ["gold10","💰","Gold digger","Get 10 golden cards right",()=>G.st.gold>=10, true, "…and some people collect them"],
@@ -2012,6 +2050,10 @@ const MODES = {
   surv:{icon:"❤️", name:"Survival", c:"#7B5BE0", kind:"surv", src:"cards", desc:"Three lives, 12 seconds per question. How far can you get?"},
   flaw:{icon:"🔎", name:"Spot the Flaw", c:"#2596B0", kind:"round", n:8, src:"flaw", desc:"A short study, one big methodological problem. Can you spot it? Explanations after every answer."},
   match:{icon:"🔗", name:"Study Matcher", c:"#D6478F", kind:"mini", src:"match", desc:"Match the researcher to what they found. Three rounds of five, from the topics you've selected."},
+  detective:{icon:"🕵️", name:"Study Detective", c:"#52525B", kind:"round", n:8, src:"detective", desc:"A case file describes a study. Work out who did it, what they found, the method and a criticism that fits. Explanations after every answer."},
+  whoami:{icon:"🎭", name:"Who Am I?", c:"#9A7440", kind:"round", n:6, src:"whoami", desc:"Clues about a famous study appear one at a time. Guess the researcher early for up to triple XP, or reveal more clues to play it safe."},
+  sort:{icon:"🗂️", name:"Sort It", c:"#0F766E", kind:"mini", src:"sort", desc:"Tap each card into the right box: NSI or ISI, STM or LTM, positive or negative symptoms and more. Three quick sets."},
+  timeline:{icon:"📅", name:"Timeline", c:"#C2410C", kind:"mini", src:"timeline", desc:"Tap famous studies and theories into date order, from oldest to newest. The years are revealed when you check."},
   order:{icon:"🧩", name:"Put It in Order", c:"#7B5BE0", kind:"mini", src:"order", desc:"Tap the steps into the right order: synaptic transmission, Duck's phases, CBT, report sections and more."},
   mistakes:{icon:"🩹", name:"Fix My Mistakes", c:"#B4531B", kind:"round", n:10, src:"mistakes", desc:"Questions you've got wrong before. Each one leaves your mistakes bank once it's right twice in a row."},
   boss:{icon:"👹", name:"Boss Battles", c:"#B91C1C", kind:"boss", src:"boss", desc:"One boss per topic. Land 15 hits with hard questions before you lose 3 lives. Beat a boss to earn its badge."},
@@ -2033,6 +2075,10 @@ function weeklyShare(){ const w=G.weekly[weekStart()]; return `Fount of Wisdom A
 function bestLabel(k){
   if(k==="weekly"){ const w=(G.weekly||{})[weekStart()]; return w&&w.done?`Done this week: ${w.score}/15 ✓`:`This week: ${weekTopic().name}`; }
   const st=G.st;
+  if(k==="sort") return st.sortBest?`Best: ${st.sortBest}% sorted`:"No score yet";
+  if(k==="timeline") return st.timelineBest?`Best: ${st.timelineBest}/4 timelines`:"No score yet";
+  if(k==="whoami") return st.whoFirst?`Guessed on the first clue: ${st.whoFirst}`:"No score yet";
+  if(k==="detective") return st.detBest!=null?`Best: ${st.detBest}/8 cases`:"No score yet";
   return k==="blitz" ? (st.blitz?`Best: ${st.blitz.toLocaleString()} points`:"No score yet")
     : k==="surv" ? (st.surv?`Best: ${st.surv} questions`:"No score yet")
     : k==="gap" ? (st.gap?`Best: ${st.gap.toLocaleString()} points`:"No score yet")
@@ -2061,7 +2107,7 @@ function renderArcade(){
       return `<button class="mode ${m.featured?"featured":""}" style="--c:${m.c}" data-mode="${k}" ${dis?"disabled":""}>${tag}<span class="mi">${m.icon}</span><h3>${m.name}${m.featured?' <small>Featured</small>':""}</h3><p>${m.desc}</p><span class="best">${bestLabel(k)}</span></button>`; }).join("")}</div>
       <p class="arc-note">Blitz, Survival and Gap Fill use the topics you've selected above${nCards?"":", so pick at least one"}. Exam Skills and Stats Lab cover the whole course. Wrong answers on revision cards are added to your still-learning pile. Use keys 1 to 4 to answer, and Enter for the next question.</p>`;
     $("#weekBan").onclick=()=>startArc("weekly");
-    area.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{ const md=b.dataset.mode; if(md==="boss"){ arc.phase="bossmenu"; renderArcade(); } else if(md==="match") startMatch(); else if(md==="order") startOrder(); else if(md==="proj") openProjector(); else if(md==="parent") openParent(); else startArc(md); });
+    area.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{ const md=b.dataset.mode; if(md==="boss"){ arc.phase="bossmenu"; renderArcade(); } else if(md==="match") startMatch(); else if(md==="order") startOrder(); else if(md==="sort") startSort(); else if(md==="timeline") startTimeline(); else if(md==="proj") openProjector(); else if(md==="parent") openParent(); else startArc(md); });
     return;
   }
   if(arc.phase==="bossmenu"){
@@ -2085,11 +2131,12 @@ function renderArcade(){
     const bossBar = k==="boss" ? `<div class="bosshp" aria-label="Boss health"><i style="width:${(BOSS_HP-arc.right)/BOSS_HP*100}%"></i><span>${BOSSES[arc.bossTopic][1]} ${esc(BOSSES[arc.bossTopic][0])} · ${BOSS_HP-arc.right} HP</span></div>` : "";
     area.innerHTML=`<div class="arc-top"><span class="big">${k==="boss"?"👹 Boss battle":m.icon+" "+m.name}</span>${m.boost?'<span class="boost">2× XP</span>':""}<span class="spacer"></span>${right}${timed?`<span class="big" id="arcTime" style="min-width:2.2em;text-align:right"></span>`:""}</div>
       ${k==="boss"?bossBar:timed?`<div class="timebar" id="tb"><i id="tbFill"></i></div>`:`<div class="progressline"><i style="width:${arc.i/(k==="daily"?10:m.n)*100}%"></i></div>`}
-      <div class="quiz-q" style="--c:${q.c}"><div class="tag">${esc(q.tname)}</div><div class="q pre ${q.q.length>150?"long":""}">${esc(q.q)}</div>
+      <div class="quiz-q" style="--c:${q.c}"><div class="tag">${esc(q.tname)}</div>${q.clues?`<div class="q">${esc(q.q)} <span class="clue-worth">${arc.locked?"":`Worth ×${[3,2,1.5,1][arc.clue-1]} XP`}</span></div><ol class="clues">${q.clues.slice(0,arc.locked?4:arc.clue).map(c=>`<li>${esc(c)}</li>`).join("")}</ol>${!arc.locked&&arc.clue<q.clues.length?`<button class="btn ghost clue-more" id="clueMore">Reveal another clue</button>`:""}`:`<div class="q pre ${q.q.length>150?"long":""}">${esc(q.q)}</div>`}
       <div class="opts">${q.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${i+1}</span><span>${esc(o)}</span></button>`).join("")}</div>
       <div id="fb"></div></div>
       <p style="text-align:right;margin-top:10px"><button class="linkbtn" id="arcQuit">${once?"Stop (counts as your go)":"End game"}</button></p>`;
     area.querySelectorAll(".opt").forEach(b=>b.onclick=()=>arcPick(+b.dataset.i));
+    const cm=$("#clueMore"); if(cm) cm.onclick=()=>{ arc.clue=Math.min(4,arc.clue+1); renderArcade(); const nb=$("#clueMore"); if(nb) nb.focus(); };
     $("#arcQuit").onclick=()=>arcFinish();
     arcTick();
     return;
@@ -2139,6 +2186,7 @@ function nextQ(){
     let q;
     if(m.src==="flaw"){ const f=FLAWS[Math.floor(rng()*FLAWS.length)]; q={...mcq("Spot the flaw: "+f[0]+"\nWhat is the main problem with this study?", f[1], shuffleR(f[2],rng), f[3], rng, "Spot the flaw"), tname:"Spot the flaw", c:"#2596B0"}; }
     else if(m.src==="mistakes"){ const ids=mistakeIds().filter(id=>mcOK(BY_ID[id])); q=qFromCard(BY_ID[ids[Math.floor(rng()*ids.length)]],rng); q.tname="🩹 Mistake · "+q.tname; }
+    else if(m.src==="detective") q=qDetective(rng); else if(m.src==="whoami") q=qWhoAmI(rng);
     else if(m.src==="exam") q=qExam(rng); else if(m.src==="stats") q=qStats(rng); else if(m.src==="gap") q=qGap(rng);
     else { const p=pool().filter(mcOK); q=qFromCard(p[Math.floor(rng()*p.length)],rng); }
     const key=q.q.slice(0,90); if(!arc.seen.has(key) || tries===24){ arc.seen.add(key); return q; }
@@ -2192,7 +2240,8 @@ function arcPick(i){
   if(m.kind==="weekly"){ const w=G.weekly[weekStart()]; if(w){ w.log=arc.qs.map((x,j)=>arc.log[j]?arc.log[j].ok:false); w.score=w.log.filter(Boolean).length; w.time=Date.now()-arc.t0; } }
   if(m.kind==="daily"){ const dd=G.daily[today()]; if(dd){ dd.log=arc.qs.map((x,j)=>arc.log[j]?arc.log[j].ok:false); dd.score=dd.log.filter(Boolean).length; dd.time=Date.now()-arc.t0; } }
   if(q.id && BY_ID[q.id]) recAcc(q.id,ok);
-  arc.xp += answer({ok, el:btns[i]||btns[q.correct], mode:m.kind==="round"?"quiz":"arcade", boost:m.boost});
+  arc.xp += answer({ok, el:btns[i]||btns[q.correct], mode:m.kind==="round"?"quiz":"arcade", boost:q.clues?[3,2,1.5,1][arc.clue-1]:m.boost});
+  if(q.clues){ const ol=document.querySelector(".clues"); if(ol) ol.innerHTML=q.clues.map(c=>`<li>${esc(c)}</li>`).join(""); const cm=$("#clueMore"); if(cm) cm.remove(); const w=document.querySelector(".clue-worth"); if(w) w.textContent=""; if(ok && arc.clue===1) G.st.whoFirst=(G.st.whoFirst||0)+1; }
   if(ok){ arc.right++; if(m.kind==="blitz"){ arc.score+=Math.round(100*comboMult()); const s=$("#arcScore"); if(s) s.textContent=arc.score.toLocaleString(); } }
   else {
     if(q.id && BY_ID[q.id] && status(q.id)!=="k") mark(q.id,"l");
@@ -2217,7 +2266,8 @@ function arcPick(i){
   }
   setTimeout(advance, ok ? 380 : 1300);
 }
-function arcFinish(){
+function arcFinishHook(){ if(arc.mode==="detective") G.st.detBest=Math.max(G.st.detBest||0,arc.right); }
+function arcFinish(){ arcFinishHook();
   if(arc.phase!=="play") return;
   clearInterval(arc.timer); arc.phase="done"; arc.best=false; arc.fb=false;
   const m=M(), st=G.st; let bonus=0;
@@ -2789,13 +2839,36 @@ function planTasks(){
     {id:"weak", icon:"🎯", label:`10 cards on ${TMAP[pl.weak].name} (${Math.min(pl.weakN,10)}/10)`, done:pl.weakN>=10}
   ];
 }
+
+/* ---- 🐀 revision pet: grows with right answers, gets sleepy when you stop revising ---- */
+const PET_STAGES=[[0,"🐭","Baby rat"],[100,"🐁","Young rat"],[500,"🐀","Lab rat"],[2000,"🐀🎓","Graduate rat"],[5000,"🐀👑","Rat royalty"],[12000,"🐀🧠","Professor Rat"]];
+const PET_FULL=20;
+function petInfo(){
+  const right=G.st.right||0; let si=0; PET_STAGES.forEach((x,i)=>{ if(right>=x[0]) si=i; });
+  const st=PET_STAGES[si], nx=PET_STAGES[si+1], t=today(), fed=G.hist[t]||0;
+  const past=Object.keys(G.hist).filter(k=>k<t && G.hist[k]>0).sort(), last=past[past.length-1], gap=last?dayNum(t)-dayNum(last):null;
+  const name=G.petName||"Pip";
+  const mood = fed>=PET_FULL ? ["😄","is full and happy. Great revising today!"]
+    : fed>0 ? ["🙂",`is nibbling away: ${fed}/${PET_FULL} snacks today.`]
+    : gap===null ? ["👋","has just moved in. Answer some questions to feed them."]
+    : gap<=1 ? ["🥺","is hungry. Answer a few questions to feed them."]
+    : gap<=3 ? ["😴","is getting sleepy. A few questions will perk them up."]
+    : ["💤","is hibernating. Revise to wake them up!"];
+  return {name, face:st[1], stage:st[2], mood, fed, sleepy:fed===0&&gap!==null&&gap>1, next:nx?{n:nx[0]-right, stage:nx[2]}:null};
+}
+function petHTML(){
+  const p=petInfo();
+  return `<div class="pet ${p.sleepy?"sleepy":""}"><span class="pet-face" aria-hidden="true">${p.face}</span><div class="pet-txt"><b><button class="linkbtn pet-name" id="petName" title="Rename your rat">${esc(p.name)}</button> the ${esc(p.stage)} ${p.mood[0]}</b><span>${esc(p.name)} ${esc(p.mood[1])}${p.next?` ${p.next.n.toLocaleString()} more right answers to grow into a ${esc(p.next.stage)}.`:" Fully grown!"}</span>
+    <span class="pet-food" aria-hidden="true"><i style="width:${Math.min(100,p.fed/PET_FULL*100)}%"></i></span></div></div>`;
+}
 function renderPlan(){
   const el=$("#plan"); if(!el) return;
   const tasks=planTasks(), n=tasks.filter(x=>x.done).length, pl=G.plan;
   if(n===3 && !pl.done){ pl.done=true; G.st.plans=(G.st.plans||0)+1; save(); setTimeout(()=>{ toast("📋","Today's plan complete! +40 XP","See you tomorrow."); confetti(140); sfx("badge"); addXP(40,false); checkBadges(); },300); }
   el.innerHTML=`<div class="plan-card ${n===3?"complete":""}"><div class="plan-h"><b>📋 Today's plan</b><span>${n===3?"All done. Brilliant work! ✓":`${n} of 3 done · finish all three for +40 XP`}</span></div>
     <div class="plan-tasks">${tasks.map(x=>`<button class="ptask ${x.done?"done":""}" data-plan="${x.id}" ${x.done?"disabled":""}><span>${x.done?"✅":x.icon}</span>${esc(x.label)}</button>`).join("")}
-    <button class="ptask focusbtn" id="focusBtn">${focusS.end?`🧘 Focus: <span id="focusLeft">${fmtTime(focusS.end-Date.now())}</span> · stop`:"🧘 25-minute focus session"}</button></div></div>`;
+    <button class="ptask focusbtn" id="focusBtn">${focusS.end?`🧘 Focus: <span id="focusLeft">${fmtTime(focusS.end-Date.now())}</span> · stop`:"🧘 25-minute focus session"}</button></div>${petHTML()}</div>`;
+  const pn=$("#petName"); if(pn) pn.onclick=()=>{ const v=prompt("Name your revision rat:", G.petName||"Pip"); if(v!==null){ const nm=v.trim().slice(0,20); G.petName=nm||"Pip"; save(); renderPlan(); } };
   el.querySelectorAll("[data-plan]").forEach(b=>b.onclick=()=>{
     const k=b.dataset.plan;
     if(k==="due"){ if(dueCount()===0){ store.sel=TOPICS.map(t=>t.key); save(); renderChips(); } goTab("cards"); setFilter("due"); }
@@ -2905,6 +2978,97 @@ function renderProj(){
   $("#pjFull").onclick=()=>{ if(document.fullscreenElement) document.exitFullscreen().catch(()=>{}); else o.requestFullscreen&&o.requestFullscreen().catch(()=>{}); };
 }
 
+/* ---- 🕵️ study bank for Study Detective and Who Am I?
+   who = researcher(s), t = topic key, p = participants, d = what they did (no names), f = key finding,
+   c = a criticism specific to this study, m = research method (only where it is clear-cut), x = final giveaway clue ---- */
+const STUDIES = [
+  {who:"Asch (1951)", t:"Social Influence", m:"Lab experiment", p:"123 American male students", d:"Participants judged which of three lines matched a standard line, after a group of confederates had all given the same wrong answer.", f:"Participants conformed on 36.8% of the critical trials, and 25% never conformed at all.", c:"It was done in 1950s America, a very conformist era, so it may be a 'child of its time'.", x:"I'm the classic study of conformity to a majority, using lines."},
+  {who:"Zimbardo (1973)", t:"Social Influence", m:"Controlled observation", p:"24 male student volunteers", d:"Students were randomly given the role of guard or prisoner in a mock prison in a university basement.", f:"Guards became increasingly brutal and the study was stopped after 6 days instead of 14.", c:"The lead researcher also played the prison superintendent, so he lost objectivity and was slow to protect participants.", x:"My mock prison was at Stanford University."},
+  {who:"Milgram (1963)", t:"Social Influence", p:"40 male volunteers from New Haven", d:"Participants were told to give increasingly strong electric shocks to a 'learner' every time he got an answer wrong.", f:"65% went all the way to 450 volts, and every participant went to at least 300 volts.", c:"Orne and Holland argued participants may have guessed the shocks weren't real.", x:"'Please continue. The experiment requires that you continue.'"},
+  {who:"Hofling et al (1966)", t:"Social Influence", m:"Field experiment", p:"22 nurses on hospital wards", d:"An unknown 'doctor' phoned and told nurses to give a patient twice the maximum dose of an unfamiliar drug called Astroten.", f:"21 of the 22 nurses obeyed, and were stopped on their way to give the drug.", c:"Rank and Jacobson found far less obedience when nurses knew the drug and could talk to colleagues.", x:"My study took obedience research out of the lab and into a real hospital."},
+  {who:"Moscovici et al (1969)", t:"Social Influence", m:"Lab experiment", p:"Groups of six women, two of whom were confederates", d:"Groups saw 36 blue slides and said aloud what colour they were, while two confederates called them 'green'.", f:"When the minority was consistent, participants said 'green' on 8.42% of trials, but only 1.25% when it was inconsistent.", c:"The participants were all women, so the findings may not generalise to men.", x:"I showed that a consistent minority can change the majority's view."},
+  {who:"Adorno et al (1950)", t:"Social Influence", m:"Questionnaire", p:"Over 2,000 middle-class, white Americans", d:"Participants completed the F-scale, which measures potential for fascism, and some were interviewed about their childhoods.", f:"People with an authoritarian personality were more obedient and tended to have strict, harsh parents.", c:"All the F-scale items were worded the same way, so it may measure a tendency to agree rather than authoritarianism.", x:"I created the F-scale."},
+  {who:"Peterson and Peterson (1959)", t:"Memory", m:"Lab experiment", p:"24 students", d:"Participants were shown a consonant trigram, then counted backwards in threes to stop them rehearsing it.", f:"Recall fell to under 10% after 18 seconds, suggesting STM lasts about 18 to 30 seconds.", c:"Meaningless trigrams are very artificial, so the study lacks mundane realism.", x:"Counting backwards in threes is my trademark."},
+  {who:"Bahrick et al (1975)", t:"Memory", p:"392 American ex-high-school students", d:"Participants were asked to recognise and name former classmates from their school yearbook photos.", f:"Face recognition was about 90% accurate after 15 years and still about 70% after 48 years.", c:"Some participants may have looked at their yearbooks since leaving school, a confounding variable.", x:"I tested long-term memory using yearbook photos."},
+  {who:"Jacobs (1887)", t:"Memory", p:"443 female students", d:"Participants repeated back strings of digits or letters, increasing the length until they could no longer recall them in order.", f:"The average span was 9.3 items for digits and 7.3 items for letters.", c:"The study is very old and lacked the controls of modern research, such as for distractions.", x:"I measured the capacity of STM using digit span."},
+  {who:"Baddeley (1966)", t:"Memory", m:"Lab experiment", p:"Groups of participants given lists of words", d:"Participants learned lists of words that sounded similar, sounded different, meant similar things or meant different things.", f:"Acoustically similar words were hardest in STM, while semantically similar words were hardest in LTM.", c:"Word lists have little personal meaning, so it may not show how coding works for real-life memories.", x:"I showed that STM is coded acoustically and LTM semantically."},
+  {who:"Loftus and Palmer (1974)", t:"Memory", m:"Lab experiment", p:"45 American students", d:"Participants watched film clips of car crashes and estimated the speed, with the verb in the question changed each time.", f:"With 'smashed' the average estimate was 40.5 mph, but with 'contacted' it was 31.8 mph.", c:"Watching a film clip doesn't have the emotional impact of seeing a real crash.", x:"'About how fast were the cars going when they smashed into each other?'"},
+  {who:"Johnson and Scott (1976)", t:"Memory", m:"Lab experiment", p:"Participants who thought they were waiting for a study", d:"Participants overheard an argument, then a man came out holding either a pen covered in grease or a knife covered in blood.", f:"49% identified the man when he held the pen, but only 33% when he held the knife.", c:"Participants may have been put under real stress, which raises ethical issues.", x:"I'm the classic study of weapon focus."},
+  {who:"Yuille and Cutshall (1986)", t:"Memory", p:"13 witnesses to a real armed robbery in Canada", d:"Witnesses were interviewed four to five months after a real shooting in a gun shop, and rated how stressed they had felt.", f:"Witnesses who had felt the most stress were the most accurate, about 88% compared with 75%.", c:"Researchers had no control over what witnesses saw or discussed in the months after the robbery.", x:"I studied a real gun-shop robbery rather than a film."},
+  {who:"Godden and Baddeley (1975)", t:"Memory", p:"18 deep-sea divers", d:"Divers learned a list of words either underwater or on land, then recalled it either underwater or on land.", f:"Recall was about 40% lower when the learning and recall environments didn't match.", c:"Land and underwater are far more different than most real-life contexts, such as two classrooms.", x:"My participants were deep-sea divers."},
+  {who:"Shallice and Warrington (1970)", t:"Memory", m:"Case study", p:"One patient, KF, after a motorcycle accident", d:"Researchers tested the short-term memory of a patient with brain damage using verbal and visual information.", f:"KF's STM for verbal information was poor, but his STM for visual information was much better.", c:"KF's brain injury may have caused other problems, so it's hard to generalise from one case.", x:"I studied patient KF."},
+  {who:"Schaffer and Emerson (1964)", t:"Attachment", m:"Longitudinal study", p:"60 babies from working-class homes in Glasgow", d:"Babies were visited at home every month for their first year and again at 18 months, and mothers reported on separation and stranger anxiety.", f:"Attachment develops in stages, and babies attach most strongly to whoever is most responsive to them.", c:"Mothers' reports of their babies' anxiety may have been biased or inaccurate.", x:"I gave you the stages of attachment, from asocial to multiple."},
+  {who:"Lorenz (1935)", t:"Attachment", p:"A clutch of goose eggs", d:"Half the eggs hatched with their mother and half in an incubator, where the first moving thing the goslings saw was the researcher.", f:"The goslings followed the first moving object they saw, which shows imprinting in a critical period.", c:"Geese are very different from humans, so we can't easily generalise to human attachment.", x:"Goslings followed me around as if I were their mother."},
+  {who:"Harlow (1958)", t:"Attachment", m:"Lab experiment", p:"Baby rhesus monkeys", d:"Baby monkeys were raised with two wire 'mothers': one that gave milk and one covered in soft cloth.", f:"The monkeys preferred the cloth mother, especially when frightened, so comfort matters more than food.", c:"The monkeys suffered serious long-term harm, which raises major ethical issues.", x:"My monkeys preferred the cloth mother."},
+  {who:"Ainsworth (1970)", t:"Attachment", m:"Controlled observation", p:"Middle-class American infants and their mothers", d:"Infants were observed through eight short episodes in a playroom, including the mother leaving and a stranger arriving.", f:"Most infants were securely attached, with the rest classed as insecure-avoidant or insecure-resistant.", c:"The procedure was designed in America, so it may not be valid in other cultures (an imposed etic).", x:"I created the Strange Situation."},
+  {who:"Van IJzendoorn and Kroonenberg (1988)", t:"Attachment", m:"Meta-analysis", p:"32 Strange Situation studies from 8 countries", d:"Researchers combined the results of many Strange Situation studies to compare attachment types across countries.", f:"Secure attachment was the most common type everywhere, and there was more variation within countries than between them.", c:"Comparing countries is not the same as comparing cultures, as one country contains many cultures.", x:"I'm the cross-cultural meta-analysis of attachment types."},
+  {who:"Bowlby (1944)", t:"Attachment", p:"44 teenagers referred to a guidance clinic for stealing", d:"The teenagers and their families were interviewed and compared with a control group of 44 non-thieves.", f:"14 thieves were 'affectionless psychopaths', and 12 of these had experienced prolonged early separation from their mothers.", c:"The researcher carried out the interviews and diagnoses himself, so researcher bias is likely.", x:"I'm the '44 thieves' study."},
+  {who:"Rutter et al (2011)", t:"Attachment", m:"Natural experiment", p:"165 Romanian orphans adopted by British families", d:"Orphans were assessed at regular intervals and compared depending on how old they were when adopted.", f:"Children adopted after 6 months were more likely to show disinhibited attachment and problems with peers.", c:"Children weren't randomly assigned to adoption ages, so other factors may explain the differences.", x:"I'm the English and Romanian Adoptees (ERA) study."},
+  {who:"Hazan and Shaver (1987)", t:"Attachment", m:"Questionnaire", p:"620 people who replied to a 'love quiz' in a newspaper", d:"Readers answered questions about their childhood attachments and their current romantic relationships.", f:"Securely attached people were more likely to have happy, lasting relationships, which links early attachment to adult love.", c:"The volunteers chose to reply to a newspaper quiz, so the sample may be biased.", x:"I used a 'love quiz' in a newspaper."},
+  {who:"Bandura et al (1961)", t:"Approaches", m:"Lab experiment", p:"72 children aged 3 to 5 from a university nursery", d:"Children watched an adult behave aggressively or non-aggressively towards an inflatable doll, then were left to play.", f:"Children who saw the aggressive model were much more likely to copy the aggression.", c:"The doll is designed to be hit, so children may have done what they thought was expected (demand characteristics).", x:"I'm the Bobo doll study."},
+  {who:"Sperry (1968)", t:"Biopsychology", p:"11 people who had their corpus callosum cut to treat epilepsy", d:"Images or words were flashed to one visual field so the information went to only one hemisphere.", f:"Patients couldn't say what was shown to the left visual field, because language is mainly in the left hemisphere.", c:"The patients had severe epilepsy and took medication, which may have affected their brains.", x:"I studied split-brain patients."},
+  {who:"Maguire et al (2000)", t:"Biopsychology", m:"Quasi-experiment", p:"16 right-handed male London taxi drivers", d:"MRI scans of taxi drivers' brains were compared with those of men who weren't taxi drivers.", f:"Taxi drivers had a larger posterior hippocampus, and it was bigger the longer they'd been driving.", c:"The drivers weren't randomly allocated, so they may have differed from the controls in other ways.", x:"I scanned the brains of London taxi drivers."},
+  {who:"Siffre (1975)", t:"Biopsychology", m:"Case study", p:"One person: the researcher himself", d:"He spent six months living in a cave in Texas with no daylight, clocks or other time cues.", f:"His sleep-wake cycle 'free-ran' to slightly longer than 24 hours, about 25 hours.", c:"It's a case study of one adult man, so we can't generalise to everyone.", x:"I lived in a cave with no clocks."},
+  {who:"Raine et al (1997)", t:"Forensic Psychology", m:"Quasi-experiment", p:"41 murderers pleading not guilty by reason of insanity, and 41 controls", d:"PET scans compared the brain activity of the two groups.", f:"The murderers had less activity in the prefrontal cortex, which is linked to self-control.", c:"These murderers were pleading insanity, so they may not represent most violent offenders.", x:"I used PET scans to compare murderers' brains."},
+  {who:"Christiansen (1977)", t:"Forensic Psychology", p:"Over 3,500 twin pairs in Denmark", d:"Researchers compared how often both twins had a criminal record in identical and non-identical pairs.", f:"Concordance for male identical twins was 35%, compared with 13% for male non-identical twins.", c:"Identical twins may be treated more alike, so the shared environment could explain the higher concordance.", x:"I studied criminality in Danish twins."},
+  {who:"Lombroso (1876)", t:"Forensic Psychology", p:"383 dead and 3,839 living convicts", d:"He examined the skulls and faces of convicts, looking for 'primitive' physical features.", f:"About 40% of the criminals had 'atavistic' features, such as a heavy brow or strong jaw.", c:"He had no control group of non-criminals, and his ideas had racist overtones.", x:"I'm the father of modern criminology and the atavistic form."},
+  {who:"Walster et al (1966)", t:"Relationships", m:"Field experiment", p:"752 university students", d:"Students were secretly rated for attractiveness, then randomly paired for a 'computer dance'.", f:"Physical attractiveness was the biggest predictor of liking, whatever the person's own attractiveness.", c:"A blind date at a dance is a short first meeting, so it may not reflect long-term relationships.", x:"I set up a 'computer dance'."},
+  {who:"Kerckhoff and Davis (1962)", t:"Relationships", p:"Student couples who had been together for under or over 18 months", d:"Couples completed questionnaires about their values and needs, and were followed up seven months later.", f:"Similar values mattered most for short-term couples, while complementary needs mattered more for long-term couples.", c:"Later researchers failed to replicate the findings.", x:"I came up with filter theory."},
+  {who:"Gottesman (1991)", t:"Schizophrenia", m:"Meta-analysis", p:"About 40 family and twin studies", d:"He combined the results of many studies to compare the risk of schizophrenia in relatives.", f:"Concordance was about 48% for identical twins and 17% for non-identical twins.", c:"Identical twins share more of their environment too, so genes can't be fully separated from upbringing.", x:"I'm famous for family studies showing that genes play a role in schizophrenia."}
+];
+const METHODS=["Lab experiment","Field experiment","Natural experiment","Quasi-experiment","Controlled observation","Naturalistic observation","Case study","Questionnaire","Meta-analysis","Longitudinal study"];
+const METHOD_NEAR={"Lab experiment":["Controlled observation","Quasi-experiment"],"Controlled observation":["Lab experiment","Naturalistic observation"],"Quasi-experiment":["Natural experiment","Lab experiment"],"Natural experiment":["Quasi-experiment","Longitudinal study","Field experiment"],"Longitudinal study":["Naturalistic observation","Questionnaire","Natural experiment"],"Field experiment":["Natural experiment"],"Questionnaire":["Longitudinal study"],"Meta-analysis":[],"Case study":[]};
+function studyOthers(s){ const same=STUDIES.filter(x=>x!==s && x.t===s.t), rest=STUDIES.filter(x=>x!==s && x.t!==s.t); return shuffle(same).concat(shuffle(rest)); }
+function qDetective(rng){
+  const s=pickR(STUDIES,rng), t=TMAP[s.t], others=studyOthers(s), kinds=["who","find","crit"]; if(s.m) kinds.push("method");
+  const k=pickR(kinds,rng), file="🗂️ Case file: "+s.d+"\n";
+  let q;
+  if(k==="who") q=mcq(file+"Which study is this?", s.who, others.map(x=>x.who), s.who+": "+s.f, rng, "who");
+  else if(k==="find") q=mcq(file+"What did this study find?", s.f, others.map(x=>x.f), s.who, rng, "find");
+  else if(k==="crit") q=mcq("🗂️ Case file: "+s.who+"\n"+s.d+"\nWhich criticism is specifically about this study?", s.c, others.map(x=>x.c), s.who+": "+s.c, rng, "crit");
+  else { const near=METHOD_NEAR[s.m]||[]; q=mcq(file+"Which research method did this study use?", s.m, shuffleR(METHODS.filter(x=>x!==s.m && !near.includes(x)),rng), s.who+" used a "+s.m.toLowerCase()+".", rng, "method"); }
+  return {...q, tname:"Study Detective · "+t.name, c:t.c};
+}
+function qWhoAmI(rng){
+  const s=pickR(STUDIES,rng), t=TMAP[s.t], others=studyOthers(s);
+  const q=mcq("Who am I?", s.who, others.map(x=>x.who), s.who+": "+s.f, rng, "whoami");
+  arc.clue=1;
+  return {...q, clues:["👥 My participants: "+s.p, "🔬 What I did: "+s.d, "📊 What I found: "+s.f, "💡 "+s.x], tname:"Who Am I? · "+t.name, c:t.c};
+}
+
+/* ---- 🗂️ Sort It: tap each card into the right bucket ---- */
+const SORT_SETS = [
+  {t:"Social Influence", title:"Normative or informational social influence?", b:["Normative (NSI)","Informational (ISI)"], items:[["Conforming to be liked or accepted",0],["Conforming because you want to be right",1],["More likely when the task is ambiguous or difficult",1],["Usually leads to compliance",0],["Usually leads to internalisation",1],["Fear of rejection by the group",0],["Asch: conformity fell when answers were written privately",0],["Lucas et al: more conformity on harder maths problems",1]]},
+  {t:"Social Influence", title:"Situational or dispositional explanation of obedience?", b:["Situational","Dispositional"], items:[["Agentic state",0],["Legitimacy of authority",0],["Authoritarian personality",1],["Proximity of the authority figure",0],["The F-scale",1],["Wearing a uniform",0],["Strict, harsh parenting in childhood",1],["Location, e.g. a prestigious university",0]]},
+  {t:"Memory", title:"Short-term or long-term memory?", b:["STM","LTM"], items:[["Lasts about 18 to 30 seconds",0],["Capacity of 7 ± 2 items",0],["Mainly coded acoustically",0],["Mainly coded semantically",1],["Potentially unlimited capacity",1],["Can last a lifetime",1],["Jacobs' digit span study",0],["Bahrick's yearbook photo study",1]]},
+  {t:"Memory", title:"Which type of long-term memory?", b:["Episodic","Semantic","Procedural"], items:[["Your 16th birthday party",0],["Knowing Paris is the capital of France",1],["Riding a bike",2],["Memories that are 'time-stamped'",0],["Knowing what words mean",1],["Recalled without conscious effort",2],["Your first day at sixth form",0],["Touch-typing on a keyboard",2]]},
+  {t:"Attachment", title:"Learning theory or Bowlby's monotropic theory?", b:["Learning theory","Bowlby"], items:[["Attachment through classical conditioning with food",0],["'Cupboard love'",0],["Critical period of around 2.5 years",1],["Internal working model",1],["Social releasers such as smiling",1],["Drive reduction",0],["Monotropy",1],["Crying is reinforced by being fed",0]]},
+  {t:"Psychopathology", title:"Which kind of characteristic of depression?", b:["Behavioural","Emotional","Cognitive"], items:[["Reduced energy and activity levels",0],["Lowered mood",1],["Poor concentration",2],["Changes to sleep and eating",0],["Anger, sometimes at oneself",1],["Absolutist 'all or nothing' thinking",2],["Low self-esteem",1],["Focusing on the negative",2]]},
+  {t:"Psychopathology", title:"Which approach does each treatment come from?", b:["Behavioural","Cognitive","Biological"], items:[["Systematic desensitisation",0],["Flooding",0],["SSRIs",2],["Beck's cognitive therapy",1],["Ellis' REBT",1],["Building a hierarchy of fears",0],["Challenging irrational thoughts",1],["Increasing serotonin levels",2]]},
+  {t:"Approaches", title:"Classical or operant conditioning?", b:["Classical","Operant"], items:[["Learning by association",0],["Learning through consequences",1],["Pavlov's dogs",0],["Skinner's rats and pigeons",1],["A neutral stimulus becomes a conditioned stimulus",0],["Positive reinforcement",1],["Negative reinforcement",1],["Unconditioned response",0]]},
+  {t:"Biopsychology", title:"Sympathetic or parasympathetic nervous system?", b:["Sympathetic","Parasympathetic"], items:[["Increases heart rate",0],["Dilates the pupils",0],["Stimulates digestion",1],["'Rest and digest'",1],["Inhibits saliva production",0],["Slows breathing",1],["Triggers adrenaline release",0],["Constricts the pupils",1]]},
+  {t:"Biopsychology", title:"Broca's area or Wernicke's area?", b:["Broca's area","Wernicke's area"], items:[["Speech production",0],["Language comprehension",1],["In the frontal lobe",0],["In the temporal lobe",1],["Damage causes slow, laboured speech",0],["Damage causes fluent but meaningless speech",1]]},
+  {t:"RM", title:"Qualitative or quantitative data?", b:["Quantitative","Qualitative"], items:[["Number of words recalled",0],["An interview transcript",1],["A rating on a 1 to 10 scale",0],["A diary entry",1],["Reaction time in milliseconds",0],["Answers to open questions",1],["A tally chart of behaviours",0],["A description of how someone felt",1]]},
+  {t:"RM", title:"Primary or secondary data?", b:["Primary","Secondary"], items:[["A questionnaire you hand out yourself",0],["Government statistics",1],["Data used in a meta-analysis",1],["Your own observation notes",0],["Results from a published study",1],["An interview you conduct",0]]},
+  {t:"RM", title:"Which level of measurement?", b:["Nominal","Ordinal","Interval"], items:[["Whether people passed or failed",0],["Finishing position in a race",1],["A rating on a 1 to 10 scale",1],["Temperature in °C",2],["Time taken in seconds",2],["Favourite colour",0]]},
+  {t:"Issues and Debates part I", title:"Nomothetic or idiographic?", b:["Nomothetic","Idiographic"], items:[["Case studies",1],["General laws that apply to everyone",0],["Large samples and statistics",0],["The humanistic approach",1],["The behaviourist approach",0],["Rich, in-depth detail about one person",1]]},
+  {t:"Schizophrenia", title:"Positive or negative symptom?", b:["Positive","Negative"], items:[["Hallucinations",0],["Delusions",0],["Avolition",1],["Speech poverty",1],["Hearing voices that aren't there",0],["Believing you are a famous person",0],["Reduced amount and quality of speech",1],["Not keeping up personal hygiene",1]]},
+  {t:"Forensic Psychology", title:"Organised or disorganised offender?", b:["Organised","Disorganised"], items:[["The crime is carefully planned",0],["Above-average intelligence",0],["Little evidence of planning",1],["The victim is deliberately targeted",0],["The body is left at the scene",1],["Socially and sexually incompetent",1],["Usually in a skilled job",0],["Often lives alone, near the crime scene",1]]},
+  {t:"Relationships", title:"Social exchange theory or equity theory?", b:["Social exchange","Equity"], items:[["Rewards minus costs",0],["Fairness matters most",1],["Comparison level",0],["Over-benefiting leads to guilt",1],["Comparison level for alternatives",0],["Under-benefiting leads to anger",1]]}
+];
+
+/* ---- 📅 Timeline: tap events into chronological order (listed oldest first here) ---- */
+const TIMELINES = [
+  {t:"Social Influence", title:"Social influence research", items:[["Asch's line study",1951],["Milgram's obedience study",1963],["Moscovici's blue-green slides",1969],["Zimbardo's Stanford Prison Experiment takes place",1971],["Burger's partial replication of Milgram",2009]]},
+  {t:"Memory", title:"Memory research", items:[["Jacobs' digit span study",1887],["Miller's 'magic number 7 ± 2'",1956],["Peterson and Peterson's trigram study",1959],["Atkinson and Shiffrin's multi-store model",1968],["Baddeley and Hitch's working memory model",1974]]},
+  {t:"Attachment", title:"Attachment research", items:[["Lorenz's goslings",1935],["Bowlby's 44 thieves",1944],["Harlow's monkeys",1958],["Schaffer and Emerson's Glasgow babies",1964],["Van IJzendoorn and Kroonenberg's meta-analysis",1988]]},
+  {t:"Approaches", title:"The history of psychology", items:[["Wundt opens the first psychology lab",1879],["Freud publishes The Interpretation of Dreams",1900],["Watson launches behaviourism",1913],["Maslow's hierarchy of needs",1943],["Bandura's Bobo doll study",1961]]},
+  {t:"Biopsychology", title:"Discovering the brain", items:[["Phineas Gage's accident",1848],["Broca identifies a speech area",1861],["Wernicke identifies a language comprehension area",1874],["Sperry's split-brain research",1968],["Maguire's London taxi drivers",2000]]},
+  {t:"Psychopathology", title:"Treatments and explanations", items:[["Ellis develops rational therapy",1955],["Wolpe develops systematic desensitisation",1958],["Beck's cognitive triad",1967],["Prozac (an SSRI) is approved in the USA",1987]]},
+  {t:"Forensic Psychology", title:"Explaining offending", items:[["Lombroso's atavistic form",1876],["Eysenck's Crime and Personality",1964],["Christiansen's Danish twin study",1977],["Raine's PET scans of murderers",1997]]},
+  {t:"Relationships", title:"Relationships research", items:[["Thibaut and Kelley's social exchange theory",1959],["Kerckhoff and Davis' filter theory",1962],["Walster's computer dance",1966],["Rusbult's investment model",1980]]}
+];
+
 /* ---- 🔗 study matcher, 🧩 put it in order ---- */
 const MATCH_RE=/^What did (.+?) find(?: about [^?]+)?\??$/i;
 function matchPairs(){
@@ -2917,8 +3081,26 @@ function matchPairs(){
 const mg={phase:"", pairs:[], round:0, left:[], right:[], sel:null, matched:new Set(), wrong:0, xp:0, t0:0, seqs:[], si:0, picked:[], checked:false, right2:0};
 function startMatch(){ mg.pairs=matchPairs(); mg.round=0; mg.wrong=0; mg.xp=0; mg.t0=Date.now(); mg.phase="match"; arc.phase="mini"; arc.mode="match"; setupRound(); renderArcade(); }
 function setupRound(){ const r=mg.pairs.slice(mg.round*5, mg.round*5+5); mg.left=shuffle(r); mg.right=shuffle(r); mg.sel=null; mg.matched=new Set(); }
-function startOrder(){ const sel=new Set(store.sel); let s=SEQUENCES.filter(x=>sel.has(x.t)); if(s.length<5) s=SEQUENCES; mg.seqs=shuffle(s).slice(0,5); mg.si=0; mg.picked=[]; mg.checked=false; mg.right2=0; mg.xp=0; mg.phase="order"; arc.phase="mini"; arc.mode="order"; mg.shuffled=shuffle(mg.seqs[0].steps); renderArcade(); }
+function startTimeline(){ const sel=new Set(store.sel); let s=TIMELINES.filter(x=>sel.has(x.t)); if(s.length<4) s=TIMELINES;
+  mg.seqs=shuffle(s).slice(0,4).map(x=>({t:x.t, title:x.title, steps:x.items.map(i=>i[0]), years:Object.fromEntries(x.items)}));
+  mg.tl=true; mg.si=0; mg.picked=[]; mg.checked=false; mg.right2=0; mg.xp=0; mg.phase="order"; arc.phase="mini"; arc.mode="timeline"; mg.shuffled=shuffle(mg.seqs[0].steps); renderArcade(); }
+function startSort(){ const sel=new Set(store.sel); let s=SORT_SETS.filter(x=>sel.has(x.t)); if(s.length<3) s=SORT_SETS;
+  mg.sets=shuffle(s).slice(0,3); mg.si=0; mg.items=shuffle(mg.sets[0].items); mg.ii=0; mg.right2=0; mg.total=mg.sets.reduce((a,x)=>a+x.items.length,0); mg.xp=0; mg.last=null; mg.busy=false;
+  mg.phase="sort"; arc.phase="mini"; arc.mode="sort"; renderArcade(); }
+function startOrder(){ mg.tl=false; const sel=new Set(store.sel); let s=SEQUENCES.filter(x=>sel.has(x.t)); if(s.length<5) s=SEQUENCES; mg.seqs=shuffle(s).slice(0,5); mg.si=0; mg.picked=[]; mg.checked=false; mg.right2=0; mg.xp=0; mg.phase="order"; arc.phase="mini"; arc.mode="order"; mg.shuffled=shuffle(mg.seqs[0].steps); renderArcade(); }
 function renderMini(area){
+  if(mg.phase==="sort"){
+    const set=mg.sets[mg.si], t=TMAP[set.t], it=mg.items[mg.ii];
+    area.innerHTML=`<div class="arc-top"><span class="big">🗂️ Sort it</span><span class="spacer"></span><span>Set</span><span class="big">${mg.si+1}/${mg.sets.length}</span></div>
+      <div class="progressline"><i style="width:${mg.ii/set.items.length*100}%"></i></div>
+      <div class="quiz-q" style="--c:${t.c}"><div class="tag">${esc(t.name)} · card ${mg.ii+1} of ${set.items.length}</div><div class="q" style="font-size:clamp(18px,2.2vw,22px);margin:8px 0 6px">${esc(set.title)}</div>
+      <div class="sort-card" id="sortCard">${esc(it[0])}</div>
+      <div class="sort-bins b${set.b.length}">${set.b.map((b,i)=>`<button class="sort-bin" data-bin="${i}"><span class="k">${i+1}</span>${esc(b)}</button>`).join("")}</div>
+      <div class="sort-fb" aria-live="polite">${mg.last?mg.last:""}</div></div>
+      <p style="text-align:right;margin-top:10px"><button class="linkbtn" id="mgQuit">End game</button></p>`;
+    area.querySelectorAll("[data-bin]").forEach(b=>b.onclick=()=>sortPick(+b.dataset.bin));
+    $("#mgQuit").onclick=finishMini; return;
+  }
   if(mg.phase==="match"){
     const n=Math.ceil(mg.pairs.length/5);
     area.innerHTML=`<div class="arc-top"><span class="big">🔗 Study matcher</span><span class="spacer"></span><span>Round</span><span class="big">${mg.round+1}/${n}</span></div>
@@ -2939,13 +3121,13 @@ function renderMini(area){
   if(mg.phase==="order"){
     const s=mg.seqs[mg.si], t=TMAP[s.t];
     const avail=mg.shuffled.filter(x=>!mg.picked.includes(x));
-    area.innerHTML=`<div class="arc-top"><span class="big">🧩 Put it in order</span><span class="spacer"></span><span>Sequence</span><span class="big">${mg.si+1}/${mg.seqs.length}</span></div>
+    area.innerHTML=`<div class="arc-top"><span class="big">${mg.tl?"📅 Timeline":"🧩 Put it in order"}</span><span class="spacer"></span><span>${mg.tl?"Timeline":"Sequence"}</span><span class="big">${mg.si+1}/${mg.seqs.length}</span></div>
       <div class="quiz-q" style="--c:${t.c}"><div class="tag">${esc(t.name)}</div><div class="q" style="font-size:clamp(20px,2.6vw,26px);margin:8px 0 12px">${esc(s.title)}</div>
-      <p class="muted" style="margin:0 0 10px">Tap the steps in the right order${mg.checked?"":". Tap a placed step to put it back."}</p>
-      <ol class="order-done">${mg.picked.map((x,i)=>`<li class="${mg.checked?(x===s.steps[i]?"ok":"no"):""}"><button data-un="${i}" ${mg.checked?"disabled":""}>${esc(x)}</button>${mg.checked&&x!==s.steps[i]?`<small>Should be: ${esc(s.steps[i])}</small>`:""}</li>`).join("")}</ol>
+      <p class="muted" style="margin:0 0 10px">${mg.tl?"Tap them in date order, oldest first":"Tap the steps in the right order"}${mg.checked?"":". Tap a placed step to put it back."}</p>
+      <ol class="order-done">${mg.picked.map((x,i)=>`<li class="${mg.checked?(x===s.steps[i]?"ok":"no"):""}"><button data-un="${i}" ${mg.checked?"disabled":""}>${esc(x)}${mg.checked&&s.years?` <b class="yr">${s.years[x]}</b>`:""}</button>${mg.checked&&x!==s.steps[i]?`<small>Should be: ${esc(s.steps[i])}${s.years?" ("+s.years[s.steps[i]]+")":""}</small>`:""}</li>`).join("")}</ol>
       <div class="order-avail">${avail.map(x=>`<button class="opt" data-pick="${esc(x)}">${esc(x)}</button>`).join("")}</div>
       ${mg.picked.length===s.steps.length&&!mg.checked?`<div class="card-actions"><button class="btn" id="ordCheck">Check order</button></div>`:""}
-      ${mg.checked?`<div class="card-actions"><button class="btn" id="ordNext">${mg.si+1>=mg.seqs.length?"See results":"Next sequence"}</button></div>`:""}</div>
+      ${mg.checked?`<div class="card-actions"><button class="btn" id="ordNext">${mg.si+1>=mg.seqs.length?"See results":mg.tl?"Next timeline":"Next sequence"}</button></div>`:""}</div>
       <p style="text-align:right;margin-top:10px"><button class="linkbtn" id="mgQuit">End game</button></p>`;
     area.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>{ mg.picked.push(b.dataset.pick); renderArcade(); });
     area.querySelectorAll("[data-un]").forEach(b=>b.onclick=()=>{ mg.picked.splice(+b.dataset.un,1); renderArcade(); });
@@ -2954,15 +3136,30 @@ function renderMini(area){
     $("#mgQuit").onclick=finishMini; return;
   }
   // results
-  area.innerHTML=`<div class="empty"><h3>${mg.phase==="matchdone"?"🔗 Study matcher":"🧩 Put it in order"} over</h3>
-    ${mg.phase==="matchdone"?`<p class="score">${mg.matchedTotal}/${mg.pairs.length}</p><p class="muted">pairs matched · ${mg.wrong} wrong guess${mg.wrong===1?"":"es"} · ${fmtTime(Date.now()-mg.t0)}</p>`:`<p class="score">${mg.right2}/${mg.seqs.length}</p><p class="muted">sequences in perfect order</p>`}
+  area.innerHTML=`<div class="empty"><h3>${mg.phase==="matchdone"?"🔗 Study matcher":mg.phase==="sortdone"?"🗂️ Sort it":mg.tl?"📅 Timeline":"🧩 Put it in order"} over</h3>
+    ${mg.phase==="sortdone"?`<p class="score">${mg.right2}/${mg.total}</p><p class="muted">cards sorted correctly</p>`:mg.phase==="matchdone"?`<p class="score">${mg.matchedTotal}/${mg.pairs.length}</p><p class="muted">pairs matched · ${mg.wrong} wrong guess${mg.wrong===1?"":"es"} · ${fmtTime(Date.now()-mg.t0)}</p>`:`<p class="score">${mg.right2}/${mg.seqs.length}</p><p class="muted">${mg.tl?"timelines":"sequences"} in perfect order</p>`}
     <p style="margin-top:10px">+${mg.xp} XP earned</p><button class="btn" id="mgAgain">Play again</button> <button class="btn ghost" id="arcMenu">Arcade menu</button></div>`;
-  $("#mgAgain").onclick=()=>mg.phase==="matchdone"?startMatch():startOrder();
+  $("#mgAgain").onclick=()=>mg.phase==="matchdone"?startMatch():mg.phase==="sortdone"?startSort():mg.tl?startTimeline():startOrder();
   $("#arcMenu").onclick=()=>{ arc.phase="menu"; renderArcade(); };
 }
+function sortPick(bin){
+  if(mg.busy || mg.phase!=="sort") return;
+  const set=mg.sets[mg.si], it=mg.items[mg.ii], ok=bin===it[1], bins=[...document.querySelectorAll(".sort-bin")];
+  mg.busy=true; bins.forEach((b,i)=>{ b.disabled=true; if(i===it[1]) b.classList.add("right"); else if(i===bin) b.classList.add("wrong"); });
+  if(ok) mg.right2++;
+  mg.xp+=answer({ok, el:bins[bin], mode:"arcade"});
+  mg.last=ok?"✅ "+esc(it[0])+" → "+esc(set.b[it[1]]):"❌ "+esc(it[0])+" goes in <b>"+esc(set.b[it[1]])+"</b>";
+  const fb=document.querySelector(".sort-fb"); if(fb) fb.innerHTML=mg.last;
+  setTimeout(()=>{ if(mg.phase!=="sort") return; mg.busy=false; mg.ii++;
+    if(mg.ii>=set.items.length){ mg.si++; if(mg.si>=mg.sets.length) return finishMini(); mg.items=shuffle(mg.sets[mg.si].items); mg.ii=0; mg.last=null; }
+    renderArcade(); }, ok?650:1500);
+}
+document.addEventListener("keydown",e=>{ if(tab!=="arcade" || arc.phase!=="mini" || mg.phase!=="sort" || e.target.matches("input,textarea") || e.metaKey||e.ctrlKey||e.altKey || document.querySelector(".overlay")) return;
+  const n=mg.sets[mg.si].b.length; if(/^[1-3]$/.test(e.key) && +e.key<=n){ e.preventDefault(); sortPick(+e.key-1); } });
 function finishMini(){
   if(mg.phase==="match"){ mg.matchedTotal=mg.round*5+(mg.round*5<mg.pairs.length?mg.matched.size:0); const bonus=mg.matchedTotal*2; mg.xp+=bonus; addXP(bonus,false); G.st.matchBest=Math.max(G.st.matchBest||0,mg.matchedTotal); if(mg.matchedTotal>=15 && mg.wrong===0) G.st.matchPerfect=1; mg.phase="matchdone"; }
-  else if(mg.phase==="order"){ const bonus=mg.right2*10; mg.xp+=bonus; addXP(bonus,false); G.st.orderBest=Math.max(G.st.orderBest||0,mg.right2); G.st.orders=(G.st.orders||0)+1; mg.phase="orderdone"; }
+  else if(mg.phase==="order"){ const bonus=mg.right2*10; mg.xp+=bonus; addXP(bonus,false); if(mg.tl){ G.st.timelineBest=Math.max(G.st.timelineBest||0,mg.right2); G.st.timelines=(G.st.timelines||0)+1; } else { G.st.orderBest=Math.max(G.st.orderBest||0,mg.right2); G.st.orders=(G.st.orders||0)+1; } mg.phase="orderdone"; }
+  else if(mg.phase==="sort"){ const bonus=mg.right2; mg.xp+=bonus; addXP(bonus,false); G.st.sortBest=Math.max(G.st.sortBest||0,Math.round(mg.right2/Math.max(1,mg.total)*100)); G.st.sorts=(G.st.sorts||0)+1; mg.phase="sortdone"; }
   if(mg.xp>0) confetti(90);
   palCheck(); checkBadges(); save(); renderArcade();
 }
@@ -3184,6 +3381,11 @@ function renderTrophies(){
       return `<div class="box" id="examBox"><h3>Exam countdown <small>AQA A-level Psychology, summer 2027</small></h3><div class="exams">${EXAMS.map(([nm,d,sub])=>{ const dd=daysUntil(d); return `<div class="exam ${dd<0?"past":""}"><b>${dd<0?"✓":dd}</b><span>${dd<0?"Done":dd===0?"Today!":dd===1?"day to go":"days to go"}</span><strong>${nm}</strong><small>${new Date(d+"T12:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"long"})} · ${sub}</small></div>`; }).join("")}</div>
         ${tg?`<p class="target">You have <b>${tg.unknown.toLocaleString()}</b> cards not yet known and <b>${tg.days}</b> days until Paper 1. Learning about <b>${tg.perDay}</b> new card${tg.perDay===1?"":"s"} a day gets you through them all. With reviews, a daily goal of <b>${tg.goal}</b> answers would cover it${G.goal===tg.goal?" (that's your goal already ✓)":""}.</p>${G.goal!==tg.goal?`<button class="btn ghost" id="useGoal" data-g="${tg.goal}">Set my daily goal to ${tg.goal}</button>`:""}`:`<p class="target">All three papers are done. Brilliant work. 🎉</p>`}</div>`; })()}
     </section>
+<section data-sec="progress" class="ts-mastery">
+    <div class="box" id="masteryBox"><h3>⭐ Topic mastery <small>${TOPICS.reduce((a,t)=>a+mastery(t.key).s,0)} of ${TOPICS.length*3} stars</small></h3>
+    <p class="muted" style="margin:-4px 0 12px;font-size:14px">★ 20 answers at 60% · ★★ 40 answers at 75% and a quarter of cards known · ★★★ 60 answers at 90% and half known. Accuracy is based on your last ${MASTERY_WIN} answers, so keep topics topped up.</p>
+    <div class="mastery">${TOPICS.map(t=>{ const m=mastery(t.key); return `<div class="mrow" style="--c:${t.c}"><span class="mdot"></span><b>${esc(t.name)}</b><span class="stars s${m.s}">${starStr(m.s)}</span><small>${m.s===3?"Mastered!":"Next star: "+esc(m.need.join(", "))}</small></div>`; }).join("")}</div></div>
+    </section>
 <section data-sec="progress" class="ts-profile">
     <div class="profile"><div class="bigring"><svg viewBox="0 0 110 110"><circle class="ring-bg" cx="55" cy="55" r="48" style="stroke-width:9"/><circle class="ring-fg" cx="55" cy="55" r="48" style="stroke-width:9" ${ring(48,frac)}/></svg><b>${n}</b></div>
       <div><h2>${esc(rankFor(n))}</h2><p>Level ${n} · ${G.xp.toLocaleString()} XP total · ${e-G.xp} XP to level ${n+1}</p>
@@ -3208,6 +3410,10 @@ function renderTrophies(){
       <div class="tile"><b>🔎 ${G.st.flawBest||0}/8</b><span>Spot the Flaw best</span></div>
       <div class="tile"><b>🔗 ${G.st.matchBest||0}/15</b><span>Study Matcher best</span></div>
       <div class="tile"><b>🧩 ${G.st.orderBest||0}/5</b><span>Put It in Order best</span></div>
+      <div class="tile"><b>🕵️ ${G.st.detBest||0}/8</b><span>Study Detective best</span></div>
+      <div class="tile"><b>🎭 ${G.st.whoFirst||0}</b><span>Who Am I? first-clue guesses</span></div>
+      <div class="tile"><b>🗂️ ${G.st.sortBest||0}%</b><span>Sort It best</span></div>
+      <div class="tile"><b>📅 ${G.st.timelineBest||0}/4</b><span>Timeline best</span></div>
       <div class="tile"><b>👹 ${Object.keys(G.st.bosses||{}).length}/${TOPICS.length}</b><span>Bosses beaten</span></div>
       <div class="tile"><b>✍️ ${G.st.essays||0}</b><span>Essays self-marked</span></div>
       <div class="tile"><b>📝 ${(G.mocks||[]).length}</b><span>Mini mocks done</span></div>
