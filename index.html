@@ -731,12 +731,16 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 :root[data-skin="pavlov"] .top h1{color:#7A3E12}
 :root[data-skin="pavlov"] .top h1 span{color:var(--muted)}
 :root[data-skin="pavlov"] .xpbar i{background:repeating-linear-gradient(90deg,#A0602C 0 14px,#C98A4F 14px 18px)}
-:root[data-skin="graph"]{--paper:#FBFDFF;--card:#FFFFFF;--ink:#14213D;--muted:#55627D;--line:#D5E2F5;--soft:#EEF4FC;--good:#1C8A5E;--good-bg:#DDF3E8;--warn:#D6336C;--warn-bg:#FBE0EA;color-scheme:light}
-:root[data-skin="graph"] body{background:linear-gradient(#C9DBF588 1px,transparent 1px) 0 0/20px 20px,linear-gradient(90deg,#C9DBF588 1px,transparent 1px) 0 0/20px 20px,linear-gradient(#9DBDEB88 1px,transparent 1px) 0 0/100px 100px,linear-gradient(90deg,#9DBDEB88 1px,transparent 1px) 0 0/100px 100px,var(--paper)}
-:root[data-skin="graph"] .top h1{color:#1D4ED8}
-:root[data-skin="graph"] .top h1::before{content:"📈 "}
-:root[data-skin="graph"] .top h1 span{color:var(--muted)}
-:root[data-skin="graph"] .xpbar i{background:#2563EB}
+:root[data-skin="inner"]{--paper:#1E0A15;--card:#2A0F1E;--ink:#FBEFEA;--muted:#C9A9B4;--line:#45203A;--soft:#35162A;--good:#8EDBA8;--good-bg:#1F3A28;--warn:#E8A87C;--warn-bg:#40261A;color-scheme:dark}
+:root[data-skin="inner"] .top h1{color:#E8A87C}
+:root[data-skin="inner"] .top h1::before{content:"🤫 "}
+:root[data-skin="inner"] .top h1 span{color:var(--muted)}
+:root[data-skin="inner"] .xpbar i{background:linear-gradient(90deg,#B76E79,#E8A87C,#F6D3B3)}
+:root[data-skin="slime"]{--paper:#F3FFE9;--card:#FFFFFF;--ink:#14280A;--muted:#4F6B3E;--line:#D3F2BC;--soft:#E4FAD3;--good:#1C7A35;--good-bg:#DCF5D9;--warn:#C2410C;--warn-bg:#FDE6D8;color-scheme:light}
+:root[data-skin="slime"] .top h1{color:#2F7A12}
+:root[data-skin="slime"] .top h1 span{color:var(--muted)}
+:root[data-skin="slime"] .hud{border-top:6px solid #92FC4D}
+:root[data-skin="slime"] .xpbar i{background:linear-gradient(90deg,#C6FF9E,#92FC4D,#5CC21F)}
 :root[data-skin="arcade8"]{--paper:#0B0B1E;--card:#15153A;--ink:#F4F1FF;--muted:#A9A6E8;--line:#2E2B6E;--soft:#1F1D52;--good:#39FF9A;--good-bg:#0F3A2E;--warn:#FF2E9A;--warn-bg:#3D0F2C;color-scheme:dark}
 :root[data-skin="arcade8"] .top h1{font-family:"Press Start 2P",var(--display);font-size:clamp(20px,3.6vw,34px);line-height:1.35;letter-spacing:0;color:#FFE14D;text-shadow:3px 3px 0 #FF2E9A}
 :root[data-skin="arcade8"] .top h1::before{content:"🎮 "}
@@ -758,8 +762,8 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 :root[data-skin="lanyard"]{--paper:#FFF5FA;--card:#FFFFFF;--ink:#2B1630;--muted:#6E5672;--line:#F3D9E7;--soft:#FBE8F2;--good:#1C7A55;--good-bg:#DDF0E6;--warn:#C2185B;--warn-bg:#FCE0EC;color-scheme:light}
 :root[data-skin="lanyard"] .top h1{color:#C2185B}
 :root[data-skin="lanyard"] .top h1 span{color:var(--muted)}
-:root[data-skin="lanyard"] .hud{background-image:repeating-linear-gradient(90deg,#F06BA8 0 28px,#8FD3F4 28px 56px);background-size:100% 6px;background-repeat:no-repeat;padding-top:16px}
-:root[data-skin="lanyard"] .xpbar i{background:repeating-linear-gradient(135deg,#F06BA8 0 12px,#8FD3F4 12px 24px)}
+:root[data-skin="lanyard"] .hud{background-image:repeating-linear-gradient(90deg,#F06BA8 0 28px,#6198EC 28px 56px);background-size:100% 6px;background-repeat:no-repeat;padding-top:16px}
+:root[data-skin="lanyard"] .xpbar i{background:repeating-linear-gradient(135deg,#F06BA8 0 12px,#6198EC 12px 24px)}
 :root[data-skin="brainscan"]{--paper:#07090F;--card:#10141F;--ink:#E8EEF8;--muted:#9AA6BC;--line:#222A3B;--soft:#171D2B;--good:#6EE7A8;--good-bg:#12301F;--warn:#FF8A5C;--warn-bg:#3A1C12;color-scheme:dark}
 :root[data-skin="brainscan"] body{background:radial-gradient(ellipse at 80% -10%,rgba(255,90,60,.16),transparent 45%),radial-gradient(ellipse at 10% 0%,rgba(60,140,255,.14),transparent 40%),var(--paper)}
 :root[data-skin="brainscan"] .top h1::before{content:"🧠 "}
@@ -989,7 +993,7 @@ const SKINS=[
   {id:"chalk", name:"Chalkboard", lvl:60, sw:["#1F3B2D","#F1F5EE"], desc:"Green board, chalky text 🖍️"},
   {id:"ink", name:"Ink & Quill", lvl:64, sw:["#F7F4EC","#1D3C8F"], desc:"Fountain-pen blue for the Fount 🖋️"},
   {id:"library", name:"Library", lvl:68, sw:["#1E2B22","#E2C178"], desc:"Green leather and brass 📚"},
-  {id:"lanyard", name:"Sixth Form Lanyard", lvl:72, sw:["#F06BA8","#8FD3F4"], desc:"Y13 pink and Y12 light blue 🪪"},
+  {id:"lanyard", name:"Sixth Form Lanyard", lvl:72, sw:["#F06BA8","#6198EC"], desc:"Y13 pink and Y12 light blue 🪪"},
   {id:"brainscan", name:"Brain Scan", lvl:76, sw:["#07090F","#FF5A3C"], desc:"fMRI heatmap 🧠"},
   {id:"uniform", name:"School Red", lvl:80, sw:["#8B0408","#C9C9C9"], desc:"Blazer red ❤️"},
   {id:"senior", name:"Senior Student", lvl:84, sw:["#FFF6EC","#F28C28"], desc:"The orange lanyard ⭐"},
@@ -997,7 +1001,8 @@ const SKINS=[
   {id:"results", name:"Results Day", lvl:92, sw:["#E8D5B5","#B8860B"], desc:"Brown envelope, gold grades ✉️"},
   {id:"school", name:"The School", lvl:96, sw:["#E3C800","#345EE4"], desc:"Yellow cladding, blue letters 🏫"},
   {id:"stan", name:"Stan Gold", lvl:100, sw:["#12100A","#F2C14E"], desc:"Dedicated Wakefield Stans only"},
-  {id:"snowdome", name:"SnowDome", lvl:999, hidden:true, unlock:()=>chalDone(1), sw:["#F3EFDF","#4FA79C"], desc:"Tamworth's indoor slopes ❄️"},
+  {id:"inner", name:"Inner Circle", lvl:999, hidden:true, unlock:()=>chalDone(1), sw:["#2A0F1E","#E8A87C"], desc:"Tell no one 🤫"},
+  {id:"snowdome", name:"SnowDome", lvl:999, hidden:true, unlock:()=>chalDone(12), sw:["#F3EFDF","#4FA79C"], desc:"Tamworth's indoor slopes ❄️"},
   {id:"veggie", name:"Veggie Patch", lvl:999, hidden:true, unlock:()=>chalDone(3), sw:["#EEF7E6","#4C9A2A"], desc:"Eat your vegetables 🥦"},
   {id:"volts", name:"450 Volts", lvl:999, hidden:true, unlock:()=>chalDone(4), sw:["#111111","#FFD400"], desc:"Please continue… ⚡"},
   {id:"fool", name:"April Fool", lvl:999, hidden:true, unlock:()=>chalDone(9), sw:["#FFF7E0","#E8458B"], desc:"Every answer is C 🃏"},
@@ -1006,12 +1011,13 @@ const SKINS=[
   {id:"dreams", name:"Sweet Dreams", lvl:999, hidden:true, unlock:()=>chalDone(2), sw:["#1A1640","#B9A7FF"], desc:"Not consolidating, just sleeping 😴"},
   {id:"coffee", name:"Coffee Break", lvl:999, hidden:true, unlock:()=>chalDone(5), sw:["#2A1A12","#D9A066"], desc:"IV: coffee. DV: marking ☕"},
   {id:"pavlov", name:"Pavlov's Dog", lvl:999, hidden:true, unlock:()=>chalDone(8), sw:["#F6E7D2","#A0602C"], desc:"Ding! Feeling hungry? 🔔"},
-  {id:"graph", name:"Graph Paper", lvl:999, hidden:true, unlock:()=>chalDone(11), sw:["#FBFDFF","#2563EB"], desc:"p ≤ 0.05 📈"},
+  {id:"slime", name:"Slime Green", lvl:999, hidden:true, unlock:()=>chalDone(11), sw:["#92FC4D","#14280A"], desc:"The slime green lanyard 🟢"},
   {id:"arcade8", name:"8-bit Arcade", lvl:999, hidden:true, unlock:()=>chalDone(6), sw:["#0B0B1E","#FF2E9A"], desc:"Unlocked by the rarest scroll 🎮"},
   {id:"wakefield", name:"Wakefield Mode", lvl:999, hidden:true, sw:["#0F3D2E","#D4AF37"], desc:"Keeper of the Scrolls ✦"}
 ];
 function applySkin(id){ if(id==="arcade8" && !document.getElementById("pixelCss")){ const l=document.createElement("link"); l.id="pixelCss"; l.rel="stylesheet"; l.href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"; document.head.appendChild(l); } const r=document.documentElement; r.removeAttribute("data-skin"); r.removeAttribute("data-theme"); if(id==="light"||id==="dark") r.setAttribute("data-theme",id); else if(id && id!=="auto") r.setAttribute("data-skin",id); }
 if(store.theme==="sunset"){ store.theme="tamworth"; save(); }
+if(store.theme==="graph"){ store.theme="slime"; save(); }
 if(store.theme==="postit"||store.theme==="highlighter"){ store.theme=store.theme==="postit"?"lanyard":"senior"; save(); } // replaced by the lanyard themes // Sunset became Tamworth Castle
 applySkin(store.theme);
 
@@ -1292,17 +1298,18 @@ $("#resetBtn").onclick=()=>{ if(confirm("Clear all your known and still-learning
 /* ===== 📜 SECRET SCROLLS — hidden messages from Mr W. Edit the titles, messages and hints here. =====
    trigger is how each one is found (the code that checks it lives further down; changing the words below is safe). */
 const SECRET_SCROLLS = [
-  {id:1, theme:"snowdome", trigger:"title5", title:"Welcome to the inner circle", text:"You clicked my name five times. That's either dedication or a cry for help. Either way, welcome to the inner circle. Tell no one. — Mr W", hint:"Show the title some love"},
-  {id:2, theme:"dreams", trigger:"ring10", title:"Wake up!", text:"This is your official reminder that sleeping in my lesson is NOT 'consolidating your memories', however convincingly you argue it. (Sleep does help memory, mind — do it at night.) — Mr W", hint:"Is this thing on?"},
+  {id:1, theme:"inner", trigger:"title5", title:"Welcome to the inner circle", text:"You clicked my name five times. That's either dedication or a cry for help. Either way, welcome to the inner circle. Tell no one. — Mr W", hint:"Show the title some love"},
+  {id:2, theme:"dreams", trigger:"ring10", title:"Wake up!", text:"This is your official wake-up call. Tapping your level ring won't make it go up any faster (I've tried). Answering questions will. And a proper night's sleep really does help your memory, so get one before the exam. — Mr W", hint:"Is this thing on?"},
   {id:3, theme:"veggie", trigger:"wakefield", title:"A message from the management", text:"Mr W and Romeo have one message for you: eat your vegetables. Your brain runs on them. No arguments. — Mr W (and Romeo)", hint:"Say my name (keyboard required)"},
   {id:4, theme:"volts", trigger:"milgram", title:"450 volts", text:"Please continue. The experiment requires that you continue. It is absolutely essential that you continue… revising. No volts were harmed in the making of this scroll. — Mr W", hint:"A shocking surname (keyboard required)"},
   {id:5, theme:"coffee", trigger:"stan", title:"Results are in", text:"Only true stans know this: Mr W once ran a study on himself. IV: cups of coffee. DV: essays marked per hour. Result: a strong positive correlation, right up until cup six. Sample size of one, so it won't generalise. — Mr W", hint:"What are you? Type it. (keyboard required)"},
   {id:6, trigger:"konami", theme:"arcade8", title:"The rarest scroll", text:"You found the rarest scroll of all. Honestly? Being this deep in a revision website is exactly the kind of effort that gets grades. I'm proud of you. Now go and smash it in May. — Mr W", hint:"Up, up, down, down… (keyboard required)"},
   {id:7, theme:"bullring", trigger:"blues", title:"Keep Right On", text:"Keep right on to the end of the road. It's the Blues anthem and, it turns out, the best revision advice ever written. Up the Blues! 💙 (Villa fans: this scroll is not for you.) — Mr W", hint:"Keep right on… (keyboard required)"},
-  {id:8, theme:"pavlov", trigger:"pavlov", title:"Ding!", text:"Did you just get hungry? That's classical conditioning. Pavlov's dogs drooled at a bell — you drool at XP. We are not so different. — Mr W", hint:"Ring a bell? Try the gap fills."},
+  {id:8, theme:"pavlov", trigger:"pavlov", title:"Ding!", text:"Did your ears just prick up? That's classical conditioning. Pavlov's dogs learned to salivate at a bell — you've learned to get excited at XP. We are not so different. — Mr W", hint:"Ring a bell? Try the gap fills."},
   {id:9, theme:"fool", trigger:"april1", title:"Insider exam tip", text:"Every answer in this year's exam is C. … April Fool. Please, PLEASE do not put C for everything. — Mr W", hint:"Some days, nothing is what it seems"},
   {id:10, theme:"graduate", trigger:"level59", title:"The handover", text:"You are now Basically Mr Wakefield. I have nothing left to teach you. Please don't take my lanyard. One step remains: Dedicated Wakefield Stan. — Mr W", hint:"Become the teacher"},
-  {id:11, theme:"graph", trigger:"error", title:"Statistically significant", text:"You found the secret. Now go and find the difference between a Type I and a Type II error. — Mr W", hint:"To err is human (keyboard required)"}
+  {id:11, theme:"slime", trigger:"error", title:"Statistically significant", text:"You found the secret. Now go and find the difference between a Type I and a Type II error. — Mr W", hint:"To err is human (keyboard required)"},
+  {id:12, theme:"snowdome", trigger:"tamworth", seal:"mock", title:"Home sweet home", text:"Classified fact: Mr W is Tamworth born and bred. Castle, SnowDome, the Lambs, and now the finest psychology revision this side of the A5. Some say Tamworth is the centre of the universe. I have never denied this. — Mr W", hint:"Where it all began… (keyboard required)"},
 ];
 const ymd = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const today = () => ymd(new Date());
@@ -2362,7 +2369,7 @@ const SCROLL_QUIZ = {
   11:{t:"RM", re:/type (1|2|i|ii)\b|significan|probability/i, label:"significance and errors"}
 };
 const CHAL_N=3;
-function chalDone(n){ return !!((G.scrolls||{})[n] && (G.chal||{})[n]); }
+function chalDone(n){ const sc=SECRET_SCROLLS.find(x=>x.id===n); return !!((G.scrolls||{})[n] && (sc&&sc.seal==="mock" ? (G.mocks||[]).length>0 : (G.chal||{})[n])); }
 function chalQs(n){
   const sp=SCROLL_QUIZ[n]||{};
   let pool=DATA.filter(d=>mcOK(d) && d.t!=="Exam skills" && (!sp.t || d.t===sp.t));
@@ -2426,16 +2433,18 @@ function showScroll(id, reread){
   o.innerHTML=`<div class="parch ${blues?"blues":""}" role="dialog" aria-modal="true" aria-labelledby="scT"><div class="rod"></div><div class="pbody">
     <div class="kick">📜 Secret scroll · ${found} of ${SECRET_SCROLLS.length} found${first?" · +30 XP":""}</div>
     <h3 id="scT">${esc(sc.title)}</h3><p>${esc(sc.text)}</p>
-    ${sc.theme&&!chalDone(sc.id)?`<p class="unlock">🎨 Answer ${CHAL_N} questions on <b>${esc((SCROLL_QUIZ[sc.id]||{}).label||"any topic")}</b> to unlock the <b>${esc(themeName)}</b> theme.</p>`:""}
+    ${first&&sc.seal==="mock"&&chalDone(sc.id)?`<p class="unlock">🎨 You've already finished a mini mock, so the <b>${esc(themeName)}</b> theme is unlocked!</p>`:""}
+    ${sc.seal==="mock"&&!chalDone(sc.id)?`<p class="unlock">🎨 Finish a mini mock paper (any paper) to unlock the <b>${esc(themeName)}</b> theme.</p>`:""}
+    ${sc.theme&&!sc.seal&&!chalDone(sc.id)?`<p class="unlock">🎨 Answer ${CHAL_N} questions on <b>${esc((SCROLL_QUIZ[sc.id]||{}).label||"any topic")}</b> to unlock the <b>${esc(themeName)}</b> theme.</p>`:""}
     ${first&&allScrolls()?`<p class="unlock">✦ You found every scroll! The secret <b>Wakefield Mode</b> theme is now in the Themes tab.</p>`:""}
-    ${chal?`<div class="chal-btns"><button class="btn" id="scGo">Start the challenge</button><button class="btn ghost" id="scOk">Later</button></div>`:`<button class="btn" id="scOk">Roll it up</button>`}</div><div class="rod"></div></div>`;
+    ${chal?`<div class="chal-btns"><button class="btn" id="scGo">${sc.seal==="mock"?"Go to mini mocks":"Start the challenge"}</button><button class="btn ghost" id="scOk">Later</button></div>`:`<button class="btn" id="scOk">Roll it up</button>`}</div><div class="rod"></div></div>`;
   document.body.appendChild(o);
   const close=()=>{ o.remove(); document.removeEventListener("keydown",k2,true); };
   const k2=e=>{ if(e.key==="Tab") return; e.stopPropagation();
     if(e.key==="Escape"){ e.preventDefault(); close(); }
     else if((e.key==="Enter"||e.key===" ") && !(chal && document.activeElement && document.activeElement.closest(".scroll-ov button"))){ e.preventDefault(); close(); } };
   document.addEventListener("keydown",k2,true);
-  o.onclick=e=>{ if(e.target===o||e.target.id==="scOk") close(); else if(e.target.id==="scGo"){ close(); setTimeout(()=>startChallenge(id),first?250:0); } };
+  o.onclick=e=>{ if(e.target===o||e.target.id==="scOk") close(); else if(e.target.id==="scGo"){ close(); if(sc.seal==="mock"){ wr.mode="mock"; mk.phase="pick"; goTab("writing"); renderWriting(); } else setTimeout(()=>startChallenge(id),first?250:0); } };
   (chal?$("#scGo"):$("#scOk")).focus();
   if(first){ addXP(30,false); checkBadges(); if(inTrophies()) setTimeout(renderTrophies,50); }
 }
@@ -2445,7 +2454,7 @@ document.querySelector(".top h1").addEventListener("click", tapCounter(5, 2500, 
 $("#hudLvl").addEventListener("click", tapCounter(10, 4000, ()=>{ G.sec.ring=1; save(); checkBadges(); setTimeout(()=>showScroll(2),300); }));
 // typed words and the Konami code (ignored while typing in a box)
 const KONAMI=["arrowup","arrowup","arrowdown","arrowdown","arrowleft","arrowright","arrowleft","arrowright","b","a"];
-const WORDS={wakefield:3, milgram:4, stan:5, blues:7, kro:7, error:11};
+const WORDS={wakefield:3, milgram:4, stan:5, blues:7, kro:7, error:11, tamworth:12};
 let keyBuf=[];
 document.addEventListener("keydown",e=>{
   if(e.metaKey||e.ctrlKey||e.altKey) return;
@@ -3315,7 +3324,7 @@ function renderMock(area,seg){
       mk.items.forEach(it=>{ (byT[it.t]=byT[it.t]||[0,0]); byT[it.t][0]+=it.got; byT[it.t][1]+=it.marks;
         if(it.type==="essay"){ const sp=aoSplit(it.essay), f=it.got/8; [1,2,3].forEach((a,j)=>{ byAO[a][0]+=sp[j]*f; byAO[a][1]+=sp[j]; }); } else { byAO[it.ao][0]+=it.got; byAO[it.ao][1]+=it.marks; } });
       const xp=(40+score*3)*WRITING_BOOST; G.mocks=(G.mocks||[]).concat([[mk.paper,score,total,today()]]).slice(-30); if(score/total>=0.8) G.st.mock80=1;
-      mk.res={score, byT, byAO, xp}; mk.phase="done"; addXP(xp,false); confetti(140); sfx("lvl"); save(); checkBadges(); renderWriting(); window.scrollTo({top:$("#wrArea").offsetTop-80,behavior:reduced()?"auto":"smooth"});
+      mk.res={score, byT, byAO, xp}; mk.phase="done"; if(G.scrolls[12] && G.mocks.length===1) setTimeout(()=>toast("❄️","SnowDome theme unlocked!","Pick it in the Themes tab."),1200); addXP(xp,false); confetti(140); sfx("lvl"); save(); checkBadges(); renderWriting(); window.scrollTo({top:$("#wrArea").offsetTop-80,behavior:reduced()?"auto":"smooth"});
     };
     return;
   }
@@ -3552,7 +3561,7 @@ function renderTrophies(){
     <div class="box"><h3>Last 12 weeks <small>Darker = closer to your goal</small></h3><div class="heat">${cells}</div></div>
     </section>
 <section data-sec="scrolls" class="ts-scrolls">
-    <div class="box" id="scrollBox"><h3>📜 Secret scrolls <small>${SECRET_SCROLLS.filter(x=>G.scrolls[x.id]).length} of ${SECRET_SCROLLS.length} found</small></h3><p class="scrnote">🎨 Every scroll has a bonus theme. Find the scroll, then answer 3 questions to unlock it.</p><div class="scrolls">${[...SECRET_SCROLLS].sort((a,b)=>(G.scrolls[a.id]?1:0)-(G.scrolls[b.id]?1:0)).map(x=>G.scrolls[x.id]?`<button class="scr got" data-scroll="${x.id}"><span>📜</span><b>${esc(x.title)}</b><small>${chalDone(x.id)?`Theme: ${esc((SKINS.find(k=>k.id===x.theme)||{}).name||"")} ✓ · tap to read again`:`🔒 Theme: ${esc((SKINS.find(k=>k.id===x.theme)||{}).name||"")} · tap to unlock`}</small></button>`:`<div class="scr"><span>🔒</span><b>Sealed scroll</b><small>${esc(x.hint)}</small></div>`).join("")}</div></div>
+    <div class="box" id="scrollBox"><h3>📜 Secret scrolls <small>${SECRET_SCROLLS.filter(x=>G.scrolls[x.id]).length} of ${SECRET_SCROLLS.length} found</small></h3><p class="scrnote">🎨 Every scroll has a bonus theme. Find the scroll, then answer 3 questions (or finish the task it sets) to unlock it.</p><div class="scrolls">${[...SECRET_SCROLLS].sort((a,b)=>(G.scrolls[a.id]?1:0)-(G.scrolls[b.id]?1:0)).map(x=>G.scrolls[x.id]?`<button class="scr got" data-scroll="${x.id}"><span>📜</span><b>${esc(x.title)}</b><small>${chalDone(x.id)?`Theme: ${esc((SKINS.find(k=>k.id===x.theme)||{}).name||"")} ✓ · tap to read again`:`🔒 Theme: ${esc((SKINS.find(k=>k.id===x.theme)||{}).name||"")} · ${x.seal==="mock"?"finish a mini mock":"tap to unlock"}`}</small></button>`:`<div class="scr"><span>🔒</span><b>Sealed scroll</b><small>${esc(x.hint)}</small></div>`).join("")}</div></div>
     </section>
 <section data-sec="badges" class="ts-badges">
     <div class="box"><h3>Badges <small>${got} of ${BADGES.length} unlocked</small></h3>
