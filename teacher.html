@@ -46,6 +46,7 @@ tr.inactive td:first-child::after{content:" 💤";}
 .badge{display:inline-block;font-size:12px;border-radius:99px;padding:1px 8px;background:var(--warn-bg);color:var(--warn);font-weight:700;margin-left:6px}
 label.chk{display:inline-flex;gap:6px;align-items:center;font-size:14px}
 @media print{ .noprint{display:none!important} body{background:#fff;color:#000} .box{border-color:#ccc;break-inside:avoid} }
+.heat .st{display:block;font-size:10px;line-height:1;color:#B7791F;letter-spacing:1px}
 </style>
 </head>
 <body>
@@ -109,8 +110,8 @@ function render(){
   const avgAcc=accRows.map((rs,i)=>rs.length?rs.reduce((a,r)=>a+r.topics[i][1],0)/rs.length:null);
   const weak=TOPICS.map((tp,i)=>({i,name:tp[0],acc:avgAcc[i],known:avgKnown[i]})).filter(x=>x.name!=="Exam skills").sort((a,b)=>(a.acc??999)-(b.acc??999)||a.known-b.known).slice(0,3);
   const sorted=rows.slice().sort((a,b)=>{ const A=a[sortKey],B=b[sortKey]; return (typeof A==="string"?A.localeCompare(B):A-B)*sortDir; });
-  const cols=[["name","Student"],["level","Level"],["xp","XP"],["known","Cards known"],["acc","Accuracy %"],["streak","Streak"],["active","Days active (14)"],["essays","Essays"],["day","Report date"]];
-  rows.forEach(r=>r.level=lvlFor(r.xp));
+  const cols=[["name","Student"],["level","Level"],["xp","XP"],["known","Cards known"],["acc","Accuracy %"],["streak","Streak"],["active","Days active (14)"],["essays","Essays"],["stars","Mastery ⭐"],["day","Report date"]];
+  rows.forEach(r=>{ r.level=lvlFor(r.xp); r.stars=(r.topics||[]).reduce((a,x)=>a+((x&&x[3])||0),0); });
   $("#out").innerHTML=`
   <div class="box"><h2>Class summary</h2><div class="tiles">
     <div class="tile"><b>${rows.length}</b><span>students</span></div>
@@ -121,18 +122,18 @@ function render(){
   <div class="box"><h2>Weakest topics for the class</h2><ol class="weak">${weak.map(w=>`<li><b>${esc(w.name)}</b>: ${w.acc==null?"not enough answers yet":Math.round(w.acc)+"% average accuracy"}, ${Math.round(w.known)}% of cards known on average</li>`).join("")}</ol>
     <p class="note">Accuracy only counts students who have answered at least 8 questions in a topic.</p></div>
   <div class="box"><h2>Students</h2><div class="scroll"><table id="tbl"><thead><tr>${cols.map(([k,l])=>`<th data-k="${k}" aria-sort="${sortKey===k?(sortDir>0?"ascending":"descending"):"none"}">${l}</th>`).join("")}</tr></thead><tbody>
-    ${sorted.map(r=>`<tr class="${inactive(r)?"inactive":""}"><td>${esc(r.name)}</td><td class="n">${r.level}</td><td class="n">${r.xp.toLocaleString()}</td><td class="n">${r.known.toLocaleString()}</td><td class="n">${r.acc}</td><td class="n">${r.streak}</td><td class="n">${r.active}</td><td class="n">${r.essays}</td><td>${dayToDate(r.day).toLocaleDateString("en-GB")}</td></tr>`).join("")}
+    ${sorted.map(r=>`<tr class="${inactive(r)?"inactive":""}"><td>${esc(r.name)}</td><td class="n">${r.level}</td><td class="n">${r.xp.toLocaleString()}</td><td class="n">${r.known.toLocaleString()}</td><td class="n">${r.acc}</td><td class="n">${r.streak}</td><td class="n">${r.active}</td><td class="n">${r.essays}</td><td class="n">${r.stars}</td><td>${dayToDate(r.day).toLocaleDateString("en-GB")}</td></tr>`).join("")}
   </tbody></table></div></div>
-  <div class="box"><h2>Cards known by topic (%)</h2><div class="scroll"><table class="heat"><thead><tr><th style="cursor:default">Student</th>${TOPICS.map(t=>`<th class="tp">${esc(t[0])}</th>`).join("")}</tr></thead><tbody>
-    ${sorted.map(r=>`<tr><td>${esc(r.name)}</td>${TOPICS.map((_,i)=>{ const v=r.topics[i]?r.topics[i][0]:0, a=r.topics[i]?r.topics[i][1]:-1; return `<td class="h" style="background:${heat(v)}" title="${v}% known${a>=0?", "+a+"% accuracy":""}">${v}</td>`; }).join("")}</tr>`).join("")}
+  <div class="box"><h2>Cards known by topic (%)</h2><p class="note">★ = mastery stars in that topic (1 to 3), based on recent accuracy and cards known.</p><div class="scroll"><table class="heat"><thead><tr><th style="cursor:default">Student</th>${TOPICS.map(t=>`<th class="tp">${esc(t[0])}</th>`).join("")}</tr></thead><tbody>
+    ${sorted.map(r=>`<tr><td>${esc(r.name)}</td>${TOPICS.map((_,i)=>{ const v=r.topics[i]?r.topics[i][0]:0, a=r.topics[i]?r.topics[i][1]:-1; return `<td class="h" style="background:${heat(v)}" title="${v}% known${a>=0?", "+a+"% accuracy":""}${r.topics[i]&&r.topics[i][3]?", "+r.topics[i][3]+" mastery stars":""}">${v}${r.topics[i]&&r.topics[i][3]?`<small class="st">${"★".repeat(r.topics[i][3])}</small>`:""}</td>`; }).join("")}</tr>`).join("")}
     <tr><td><b>Class average</b></td>${avgKnown.map(v=>`<td class="h" style="background:${heat(v)}"><b>${Math.round(v)}</b></td>`).join("")}</tr>
   </tbody></table></div></div>`;
   document.querySelectorAll("#tbl th").forEach(th=>th.onclick=()=>{ const k=th.dataset.k; if(sortKey===k) sortDir*=-1; else { sortKey=k; sortDir=k==="name"?1:-1; } render(); });
 }
 $("#go").onclick=run;
 $("#csv").onclick=()=>{
-  const head=["Student","Level","XP","Cards known","Accuracy %","Streak","Best streak","Days active (14)","Essays","Bosses beaten","Exam Skills best","Stats Lab best","Report date",...TOPICS.map(t=>t[0]+" % known")];
-  const lines=[head,...rows.map(r=>[r.name,lvlFor(r.xp),r.xp,r.known,r.acc,r.streak,r.best,r.active,r.essays,r.bosses,r.exam,r.stats,dayToDate(r.day).toLocaleDateString("en-GB"),...TOPICS.map((_,i)=>r.topics[i]?r.topics[i][0]:"")])];
+  const head=["Student","Level","XP","Cards known","Accuracy %","Streak","Best streak","Days active (14)","Essays","Bosses beaten","Exam Skills best","Stats Lab best","Mastery stars","Report date",...TOPICS.map(t=>t[0]+" % known"),...TOPICS.map(t=>t[0]+" stars")];
+  const lines=[head,...rows.map(r=>[r.name,lvlFor(r.xp),r.xp,r.known,r.acc,r.streak,r.best,r.active,r.essays,r.bosses,r.exam,r.stats,r.stars,dayToDate(r.day).toLocaleDateString("en-GB"),...TOPICS.map((_,i)=>r.topics[i]?r.topics[i][0]:""),...TOPICS.map((_,i)=>r.topics[i]&&r.topics[i][3]!=null?r.topics[i][3]:"")])];
   const csv=lines.map(l=>l.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
   const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download="class-progress.csv"; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),500);
 };

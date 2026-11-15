@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
 <style>
+:root{--good-ink:color-mix(in srgb,var(--good) 62%,var(--ink));--warn-ink:color-mix(in srgb,var(--warn) 62%,var(--ink))}
 :root{
   --paper:#EEF1F7; --card:#FFFFFF; --ink:#18203A; --muted:#566082; --line:#D3D9E6; --soft:#E3E8F2;
   --good:#1C8A5E; --good-bg:#DDF3E8; --warn:#B4531B; --warn-bg:#FBE7D9;
@@ -84,7 +85,7 @@ h1 span b{font-weight:500}
 .btn{border:2px solid var(--ink);background:var(--ink);color:var(--paper);padding:11px 20px;border-radius:12px;font-weight:700;font-size:16px}
 .btn.ghost{background:transparent;color:var(--ink)}
 .btn.good{background:var(--good);border-color:var(--good);color:#fff}
-.btn.warn{background:transparent;border-color:var(--warn);color:var(--warn)}
+.btn.warn{background:transparent;border-color:var(--warn);color:var(--warn-ink)}
 .btn:disabled{opacity:.4;cursor:default}
 .muted{color:var(--muted)}
 kbd{font-family:var(--body);font-size:12px;border:1px solid currentColor;border-radius:5px;padding:0 5px;opacity:.7;margin-left:6px}
@@ -108,7 +109,7 @@ kbd{font-family:var(--body);font-size:12px;border:1px solid currentColor;border-
 .automark.ok{border-color:var(--good);background:var(--good-bg)}.automark.no{border-color:var(--warn);background:var(--warn-bg)}
 .automark span{color:var(--muted);margin-left:4px}
 .kterms{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.kterms i{font-style:normal;font-size:13px;padding:2px 8px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--muted)}
-.kterms i.hit{color:var(--good);border-color:var(--good);font-weight:700}
+.kterms i.hit{color:var(--good-ink);border-color:var(--good);font-weight:700}
 #qAns.need,.gapin.need{border-color:var(--warn)!important;animation:shake .35s}
 .why{position:relative;margin:10px 0 0;padding:8px 12px;border-radius:10px;background:var(--soft);font-size:15px}
 .face.back .q-small{font-size:15px;color:var(--muted);margin:14px 0 10px;position:relative}
@@ -142,8 +143,8 @@ textarea:focus{border-color:var(--c);outline:none}
 .results{list-style:none;padding:0;margin:20px 0;text-align:left;display:grid;gap:8px}
 .results li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px 12px 44px;position:relative}
 .results li::before{position:absolute;left:14px;top:11px;font-weight:800;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:13px}
-.results li.ok::before{content:"✓";background:var(--good-bg);color:var(--good)}
-.results li.no::before{content:"✗";background:var(--warn-bg);color:var(--warn)}
+.results li.ok::before{content:"✓";background:var(--good-bg);color:var(--good-ink)}
+.results li.no::before{content:"✗";background:var(--warn-bg);color:var(--warn-ink)}
 .results li .ans{font-size:15px;color:var(--muted);margin-top:4px}
 .size-pick{display:flex;gap:10px;justify-content:center;margin:0 0 20px;flex-wrap:wrap}
 .size-pick button{width:74px;height:74px;border-radius:16px;border:2px solid var(--line);background:var(--card);font-family:var(--display);font-weight:800;font-size:28px}
@@ -159,8 +160,8 @@ textarea:focus{border-color:var(--c);outline:none}
 .item summary .num{font-size:13px;color:var(--muted);min-width:2.6em}
 .item summary .qt{font-weight:700;flex:1}
 .pill{font-size:12px;font-weight:700;padding:2px 9px;border-radius:99px;white-space:nowrap}
-.pill.k{background:var(--good-bg);color:var(--good)}
-.pill.l{background:var(--warn-bg);color:var(--warn)}
+.pill.k{background:var(--good-bg);color:var(--good-ink)}
+.pill.l{background:var(--warn-bg);color:var(--warn-ink)}
 .item .body{padding:0 16px 14px calc(16px + 2.6em + 12px)}
 .item .body .a{font-size:17px}
 .item .body .mini{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
@@ -230,9 +231,9 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 
 /* floaters, toasts, modal, fx */
 #fx{position:fixed;inset:0;pointer-events:none;z-index:90}
-.floater{position:fixed;z-index:95;pointer-events:none;font-family:var(--display);font-weight:800;font-size:22px;color:var(--good);text-shadow:0 2px 0 var(--card);animation:floatUp 1.1s ease-out forwards;white-space:nowrap;transform:translateX(-50%)}
+.floater{position:fixed;z-index:95;pointer-events:none;font-family:var(--display);font-weight:800;font-size:22px;color:var(--good-ink);text-shadow:0 2px 0 var(--card);animation:floatUp 1.1s ease-out forwards;white-space:nowrap;transform:translateX(-50%)}
 .floater.big{font-size:30px;color:#E0A100}
-.floater.meh{color:var(--warn);font-size:18px}
+.floater.meh{color:var(--warn-ink);font-size:18px}
 @keyframes floatUp{0%{opacity:0;margin-top:0}15%{opacity:1}100%{opacity:0;margin-top:-80px}}
 #toasts{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);pointer-events:none;z-index:96;display:grid;gap:8px;width:min(380px,calc(100vw - 32px))}
 .toast{display:flex;gap:12px;align-items:center;background:var(--ink);color:var(--paper);border-radius:14px;padding:12px 16px;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:toastIn .4s cubic-bezier(.2,1.4,.4,1)}
@@ -312,7 +313,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .filebtn{display:inline-flex;align-items:center;cursor:pointer}
 #loadCode{min-height:70px;font-family:ui-monospace,Menlo,monospace;font-size:13px;word-break:break-all;margin-bottom:10px}
 .savemsg{margin:10px 0 0;font-weight:700}
-.savemsg.ok{color:var(--good)} .savemsg.no{color:var(--warn)}
+.savemsg.ok{color:var(--good-ink)} .savemsg.no{color:var(--warn-ink)}
 .bosses{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
 .bossc{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;border:2px solid var(--line);border-left:8px solid var(--c);background:var(--card);border-radius:14px;padding:12px 14px;transition:transform .15s}
 .bossc:hover:not(:disabled){transform:translateY(-2px)}
@@ -321,7 +322,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .bossc span{font-size:13px;color:var(--muted)}
 .bossc .bs{margin-top:6px;font-weight:700;color:var(--ink)}
 .bossc.won{background:color-mix(in srgb,var(--c) 10%,var(--card))}
-.bossc.won .bs{color:var(--good)}
+.bossc.won .bs{color:var(--good-ink)}
 .bosshp{position:relative;height:26px;border-radius:9px;background:var(--soft);overflow:hidden;margin-bottom:14px}
 .bosshp i{display:block;height:100%;background:linear-gradient(90deg,#B91C1C,#E0533D);transition:width .4s}
 .bosshp.hard i{background:linear-gradient(90deg,#7C2D12,#F97316,#FACC15)}
@@ -364,12 +365,12 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .dcard{display:flex;flex-direction:column;gap:4px;text-align:left;border:2px solid var(--line);background:var(--card);border-radius:14px;padding:14px 16px}
 .dcard b{font-family:var(--display);font-size:18px}
 .dcard span{color:var(--muted);font-size:15px}
-.dcard small{color:var(--good);font-weight:700}
+.dcard small{color:var(--good-ink);font-weight:700}
 .opts.one{grid-template-columns:1fr}
 .opt.okay{border-color:#C99A17;background:color-mix(in srgb,#F2C14E 18%,var(--card))}
 .explain.meh{background:color-mix(in srgb,#F2C14E 22%,var(--card))}
 .model li{margin:8px 0;line-height:1.5}
-.warnt{color:var(--warn)}
+.warnt{color:var(--warn-ink)}
 .weekban{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:2px solid var(--c);background:color-mix(in srgb,var(--c) 12%,var(--card));border-radius:16px;padding:12px 16px;margin-bottom:12px}
 .weekban > span{font-size:28px}
 .weekban div{flex:1;min-width:0}
@@ -390,7 +391,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .pm-marks .btn{font-size:19px;padding:13px 22px}
 .pm-yes{background:var(--good);border-color:var(--good);color:#fff}
 .pm-part{background:#F2C14E;border-color:#F2C14E;color:#3A2E00}
-.pm-no{background:transparent;border-color:var(--warn);color:var(--warn)}
+.pm-no{background:transparent;border-color:var(--warn);color:var(--warn-ink)}
 .pm-score{text-align:center;font-weight:800;font-size:18px;margin-top:auto;padding-top:16px}
 @media (max-width:560px){ .pm-marks .btn{flex:1 1 100%} }
 
@@ -442,7 +443,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .order-done li button{width:100%;text-align:left;border:2px solid var(--ink);background:var(--card);border-radius:10px;padding:8px 12px;font-size:15px}
 .order-done li.ok button{border-color:var(--good);background:var(--good-bg)}
 .order-done li.no button{border-color:var(--warn);background:var(--warn-bg)}
-.order-done li small{display:block;color:var(--warn);font-size:13px;margin-top:2px}
+.order-done li small{display:block;color:var(--warn-ink);font-size:13px;margin-top:2px}
 .order-avail{display:grid;gap:8px}
 .mock-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin-bottom:12px;position:sticky;top:76px;z-index:5}
 .mock-head b{font-family:var(--display);font-size:18px}
@@ -633,7 +634,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .gapin:focus{border-color:var(--c);outline:none}
 .gapterm{padding:14px 0 6px;margin:0}
 .gapres{position:relative;font-weight:700;margin:0 0 10px;font-size:16px}
-.gapres.ok{color:var(--good)} .gapres.close{color:#B07E00} .gapres.no{color:var(--warn)} .gapres.none{color:var(--muted);font-weight:400}
+.gapres.ok{color:var(--good-ink)} .gapres.close{color:#B07E00} .gapres.no{color:var(--warn-ink)} .gapres.none{color:var(--muted);font-weight:400}
 
 /* new arcade bits */
 .q.pre{white-space:pre-line}
@@ -807,7 +808,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 :root[data-skin="labcoat"] .top h1 span{color:var(--muted)}
 :root[data-skin="labcoat"] .top h1::before{content:"🥼 "}
 :root[data-skin="labcoat"] .xpbar i{background:linear-gradient(90deg,#5EEAD4,#0F766E)}
-:root[data-skin="results"]{--paper:#E8D5B5;--card:#FBF4E6;--ink:#2E2414;--muted:#6E5D40;--line:#D9C49E;--soft:#F1E3C8;--good:#2E6B3A;--good-bg:#DCE9D2;--warn:#A0461C;--warn-bg:#F5DCCB;color-scheme:light}
+:root[data-skin="results"]{--paper:#E8D5B5;--card:#FBF4E6;--ink:#2E2414;--muted:#5C4D33;--line:#D9C49E;--soft:#F1E3C8;--good:#2E6B3A;--good-bg:#DCE9D2;--warn:#A0461C;--warn-bg:#F5DCCB;color-scheme:light}
 :root[data-skin="results"] .top h1::before{content:"✉️ "}
 :root[data-skin="results"] .xpbar i{background:linear-gradient(90deg,#B8860B,#E2B84B,#FFE9A3)}
 :root[data-skin="school"]{--paper:#FFF6C2;--card:#FFFFFF;--ink:#1A2340;--muted:#5B6070;--line:#EADF9A;--soft:#FBEFB0;--good:#1C7A55;--good-bg:#DDF0E6;--warn:#2C55D8;--warn-bg:#DFE6FB;color-scheme:light}
@@ -2920,7 +2921,7 @@ function chk4(str){ let h=7; for(const ch of str) h=(h*31+ch.charCodeAt(0))%1679
 async function makeReport(){
   const t=today(), live=G.last===t||(G.last&&dayNum(t)-dayNum(G.last)===1)?G.streak:0, ts=topicStats();
   const active=Object.keys(G.hist).filter(k=>G.hist[k]>0 && dayNum(t)-dayNum(k)<14).length;
-  const arr=[1,(store.reportName||"").trim().slice(0,30),dayNum(t),G.xp,live,G.best,knownTotal(),G.st.cards,G.st.cards?Math.round(G.st.right/G.st.cards*100):0,G.st.exam,G.st.stats,Object.keys(G.st.bosses||{}).length,active,G.st.essays||0,TOPICS.length,ts.map(x=>[Math.round(x.known*100),x.n?Math.round(x.acc*100):-1,Math.min(x.n,9999)])];
+  const arr=[1,(store.reportName||"").trim().slice(0,30),dayNum(t),G.xp,live,G.best,knownTotal(),G.st.cards,G.st.cards?Math.round(G.st.right/G.st.cards*100):0,G.st.exam,G.st.stats,Object.keys(G.st.bosses||{}).length,active,G.st.essays||0,TOPICS.length,ts.map(x=>[Math.round(x.known*100),x.n?Math.round(x.acc*100):-1,Math.min(x.n,9999),mastery(x.key).s])];
   let bytes=new TextEncoder().encode(JSON.stringify(arr)), pre="FR1";
   try{ if(window.CompressionStream){ bytes=new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream("deflate-raw"))).arrayBuffer()); pre="FR1Z"; } }catch(e){ bytes=new TextEncoder().encode(JSON.stringify(arr)); pre="FR1"; }
   const body=b64u(bytes); G.st.reports=(G.st.reports||0)+1;
@@ -3718,7 +3719,7 @@ function b64u(bytes){ let s=""; for(let i=0;i<bytes.length;i+=0x8000) s+=String.
 function unb64u(str){ str=str.replace(/-/g,"+").replace(/_/g,"/"); while(str.length%4) str+="="; const bin=atob(str), out=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i); return out; }
 async function makeSaveCode(){
   G.lastBackup=today();
-  const json=JSON.stringify({v:1, p:store.p, sel:store.sel, sr:store.sr, g:G, theme:store.theme||"auto", gapMode:!!store.gapMode, a11y:store.a11y});
+  const json=JSON.stringify({v:1, p:store.p, sel:store.sel, sr:store.sr, g:G, theme:store.theme||"auto", gapMode:!!store.gapMode, a11y:store.a11y, cardStyle:store.cardStyle||"mc"});
   let bytes=new TextEncoder().encode(json), pre="F1R";
   try{ if(window.CompressionStream){ bytes=new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream("deflate"))).arrayBuffer()); pre="F1Z"; } }catch(e){ bytes=new TextEncoder().encode(json); pre="F1R"; }
   return pre+b64u(bytes);
@@ -3737,7 +3738,7 @@ async function loadSave(code){
   try{
     const d=await readSaveCode(code), nl=lvlFor(d.g.xp), ol=lvlFor(G.xp);
     if(!confirm(`Replace the progress on this device (Level ${ol}, ${G.xp.toLocaleString()} XP) with the saved progress (Level ${nl}, ${d.g.xp.toLocaleString()} XP)?`)) return;
-    localStorage.setItem(KEY, JSON.stringify({p:d.p, sel:Array.isArray(d.sel)?d.sel:TOPICS.map(t=>t.key), all:TOPICS.map(t=>t.key), g:d.g, sr:d.sr||{}, srMig:1, theme:d.theme||"auto", gapMode:!!d.gapMode, a11y:d.a11y||{font:"std",size:1}, reportName:store.reportName||""}));
+    localStorage.setItem(KEY, JSON.stringify({p:d.p, sel:Array.isArray(d.sel)?d.sel:TOPICS.map(t=>t.key), all:TOPICS.map(t=>t.key), g:d.g, sr:d.sr||{}, srMig:1, theme:d.theme||"auto", gapMode:!!d.gapMode, a11y:d.a11y||{font:"std",size:1}, reportName:store.reportName||"", cardStyle:d.cardStyle||"mc"}));
     location.reload();
   }catch(e){ msg.className="savemsg no"; msg.textContent=e && e.message && !/JSON|atob|decod|base64/i.test(e.message) ? e.message : "Sorry, that code couldn't be read. Make sure you copied all of it."; }
 }
