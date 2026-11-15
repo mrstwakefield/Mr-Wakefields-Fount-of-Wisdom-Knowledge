@@ -378,7 +378,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 #trophyArea{display:flex;flex-direction:column}
 #trophyArea > section{display:none}
 #trophyArea[data-sec="progress"] > section[data-sec="progress"],#trophyArea[data-sec="weak"] > section[data-sec="weak"],#trophyArea[data-sec="badges"] > section[data-sec="badges"],#trophyArea[data-sec="scrolls"] > section[data-sec="scrolls"],#trophyArea[data-sec="themes"] > section[data-sec="themes"],#trophyArea[data-sec="saves"] > section[data-sec="saves"]{display:block}
-.ts-profile{order:1}.ts-tiles{order:2}.ts-exam{order:3}.ts-mastery{order:3}.ts-weak{order:4}.ts-heat{order:5}.ts-goal{order:6}
+.ts-profile{order:1}.ts-pet{order:1}.ts-tiles{order:2}.ts-exam{order:3}.ts-mastery{order:3}.ts-weak{order:4}.ts-heat{order:5}.ts-goal{order:6}
 .ts-badges{order:1}.ts-scrolls{order:2}.ts-certs{order:3}
 .ts-backup{order:1}.ts-report{order:2}.ts-a11y{order:3}
 .tseg{order:0;align-self:flex-start;margin-bottom:14px;max-width:100%;overflow-x:auto;flex-wrap:nowrap}
@@ -515,13 +515,31 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .sort-bin.right{border-color:var(--good);background:var(--good-bg)}.sort-bin.wrong{border-color:var(--warn);background:var(--warn-bg);animation:shake .35s}
 .sort-fb{min-height:1.6em;margin-top:12px;text-align:center;font-size:15px}
 .yr{color:var(--c);margin-left:6px}
-.pet{display:flex;gap:12px;align-items:center;margin-top:12px;padding:10px 12px;border-radius:14px;background:var(--soft)}
-.pet-face{font-size:34px;line-height:1;animation:petbob 2.4s ease-in-out infinite}.pet.sleepy .pet-face{animation:none;filter:grayscale(.4);opacity:.75}
-@keyframes petbob{50%{transform:translateY(-3px)}}
-@media (prefers-reduced-motion:reduce){.pet-face{animation:none}}
-.pet-txt{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}.pet-txt span{font-size:14px;color:var(--muted)}
-.pet-name{font-weight:800;font-size:inherit;padding:0}
-.pet-food{display:block;height:6px;border-radius:9px;background:var(--card);overflow:hidden;margin-top:3px}.pet-food i{display:block;height:100%;background:linear-gradient(90deg,#F2C14E,#1C8A5E)}
+.petstrip{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:2px 14px 2px 4px;margin:0 0 14px;color:var(--ink);font-size:16px;line-height:1.35}
+.petstrip[hidden]{display:none}
+.petstrip:hover{background:var(--soft)}
+.petstrip .ps-art{flex:none;display:block;line-height:0}
+.petstrip .ps-txt{flex:1;min-width:0}
+.petstrip .ps-cheese{flex:none;font-size:18px;letter-spacing:2px}
+.petstrip .ps-cheese i{font-style:normal;opacity:.25}
+.petstrip.sleepy,.petstrip.asleep{border-style:dashed}
+.petstrip.ecstatic{border-color:var(--good);background:var(--good-bg)}
+@media (max-width:560px){.petstrip{font-size:14px;gap:8px}.petstrip .ps-art svg{width:84px;height:63px}.petstrip .ps-cheese{font-size:14px}}
+.pet-box{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.pet-art{flex:none}
+.pet-info{flex:1;min-width:220px}
+.pet-msg{margin:0;font-size:17px}
+.box .pet-info h3{display:flex;align-items:baseline;gap:8px;justify-content:flex-start}
+@media (max-width:560px){.petbtn svg{width:34px;height:26px}.hud{gap:6px!important}.hud .iconbtn{width:36px;min-width:36px;height:38px;padding:0}.hud .petbtn{width:auto;padding:0 2px}.hud .focusbtn{width:auto;min-width:36px;padding:0 6px}.hud .hud-stat{padding-left:8px;padding-right:8px}.hud #hudGoal .goalring{display:none}}
+.pet-svg.ecstatic .pet-body{animation:petdance .7s ease-in-out infinite alternate;transform-origin:80px 110px;transform-box:view-box}
+.pet-svg.happy .pet-tail{animation:petwag 1s ease-in-out infinite alternate;transform-origin:118px 96px;transform-box:view-box}
+.pet-z text{animation:petz 2.4s ease-in-out infinite}
+.pet-z text:nth-child(2){animation-delay:.4s}.pet-z text:nth-child(3){animation-delay:.8s}
+@keyframes petdance{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-6px) rotate(3deg)}}
+@keyframes petwag{from{transform:rotate(-6deg)}to{transform:rotate(8deg)}}
+@keyframes petz{0%,100%{opacity:.2;transform:translateY(4px)}50%{opacity:1;transform:translateY(-2px)}}
+@media (prefers-reduced-motion:reduce){.pet-svg *{animation:none!important}}
+.skin-h{margin:4px 0 10px;font-size:15px}.skin-h small{color:var(--muted);font-weight:500;margin-left:4px}.skins + .skin-h{margin-top:20px}
 .chip .stars{font-size:12px;letter-spacing:1px;color:var(--muted);white-space:nowrap}.stars.s1,.stars.s2,.stars.s3{color:#D9A21B}
 .mastery{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
 .mrow{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:12px}
@@ -737,10 +755,11 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 :root[data-skin="library"] .top h1{color:#E2C178}
 :root[data-skin="library"] .top h1::before{content:"📚 "}
 :root[data-skin="library"] .xpbar i{background:linear-gradient(90deg,#8C6A2A,#C9A24E,#F0D99A)}
-:root[data-skin="postit"]{--paper:#FFFBE0;--card:#FFF8C4;--ink:#3B3410;--muted:#6E6430;--line:#EFE08A;--soft:#FFF2A8;--good:#2E7D32;--good-bg:#DCEFD5;--warn:#C2185B;--warn-bg:#FCE0EC;color-scheme:light}
-:root[data-skin="postit"] .top h1::before{content:"📝 "}
-:root[data-skin="postit"] .box{box-shadow:3px 4px 0 rgba(120,100,0,.12)}
-:root[data-skin="postit"] .xpbar i{background:linear-gradient(90deg,#FF9EC7,#FFD84D,#9EE6A0,#8EC9FF)}
+:root[data-skin="lanyard"]{--paper:#FFF5FA;--card:#FFFFFF;--ink:#2B1630;--muted:#6E5672;--line:#F3D9E7;--soft:#FBE8F2;--good:#1C7A55;--good-bg:#DDF0E6;--warn:#C2185B;--warn-bg:#FCE0EC;color-scheme:light}
+:root[data-skin="lanyard"] .top h1{color:#C2185B}
+:root[data-skin="lanyard"] .top h1 span{color:var(--muted)}
+:root[data-skin="lanyard"] .hud{background-image:repeating-linear-gradient(90deg,#F06BA8 0 28px,#8FD3F4 28px 56px);background-size:100% 6px;background-repeat:no-repeat;padding-top:16px}
+:root[data-skin="lanyard"] .xpbar i{background:repeating-linear-gradient(135deg,#F06BA8 0 12px,#8FD3F4 12px 24px)}
 :root[data-skin="brainscan"]{--paper:#07090F;--card:#10141F;--ink:#E8EEF8;--muted:#9AA6BC;--line:#222A3B;--soft:#171D2B;--good:#6EE7A8;--good-bg:#12301F;--warn:#FF8A5C;--warn-bg:#3A1C12;color-scheme:dark}
 :root[data-skin="brainscan"] body{background:radial-gradient(ellipse at 80% -10%,rgba(255,90,60,.16),transparent 45%),radial-gradient(ellipse at 10% 0%,rgba(60,140,255,.14),transparent 40%),var(--paper)}
 :root[data-skin="brainscan"] .top h1::before{content:"🧠 "}
@@ -750,10 +769,12 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 :root[data-skin="uniform"] .top h1 span{color:var(--muted)}
 :root[data-skin="uniform"] .hud{border-top:6px solid #8B0408}
 :root[data-skin="uniform"] .xpbar i{background:linear-gradient(90deg,#B3262B,#8B0408)}
-:root[data-skin="highlighter"]{--paper:#FFFFFF;--card:#FFFFFF;--ink:#111111;--muted:#555555;--line:#E6E6E6;--soft:#F5F5F5;--good:#14804A;--good-bg:#DDF7E6;--warn:#E0457B;--warn-bg:#FDE2EC;color-scheme:light}
-:root[data-skin="highlighter"] .top h1{text-decoration:underline .32em #E6FF3B;text-decoration-skip-ink:none;text-underline-offset:-.12em}
-:root[data-skin="highlighter"] .top h1 span{display:inline-block;width:100%}
-:root[data-skin="highlighter"] .xpbar i{background:linear-gradient(90deg,#E6FF3B,#FF6EC7,#5CFFB0,#FFB13B)}
+:root[data-skin="senior"]{--paper:#FFF6EC;--card:#FFFFFF;--ink:#2E1A08;--muted:#75573A;--line:#F5DCC0;--soft:#FDEBD6;--good:#1C7A55;--good-bg:#DDF0E6;--warn:#C2410C;--warn-bg:#FDE6D8;color-scheme:light}
+:root[data-skin="senior"] .top h1{color:#D2601A}
+:root[data-skin="senior"] .top h1 span{color:var(--muted)}
+:root[data-skin="senior"] .top h1::before{content:"⭐ "}
+:root[data-skin="senior"] .hud{border-top:6px solid #F28C28}
+:root[data-skin="senior"] .xpbar i{background:linear-gradient(90deg,#FFB35C,#F28C28,#D2601A)}
 :root[data-skin="labcoat"]{--paper:#F4FAFA;--card:#FFFFFF;--ink:#0F2A2E;--muted:#4F6C70;--line:#D3E6E6;--soft:#E6F2F2;--good:#0F8A7E;--good-bg:#DDF3F0;--warn:#C2410C;--warn-bg:#FDE6D8;color-scheme:light}
 :root[data-skin="labcoat"] .top h1{color:#0F766E}
 :root[data-skin="labcoat"] .top h1 span{color:var(--muted)}
@@ -797,6 +818,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
     <button class="iconbtn" id="soundBtn" aria-label="Mute sounds">🔊</button>
   </div>
   <div id="evBanner"></div>
+  <button class="petstrip" id="petStrip" hidden></button>
   <div id="plan"></div>
 
   <div class="tabs" role="tablist" aria-label="Revision mode">
@@ -967,10 +989,10 @@ const SKINS=[
   {id:"chalk", name:"Chalkboard", lvl:60, sw:["#1F3B2D","#F1F5EE"], desc:"Green board, chalky text 🖍️"},
   {id:"ink", name:"Ink & Quill", lvl:64, sw:["#F7F4EC","#1D3C8F"], desc:"Fountain-pen blue for the Fount 🖋️"},
   {id:"library", name:"Library", lvl:68, sw:["#1E2B22","#E2C178"], desc:"Green leather and brass 📚"},
-  {id:"postit", name:"Post-it", lvl:72, sw:["#FFF6A8","#E8458B"], desc:"Sticky-note revision 📝"},
+  {id:"lanyard", name:"Sixth Form Lanyard", lvl:72, sw:["#F06BA8","#8FD3F4"], desc:"Y13 pink and Y12 light blue 🪪"},
   {id:"brainscan", name:"Brain Scan", lvl:76, sw:["#07090F","#FF5A3C"], desc:"fMRI heatmap 🧠"},
   {id:"uniform", name:"School Red", lvl:80, sw:["#8B0408","#C9C9C9"], desc:"Blazer red ❤️"},
-  {id:"highlighter", name:"Highlighter", lvl:84, sw:["#FFFFFF","#E6FF3B"], desc:"Neon on white 🖊️"},
+  {id:"senior", name:"Senior Student", lvl:84, sw:["#FFF6EC","#F28C28"], desc:"The orange lanyard ⭐"},
   {id:"labcoat", name:"Lab Coat", lvl:88, sw:["#F4FAFA","#0F766E"], desc:"Clinical white and teal 🥼"},
   {id:"results", name:"Results Day", lvl:92, sw:["#E8D5B5","#B8860B"], desc:"Brown envelope, gold grades ✉️"},
   {id:"school", name:"The School", lvl:96, sw:["#E3C800","#345EE4"], desc:"Yellow cladding, blue letters 🏫"},
@@ -989,7 +1011,8 @@ const SKINS=[
   {id:"wakefield", name:"Wakefield Mode", lvl:999, hidden:true, sw:["#0F3D2E","#D4AF37"], desc:"Keeper of the Scrolls ✦"}
 ];
 function applySkin(id){ if(id==="arcade8" && !document.getElementById("pixelCss")){ const l=document.createElement("link"); l.id="pixelCss"; l.rel="stylesheet"; l.href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"; document.head.appendChild(l); } const r=document.documentElement; r.removeAttribute("data-skin"); r.removeAttribute("data-theme"); if(id==="light"||id==="dark") r.setAttribute("data-theme",id); else if(id && id!=="auto") r.setAttribute("data-skin",id); }
-if(store.theme==="sunset"){ store.theme="tamworth"; save(); } // Sunset became Tamworth Castle
+if(store.theme==="sunset"){ store.theme="tamworth"; save(); }
+if(store.theme==="postit"||store.theme==="highlighter"){ store.theme=store.theme==="postit"?"lanyard":"senior"; save(); } // replaced by the lanyard themes // Sunset became Tamworth Castle
 applySkin(store.theme);
 
 /* ---------- boss battles ---------- */
@@ -1350,7 +1373,7 @@ if(!G.migrated){
 }
 let combo = 0;
 
-const RANKS = [[1,"Lab Rat"],[2,"Wakefield Minion"],[3,"Tabula Rasa"],[4,"Naive Participant"],[5,"Back-Row Napper"],[6,"Pavlov's Puppy"],[7,"Wakefield's Homework Hero"],[8,"Magic Number 7±2"],[9,"Chunking Champion"],[10,"Bobo Doll Bystander"],[11,"Teacher's Pet (Wakefield Edition)"],[12,"Extraneous Variable"],[13,"Phonological Looper"],[14,"Mr Wallace"],[15,"Wakefield's Whiteboard Wiper"],[16,"Demand Characteristic"],[17,"Agentic State Agent"],[18,"Asch's Lone Dissenter"],[19,"Strange Situation Survivor"],[20,"Wakefield's Hall Monitor"],[21,"Securely Attached"],[22,"Null Hypothesis Rejecter"],[23,"Type I Error Dodger"],[24,"Sign Test Sorcerer"],[25,"Wakefield's Favourite (Allegedly)"],[26,"Neuroplastic Fantastic"],[27,"Hemisphere Hero"],[28,"Fight or Flight Fanatic"],[29,"Synapse Surfer"],[30,"Wakefield's Lab Assistant"],[31,"Superego in Charge"],[32,"Self-Actualiser"],[33,"Cognitive Distortion Detector"],[34,"Data-Driven Detective"],[35,"Wakefield's Essay Whisperer"],[36,"Diathesis-Stress Defuser"],[37,"Dopamine Decoder"],[38,"Rusbult's Investor"],[39,"Parasocial Superfan"],[40,"Keeper of the Fount"],[41,"Peer Reviewer"],[42,"Spearman's Rho-mantic"],[43,"Pearson's Pal"],[44,"Wakefield's Pink Pen"],[45,"AO3 Ace"],[46,"PEEL Master"],[47,"Level 4 Essay Machine"],[48,"Wakefield's Right-Hand Rat"],[49,"Chartered Psychologist"],[50,"Mr Wakefield in Training"],[51,"Lord of the Long-Term Store"],[52,"Head of Department"],[53,"Wakefield's Understudy"],[54,"Paradigm Shifter"],[55,"Grand Master of the Mind"],[56,"Fount of Wisdom (Junior)"],[57,"Wakefield's Chosen One"],[58,"Working Memory Wizard"],[59,"Episodic Buffer"],[60,"Wakefield's Seating Plan Survivor"],[61,"Cognitive Interviewer"],[62,"Monotropy Master"],[63,"Critical Period Crosser"],[64,"Internal Working Model"],[65,"Wakefield's Register Taker"],[66,"Social Learning Superstar"],[67,"Vicarious Reinforcer"],[68,"Schema Shaper"],[69,"Gender Bias Buster"],[70,"Wakefield's Mock Marker"],[71,"Free Will Philosopher"],[72,"Hard Determinist"],[73,"Nature-Nurture Negotiator"],[74,"Holism Hero"],[75,"Wakefield's Tea Maker"],[76,"Idiographic Insider"],[77,"Token Economy Tycoon"],[78,"Dopamine Hypothesis Debunker"],[79,"Family Therapy Facilitator"],[80,"Wakefield's Exam Invigilator"],[81,"CBT Champion"],[82,"Offender Profiler"],[83,"Top-Down Typologist"],[84,"Eysenck's Extrovert"],[85,"Wakefield's Report Writer"],[86,"Anger Management Mentor"],[87,"Matching Hypothesis Matchmaker"],[88,"Duck's Dissolution Expert"],[89,"Absorption-Addiction Analyst"],[90,"Wakefield's Department Deputy"],[91,"Biological Rhythm Rider"],[92,"Circadian Clock Keeper"],[93,"Split-Brain Scholar"],[94,"Localisation Legend"],[95,"Wakefield's Parents' Evening Star"],[96,"Meta-Analysis Mastermind"],[97,"Professor of Psychology"],[98,"Walking Textbook"],[99,"Basically Mr Wakefield"],[100,"Dedicated Wakefield Stan"]];
+const RANKS = [[1,"Lab Rat"],[2,"Wakefield Minion"],[3,"Tabula Rasa"],[4,"Naive Participant"],[5,"Back-Row Napper"],[6,"Pavlov's Puppy"],[7,"Wakefield's Homework Hero"],[8,"Magic Number 7±2"],[9,"Chunking Champion"],[10,"Bobo Doll Bystander"],[11,"Teacher's Pet (Wakefield Edition)"],[12,"Extraneous Variable"],[13,"Phonological Looper"],[14,"Mr Wallace"],[15,"Wakefield's Whiteboard Wiper"],[16,"Demand Characteristic"],[17,"Agentic State Agent"],[18,"Asch's Lone Dissenter"],[19,"Strange Situation Survivor"],[20,"Wakefield's Hall Monitor"],[21,"Securely Attached"],[22,"Null Hypothesis Rejecter"],[23,"Type I Error Dodger"],[24,"Sign Test Sorcerer"],[25,"Wakefield's Favourite (Allegedly)"],[26,"Neuroplastic Fantastic"],[27,"Hemisphere Hero"],[28,"Fight or Flight Fanatic"],[29,"Synapse Surfer"],[30,"Wakefield's Lab Assistant"],[31,"Superego in Charge"],[32,"Self-Actualiser"],[33,"Cognitive Distortion Detector"],[34,"Data-Driven Detective"],[35,"Wakefield's Essay Whisperer"],[36,"Diathesis-Stress Defuser"],[37,"Dopamine Decoder"],[38,"Rusbult's Investor"],[39,"Parasocial Superfan"],[40,"Keeper of the Fount"],[41,"Peer Reviewer"],[42,"Spearman's Rho-mantic"],[43,"Pearson's Pal"],[44,"Wakefield's Pink Pen"],[45,"AO3 Ace"],[46,"PEEL Master"],[47,"Level 4 Essay Machine"],[48,"Wakefield's Right-Hand Rat"],[49,"Chartered Psychologist"],[50,"Mr Wakefield in Training"],[51,"Lord of the Long-Term Store"],[52,"Head of Department"],[53,"Wakefield's Understudy"],[54,"Paradigm Shifter"],[55,"Grand Master of the Mind"],[56,"Fount of Wisdom (Junior)"],[57,"Wakefield's Chosen One"],[58,"Working Memory Wizard"],[59,"Episodic Buffer"],[60,"Wakefield's Seating Plan Survivor"],[61,"Cognitive Interviewer"],[62,"Monotropy Master"],[63,"Critical Period Crosser"],[64,"Internal Working Model"],[65,"Wakefield's Register Taker"],[66,"Social Learning Superstar"],[67,"Vicarious Reinforcer"],[68,"Schema Shaper"],[69,"Gender Bias Buster"],[70,"Wakefield's Mock Marker"],[71,"Free Will Philosopher"],[72,"Hard Determinist"],[73,"Nature-Nurture Negotiator"],[74,"Holism Hero"],[75,"Wakefield's Tea Maker"],[76,"Idiographic Insider"],[77,"Token Economy Tycoon"],[78,"Dopamine Hypothesis Debunker"],[79,"Family Therapy Facilitator"],[80,"Wakefield's Exam Invigilator"],[81,"CBT Champion"],[82,"Offender Profiler"],[83,"Offender Typologist"],[84,"Eysenck's Extrovert"],[85,"Wakefield's Report Writer"],[86,"Anger Management Mentor"],[87,"Matching Hypothesis Matchmaker"],[88,"Duck's Dissolution Expert"],[89,"Absorption-Addiction Analyst"],[90,"Wakefield's Department Deputy"],[91,"Plasticity Pioneer"],[92,"Neural Pathway Navigator"],[93,"Split-Brain Scholar"],[94,"Localisation Legend"],[95,"Wakefield's Parents' Evening Star"],[96,"Meta-Analysis Mastermind"],[97,"Professor of Psychology"],[98,"Walking Textbook"],[99,"Basically Mr Wakefield"],[100,"Dedicated Wakefield Stan"]];
 const lvlStart = n => 50*(n-1)*n;           // XP needed to reach level n
 function lvlFor(xp){ let n=1; while(xp>=lvlStart(n+1)) n++; return n; }
 function rankFor(n){ let r=RANKS[0][1]; RANKS.forEach(([l,name])=>{ if(n>=l) r=name; }); return r; }
@@ -1631,6 +1654,7 @@ function renderHud(){
 }
 $("#soundBtn").onclick=()=>{ G.sound=!G.sound; save(); renderHud(); if(G.sound) sfx("ok"); };
 $("#hudLvl").onclick=()=>goTab("progress");
+$("#petStrip").onclick=()=>goTab("progress");
 $("#hudGoal").onclick=()=>goTab("progress");
 $("#hudExam").onclick=()=>{ goTab("progress"); setTimeout(()=>{ const b=$("#examBox"); if(b) b.scrollIntoView({behavior:reduced()?"auto":"smooth"}); },50); };
 $("#hudDue").onclick=()=>{ if(dueCount()===0){ store.sel=TOPICS.map(t=>t.key); save(); renderChips(); } goTab("cards"); setFilter("due"); document.querySelector("#p-cards").scrollIntoView({behavior:reduced()?"auto":"smooth"}); };
@@ -2840,26 +2864,94 @@ function planTasks(){
   ];
 }
 
-/* ---- 🐀 revision pet: grows with right answers, gets sleepy when you stop revising ---- */
-const PET_STAGES=[[0,"🐭","Baby rat"],[100,"🐁","Young rat"],[500,"🐀","Lab rat"],[2000,"🐀🎓","Graduate rat"],[5000,"🐀👑","Rat royalty"],[12000,"🐀🧠","Professor Rat"]];
-const PET_FULL=20;
-function petInfo(){
-  const right=G.st.right||0; let si=0; PET_STAGES.forEach((x,i)=>{ if(right>=x[0]) si=i; });
-  const st=PET_STAGES[si], nx=PET_STAGES[si+1], t=today(), fed=G.hist[t]||0;
-  const past=Object.keys(G.hist).filter(k=>k<t && G.hist[k]>0).sort(), last=past[past.length-1], gap=last?dayNum(t)-dayNum(last):null;
-  const name=G.petName||"Pip";
-  const mood = fed>=PET_FULL ? ["😄","is full and happy. Great revising today!"]
-    : fed>0 ? ["🙂",`is nibbling away: ${fed}/${PET_FULL} snacks today.`]
-    : gap===null ? ["👋","has just moved in. Answer some questions to feed them."]
-    : gap<=1 ? ["🥺","is hungry. Answer a few questions to feed them."]
-    : gap<=3 ? ["😴","is getting sleepy. A few questions will perk them up."]
-    : ["💤","is hibernating. Revise to wake them up!"];
-  return {name, face:st[1], stage:st[2], mood, fed, sleepy:fed===0&&gap!==null&&gap>1, next:nx?{n:nx[0]-right, stage:nx[2]}:null};
+/* ---- 🐀 revision pet (the same lab rat as the GCSE site): grows with right answers, dances when you hit your goal, falls asleep when you stop ---- */
+const PET_STAGES=[[0,"Baby rat"],[100,"Young rat"],[500,"Lab rat"],[2000,"Research rat"],[5000,"Wise rat"],[12000,"Professor rat"]];
+function petName(){ return G.petName||"Professor Squeaks"; }
+function petStage(){ const n=G.st.right||0; let s=0; PET_STAGES.forEach(([v],i)=>{ if(n>=v) s=i; }); return s; }
+function petDaysAway(){ const days=Object.keys(G.hist||{}).filter(d=>G.hist[d]>0).sort(); if(!days.length) return -1; return dayNum(today())-dayNum(days[days.length-1]); }
+function petMood(){
+  const away=petDaysAway(), td=(G.hist||{})[today()]||0;
+  if(away<0) return "new";
+  if(away===0) return td>=G.goal ? "ecstatic" : "happy";
+  if(away===1) return "waiting";
+  if(away===2) return "sleepy";
+  return "asleep";
 }
-function petHTML(){
-  const p=petInfo();
-  return `<div class="pet ${p.sleepy?"sleepy":""}"><span class="pet-face" aria-hidden="true">${p.face}</span><div class="pet-txt"><b><button class="linkbtn pet-name" id="petName" title="Rename your rat">${esc(p.name)}</button> the ${esc(p.stage)} ${p.mood[0]}</b><span>${esc(p.name)} ${esc(p.mood[1])}${p.next?` ${p.next.n.toLocaleString()} more right answers to grow into a ${esc(p.next.stage)}.`:" Fully grown!"}</span>
-    <span class="pet-food" aria-hidden="true"><i style="width:${Math.min(100,p.fed/PET_FULL*100)}%"></i></span></div></div>`;
+const PET_MSG = {
+  new:"Meet your new lab rat! Answer questions to help him grow.",
+  ecstatic:"is dancing! 🎉 You smashed your daily goal.",
+  happy:"is happy you're revising today. Hit your goal to make him dance!",
+  waiting:"is waiting for you. Answer a few questions to keep him happy.",
+  sleepy:"is getting sleepy… 😴 He misses you. Revise today to perk him up.",
+  asleep:"has fallen fast asleep 💤 Answer some questions to wake him up!",
+};
+function petSVG(stage, mood, px){
+  const sc=.62+stage*.076, sleepy=mood==="sleepy"||mood==="asleep", happy=mood==="ecstatic"||mood==="happy"||mood==="new";
+  const eye = x => sleepy ? `<path d="M${x-5} 50 q5 ${mood==="asleep"?4:3} 10 0" stroke="#2A2230" stroke-width="2.6" fill="none" stroke-linecap="round"/>`
+                          : `<circle cx="${x}" cy="49" r="4.4" fill="#2A2230"/><circle cx="${x+1.5}" cy="47.4" r="1.4" fill="#fff"/>`;
+  return `<svg class="pet-svg ${mood}" viewBox="0 0 160 120" width="${px}" height="${px*.75}" role="img" aria-label="Your lab rat, ${esc(PET_STAGES[stage][1])}, ${mood}">
+    <g class="pet-body"><g transform="translate(80 118) scale(${sc}) translate(-80 -118)">
+      <path d="M118 96 q32 -4 30 -30 q-2 -14 -12 -12" stroke="#E8A3B4" stroke-width="5" fill="none" stroke-linecap="round" class="pet-tail"/>
+      <ellipse cx="88" cy="88" rx="38" ry="28" fill="#C9CCD6"/>
+      ${stage>=3?`<path d="M62 70 q26 18 52 0 l6 40 h-64z" fill="#FFFFFF" opacity=".95"/><path d="M88 74 v34" stroke="#D6DAE2" stroke-width="2"/>`:""}
+      <ellipse cx="70" cy="112" rx="10" ry="5" fill="#E8A3B4"/><ellipse cx="104" cy="112" rx="10" ry="5" fill="#E8A3B4"/>
+      <circle cx="40" cy="30" r="13" fill="#C9CCD6"/><circle cx="40" cy="30" r="8" fill="#F2B8C6"/>
+      <circle cx="82" cy="28" r="13" fill="#C9CCD6"/><circle cx="82" cy="28" r="8" fill="#F2B8C6"/>
+      <ellipse cx="60" cy="56" rx="30" ry="26" fill="#D7DAE2"/>
+      ${eye(50)}${eye(70)}
+      ${stage>=4?`<g stroke="#2A2230" stroke-width="2.2" fill="none"><circle cx="50" cy="49" r="8"/><circle cx="70" cy="49" r="8"/><path d="M58 49 h4"/></g>`:""}
+      <ellipse cx="44" cy="60" rx="5" ry="3" fill="#F2B8C6" opacity=".8"/><ellipse cx="76" cy="60" rx="5" ry="3" fill="#F2B8C6" opacity=".8"/>
+      <circle cx="60" cy="62" r="4" fill="#E88AA2"/>
+      ${happy?`<path d="M54 67 q6 6 12 0" stroke="#2A2230" stroke-width="2.2" fill="none" stroke-linecap="round"/>`:`<path d="M55 69 h10" stroke="#2A2230" stroke-width="2" stroke-linecap="round"/>`}
+      <g stroke="#9AA0AE" stroke-width="1.4"><path d="M46 63 l-20 -3"/><path d="M46 66 l-20 3"/><path d="M74 63 l20 -3"/><path d="M74 66 l20 3"/></g>
+      ${stage>=5?`<g><path d="M36 22 l24 -10 l24 10 l-24 10z" fill="#1E2233"/><rect x="48" y="22" width="24" height="9" fill="#1E2233"/><path d="M84 22 v12" stroke="#E2B53E" stroke-width="2"/><circle cx="84" cy="35" r="2.5" fill="#E2B53E"/></g>`:""}
+      ${stage===2?`<path d="M52 84 l8 -5 l8 5 l-8 5z" fill="#E11D74"/>`:""}
+    </g></g>
+    ${sleepy?`<g class="pet-z" fill="#7B8BB8" font-family="var(--display)" font-weight="800"><text x="102" y="42" font-size="15">z</text><text x="114" y="31" font-size="19">Z</text>${mood==="asleep"?'<text x="128" y="22" font-size="22">Z</text>':""}</g>`:""}
+    ${mood==="ecstatic"?`<g class="pet-spark" font-size="16"><text x="12" y="24">✨</text><text x="128" y="44">🎉</text></g>`:""}
+  </svg>`;
+}
+function petLine(m){ return m==="new" ? `Meet <b>${esc(petName())}</b>, your new lab rat! Answer questions to help him grow.` : `<b>${esc(petName())}</b> ${esc(PET_MSG[m])}`; }
+const petCheese=()=>Math.min(3,Math.floor(((G.hist||{})[today()]||0)/10));
+function petBoxHTML(){
+  const st=petStage(), mood=petMood(), n=G.st.right||0, next=PET_STAGES[st+1], cheese=petCheese();
+  return `<div class="box pet-box"><div class="pet-art">${petSVG(st,mood,220)}</div>
+    <div class="pet-info"><h3 style="margin:0">🐀 <span>${esc(petName())}</span> <button class="linkbtn" id="petRename" style="font-size:14px">Rename</button></h3>
+      <p class="muted" style="margin:2px 0 8px">${esc(PET_STAGES[st][1])}${next?` · ${(next[0]-n).toLocaleString()} more right answers to become a ${esc(next[1].toLowerCase())}`:" · fully grown legend 🎓"}</p>
+      ${next?`<div class="xpbar" style="margin-bottom:10px"><i style="width:${(n-PET_STAGES[st][0])/(next[0]-PET_STAGES[st][0])*100}%"></i></div>`:""}
+      <p class="pet-msg">${petLine(mood)}</p>
+      <p class="muted" style="margin:6px 0 0;font-size:15px">Cheese today: ${"🧀".repeat(cheese)}${"<span style='opacity:.25'>🧀</span>".repeat(3-cheese)} <span style="font-size:13px">(one for every 10 answers)</span></p></div></div>`;
+}
+const NAME_BLOCK = (()=>{ try{ return JSON.parse(atob("W1siZnVjayIsICJmdWsiLCAiZmNrIiwgInNoaXQiLCAiY3VudCIsICJiaXRjaCIsICJiYXN0YXJkIiwgIndhbmsiLCAidHdhdCIsICJwdXNzeSIsICJzbHV0IiwgIndob3JlIiwgIm5pZ2ciLCAibmlnZ2EiLCAiZmFnZyIsICJmYWdnb3QiLCAicmV0YXJkIiwgInJhcGUiLCAicmFwaXN0IiwgInBvcm4iLCAicGVuaXMiLCAidmFnaW5hIiwgImRpbGRvIiwgImJvbGxvY2siLCAiYmVsbGVuZCIsICJ0b3NzZXIiLCAibm9uY2UiLCAic3Bhc3RpYyIsICJuYXppIiwgImhpdGxlciIsICJqaXp6IiwgImJ1a2tha2UiLCAiY2xpdCIsICJzaGFnIiwgImJ1Z2dlciIsICJtaW5nZSIsICJrbm9iIiwgIm1vdGhlcmYiLCAic2gxdCIsICJwYWVkbyIsICJwZWRvIiwgImluY2VsIiwgImhvcm55IiwgImJvb2IiLCAidGVzdGljbGUiLCAic2Nyb3QiLCAiZGlja2hlYWQiLCAiY29ja3N1Y2siLCAiYXJzZWhvbGUiLCAiYXNzaG9sZSIsICJ3YW5rZXIiLCAibWlsZiIsICJvbmx5ZmFucyIsICJreXMiLCAia2lsbHlvdXJzZWxmIiwgInN1aWNpZGUiLCAiY29vbiIsICJjaGluayIsICJnb29rIiwgImtpa2UiLCAid29nIiwgInRyYW5ueSIsICJkeWtlIiwgImhvbW8iXSwgWyJkaWNrIiwgImNvY2siLCAiYXJzZSIsICJhc3MiLCAidGl0IiwgInRpdHMiLCAidGl0dHkiLCAiY3VtIiwgInNleCIsICJzZXh5IiwgImFuYWwiLCAiYW51cyIsICJwb28iLCAicG9vcCIsICJwZWUiLCAicGlzcyIsICJwcmljayIsICJjcmFwIiwgInNsYWciLCAic2thbmsiLCAiaG9lIiwgImhvIiwgInNwYXoiLCAicGFraSIsICJnYXkiLCAibGVzYm8iLCAiYnV0dCIsICJidW0iLCAiYmFsbHMiLCAibnV0IiwgIm51dHMiLCAiZmFydCIsICJ0dXJkIiwgImRhbW4iLCAiaGVsbCIsICJ3aWxseSIsICJ3ZWUiLCAiYmoiLCAiZGsiLCAic3RmdSIsICJ3dGYiLCAiZnUiLCAiZm1sIiwgImxtZmFvIiwgImhvcmUiLCAidGhvdCIsICJzaW1wIiwgImR1bWIiLCAiaWRpb3QiLCAic3R1cGlkIiwgInVnbHkiLCAiZmF0IiwgImxvc2VyIiwgIm1vcm9uIiwgInN1Y2tzIiwgInNtZWxseSIsICJzdGlua3kiLCAia2lsbCIsICJkaWUiLCAiZGVhZCIsICJtdXJkZXIiLCAiZ3VuIiwgImJvbWIiLCAiZHJ1Z3MiLCAid2VlZCIsICJjcmFjayJdXQ==")); }catch(e){ return [[],[]]; } })();
+function cleanName(raw){
+  // returns a tidy name, or null if it's empty, uses odd characters or contains a rude word
+  const n=String(raw||"").replace(/\s+/g," ").trim().slice(0,20);
+  if(n.length<2 || !/^[A-Za-zÀ-ÿ' .-]+$/.test(n)) return null;
+  const leet=s=>s.toLowerCase().replace(/[0@]/g,m=>m==="0"?"o":"a").replace(/1|!|\|/g,"i").replace(/3/g,"e").replace(/4/g,"a").replace(/5|\$/g,"s").replace(/7/g,"t");
+  const squash=s=>s.replace(/(.)\1+/g,"$1");
+  const flat=squash(leet(n).replace(/[^a-z]/g,""));
+  if(NAME_BLOCK[0].some(w=>flat.includes(squash(w)))) return null;
+  const words=leet(n).split(/[^a-z]+/).filter(Boolean).map(squash);
+  if(words.some(w=>NAME_BLOCK[1].some(b=>squash(b)===w)) || NAME_BLOCK[1].some(b=>squash(b)===flat)) return null;
+  return n;
+}
+function wirePet(){ const b=$("#petRename"); if(b) b.onclick=()=>{
+  let n=prompt("Name your lab rat (letters only, up to 20):", petName());
+  while(n!==null){ const ok=cleanName(n); if(ok){ G.petName=ok; save(); renderTrophies(); petHud(); return; }
+    n=prompt("Let's keep it friendly! Pick a different name (letters only, 2–20 characters):", "Professor Squeaks"); }
+}; }
+function petHud(){ const b=$("#petStrip"); if(!b) return; const m=petMood(), st=petStage(), cheese=petCheese();
+  b.hidden=false; b.className="petstrip "+m;
+  b.innerHTML=`<span class="ps-art">${petSVG(st,m,120)}</span><span class="ps-txt">${petLine(m)}</span><span class="ps-cheese" aria-label="${cheese} of 3 cheese today">${"🧀".repeat(cheese)}${"<i>🧀</i>".repeat(3-cheese)}</span>`;
+  b.setAttribute("aria-label",`${petName()} the lab rat: ${PET_MSG[m]} Open progress`); }
+function petCheck(){
+  if(G.petName && !cleanName(G.petName)) delete G.petName;
+  G.petS=G.petS||{stage:petStage(), mood:""}; const p=G.petS, st=petStage(), m=petMood(), nm=petName();
+  if(st>p.stage){ p.stage=st; save(); setTimeout(()=>{ toast("🐀",`${nm} grew into a ${PET_STAGES[st][1].toLowerCase()}!`,st>=5?"He's wearing a graduation cap. Legendary.":st>=4?"Look, glasses! So wise.":st>=3?"He's got his own lab coat now.":"Keep revising to help him grow."); confetti(100); },600); }
+  if((p.mood==="sleepy"||p.mood==="asleep") && (m==="happy"||m==="ecstatic")) setTimeout(()=>toast("🐀",`${nm} woke up!`,"He's so happy to see you revising again."),400);
+  if(p.mood!=="ecstatic" && m==="ecstatic" && p.mood) setTimeout(()=>toast("🐀",`${nm} is dancing!`,"Daily goal smashed. 🧀🧀🧀"),800);
+  if(p.mood!==m){ p.mood=m; save(); }
+  petHud();
 }
 function renderPlan(){
   const el=$("#plan"); if(!el) return;
@@ -2867,8 +2959,8 @@ function renderPlan(){
   if(n===3 && !pl.done){ pl.done=true; G.st.plans=(G.st.plans||0)+1; save(); setTimeout(()=>{ toast("📋","Today's plan complete! +40 XP","See you tomorrow."); confetti(140); sfx("badge"); addXP(40,false); checkBadges(); },300); }
   el.innerHTML=`<div class="plan-card ${n===3?"complete":""}"><div class="plan-h"><b>📋 Today's plan</b><span>${n===3?"All done. Brilliant work! ✓":`${n} of 3 done · finish all three for +40 XP`}</span></div>
     <div class="plan-tasks">${tasks.map(x=>`<button class="ptask ${x.done?"done":""}" data-plan="${x.id}" ${x.done?"disabled":""}><span>${x.done?"✅":x.icon}</span>${esc(x.label)}</button>`).join("")}
-    <button class="ptask focusbtn" id="focusBtn">${focusS.end?`🧘 Focus: <span id="focusLeft">${fmtTime(focusS.end-Date.now())}</span> · stop`:"🧘 25-minute focus session"}</button></div>${petHTML()}</div>`;
-  const pn=$("#petName"); if(pn) pn.onclick=()=>{ const v=prompt("Name your revision rat:", G.petName||"Pip"); if(v!==null){ const nm=v.trim().slice(0,20); G.petName=nm||"Pip"; save(); renderPlan(); } };
+    <button class="ptask focusbtn" id="focusBtn">${focusS.end?`🧘 Focus: <span id="focusLeft">${fmtTime(focusS.end-Date.now())}</span> · stop`:"🧘 25-minute focus session"}</button></div></div>`;
+  petCheck();
   el.querySelectorAll("[data-plan]").forEach(b=>b.onclick=()=>{
     const k=b.dataset.plan;
     if(k==="due"){ if(dueCount()===0){ store.sel=TOPICS.map(t=>t.key); save(); renderChips(); } goTab("cards"); setFilter("due"); }
@@ -2983,13 +3075,12 @@ function renderProj(){
    c = a criticism specific to this study, m = research method (only where it is clear-cut), x = final giveaway clue ---- */
 const STUDIES = [
   {who:"Asch (1951)", t:"Social Influence", m:"Lab experiment", p:"123 American male students", d:"Participants judged which of three lines matched a standard line, after a group of confederates had all given the same wrong answer.", f:"Participants conformed on 36.8% of the critical trials, and 25% never conformed at all.", c:"It was done in 1950s America, a very conformist era, so it may be a 'child of its time'.", x:"I'm the classic study of conformity to a majority, using lines."},
-  {who:"Zimbardo (1973)", t:"Social Influence", m:"Controlled observation", p:"24 male student volunteers", d:"Students were randomly given the role of guard or prisoner in a mock prison in a university basement.", f:"Guards became increasingly brutal and the study was stopped after 6 days instead of 14.", c:"The lead researcher also played the prison superintendent, so he lost objectivity and was slow to protect participants.", x:"My mock prison was at Stanford University."},
   {who:"Milgram (1963)", t:"Social Influence", p:"40 male volunteers from New Haven", d:"Participants were told to give increasingly strong electric shocks to a 'learner' every time he got an answer wrong.", f:"65% went all the way to 450 volts, and every participant went to at least 300 volts.", c:"Orne and Holland argued participants may have guessed the shocks weren't real.", x:"'Please continue. The experiment requires that you continue.'"},
   {who:"Hofling et al (1966)", t:"Social Influence", m:"Field experiment", p:"22 nurses on hospital wards", d:"An unknown 'doctor' phoned and told nurses to give a patient twice the maximum dose of an unfamiliar drug called Astroten.", f:"21 of the 22 nurses obeyed, and were stopped on their way to give the drug.", c:"Rank and Jacobson found far less obedience when nurses knew the drug and could talk to colleagues.", x:"My study took obedience research out of the lab and into a real hospital."},
   {who:"Moscovici et al (1969)", t:"Social Influence", m:"Lab experiment", p:"Groups of six women, two of whom were confederates", d:"Groups saw 36 blue slides and said aloud what colour they were, while two confederates called them 'green'.", f:"When the minority was consistent, participants said 'green' on 8.42% of trials, but only 1.25% when it was inconsistent.", c:"The participants were all women, so the findings may not generalise to men.", x:"I showed that a consistent minority can change the majority's view."},
   {who:"Adorno et al (1950)", t:"Social Influence", m:"Questionnaire", p:"Over 2,000 middle-class, white Americans", d:"Participants completed the F-scale, which measures potential for fascism, and some were interviewed about their childhoods.", f:"People with an authoritarian personality were more obedient and tended to have strict, harsh parents.", c:"All the F-scale items were worded the same way, so it may measure a tendency to agree rather than authoritarianism.", x:"I created the F-scale."},
   {who:"Peterson and Peterson (1959)", t:"Memory", m:"Lab experiment", p:"24 students", d:"Participants were shown a consonant trigram, then counted backwards in threes to stop them rehearsing it.", f:"Recall fell to under 10% after 18 seconds, suggesting STM lasts about 18 to 30 seconds.", c:"Meaningless trigrams are very artificial, so the study lacks mundane realism.", x:"Counting backwards in threes is my trademark."},
-  {who:"Bahrick et al (1975)", t:"Memory", p:"392 American ex-high-school students", d:"Participants were asked to recognise and name former classmates from their school yearbook photos.", f:"Face recognition was about 90% accurate after 15 years and still about 70% after 48 years.", c:"Some participants may have looked at their yearbooks since leaving school, a confounding variable.", x:"I tested long-term memory using yearbook photos."},
+  {who:"Bahrick et al (1975)", t:"Memory", p:"392 American ex-high-school students", d:"Participants were asked to recognise and name former classmates from their school yearbook photos.", f:"Face recognition was about 90% accurate after 15 years and still about 70% after 48 years.", c:"Some participants may have looked at their yearbooks since leaving school, which could explain their good recall.", x:"I tested long-term memory using yearbook photos."},
   {who:"Jacobs (1887)", t:"Memory", p:"443 female students", d:"Participants repeated back strings of digits or letters, increasing the length until they could no longer recall them in order.", f:"The average span was 9.3 items for digits and 7.3 items for letters.", c:"The study is very old and lacked the controls of modern research, such as for distractions.", x:"I measured the capacity of STM using digit span."},
   {who:"Baddeley (1966)", t:"Memory", m:"Lab experiment", p:"Groups of participants given lists of words", d:"Participants learned lists of words that sounded similar, sounded different, meant similar things or meant different things.", f:"Acoustically similar words were hardest in STM, while semantically similar words were hardest in LTM.", c:"Word lists have little personal meaning, so it may not show how coding works for real-life memories.", x:"I showed that STM is coded acoustically and LTM semantically."},
   {who:"Loftus and Palmer (1974)", t:"Memory", m:"Lab experiment", p:"45 American students", d:"Participants watched film clips of car crashes and estimated the speed, with the verb in the question changed each time.", f:"With 'smashed' the average estimate was 40.5 mph, but with 'contacted' it was 31.8 mph.", c:"Watching a film clip doesn't have the emotional impact of seeing a real crash.", x:"'About how fast were the cars going when they smashed into each other?'"},
@@ -2997,7 +3088,7 @@ const STUDIES = [
   {who:"Yuille and Cutshall (1986)", t:"Memory", p:"13 witnesses to a real armed robbery in Canada", d:"Witnesses were interviewed four to five months after a real shooting in a gun shop, and rated how stressed they had felt.", f:"Witnesses who had felt the most stress were the most accurate, about 88% compared with 75%.", c:"Researchers had no control over what witnesses saw or discussed in the months after the robbery.", x:"I studied a real gun-shop robbery rather than a film."},
   {who:"Godden and Baddeley (1975)", t:"Memory", p:"18 deep-sea divers", d:"Divers learned a list of words either underwater or on land, then recalled it either underwater or on land.", f:"Recall was about 40% lower when the learning and recall environments didn't match.", c:"Land and underwater are far more different than most real-life contexts, such as two classrooms.", x:"My participants were deep-sea divers."},
   {who:"Shallice and Warrington (1970)", t:"Memory", m:"Case study", p:"One patient, KF, after a motorcycle accident", d:"Researchers tested the short-term memory of a patient with brain damage using verbal and visual information.", f:"KF's STM for verbal information was poor, but his STM for visual information was much better.", c:"KF's brain injury may have caused other problems, so it's hard to generalise from one case.", x:"I studied patient KF."},
-  {who:"Schaffer and Emerson (1964)", t:"Attachment", m:"Longitudinal study", p:"60 babies from working-class homes in Glasgow", d:"Babies were visited at home every month for their first year and again at 18 months, and mothers reported on separation and stranger anxiety.", f:"Attachment develops in stages, and babies attach most strongly to whoever is most responsive to them.", c:"Mothers' reports of their babies' anxiety may have been biased or inaccurate.", x:"I gave you the stages of attachment, from asocial to multiple."},
+  {who:"Schaffer and Emerson (1964)", t:"Attachment", m:"Longitudinal study", p:"60 babies from working-class homes in Glasgow", d:"Babies were visited at home every month for their first year and again at 18 months, and mothers reported on separation and stranger anxiety.", f:"Babies attached most strongly to whoever was most responsive to them, not necessarily whoever fed them.", c:"Mothers' reports of their babies' anxiety may have been biased or inaccurate.", x:"My Glasgow babies are used as evidence against learning theory: feeding wasn't what mattered."},
   {who:"Lorenz (1935)", t:"Attachment", p:"A clutch of goose eggs", d:"Half the eggs hatched with their mother and half in an incubator, where the first moving thing the goslings saw was the researcher.", f:"The goslings followed the first moving object they saw, which shows imprinting in a critical period.", c:"Geese are very different from humans, so we can't easily generalise to human attachment.", x:"Goslings followed me around as if I were their mother."},
   {who:"Harlow (1958)", t:"Attachment", m:"Lab experiment", p:"Baby rhesus monkeys", d:"Baby monkeys were raised with two wire 'mothers': one that gave milk and one covered in soft cloth.", f:"The monkeys preferred the cloth mother, especially when frightened, so comfort matters more than food.", c:"The monkeys suffered serious long-term harm, which raises major ethical issues.", x:"My monkeys preferred the cloth mother."},
   {who:"Ainsworth (1970)", t:"Attachment", m:"Controlled observation", p:"Middle-class American infants and their mothers", d:"Infants were observed through eight short episodes in a playroom, including the mother leaving and a stranger arriving.", f:"Most infants were securely attached, with the rest classed as insecure-avoidant or insecure-resistant.", c:"The procedure was designed in America, so it may not be valid in other cultures (an imposed etic).", x:"I created the Strange Situation."},
@@ -3008,10 +3099,8 @@ const STUDIES = [
   {who:"Bandura et al (1961)", t:"Approaches", m:"Lab experiment", p:"72 children aged 3 to 5 from a university nursery", d:"Children watched an adult behave aggressively or non-aggressively towards an inflatable doll, then were left to play.", f:"Children who saw the aggressive model were much more likely to copy the aggression.", c:"The doll is designed to be hit, so children may have done what they thought was expected (demand characteristics).", x:"I'm the Bobo doll study."},
   {who:"Sperry (1968)", t:"Biopsychology", p:"11 people who had their corpus callosum cut to treat epilepsy", d:"Images or words were flashed to one visual field so the information went to only one hemisphere.", f:"Patients couldn't say what was shown to the left visual field, because language is mainly in the left hemisphere.", c:"The patients had severe epilepsy and took medication, which may have affected their brains.", x:"I studied split-brain patients."},
   {who:"Maguire et al (2000)", t:"Biopsychology", m:"Quasi-experiment", p:"16 right-handed male London taxi drivers", d:"MRI scans of taxi drivers' brains were compared with those of men who weren't taxi drivers.", f:"Taxi drivers had a larger posterior hippocampus, and it was bigger the longer they'd been driving.", c:"The drivers weren't randomly allocated, so they may have differed from the controls in other ways.", x:"I scanned the brains of London taxi drivers."},
-  {who:"Siffre (1975)", t:"Biopsychology", m:"Case study", p:"One person: the researcher himself", d:"He spent six months living in a cave in Texas with no daylight, clocks or other time cues.", f:"His sleep-wake cycle 'free-ran' to slightly longer than 24 hours, about 25 hours.", c:"It's a case study of one adult man, so we can't generalise to everyone.", x:"I lived in a cave with no clocks."},
   {who:"Raine et al (1997)", t:"Forensic Psychology", m:"Quasi-experiment", p:"41 murderers pleading not guilty by reason of insanity, and 41 controls", d:"PET scans compared the brain activity of the two groups.", f:"The murderers had less activity in the prefrontal cortex, which is linked to self-control.", c:"These murderers were pleading insanity, so they may not represent most violent offenders.", x:"I used PET scans to compare murderers' brains."},
   {who:"Christiansen (1977)", t:"Forensic Psychology", p:"Over 3,500 twin pairs in Denmark", d:"Researchers compared how often both twins had a criminal record in identical and non-identical pairs.", f:"Concordance for male identical twins was 35%, compared with 13% for male non-identical twins.", c:"Identical twins may be treated more alike, so the shared environment could explain the higher concordance.", x:"I studied criminality in Danish twins."},
-  {who:"Lombroso (1876)", t:"Forensic Psychology", p:"383 dead and 3,839 living convicts", d:"He examined the skulls and faces of convicts, looking for 'primitive' physical features.", f:"About 40% of the criminals had 'atavistic' features, such as a heavy brow or strong jaw.", c:"He had no control group of non-criminals, and his ideas had racist overtones.", x:"I'm the father of modern criminology and the atavistic form."},
   {who:"Walster et al (1966)", t:"Relationships", m:"Field experiment", p:"752 university students", d:"Students were secretly rated for attractiveness, then randomly paired for a 'computer dance'.", f:"Physical attractiveness was the biggest predictor of liking, whatever the person's own attractiveness.", c:"A blind date at a dance is a short first meeting, so it may not reflect long-term relationships.", x:"I set up a 'computer dance'."},
   {who:"Kerckhoff and Davis (1962)", t:"Relationships", p:"Student couples who had been together for under or over 18 months", d:"Couples completed questionnaires about their values and needs, and were followed up seven months later.", f:"Similar values mattered most for short-term couples, while complementary needs mattered more for long-term couples.", c:"Later researchers failed to replicate the findings.", x:"I came up with filter theory."},
   {who:"Gottesman (1991)", t:"Schizophrenia", m:"Meta-analysis", p:"About 40 family and twin studies", d:"He combined the results of many studies to compare the risk of schizophrenia in relatives.", f:"Concordance was about 48% for identical twins and 17% for non-identical twins.", c:"Identical twins share more of their environment too, so genes can't be fully separated from upbringing.", x:"I'm famous for family studies showing that genes play a role in schizophrenia."}
@@ -3041,7 +3130,6 @@ const SORT_SETS = [
   {t:"Social Influence", title:"Normative or informational social influence?", b:["Normative (NSI)","Informational (ISI)"], items:[["Conforming to be liked or accepted",0],["Conforming because you want to be right",1],["More likely when the task is ambiguous or difficult",1],["Usually leads to compliance",0],["Usually leads to internalisation",1],["Fear of rejection by the group",0],["Asch: conformity fell when answers were written privately",0],["Lucas et al: more conformity on harder maths problems",1]]},
   {t:"Social Influence", title:"Situational or dispositional explanation of obedience?", b:["Situational","Dispositional"], items:[["Agentic state",0],["Legitimacy of authority",0],["Authoritarian personality",1],["Proximity of the authority figure",0],["The F-scale",1],["Wearing a uniform",0],["Strict, harsh parenting in childhood",1],["Location, e.g. a prestigious university",0]]},
   {t:"Memory", title:"Short-term or long-term memory?", b:["STM","LTM"], items:[["Lasts about 18 to 30 seconds",0],["Capacity of 7 ± 2 items",0],["Mainly coded acoustically",0],["Mainly coded semantically",1],["Potentially unlimited capacity",1],["Can last a lifetime",1],["Jacobs' digit span study",0],["Bahrick's yearbook photo study",1]]},
-  {t:"Memory", title:"Which type of long-term memory?", b:["Episodic","Semantic","Procedural"], items:[["Your 16th birthday party",0],["Knowing Paris is the capital of France",1],["Riding a bike",2],["Memories that are 'time-stamped'",0],["Knowing what words mean",1],["Recalled without conscious effort",2],["Your first day at sixth form",0],["Touch-typing on a keyboard",2]]},
   {t:"Attachment", title:"Learning theory or Bowlby's monotropic theory?", b:["Learning theory","Bowlby"], items:[["Attachment through classical conditioning with food",0],["'Cupboard love'",0],["Critical period of around 2.5 years",1],["Internal working model",1],["Social releasers such as smiling",1],["Drive reduction",0],["Monotropy",1],["Crying is reinforced by being fed",0]]},
   {t:"Psychopathology", title:"Which kind of characteristic of depression?", b:["Behavioural","Emotional","Cognitive"], items:[["Reduced energy and activity levels",0],["Lowered mood",1],["Poor concentration",2],["Changes to sleep and eating",0],["Anger, sometimes at oneself",1],["Absolutist 'all or nothing' thinking",2],["Low self-esteem",1],["Focusing on the negative",2]]},
   {t:"Psychopathology", title:"Which approach does each treatment come from?", b:["Behavioural","Cognitive","Biological"], items:[["Systematic desensitisation",0],["Flooding",0],["SSRIs",2],["Beck's cognitive therapy",1],["Ellis' REBT",1],["Building a hierarchy of fears",0],["Challenging irrational thoughts",1],["Increasing serotonin levels",2]]},
@@ -3059,13 +3147,13 @@ const SORT_SETS = [
 
 /* ---- 📅 Timeline: tap events into chronological order (listed oldest first here) ---- */
 const TIMELINES = [
-  {t:"Social Influence", title:"Social influence research", items:[["Asch's line study",1951],["Milgram's obedience study",1963],["Moscovici's blue-green slides",1969],["Zimbardo's Stanford Prison Experiment takes place",1971],["Burger's partial replication of Milgram",2009]]},
+  {t:"Social Influence", title:"Social influence research", items:[["Asch's line study",1951],["Milgram's obedience study",1963],["Hofling's hospital obedience study",1966],["Moscovici's blue-green slides",1969],["Burger's partial replication of Milgram",2009]]},
   {t:"Memory", title:"Memory research", items:[["Jacobs' digit span study",1887],["Miller's 'magic number 7 ± 2'",1956],["Peterson and Peterson's trigram study",1959],["Atkinson and Shiffrin's multi-store model",1968],["Baddeley and Hitch's working memory model",1974]]},
   {t:"Attachment", title:"Attachment research", items:[["Lorenz's goslings",1935],["Bowlby's 44 thieves",1944],["Harlow's monkeys",1958],["Schaffer and Emerson's Glasgow babies",1964],["Van IJzendoorn and Kroonenberg's meta-analysis",1988]]},
-  {t:"Approaches", title:"The history of psychology", items:[["Wundt opens the first psychology lab",1879],["Freud publishes The Interpretation of Dreams",1900],["Watson launches behaviourism",1913],["Maslow's hierarchy of needs",1943],["Bandura's Bobo doll study",1961]]},
+  {t:"Approaches", title:"The history of psychology", items:[["Freud publishes The Interpretation of Dreams",1900],["Watson launches behaviourism",1913],["Maslow's hierarchy of needs",1943],["Bandura's Bobo doll study",1961]]},
   {t:"Biopsychology", title:"Discovering the brain", items:[["Phineas Gage's accident",1848],["Broca identifies a speech area",1861],["Wernicke identifies a language comprehension area",1874],["Sperry's split-brain research",1968],["Maguire's London taxi drivers",2000]]},
   {t:"Psychopathology", title:"Treatments and explanations", items:[["Ellis develops rational therapy",1955],["Wolpe develops systematic desensitisation",1958],["Beck's cognitive triad",1967],["Prozac (an SSRI) is approved in the USA",1987]]},
-  {t:"Forensic Psychology", title:"Explaining offending", items:[["Lombroso's atavistic form",1876],["Eysenck's Crime and Personality",1964],["Christiansen's Danish twin study",1977],["Raine's PET scans of murderers",1997]]},
+  {t:"Forensic Psychology", title:"Explaining offending", items:[["Kohlberg's stages of moral reasoning",1958],["Eysenck's Crime and Personality",1964],["Christiansen's Danish twin study",1977],["Raine's PET scans of murderers",1997]]},
   {t:"Relationships", title:"Relationships research", items:[["Thibaut and Kelley's social exchange theory",1959],["Kerckhoff and Davis' filter theory",1962],["Walster's computer dance",1966],["Rusbult's investment model",1980]]}
 ];
 
@@ -3391,6 +3479,7 @@ function renderTrophies(){
       <div><h2>${esc(rankFor(n))}</h2><p>Level ${n} · ${G.xp.toLocaleString()} XP total · ${e-G.xp} XP to level ${n+1}</p>
       <p>${(()=>{const nx=RANKS.find(r=>r[0]>n); return nx?`Next rank: <b>${esc(nx[1])}</b> at level ${nx[0]}`:"You've reached the top rank. Legend."})()}</p></div></div>
     </section>
+<section data-sec="progress" class="ts-pet">${petBoxHTML()}</section>
 <section data-sec="progress" class="ts-tiles">
     <div class="tiles">
       <div class="tile"><b>🔥 ${G.last===t||(G.last&&dayNum(t)-dayNum(G.last)===1)?G.streak:0}</b><span>Day streak (best ${G.best})</span></div>
@@ -3426,8 +3515,10 @@ function renderTrophies(){
       return `<div class="box" id="weakBox"><h3>Weak spots <small>How often you get each topic right</small></h3>${ts.length?ts.map(x=>bar(x.name,x.acc,x.n,x.c)).join("")+(ys.length?`<h4 class="wh">By type of question</h4>`+ys.map(([k,v])=>bar(k,v[0]/v[1],v[1],"var(--ink)")).join(""):"")+(weakest(1).length?`<div class="btnrow" style="margin-top:12px"><button class="btn" id="weakGo">🎯 Fix my weak spots</button></div>`:`<p class="muted" style="margin:10px 0 0;font-size:14px">Answer at least ${WEAK_MIN} questions in a topic to unlock Fix my weak spots.</p>`):`<p class="muted" style="margin:0">Answer some flashcards, quizzes or Arcade questions and your strongest and weakest topics will appear here.</p>`}</div>`; })()}
     </section>
 <section data-sec="themes" class="ts-themes">
-    <div class="box"><h3>Themes <small>A new one every 4 levels, plus bonus themes hidden in the secret scrolls</small></h3><div class="skins">${SKINS.filter(k=>!k.hidden||(k.unlock?k.unlock():allScrolls())).map(k=>{ const ok=k.hidden?true:(n>=k.lvl||store.theme===k.id), on=(store.theme||"auto")===k.id;
-      return `<button class="skin ${on?"on":""}" data-skin="${k.id}" ${ok?"":"disabled"} aria-pressed="${on}"><span class="sw" style="background:linear-gradient(135deg,${k.sw[0]} 50%,${k.sw[1]} 50%)"></span><b>${esc(k.name)}</b><span>${ok?esc(k.desc):"🔒 Level "+k.lvl}</span></button>`; }).join("")}</div></div>
+    <div class="box"><h3>Themes <small>A new one every 4 levels, plus bonus themes hidden in the secret scrolls</small></h3>${(()=>{ const vis=SKINS.filter(k=>!k.hidden||(k.unlock?k.unlock():allScrolls())), isOk=k=>k.hidden?true:(n>=k.lvl||store.theme===k.id);
+      const card=k=>{ const ok=isOk(k), on=(store.theme||"auto")===k.id; return `<button class="skin ${on?"on":""}" data-skin="${k.id}" ${ok?"":"disabled"} aria-pressed="${on}"><span class="sw" style="background:linear-gradient(135deg,${k.sw[0]} 50%,${k.sw[1]} 50%)"></span><b>${esc(k.name)}</b><span>${ok?esc(k.desc):"🔒 Level "+k.lvl}</span></button>`; };
+      const okL=vis.filter(isOk), lockL=vis.filter(k=>!isOk(k)).sort((a,b)=>a.lvl-b.lvl);
+      return `<h4 class="skin-h">Unlocked <small>${okL.length}</small></h4><div class="skins">${okL.map(card).join("")}</div>${lockL.length?`<h4 class="skin-h">Still to unlock <small>${lockL.length}</small></h4><div class="skins">${lockL.map(card).join("")}</div>`:""}`; })()}</div>
     </section>
 <section data-sec="badges" class="ts-certs">
     <div class="box" id="certBox"><h3>🏅 Certificates <small>Print them or save as a PDF</small></h3><div class="scrolls">${CERTS.map(c=>c.ok()?`<button class="scr got" data-cert="${c.id}"><span>🏅</span><b>${esc(c.title)}</b><small>${esc(c.sub())}</small></button>`:`<div class="scr"><span>🔒</span><b>${esc(c.title)}</b><small>${c.id==="bosses"?"Beat every topic boss":"Reach "+esc(c.title.toLowerCase())}</small></div>`).join("")}</div></div>
@@ -3471,6 +3562,7 @@ function renderTrophies(){
       return `<div class="badge ${has?"got":"locked"}"><div class="bi">${ic}</div><b>${esc(name)}</b><span>${esc(desc)}</span></div>`; }).join("")}</div></div>
     </section>
 `;
+  wirePet();
   document.querySelectorAll(".skin[data-skin]").forEach(b=>b.onclick=()=>{ store.theme=b.dataset.skin; if(!G.themesTried.includes(store.theme)) G.themesTried.push(store.theme); applySkin(store.theme); save(); checkBadges(); renderTrophies(); });
   wireBackup();
   ta.querySelectorAll("[data-bf]").forEach(b=>b.onclick=()=>{ badgeFilter=b.dataset.bf; renderTrophies(); });
