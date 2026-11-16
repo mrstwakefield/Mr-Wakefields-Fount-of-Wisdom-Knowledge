@@ -346,6 +346,8 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .boss-say span{font-style:normal;font-size:20px}
 .whatsnew{text-align:left;max-width:520px}.whatsnew h3{text-align:center}.whatsnew .kick{text-align:center}
 .whatsnew ul{margin:10px 0 16px;padding-left:1.1em;display:grid;gap:8px;font-size:15px;line-height:1.45}.whatsnew .btn{display:block;margin:0 auto}
+.demobar{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:96;background:#18203A;color:#fff;padding:8px 14px;border-radius:999px;font-size:14px;box-shadow:0 6px 20px rgba(0,0,0,.3);max-width:calc(100vw - 24px);text-align:center}
+.demobar a{color:#FFD54A;margin-left:6px}
 .boss-quote{font-style:italic;font-weight:700;font-size:18px;margin:0 0 6px}
 .hardtog{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px}.hardtog span{color:var(--muted);font-size:14px}
 .bossc.hard:not(:disabled){box-shadow:0 0 0 2px #F97316 inset}
@@ -960,7 +962,10 @@ const TMAP = Object.fromEntries(TOPICS.map(t=>[t.key,t]));
 const BY_ID = Object.fromEntries(DATA.map(d=>[d.id,d]));
 
 /* ---------- storage ---------- */
-const KEY = "rr-psych-v1";
+/* demo mode (add ?demo to the address): everything unlocked, kept separate from real progress and reset on every visit */
+const DEMO=/[?&]demo\b/i.test(location.search);
+const KEY = DEMO ? "rr-psych-demo" : "rr-psych-v1";
+if(DEMO) try{ localStorage.removeItem(KEY); }catch(e){}
 let store = {p:{}, sel:TOPICS.map(t=>t.key), all:TOPICS.map(t=>t.key)};
 try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s && s.p){ store.p = s.p; if(Array.isArray(s.sel)){ const seen=new Set(Array.isArray(s.all)?s.all:s.sel.concat(["Social Influence","Memory","Attachment","Psychopathology","Approaches","Biopsychology","RM","Issues and Debates part I"])); store.sel = [...new Set(s.sel.map(k=>k.startsWith("Issues and Debates")?"Issues and Debates part I":k))].filter(k=>TMAP[k]).concat(TOPICS.map(t=>t.key).filter(k=>!seen.has(k))); } } }catch(e){}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} }
@@ -2937,7 +2942,7 @@ function renderDesign(area,seg){
 
 /* ---- 📨 progress report codes for the teacher (nothing is uploaded) ---- */
 function chk4(str){ let h=7; for(const ch of str) h=(h*31+ch.charCodeAt(0))%1679616; return h.toString(36).padStart(4,"0"); }
-async function makeReport(){
+async function makeReport(){ if(DEMO) return "Demo mode: no real progress report can be made here.";
   const t=today(), live=G.last===t||(G.last&&dayNum(t)-dayNum(G.last)===1)?G.streak:0, ts=topicStats();
   const active=Object.keys(G.hist).filter(k=>G.hist[k]>0 && dayNum(t)-dayNum(k)<14).length;
   const arr=[1,(store.reportName||"").trim().slice(0,30),dayNum(t),G.xp,live,G.best,knownTotal(),G.st.cards,G.st.cards?Math.round(G.st.right/G.st.cards*100):0,G.st.exam,G.st.stats,Object.keys(G.st.bosses||{}).length,active,G.st.essays||0,TOPICS.length,ts.map(x=>[Math.round(x.known*100),x.n?Math.round(x.acc*100):-1,Math.min(x.n,9999),mastery(x.key).s])];
@@ -3736,7 +3741,7 @@ function renderParent(){
 /* ---- save codes ---- */
 function b64u(bytes){ let s=""; for(let i=0;i<bytes.length;i+=0x8000) s+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000)); return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
 function unb64u(str){ str=str.replace(/-/g,"+").replace(/_/g,"/"); while(str.length%4) str+="="; const bin=atob(str), out=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i); return out; }
-async function makeSaveCode(){
+async function makeSaveCode(){ if(DEMO) return "Demo mode: no save code can be made here.";
   G.lastBackup=today();
   const json=JSON.stringify({v:1, p:store.p, sel:store.sel, sr:store.sr, g:G, theme:store.theme||"auto", gapMode:!!store.gapMode, a11y:store.a11y, cardStyle:store.cardStyle||"mc"});
   let bytes=new TextEncoder().encode(json), pre="F1R";
@@ -3922,6 +3927,17 @@ document.addEventListener("keydown",e=>{
   if(t.slice(5)==="04-01") setTimeout(()=>showScroll(9),2200);
   if(lvlFor(G.xp)>=99 && !G.scrolls[10]) setTimeout(()=>showScroll(10),2600);
 })();
+if(DEMO){ const t=today();
+  G.xp=lvlStart(100)+5000; G.streak=30; G.best=45; G.last=t; G.hist[t]=60; for(let i=1;i<45;i++) G.hist[addDays(-i)]=20+i%25;
+  DATA.forEach(d=>{ store.p[d.id]="k"; G.ever[d.id]=1; });
+  SECRET_SCROLLS.forEach(x=>{ G.scrolls[x.id]=t; G.chal[x.id]=t; });
+  G.st.bossesHard=G.st.bossesHard||{}; G.rec=G.rec||{};
+  TOPICS.forEach(tp=>{ G.st.bosses[tp.key]=t; G.st.bossesHard[tp.key]=t; G.rec[tp.key]="1".repeat(30); G.acc.t[tp.key]=[90,100]; });
+  G.st.right=15000; G.st.cards=16000; G.petName="Professor Squeaks"; G.petS={stage:5, mood:"ecstatic"};
+  BADGES.forEach(b=>{ G.badges[b[0]]=t; });
+  store.seenNew="2026-11"; G.lastBackup=t; save();
+  const bar=document.createElement("div"); bar.className="demobar"; bar.innerHTML=`🎓 <b>Demo mode</b>: everything is unlocked. Nothing here affects anyone's real progress. <a href="${location.pathname}">Leave demo</a>`; document.body.appendChild(bar);
+}
 checkStreak(); checkBadges(); save();
 /* ✨ what's new: shown once to returning students after a big update (bump WHATS_NEW_ID for the next one) */
 const WHATS_NEW_ID="2026-11";
