@@ -963,7 +963,13 @@ const BY_ID = Object.fromEntries(DATA.map(d=>[d.id,d]));
 
 /* ---------- storage ---------- */
 /* demo mode (add ?demo to the address): everything unlocked, kept separate from real progress and reset on every visit */
-const DEMO=/[?&]demo\b/i.test(location.search);
+const DEMO=(()=>{ if(!/[?&]demo\b/i.test(location.search)) return false;
+  try{ if(sessionStorage.getItem("fountDemoOk")==="1") return true; }catch(e){}
+  const h=x=>{ let a=5381; for(const c of String(x).trim().toLowerCase()) a=((a*33)^c.charCodeAt(0))>>>0; return a.toString(36); };
+  const v=prompt("Demo mode passcode:");
+  if(v!==null && h(v)==="1h6hp6u"){ try{ sessionStorage.setItem("fountDemoOk","1"); }catch(e){} return true; }
+  if(v!==null) alert("That passcode isn't right, so the normal site will open.");
+  return false; })();
 const KEY = DEMO ? "rr-psych-demo" : "rr-psych-v1";
 if(DEMO) try{ localStorage.removeItem(KEY); }catch(e){}
 let store = {p:{}, sel:TOPICS.map(t=>t.key), all:TOPICS.map(t=>t.key)};
