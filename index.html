@@ -348,6 +348,11 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .whatsnew ul{margin:10px 0 16px;padding-left:1.1em;display:grid;gap:8px;font-size:15px;line-height:1.45}.whatsnew .btn{display:block;margin:0 auto}
 .demobar{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:96;background:#18203A;color:#fff;padding:8px 14px;border-radius:999px;font-size:14px;box-shadow:0 6px 20px rgba(0,0,0,.3);max-width:calc(100vw - 24px);text-align:center}
 .demobar a{color:#FFD54A;margin-left:6px}
+.lb{list-style:none;margin:10px 0;padding:0;display:grid;gap:6px}
+.lb li{display:grid;grid-template-columns:2.4em 1fr auto auto;gap:10px;align-items:center;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.lb li.me{border-color:var(--good);background:var(--good-bg);font-weight:700}
+.lb .lbr{text-align:center;font-weight:800}.lb .lbl{color:var(--muted);font-size:13px}.lb .lbx{font-weight:800;font-variant-numeric:tabular-nums}
+.lbme{font-size:17px;margin:4px 0 8px}
 .boss-quote{font-style:italic;font-weight:700;font-size:18px;margin:0 0 6px}
 .hardtog{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px}.hardtog span{color:var(--muted);font-size:14px}
 .bossc.hard:not(:disabled){box-shadow:0 0 0 2px #F97316 inset}
@@ -416,7 +421,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 /* trophies pages */
 #trophyArea{display:flex;flex-direction:column}
 #trophyArea > section{display:none}
-#trophyArea[data-sec="progress"] > section[data-sec="progress"],#trophyArea[data-sec="weak"] > section[data-sec="weak"],#trophyArea[data-sec="badges"] > section[data-sec="badges"],#trophyArea[data-sec="scrolls"] > section[data-sec="scrolls"],#trophyArea[data-sec="themes"] > section[data-sec="themes"],#trophyArea[data-sec="saves"] > section[data-sec="saves"]{display:block}
+#trophyArea[data-sec="progress"] > section[data-sec="progress"],#trophyArea[data-sec="weak"] > section[data-sec="weak"],#trophyArea[data-sec="badges"] > section[data-sec="badges"],#trophyArea[data-sec="scrolls"] > section[data-sec="scrolls"],#trophyArea[data-sec="themes"] > section[data-sec="themes"],#trophyArea[data-sec="saves"] > section[data-sec="saves"],#trophyArea[data-sec="leaderboard"] > section[data-sec="leaderboard"]{display:block}
 .ts-profile{order:1}.ts-pet{order:1}.ts-tiles{order:2}.ts-exam{order:3}.ts-mastery{order:3}.ts-weak{order:4}.ts-heat{order:5}.ts-goal{order:6}
 .ts-badges{order:1}.ts-scrolls{order:2}.ts-certs{order:3}
 .ts-backup{order:1}.ts-report{order:2}.ts-a11y{order:3}
@@ -875,6 +880,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
     <button role="tab" aria-selected="false" data-tab="badges" id="tab-badges" aria-controls="p-trophies">🏆 Badges</button>
     <button role="tab" aria-selected="false" data-tab="scrolls" id="tab-scrolls" aria-controls="p-trophies">📜 Secret scrolls</button>
     <button role="tab" aria-selected="false" data-tab="themes" id="tab-themes" aria-controls="p-trophies">🎨 Themes</button>
+    <button role="tab" aria-selected="false" data-tab="leaderboard" id="tab-leaderboard" aria-controls="p-trophies" hidden>🏆 Leaderboard</button>
     <button role="tab" aria-selected="false" data-tab="saves" id="tab-saves" aria-controls="p-trophies">💾 Saves</button>
   </div>
 
@@ -975,7 +981,7 @@ if(DEMO) try{ localStorage.removeItem(KEY); }catch(e){}
 let store = {p:{}, sel:TOPICS.map(t=>t.key), all:TOPICS.map(t=>t.key)};
 try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s && s.p){ store.p = s.p; if(Array.isArray(s.sel)){ const seen=new Set(Array.isArray(s.all)?s.all:s.sel.concat(["Social Influence","Memory","Attachment","Psychopathology","Approaches","Biopsychology","RM","Issues and Debates part I"])); store.sel = [...new Set(s.sel.map(k=>k.startsWith("Issues and Debates")?"Issues and Debates part I":k))].filter(k=>TMAP[k]).concat(TOPICS.map(t=>t.key).filter(k=>!seen.has(k))); } } }catch(e){}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} }
-try{ const s0=JSON.parse(localStorage.getItem(KEY)||"null"); if(s0) ["sr","theme","gapMode","srMig","a11y","reportName","trophyTab","cardStyle","seenNew"].forEach(k=>{ if(s0[k]!==undefined) store[k]=s0[k]; }); }catch(e){}
+try{ const s0=JSON.parse(localStorage.getItem(KEY)||"null"); if(s0) ["sr","theme","gapMode","srMig","a11y","reportName","trophyTab","cardStyle","seenNew","lbOn"].forEach(k=>{ if(s0[k]!==undefined) store[k]=s0[k]; }); }catch(e){}
 const status = id => store.p[id] || "";
 
 /* ---------- spaced repetition: Got it → back in 1, 3, 7, 21, then 60 days ---------- */
@@ -1134,7 +1140,7 @@ function topicsChanged(){ renderDue(); newDeck(); if(quiz.phase!=="run") renderQ
 
 /* ---------- tabs ---------- */
 let tab="cards";
-const TROPHY_TABS=["progress","weak","badges","scrolls","themes","saves"];
+const TROPHY_TABS=["progress","weak","badges","scrolls","themes","leaderboard","saves"];
 const inTrophies=()=>TROPHY_TABS.includes(tab);
 function goTab(name){
   if(name==="trophies") name=TROPHY_TABS.includes(trophyTab)?trophyTab:"progress";
@@ -1595,6 +1601,7 @@ function addXP(n, el, label){
   renderHud();
   if(after>before) setTimeout(()=>levelUp(after), 450);
   if(after>=99 && !G.scrolls[10]) setTimeout(()=>showScroll(10), 2600);
+  if(typeof lb!=="undefined" && lb.user) lbPush();
 }
 function secretOnAnswer(t){
   const now=new Date(), md=t.slice(5), h=now.getHours(), dow=now.getDay(), sc=G.sec;
@@ -3866,6 +3873,7 @@ function renderTrophies(){
 <section data-sec="badges" class="ts-certs">
     <div class="box" id="certBox"><h3>🏅 Certificates <small>Print them or save as a PDF</small></h3><div class="scrolls">${CERTS.map(c=>c.ok()?`<button class="scr got" data-cert="${c.id}"><span>🏅</span><b>${esc(c.title)}</b><small>${esc(c.sub())}</small></button>`:`<div class="scr"><span>🔒</span><b>${esc(c.title)}</b><small>${c.id==="bosses"?"Beat every topic boss":"Reach "+esc(c.title.toLowerCase())}</small></div>`).join("")}</div></div>
     </section>
+<section data-sec="leaderboard" class="ts-lb"><div class="box" id="lbBox">${lbHTML()}</div></section>
 <section data-sec="saves" class="ts-a11y">
     <div class="box" id="a11yBox"><h3>Reading and accessibility</h3>
       <div class="bar-row" style="margin:0"><div class="seg" role="group" aria-label="Font">${[["std","Standard font"],["lexend","Easy-read font (Lexend)"]].map(([v,l])=>`<button aria-pressed="${store.a11y.font===v}" data-font="${v}">${l}</button>`).join("")}</div>
@@ -3905,7 +3913,7 @@ function renderTrophies(){
       return `<div class="badge ${has?"got":"locked"}"><div class="bi">${ic}</div><b>${esc(name)}</b><span>${esc(desc)}</span></div>`; }).join("")}</div></div>
     </section>
 `;
-  wirePet();
+  wirePet(); lbWire();
   document.querySelectorAll(".skin[data-skin]").forEach(b=>b.onclick=()=>{ store.theme=b.dataset.skin; if(!G.themesTried.includes(store.theme)) G.themesTried.push(store.theme); applySkin(store.theme); save(); checkBadges(); renderTrophies(); });
   wireBackup();
   ta.querySelectorAll("[data-bf]").forEach(b=>b.onclick=()=>{ badgeFilter=b.dataset.bf; renderTrophies(); });
@@ -3944,6 +3952,71 @@ if(DEMO){ const t=today();
   store.seenNew="2026-11"; G.lastBackup=t; save();
   const bar=document.createElement("div"); bar.className="demobar"; bar.innerHTML=`🎓 <b>Demo mode</b>: everything is unlocked. Nothing here affects anyone's real progress. <a href="${location.pathname}">Leave demo</a>`; document.body.appendChild(bar);
 }
+
+/* ===== 🏆 CLASS LEADERBOARD (Firebase + school Microsoft sign-in) =====
+   To switch it on, paste the settings from Firebase into LB_CONFIG and your school's email domain into LB_SCHOOL_DOMAIN.
+   Only the student's first name + surname initial, XP and level are stored. Progress still lives on the device as normal. */
+const LB_CONFIG = null;          // e.g. {apiKey:"…", authDomain:"…firebaseapp.com", projectId:"…", appId:"…"}
+const LB_SCHOOL_DOMAIN = "";     // e.g. "myschool.org.uk": only email addresses ending in this can join
+const LB_TENANT = "";            // the school's Microsoft directory (tenant) ID, from the Azure app's Overview page
+const lb={ready:false, loading:false, user:null, rows:null, err:"", lastPush:0, pushT:null, unsub:null, p:null};
+const lbAllowed=u=>!!(u && u.email) && (!LB_SCHOOL_DOMAIN || u.email.toLowerCase().endsWith("@"+LB_SCHOOL_DOMAIN.toLowerCase()));
+function lbName(u){
+  let n=String((u && (u.displayName || (u.email||"").split("@")[0])) || "Student").trim();
+  if(n.includes(",")){ const [last,first]=n.split(",").map(x=>x.trim()); n=(first||"")+" "+(last||""); }
+  const parts=n.split(/[\s._]+/).filter(Boolean), first=(parts[0]||"Student").replace(/[^A-Za-zÀ-ÿ'-]/g,"")||"Student";
+  const init=parts.length>1 ? parts[parts.length-1].charAt(0).toUpperCase() : "";
+  return (first.charAt(0).toUpperCase()+first.slice(1).toLowerCase()+(init?" "+init:"")).slice(0,30);
+}
+function lbLoadSdk(){
+  if(lb.p) return lb.p;
+  lb.loading=true;
+  const v="10.12.2", add=f=>new Promise((res,rej)=>{ const sc=document.createElement("script"); sc.src="https://www.gstatic.com/firebasejs/"+v+"/"+f; sc.onload=res; sc.onerror=rej; document.head.appendChild(sc); });
+  lb.p=add("firebase-app-compat.js").then(()=>Promise.all([add("firebase-auth-compat.js"),add("firebase-firestore-compat.js")])).then(()=>{
+    firebase.initializeApp(LB_CONFIG); lb.auth=firebase.auth(); lb.db=firebase.firestore(); lb.ready=true; lb.loading=false;
+    lb.auth.onAuthStateChanged(u=>{
+      if(u && !lbAllowed(u)){ lb.err="Please sign in with your school email address."; lb.auth.signOut(); return; }
+      lb.user=u||null; store.lbOn=!!u; save();
+      if(lb.user){ lbPush(true); lbListen(); } else lbStop();
+      if(tab==="leaderboard") renderTrophies();
+    });
+  }).catch(()=>{ lb.err="The leaderboard couldn't load. Check your internet connection."; lb.loading=false; lb.p=null; if(tab==="leaderboard") renderTrophies(); });
+  return lb.p;
+}
+function lbPush(now){
+  if(!lb.user || DEMO) return;
+  clearTimeout(lb.pushT);
+  const go=()=>{ lb.lastPush=Date.now(); lb.db.collection("players").doc(lb.user.uid).set({name:lbName(lb.user), xp:Math.floor(G.xp), level:lvlFor(G.xp), at:firebase.firestore.FieldValue.serverTimestamp()}).catch(()=>{}); };
+  if(now || Date.now()-lb.lastPush>60000) go(); else lb.pushT=setTimeout(go, 60000-(Date.now()-lb.lastPush));
+}
+function lbListen(){
+  if(lb.unsub) return;
+  lb.unsub=lb.db.collection("players").orderBy("xp","desc").limit(300).onSnapshot(snap=>{ lb.rows=snap.docs.map(d=>Object.assign({id:d.id},d.data())); if(tab==="leaderboard") renderTrophies(); },
+    ()=>{ lb.err="You don't have access to the leaderboard."; if(tab==="leaderboard") renderTrophies(); });
+}
+function lbStop(){ if(lb.unsub){ lb.unsub(); lb.unsub=null; } lb.rows=null; }
+function lbHTML(){
+  const h=`<h3>🏆 Class leaderboard${lb.rows?` <small>${lb.rows.length} student${lb.rows.length===1?"":"s"}</small>`:""}</h3>`;
+  if(!LB_CONFIG) return h+`<p class="muted">The class leaderboard is coming soon.</p>`;
+  if(DEMO) return h+`<p class="muted">The leaderboard is turned off in demo mode.</p>`;
+  if(!lb.ready) return h+`<p class="muted">${lb.err?esc(lb.err):"Loading the leaderboard…"}</p>`;
+  if(!lb.user) return h+`<p>Sign in with your school Microsoft account to join the leaderboard and see how you compare with the class.</p>
+    ${lb.err?`<p class="savemsg no">${esc(lb.err)}</p>`:""}<button class="btn" id="lbIn">Sign in with Microsoft</button>
+    <p class="muted" style="font-size:13px;margin-top:10px">Only your first name, the first letter of your surname, your XP and your level are shown. Your progress still saves on this device as normal.</p>`;
+  const me=lb.user.uid, rows=lb.rows||[], myRank=rows.findIndex(r=>r.id===me)+1;
+  return h+`${myRank?`<p class="lbme">You're <b>${myRank}${["th","st","nd","rd"][(myRank%100>10&&myRank%100<14)?0:(myRank%10<4?myRank%10:0)]}</b> out of ${rows.length}.</p>`:`<p class="muted">Loading the rankings…</p>`}
+    <ol class="lb">${rows.map((r,i)=>`<li class="${r.id===me?"me":""}"><span class="lbr">${i<3?["🥇","🥈","🥉"][i]:i+1}</span><b>${esc(r.name||"Student")}</b><span class="lbl">Lvl ${r.level||1}</span><span class="lbx">${Number(r.xp||0).toLocaleString()} XP</span></li>`).join("")}</ol>
+    <p class="muted" style="font-size:13px">Signed in as ${esc(lbName(lb.user))}. Your XP updates automatically. <button class="linkbtn" id="lbOut">Sign out</button></p>`;
+}
+function lbWire(){
+  if(!LB_CONFIG || DEMO) return;
+  if(tab==="leaderboard" && !lb.ready && !lb.loading) lbLoadSdk();
+  const i=$("#lbIn"); if(i) i.onclick=()=>{ lb.err="";
+    const pr=new firebase.auth.OAuthProvider("microsoft.com"); pr.setCustomParameters(Object.assign({prompt:"select_account"}, LB_SCHOOL_DOMAIN?{domain_hint:LB_SCHOOL_DOMAIN}:{}, LB_TENANT?{tenant:LB_TENANT}:{}));
+    lb.auth.signInWithPopup(pr).catch(e=>{ lb.err=(e && e.code==="auth/popup-closed-by-user")?"":"Sign-in didn't work. Tell Mr Wakefield if this keeps happening."; renderTrophies(); }); };
+  const o=$("#lbOut"); if(o) o.onclick=()=>lb.auth.signOut();
+}
+if(LB_CONFIG && !DEMO){ const tb=document.getElementById("tab-leaderboard"); if(tb) tb.hidden=false; if(store.lbOn) setTimeout(lbLoadSdk,1500); }
 checkStreak(); checkBadges(); save();
 /* ✨ what's new: shown once to returning students after a big update (bump WHATS_NEW_ID for the next one) */
 const WHATS_NEW_ID="2026-11";
