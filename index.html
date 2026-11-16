@@ -983,6 +983,7 @@ const BY_ID = Object.fromEntries(DATA.map(d=>[d.id,d]));
 /* ---------- storage ---------- */
 /* demo mode (add ?demo to the address): everything unlocked, kept separate from real progress and reset on every visit */
 let DEMO_ASK=false;
+const DEMO_HASH="1h6hp6u";
 const demoHash=x=>{ let a=5381; for(const c of String(x).trim().toLowerCase()) a=((a*33)^c.charCodeAt(0))>>>0; return a.toString(36); };
 const DEMO=(()=>{ if(!/[?&]demo\b/i.test(location.search)) return false;
   try{ if(sessionStorage.getItem("fountDemoOk")==="1") return true; }catch(e){}
@@ -1128,7 +1129,8 @@ const Y12_OPEN={"Memory":"","Social Influence":"","RM":"","Attachment":"2026-12-
   "Forensic Psychology":"y13","Schizophrenia":"y13","Issues and Debates part I":"y13","Relationships":"y13"};
 const Y13_OPEN={"Forensic Psychology":"2026-11-13","Relationships":"2026-11-20","Schizophrenia":"2027-01-08","Issues and Debates part I":"2027-03-19"};
 const isY12=()=>store.year==="12" && !DEMO;
-const yearMap=()=>DEMO?{}:store.year==="12"?Y12_OPEN:store.year==="13"?Y13_OPEN:{};
+const isTeacher=()=>store.year==="teacher" && !DEMO;
+const yearMap=()=>DEMO||isTeacher()?{}:store.year==="12"?Y12_OPEN:store.year==="13"?Y13_OPEN:{};
 const topicOpen=k=>{ const d=yearMap()[k]; return !d || (d!=="y13" && today()>=d); };
 const openDate=k=>{ const d=yearMap()[k]||""; if(d==="y13") return "Year 13"; return new Date(d+"T12:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short"}); };
 /* exam-technique questions that mention a topic follow the same unlocks */
@@ -2372,7 +2374,7 @@ function renderArcade(){
         return `<button class="mode ${m.featured?"featured":""} ${k===gotd()?"gotd":""}" style="--c:${m.c}" data-mode="${k}" ${dis?"disabled":""}>${tag}<span class="mi">${m.icon}</span><h3>${m.name}${m.featured?' <small>Featured</small>':""}</h3><p>${m.desc}</p><span class="best">${bestLabel(k)}</span></button>`; };
         const used=new Set(ARC_GROUPS.flatMap(g=>g[2])), rest=Object.keys(MODES).filter(k=>!used.has(k));
         const groups=ARC_GROUPS.map(g=>[g[0],g[1],g[2].filter(k=>MODES[k])]).concat(rest.length?[["✨","More",rest]]:[]);
-        const nOpen=TOPICS.filter(t=>t.key!=="Exam skills"&&topicOpen(t.key)).length, yr=(store.year&&!DEMO&&nOpen<TOPICS.length-1)?`<p class="yearnote">📅 <b>Year ${store.year} mode:</b> games use the topics you've been taught so far (${nOpen} of ${TOPICS.length-1}). More unlock as the year goes on. <button class="linkbtn" id="yearChange">Change year</button></p>`:"";
+        const nOpen=TOPICS.filter(t=>t.key!=="Exam skills"&&topicOpen(t.key)).length, yr=isTeacher()?`<p class="yearnote">🧑‍🏫 <b>Teacher mode:</b> every topic is in the games, and hard-mode bosses are open. <button class="linkbtn" id="yearChange">Change</button></p>`:(store.year&&!DEMO&&nOpen<TOPICS.length-1)?`<p class="yearnote">📅 <b>Year ${store.year} mode:</b> games use the topics you've been taught so far (${nOpen} of ${TOPICS.length-1}). More unlock as the year goes on. <button class="linkbtn" id="yearChange">Change year</button></p>`:"";
         return yr+`<div class="modes modes-flat">${Object.keys(MODES).map(card).join("")}</div>
         <div class="modes-grouped">${groups.map((g,i)=>`<details class="mgroup" ${i<2||g[2].includes(gotd())?"open":""}><summary><span>${g[0]}</span>${g[1]}<small>${g[2].length}</small></summary><div class="modes">${g[2].map(card).join("")}</div></details>`).join("")}</div>`; })()}
       <p class="arc-note">Blitz, Survival and Gap Fill use the topics you've selected above${nCards?"":", so pick at least one"}. Exam Skills and Stats Lab cover the whole course. Wrong answers on revision cards are added to your still-learning pile. Use keys 1 to 4 to answer, and Enter for the next question.</p>`;
@@ -2385,9 +2387,9 @@ function renderArcade(){
   if(arc.phase==="bossmenu"){
     area.innerHTML=`<div class="arc-top"><span class="big">👹 Boss Battles</span><span class="spacer"></span><button class="linkbtn" id="bossBack">← Arcade menu</button></div>
       <p class="arc-note" style="margin:0 0 12px">Pick a topic. Each boss has ${BOSS_HP} HP: every right answer is a hit. Three wrong answers and the boss wins. Questions are the harder cards in that topic, with tricky options. No timer, so read carefully.</p>
-      ${Object.keys(G.st.bosses||{}).length?`<div class="hardtog"><button class="btn ${arc.hard?"":"ghost"}" id="hardTog" aria-pressed="${!!arc.hard}">🔥 Hard mode ${arc.hard?"on":"off"}</button><span>Rematch a boss you've beaten: ${BOSS_HP_HARD} HP and only 2 lives.</span></div>`:""}
+      ${Object.keys(G.st.bosses||{}).length||isTeacher()?`<div class="hardtog"><button class="btn ${arc.hard?"":"ghost"}" id="hardTog" aria-pressed="${!!arc.hard}">🔥 Hard mode ${arc.hard?"on":"off"}</button><span>Rematch a boss you've beaten: ${BOSS_HP_HARD} HP and only 2 lives.</span></div>`:""}
       <div class="bosses">${TOPICS.map(t=>{ const [bn,bi]=BOSSES[t.key], won=G.st.bosses[t.key], n=DATA.filter(d=>d.t===t.key&&mcOK(d)&&d.a.length>=35).length;
-        const hw=(G.st.bossesHard||{})[t.key], shut=!topicOpen(t.key), off=n<bossHP()+2 || (arc.hard && !won) || shut;
+        const hw=(G.st.bossesHard||{})[t.key], shut=!topicOpen(t.key), off=n<bossHP()+2 || (arc.hard && !won && !isTeacher()) || shut;
         return `<button class="bossc ${won?"won":""} ${arc.hard?"hard":""}" style="--c:${t.c}" data-boss="${esc(t.key)}" ${off?"disabled":""}><span class="bi">${bi}</span><b>${esc(bn)}</b><span>${esc(t.name)}</span><span class="bs">${shut?`🔒 Opens ${openDate(t.key)}`:hw?"🔥 Hard mode beaten":won?"✓ Defeated":"Not beaten yet"}</span></button>`; }).join("")}</div>`;
     const ht=$("#hardTog"); if(ht) ht.onclick=()=>{ arc.hard=!arc.hard; renderArcade(); };
     $("#bossBack").onclick=()=>{ arc.phase="menu"; renderArcade(); };
@@ -3929,7 +3931,7 @@ function renderTrophies(){
 <section data-sec="leaderboard" class="ts-lb"><div class="box" id="lbBox">${lbHTML()}</div></section>
 <section data-sec="saves" class="ts-a11y">
     <div class="box" id="yearBox"><h3>📅 Your year group</h3><p class="muted" style="margin:0 0 10px">Games and challenges only use topics you've been taught so far, following the department's teaching plan.</p>
-      <div class="seg" role="group" aria-label="Year group"><button data-yr="12" aria-pressed="${store.year==="12"}">Year 12</button><button data-yr="13" aria-pressed="${store.year==="13"}">Year 13</button></div></div>
+      <div class="seg" role="group" aria-label="Year group"><button data-yr="12" aria-pressed="${store.year==="12"}">Year 12</button><button data-yr="13" aria-pressed="${store.year==="13"}">Year 13</button><button data-yr="teacher" aria-pressed="${store.year==="teacher"}">🧑‍🏫 Teacher</button></div></div>
     <div class="box" id="a11yBox"><h3>Reading and accessibility</h3>
       <div class="bar-row" style="margin:0"><div class="seg" role="group" aria-label="Font">${[["std","Standard font"],["lexend","Easy-read font (Lexend)"]].map(([v,l])=>`<button aria-pressed="${store.a11y.font===v}" data-font="${v}">${l}</button>`).join("")}</div>
       <div class="seg" role="group" aria-label="Text size">${[[0.9,"A−"],[1,"A"],[1.15,"A+"],[1.3,"A++"]].map(([v,l])=>`<button aria-pressed="${store.a11y.size===v}" data-size="${v}" aria-label="Text size ${l}">${l}</button>`).join("")}</div></div>
@@ -3969,7 +3971,8 @@ function renderTrophies(){
     </section>
 `;
   wirePet(); lbWire();
-  document.querySelectorAll("[data-yr]").forEach(b=>b.onclick=()=>{ store.year=b.dataset.yr; save(); renderTrophies(); toast("📅","Year "+store.year+" mode", store.year==="12"?"Games now use the topics you've been taught.":"Every topic is in the games."); });
+  document.querySelectorAll("[data-yr]").forEach(b=>b.onclick=()=>{ const set=y=>{ store.year=y; save(); renderTrophies(); toast(y==="teacher"?"🧑‍🏫":"📅", y==="teacher"?"Teacher mode":"Year "+y+" mode", y==="12"?"Games now use the topics you've been taught.":y==="13"?"Games use the topics you've been taught.":"Every topic is in the games."); };
+    if(b.dataset.yr==="teacher" && !isTeacher()) askTeacherPass(()=>set("teacher")); else set(b.dataset.yr); });
   document.querySelectorAll(".skin[data-skin]").forEach(b=>b.onclick=()=>{ store.theme=b.dataset.skin; if(!G.themesTried.includes(store.theme)) G.themesTried.push(store.theme); applySkin(store.theme); save(); checkBadges(); renderTrophies(); });
   wireBackup();
   ta.querySelectorAll("[data-bf]").forEach(b=>b.onclick=()=>{ badgeFilter=b.dataset.bf; renderTrophies(); });
@@ -4083,7 +4086,7 @@ if(DEMO_ASK){
   document.body.appendChild(o);
   const leave=()=>{ o.remove(); try{ history.replaceState(null,"",location.pathname+location.hash); }catch(e){} };
   o.querySelector("form").onsubmit=e=>{ e.preventDefault(); const v=$("#dpIn").value;
-    if(demoHash(v)==="1h6hp6u"){ try{ sessionStorage.setItem("fountDemoOk","1"); }catch(e){} location.reload(); }
+    if(demoHash(v)===DEMO_HASH){ try{ sessionStorage.setItem("fountDemoOk","1"); }catch(e){} location.reload(); }
     else { $("#dpErr").textContent="That passcode isn't right."; $("#dpIn").select(); } };
   $("#dpNo").onclick=leave;
   o.addEventListener("keydown",e=>{ e.stopPropagation(); if(e.key==="Escape") leave(); });
@@ -4096,12 +4099,26 @@ function showYearPicker(force){
   o.innerHTML=`<div class="levelup yearpick" role="dialog" aria-modal="true" aria-labelledby="ypT"><div class="tour-ico" aria-hidden="true">📅</div><h3 id="ypT">Which year are you in?</h3>
     <p>Games and challenges only use topics you've been taught so far, and more unlock through the year.</p>
     <div class="chal-btns"><button class="btn" data-y="12">Year 12</button><button class="btn" data-y="13">Year 13</button></div>
-    <p class="muted" style="font-size:13px;margin:12px 0 0">You can change this any time in 💾 Saves.</p></div>`;
+    <p class="muted" style="font-size:13px;margin:12px 0 0">You can change this any time in 💾 Saves. <button class="linkbtn" id="ypTeacher" style="font-size:13px">I'm a teacher</button></p></div>`;
   document.body.appendChild(o);
   const kd=e=>{ if(e.key!=="Tab"&&e.key!=="Enter"&&e.key!==" ") e.stopPropagation(); if(e.key==="Escape" && force){ o.remove(); document.removeEventListener("keydown",kd,true); } };
   document.addEventListener("keydown",kd,true);
   o.querySelectorAll("[data-y]").forEach(b=>b.onclick=()=>{ store.year=b.dataset.y; save(); o.remove(); document.removeEventListener("keydown",kd,true); if(tab==="arcade") renderArcade(); if(inTrophies()) renderTrophies(); });
   o.querySelector("[data-y]").focus();
+  $("#ypTeacher").onclick=()=>{ o.remove(); document.removeEventListener("keydown",kd,true); askTeacherPass(()=>{ store.year="teacher"; save(); if(tab==="arcade") renderArcade(); if(inTrophies()) renderTrophies(); toast("🧑‍🏫","Teacher mode","Every topic is in the games."); }, ()=>showYearPicker(force)); };
+}
+/* the teacher passcode box (masked), shared with demo mode */
+function askTeacherPass(onOk, onCancel){
+  const o=document.createElement("div"); o.className="overlay";
+  o.innerHTML=`<form class="levelup demopass" role="dialog" aria-modal="true" aria-labelledby="tpT"><div class="kick">Teacher</div><h3 id="tpT">🧑‍🏫 Teacher mode</h3>
+    <input id="tpIn" type="password" autocomplete="off" aria-label="Passcode" placeholder="Passcode"><p class="dperr" id="tpErr" aria-live="polite"></p>
+    <div class="chal-btns"><button class="btn" type="submit">Unlock</button><button class="btn ghost" type="button" id="tpNo">Cancel</button></div></form>`;
+  document.body.appendChild(o);
+  const close=()=>{ o.remove(); };
+  o.querySelector("form").onsubmit=e=>{ e.preventDefault(); if(demoHash($("#tpIn").value)===DEMO_HASH){ close(); onOk(); } else { $("#tpErr").textContent="That passcode isn't right."; $("#tpIn").select(); } };
+  $("#tpNo").onclick=()=>{ close(); if(onCancel) onCancel(); };
+  o.addEventListener("keydown",e=>{ e.stopPropagation(); if(e.key==="Escape"){ close(); if(onCancel) onCancel(); } });
+  setTimeout(()=>$("#tpIn").focus(),50);
 }
 /* ===== 📖 WELCOME TOUR + ✨ WHAT'S NEW =====
    New students see the tour once; returning students see "What's new" once per update (bump WHATS_NEW_ID).
