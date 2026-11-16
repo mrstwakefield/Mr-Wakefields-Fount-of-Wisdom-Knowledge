@@ -1127,7 +1127,7 @@ function pool(){ const s=new Set(store.sel); return DATA.filter(d=>s.has(d.t)); 
    "" = already taught, "y13" = not taught until Year 13. Flashcards, the Quick quiz and Writing always have every topic. */
 const Y12_OPEN={"Memory":"","Social Influence":"","RM":"","Attachment":"2026-12-16","Approaches":"2027-02-28","Biopsychology":"2027-05-15","Psychopathology":"2027-05-15",
   "Forensic Psychology":"y13","Schizophrenia":"y13","Issues and Debates part I":"y13","Relationships":"y13"};
-const Y13_OPEN={"Forensic Psychology":"2026-11-13","Relationships":"2026-11-20","Schizophrenia":"2027-01-08","Issues and Debates part I":"2027-03-19"};
+const Y13_OPEN={"Schizophrenia":"2027-01-08","Issues and Debates part I":"2027-03-19"};
 const isY12=()=>store.year==="12" && !DEMO;
 const isTeacher=()=>store.year==="teacher" && !DEMO;
 const yearMap=()=>DEMO||isTeacher()?{}:store.year==="12"?Y12_OPEN:store.year==="13"?Y13_OPEN:{};
