@@ -360,6 +360,10 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .lb li.me{border-color:var(--good);background:var(--good-bg);font-weight:700}
 .lb .lbr{text-align:center;font-weight:800}.lb .lbl{color:var(--muted);font-size:13px}.lb .lbx{font-weight:800;font-variant-numeric:tabular-nums}
 .lbme{font-size:17px;margin:4px 0 8px}
+.demopass{max-width:360px;text-align:center}
+.demopass input{width:100%;font:inherit;font-size:18px;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);margin:6px 0 4px;text-align:center;letter-spacing:.15em}
+.demopass input:focus{outline:none;border-color:var(--ink)}
+.dperr{min-height:1.3em;color:var(--warn-ink);font-weight:700;margin:0 0 10px}
 .boss-quote{font-style:italic;font-weight:700;font-size:18px;margin:0 0 6px}
 .hardtog{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px}.hardtog span{color:var(--muted);font-size:14px}
 .bossc.hard:not(:disabled){box-shadow:0 0 0 2px #F97316 inset}
@@ -976,13 +980,11 @@ const BY_ID = Object.fromEntries(DATA.map(d=>[d.id,d]));
 
 /* ---------- storage ---------- */
 /* demo mode (add ?demo to the address): everything unlocked, kept separate from real progress and reset on every visit */
+let DEMO_ASK=false;
+const demoHash=x=>{ let a=5381; for(const c of String(x).trim().toLowerCase()) a=((a*33)^c.charCodeAt(0))>>>0; return a.toString(36); };
 const DEMO=(()=>{ if(!/[?&]demo\b/i.test(location.search)) return false;
   try{ if(sessionStorage.getItem("fountDemoOk")==="1") return true; }catch(e){}
-  const h=x=>{ let a=5381; for(const c of String(x).trim().toLowerCase()) a=((a*33)^c.charCodeAt(0))>>>0; return a.toString(36); };
-  const v=prompt("Demo mode passcode:");
-  if(v!==null && h(v)==="1h6hp6u"){ try{ sessionStorage.setItem("fountDemoOk","1"); }catch(e){} return true; }
-  if(v!==null) alert("That passcode isn't right, so the normal site will open.");
-  return false; })();
+  DEMO_ASK=true; return false; })();
 const KEY = DEMO ? "rr-psych-demo" : "rr-psych-v1";
 if(DEMO) try{ localStorage.removeItem(KEY); }catch(e){}
 let store = {p:{}, sel:TOPICS.map(t=>t.key), all:TOPICS.map(t=>t.key)};
@@ -4024,6 +4026,22 @@ function lbWire(){
   const o=$("#lbOut"); if(o) o.onclick=()=>lb.auth.signOut();
 }
 if(LB_CONFIG && LB_SCHOOL_DOMAIN && !DEMO){ const tb=document.getElementById("tab-leaderboard"); if(tb) tb.hidden=false; if(store.lbOn) setTimeout(lbLoadSdk,1500); }
+/* demo mode passcode: a masked box (dots), so it can't be read off a projector */
+if(DEMO_ASK){
+  const o=document.createElement("div"); o.className="overlay";
+  o.innerHTML=`<form class="levelup demopass" role="dialog" aria-modal="true" aria-labelledby="dpT"><div class="kick">Teacher</div><h3 id="dpT">🎓 Demo mode</h3>
+    <input id="dpIn" type="password" autocomplete="off" aria-label="Passcode" placeholder="Passcode">
+    <p class="dperr" id="dpErr" aria-live="polite"></p>
+    <div class="chal-btns"><button class="btn" type="submit">Open demo</button><button class="btn ghost" type="button" id="dpNo">Cancel</button></div></form>`;
+  document.body.appendChild(o);
+  const leave=()=>{ o.remove(); try{ history.replaceState(null,"",location.pathname+location.hash); }catch(e){} };
+  o.querySelector("form").onsubmit=e=>{ e.preventDefault(); const v=$("#dpIn").value;
+    if(demoHash(v)==="1h6hp6u"){ try{ sessionStorage.setItem("fountDemoOk","1"); }catch(e){} location.reload(); }
+    else { $("#dpErr").textContent="That passcode isn't right."; $("#dpIn").select(); } };
+  $("#dpNo").onclick=leave;
+  o.addEventListener("keydown",e=>{ e.stopPropagation(); if(e.key==="Escape") leave(); });
+  setTimeout(()=>$("#dpIn").focus(),50);
+}
 checkStreak(); checkBadges(); save();
 /* ===== 📖 WELCOME TOUR + ✨ WHAT'S NEW =====
    New students see the tour once; returning students see "What's new" once per update (bump WHATS_NEW_ID).
@@ -4056,7 +4074,7 @@ function showTour(steps, onDone){
   document.body.appendChild(o); draw();
 }
 $("#tourLink").onclick=()=>showTour(TOUR);
-(()=>{ if(DEMO) return;
+(()=>{ if(DEMO || DEMO_ASK) return;
   const returning=(G.xp||0)>0 || Object.keys(store.p).length>0;
   if(!returning){ if(!store.toured){ store.toured=1; store.seenNew=WHATS_NEW_ID; save(); setTimeout(()=>{ if(!document.querySelector(".overlay")) showTour(TOUR); },700); } return; }
   if(store.seenNew===WHATS_NEW_ID) return;
