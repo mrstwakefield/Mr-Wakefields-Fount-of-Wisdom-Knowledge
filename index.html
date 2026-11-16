@@ -3956,7 +3956,7 @@ if(DEMO){ const t=today();
 /* ===== 🏆 CLASS LEADERBOARD (Firebase + school Microsoft sign-in) =====
    To switch it on, paste the settings from Firebase into LB_CONFIG and your school's email domain into LB_SCHOOL_DOMAIN.
    Only the student's first name + surname initial, XP and level are stored. Progress still lives on the device as normal. */
-const LB_CONFIG = {apiKey:"AIzaSyD4-yWY5_Gn3zkfD-UPTgpfdDDzBmuZKP8", authDomain:"a-level-fount-of-wisdom.firebaseapp.com", projectId:"a-level-fount-of-wisdom", storageBucket:"a-level-fount-of-wisdom.firebasestorage.app", messagingSenderId:"187774626566", appId:"1:187774626566:web:dccc0f5bedde63e9168c87"};
+const LB_CONFIG = null;          // e.g. {apiKey:"…", authDomain:"…firebaseapp.com", projectId:"…", appId:"…"}
 const LB_SCHOOL_DOMAIN = "";     // e.g. "myschool.org.uk": only email addresses ending in this can join
 const LB_TENANT = "";            // the school's Microsoft directory (tenant) ID, from the Azure app's Overview page
 const lb={ready:false, loading:false, user:null, rows:null, err:"", lastPush:0, pushT:null, unsub:null, p:null};
