@@ -1122,11 +1122,11 @@ function fmtAnswer(a,id){
   return "<p style='margin:0'>"+esc(a)+"</p>";
 }
 function pool(){ const s=new Set(store.sel); return DATA.filter(d=>s.has(d.t)); }
-/* Year 12 mode: a topic joins the games and challenges once it has been taught (dates from the 2026-27 curriculum planner).
-   "y13" = not taught until Year 13. Year 13 mode has everything. Flashcards, the Quick quiz and Writing always have every topic. */
-const Y12_OPEN={"Social Influence":"2026-11-20","Forensic Psychology":"2026-11-13","Schizophrenia":"2027-01-08","Approaches":"2027-03-12","Issues and Debates part I":"2027-03-19","Psychopathology":"2027-06-11",
-  "Memory":"y13","Attachment":"y13","Biopsychology":"y13","Relationships":"y13","RM":"y13"};
-const Y13_OPEN={"Relationships":"2026-11-20"};
+/* Year 12 / 13 mode: a topic joins the games and challenges once it has been taught (dates agreed with Mr Wakefield, 2026-27).
+   "" = already taught, "y13" = not taught until Year 13. Flashcards, the Quick quiz and Writing always have every topic. */
+const Y12_OPEN={"Memory":"","Social Influence":"","RM":"","Attachment":"2026-12-16","Approaches":"2027-02-28","Biopsychology":"2027-05-15","Psychopathology":"2027-05-15",
+  "Forensic Psychology":"y13","Schizophrenia":"y13","Issues and Debates part I":"y13","Relationships":"y13"};
+const Y13_OPEN={"Forensic Psychology":"2026-11-13","Relationships":"2026-11-20","Schizophrenia":"2027-01-08","Issues and Debates part I":"2027-03-19"};
 const isY12=()=>store.year==="12" && !DEMO;
 const yearMap=()=>DEMO?{}:store.year==="12"?Y12_OPEN:store.year==="13"?Y13_OPEN:{};
 const topicOpen=k=>{ const d=yearMap()[k]; return !d || (d!=="y13" && today()>=d); };
@@ -1197,10 +1197,35 @@ const gapById=id=>(_gm||(_gm=Object.fromEntries(gaps().map(g=>[g.id,g]))))[id];
 const normT=x=>x.toLowerCase().replace(/[^a-z0-9]/g,"");
 function lev(a,b){ const m=[]; for(let i=0;i<=a.length;i++){ m[i]=[i]; } for(let j=1;j<=b.length;j++) m[0][j]=j;
   for(let i=1;i<=a.length;i++) for(let j=1;j<=b.length;j++) m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[i-1]===b[j-1]?0:1)); return m[a.length][b.length]; }
+/* gap fill marking is forgiving: spelling slips, plurals and word endings, hyphens, a missing "the",
+   abbreviations (ISI, MSM) and the key words of a longer term all count */
+const GAP_STOP=new Set(["the","a","an","of","and","to","in","for","on","by","with","or","at","as","from","into","its","their"]);
+/* the words that make a term what it is: everything except generic words, which can be swapped or left out.
+   Contrasting words (positive/negative, strengths/weaknesses, proactive/retroactive) always count. */
+const GAP_GENERIC=new Set(["social","influence","model","theory","approach","state","effect","explanation","interference","process","system","factor","study","research","method","technique","psychology","psychologic","behaviour","type","form"]);
+const gapWords=x=>String(x).toLowerCase().replace(/\([^)]*\)/g," ").replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(w=>w&&!GAP_STOP.has(w)).map(w=>w.length>4?w.replace(/(ies|es|s|ing|ed|ly|al)$/,""):w);
+let GAP_GEN=null; const gapGeneric=w=>(GAP_GEN||(GAP_GEN=new Set(gapWords([...GAP_GENERIC].join(" "))))).has(w);
+function gapKeyWords(term){ const kw=[...new Set(gapWords(term))]; const key=kw.filter(w=>!gapGeneric(w)); return key.length?key:kw; }
 function gapVerdict(typed,term){ const a=normT(typed), b=normT(term);
   if(!a) return ["none","You didn't type an answer. How close were you?"];
   if(a===b) return ["ok","✓ Spot on"];
-  if(lev(a,b)<=Math.max(1,Math.floor(b.length/6))) return ["close","Nearly: check your spelling"];
+  const tw=gapWords(typed), kw=[...new Set(gapWords(term))];
+  if(tw.join("")===kw.join("")) return ["ok","✓ Spot on"];
+  const acro=String(term).replace(/\([^)]*\)/g," ").split(/[\s-]+/).filter(w=>w&&!GAP_STOP.has(w.toLowerCase())).map(w=>w[0]).join("").toLowerCase();
+  if(acro.length>=3 && a===acro) return ["ok","✓ Correct (abbreviation)"];
+  // a slip is fine (about one letter in five); a different word isn't (e.g. retroactive ≠ proactive)
+  // a spelling slip: 1 letter (2 in long words) with the same start and end, so different words don't sneak through (qualitative ≠ quantitative, dependent ≠ independent)
+  const near=(x,y)=>x===y || (y.length>=5 && x.slice(0,3)===y.slice(0,3) && (lev(x,y)<=1 || (y.length>=10 && lev(x,y)<=2 && x.slice(0,4)===y.slice(0,4) && x.slice(-3)===y.slice(-3))));
+  if(kw.length<=1) return near(tw.join(""),kw.join("")) || near(a,b) ? ["close","Nearly: check your spelling"] : ["no","✗ Not quite. You wrote: "+typed];
+  // words that flip or change the meaning can't be added (non-directional ≠ directional, agentic shift ≠ agentic state)
+  const NEG=new Set(["non","un","semi","not","no","anti","in","de","dis"]);
+  if(tw.some(w=>NEG.has(w) && !kw.includes(w))) return ["no","✗ Not quite. You wrote: "+typed];
+  const genNear=w=>gapGeneric(w) || [...(GAP_GEN||new Set())].some(g=>g.length>=4 && w[0]===g[0] && lev(w,g)<=2);
+  if(tw.some(w=>!genNear(w) && !kw.some(k=>near(w,k)))) return ["no","✗ Not quite. You wrote: "+typed];
+  // longer terms: the words that make the term what it is must be there; generic words can be swapped, reordered or left out
+  const key=gapKeyWords(term), has=f=>key.every(k=>tw.some(w=>f(w,k)));
+  if(has((w,k)=>w===k)) return ["ok","✓ Correct"];
+  if(has(near)) return ["close","Nearly: check your spelling"];
   return ["no","✗ Not quite. You wrote: "+typed]; }
 /* automatic marking of typed answers: the key terms of the model answer are found in what the student typed.
    Short answers need 1 key term; longer ones need about 40% of them. */
