@@ -983,7 +983,7 @@ const BY_ID = Object.fromEntries(DATA.map(d=>[d.id,d]));
 /* ---------- storage ---------- */
 /* demo mode (add ?demo to the address): everything unlocked, kept separate from real progress and reset on every visit */
 let DEMO_ASK=false;
-const DEMO_HASH="1h6hp6u";
+const DEMO_HASH="r1gxcg";
 const demoHash=x=>{ let a=5381; for(const c of String(x).trim().toLowerCase()) a=((a*33)^c.charCodeAt(0))>>>0; return a.toString(36); };
 const DEMO=(()=>{ if(!/[?&]demo\b/i.test(location.search)) return false;
   try{ if(sessionStorage.getItem("fountDemoOk")==="1") return true; }catch(e){}
