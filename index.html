@@ -788,6 +788,35 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 :root[data-skin="pavlov"] .top h1{color:#7A3E12}
 :root[data-skin="pavlov"] .top h1 span{color:var(--muted)}
 :root[data-skin="pavlov"] .xpbar i{background:repeating-linear-gradient(90deg,#A0602C 0 14px,#C98A4F 14px 18px)}
+:root[data-skin="y12class"]{--paper:#EEF5FF;--card:#FFFFFF;--ink:#0F2547;--muted:#4A607F;--line:#D3E3F8;--soft:#E2EDFB;--good:#1C7A55;--good-bg:#DDF0E6;--warn:#C2410C;--warn-bg:#FDE6D8;color-scheme:light}
+:root[data-skin="y12class"] .top h1{color:#2F5FB8}
+:root[data-skin="y12class"] .top h1 span{color:var(--muted)}
+:root[data-skin="y12class"] .top h1::before{content:"💙 "}
+:root[data-skin="y12class"] .hud{border-top:6px solid #6198EC}
+:root[data-skin="y12class"] .xpbar i{background:linear-gradient(90deg,#A9CBF5,#6198EC,#2F5FB8)}
+:root[data-skin="y12primacy"]{--paper:#0E2A3A;--card:#133646;--ink:#E8FBF8;--muted:#9CC7C1;--line:#22505F;--soft:#18414F;--good:#7EE2B8;--good-bg:#173A33;--warn:#FFB86B;--warn-bg:#3D2A16;color-scheme:dark}
+:root[data-skin="y12primacy"] .top h1{color:#5EE0D0}
+:root[data-skin="y12primacy"] .top h1::before{content:"1️⃣ "}
+:root[data-skin="y12primacy"] .xpbar i{background:linear-gradient(90deg,#5EE0D0,#3BA7D9)}
+:root[data-skin="y12encode"]{--paper:#F4F2FF;--card:#FFFFFF;--ink:#1E1640;--muted:#5C5480;--line:#E0DBF7;--soft:#ECE8FD;--good:#1C7A55;--good-bg:#DDF0E6;--warn:#C2410C;--warn-bg:#FDE6D8;color-scheme:light}
+:root[data-skin="y12encode"] .top h1{color:#5B48C8}
+:root[data-skin="y12encode"] .top h1 span{color:var(--muted)}
+:root[data-skin="y12encode"] .top h1::before{content:"🧠 "}
+:root[data-skin="y12encode"] .xpbar i{background:repeating-linear-gradient(90deg,#6D5BD0 0 10px,#A99CF0 10px 14px)}
+:root[data-skin="y13class"]{--paper:#FFF3F8;--card:#FFFFFF;--ink:#3A0F24;--muted:#7A4E63;--line:#F6D6E4;--soft:#FCE6EF;--good:#1C7A55;--good-bg:#DDF0E6;--warn:#C2185B;--warn-bg:#FCE0EC;color-scheme:light}
+:root[data-skin="y13class"] .top h1{color:#C2185B}
+:root[data-skin="y13class"] .top h1 span{color:var(--muted)}
+:root[data-skin="y13class"] .top h1::before{content:"💗 "}
+:root[data-skin="y13class"] .hud{border-top:6px solid #F06BA8}
+:root[data-skin="y13class"] .xpbar i{background:linear-gradient(90deg,#F7A8CB,#F06BA8,#C2185B)}
+:root[data-skin="y13recency"]{--paper:#2A0E1E;--card:#381528;--ink:#FFEAF2;--muted:#D6A6BC;--line:#55223D;--soft:#451B32;--good:#8EDBA8;--good-bg:#1F3A28;--warn:#FFB86B;--warn-bg:#40261A;color-scheme:dark}
+:root[data-skin="y13recency"] .top h1{color:#FF7AA8}
+:root[data-skin="y13recency"] .top h1::before{content:"⏱️ "}
+:root[data-skin="y13recency"] .xpbar i{background:linear-gradient(90deg,#FF7AA8,#FFC2D6)}
+:root[data-skin="y13actual"]{--paper:#22122F;--card:#2E1A3F;--ink:#FBF3E4;--muted:#CBB9D6;--line:#45305A;--soft:#38224B;--good:#8EDBA8;--good-bg:#1F3A28;--warn:#F2C14E;--warn-bg:#40331A;color-scheme:dark}
+:root[data-skin="y13actual"] .top h1{color:#F2C14E}
+:root[data-skin="y13actual"] .top h1::before{content:"🏔️ "}
+:root[data-skin="y13actual"] .xpbar i{background:linear-gradient(90deg,#8B5CF6,#E08BD8,#F2C14E)}
 :root[data-skin="inner"]{--paper:#1E0A15;--card:#2A0F1E;--ink:#FBEFEA;--muted:#C9A9B4;--line:#45203A;--soft:#35162A;--good:#8EDBA8;--good-bg:#1F3A28;--warn:#E8A87C;--warn-bg:#40261A;color-scheme:dark}
 :root[data-skin="inner"] .top h1{color:#E8A87C}
 :root[data-skin="inner"] .top h1::before{content:"🤫 "}
@@ -1067,6 +1096,12 @@ const SKINS=[
   {id:"results", name:"Results Day", lvl:92, sw:["#E8D5B5","#B8860B"], desc:"Brown envelope, gold grades ✉️"},
   {id:"school", name:"The School", lvl:96, sw:["#E3C800","#345EE4"], desc:"Yellow cladding, blue letters 🏫"},
   {id:"stan", name:"Stan Gold", lvl:100, sw:["#12100A","#F2C14E"], desc:"Dedicated Wakefield Stans only"},
+  {id:"y12class", name:"Class of 2028", lvl:999, hidden:true, unlock:()=>store.year==="12"||isTeacher(), sw:["#EAF3FE","#6198EC"], desc:"Year 12 only 💙"},
+  {id:"y12primacy", name:"Primacy Effect", lvl:999, hidden:true, unlock:()=>store.year==="12"||isTeacher(), sw:["#0E2A3A","#5EE0D0"], desc:"Year 12 only: the first things you learn stick best"},
+  {id:"y12encode", name:"Encoding", lvl:999, hidden:true, unlock:()=>store.year==="12"||isTeacher(), sw:["#F1EEFF","#6D5BD0"], desc:"Year 12 only: getting it all into long-term memory"},
+  {id:"y13class", name:"Class of 2027", lvl:999, hidden:true, unlock:()=>store.year==="13"||isTeacher(), sw:["#FFF0F6","#E0508F"], desc:"Year 13 only 💗"},
+  {id:"y13recency", name:"Recency Effect", lvl:999, hidden:true, unlock:()=>store.year==="13"||isTeacher(), sw:["#2A0E1E","#FF7AA8"], desc:"Year 13 only: the last thing you learn sticks too"},
+  {id:"y13actual", name:"Self-Actualisation", lvl:999, hidden:true, unlock:()=>store.year==="13"||isTeacher(), sw:["#2B1840","#F2C14E"], desc:"Year 13 only: top of the pyramid, your final year"},
   {id:"inner", name:"Inner Circle", lvl:999, hidden:true, unlock:()=>chalDone(1), sw:["#2A0F1E","#E8A87C"], desc:"Welcome to the inner circle 🌹"},
   {id:"snowdome", name:"SnowDome", lvl:999, hidden:true, unlock:()=>chalDone(12), sw:["#F3EFDF","#4FA79C"], desc:"Tamworth's indoor slopes ❄️"},
   {id:"veggie", name:"Veggie Patch", lvl:999, hidden:true, unlock:()=>chalDone(3), sw:["#EEF7E6","#4C9A2A"], desc:"Eat your vegetables 🥦"},
@@ -3920,7 +3955,7 @@ function renderTrophies(){
       return `<div class="box" id="weakBox"><h3>Weak spots <small>How often you get each topic right</small></h3>${ts.length?ts.map(x=>bar(x.name,x.acc,x.n,x.c)).join("")+(ys.length?`<h4 class="wh">By type of question</h4>`+ys.map(([k,v])=>bar(k,v[0]/v[1],v[1],"var(--ink)")).join(""):"")+(weakest(1).length?`<div class="btnrow" style="margin-top:12px"><button class="btn" id="weakGo">🎯 Fix my weak spots</button></div>`:`<p class="muted" style="margin:10px 0 0;font-size:14px">Answer at least ${WEAK_MIN} questions in a topic to unlock Fix my weak spots.</p>`):`<p class="muted" style="margin:0">Answer some flashcards, quizzes or Arcade questions and your strongest and weakest topics will appear here.</p>`}</div>`; })()}
     </section>
 <section data-sec="themes" class="ts-themes">
-    <div class="box"><h3>Themes <small>A new one every 4 levels, plus bonus themes hidden in the secret scrolls</small></h3>${(()=>{ const vis=SKINS.filter(k=>!k.hidden||(k.unlock?k.unlock():allScrolls())), isOk=k=>k.hidden?true:(n>=k.lvl||store.theme===k.id);
+    <div class="box"><h3>Themes <small>A new one every 4 levels, bonus themes hidden in the secret scrolls, and three for your year group</small></h3>${(()=>{ const vis=SKINS.filter(k=>!k.hidden||(k.unlock?k.unlock():allScrolls())), isOk=k=>k.hidden?true:(n>=k.lvl||store.theme===k.id);
       const card=k=>{ const ok=isOk(k), on=(store.theme||"auto")===k.id; return `<button class="skin ${on?"on":""}" data-skin="${k.id}" ${ok?"":"disabled"} aria-pressed="${on}"><span class="sw" style="background:linear-gradient(135deg,${k.sw[0]} 50%,${k.sw[1]} 50%)"></span><b>${esc(k.name)}</b><span>${ok?esc(k.desc):"🔒 Level "+k.lvl}</span></button>`; };
       const okL=vis.filter(isOk), lockL=vis.filter(k=>!isOk(k)).sort((a,b)=>a.lvl-b.lvl);
       return `<h4 class="skin-h">Unlocked <small>${okL.length}</small></h4><div class="skins">${okL.map(card).join("")}</div>${lockL.length?`<h4 class="skin-h">Still to unlock <small>${lockL.length}</small></h4><div class="skins">${lockL.map(card).join("")}</div>`:""}`; })()}</div>
