@@ -3956,7 +3956,7 @@ if(DEMO){ const t=today();
 /* ===== 🏆 CLASS LEADERBOARD (Firebase + school Microsoft sign-in) =====
    To switch it on, paste the settings from Firebase into LB_CONFIG and your school's email domain into LB_SCHOOL_DOMAIN.
    Only the student's first name + surname initial, XP and level are stored. Progress still lives on the device as normal. */
-const LB_CONFIG = null;          // e.g. {apiKey:"…", authDomain:"…firebaseapp.com", projectId:"…", appId:"…"}
+const LB_CONFIG = {apiKey:"AIzaSyD4-yWY5_Gn3zkfD-UPTgpfdDDzBmuZKP8", authDomain:"a-level-fount-of-wisdom.firebaseapp.com", projectId:"a-level-fount-of-wisdom", storageBucket:"a-level-fount-of-wisdom.firebasestorage.app", messagingSenderId:"187774626566", appId:"1:187774626566:web:dccc0f5bedde63e9168c87"};
 const LB_SCHOOL_DOMAIN = "";     // e.g. "myschool.org.uk": only email addresses ending in this can join
 const LB_TENANT = "";            // the school's Microsoft directory (tenant) ID, from the Azure app's Overview page
 const lb={ready:false, loading:false, user:null, rows:null, err:"", lastPush:0, pushT:null, unsub:null, p:null};
@@ -3997,7 +3997,7 @@ function lbListen(){
 function lbStop(){ if(lb.unsub){ lb.unsub(); lb.unsub=null; } lb.rows=null; }
 function lbHTML(){
   const h=`<h3>🏆 Class leaderboard${lb.rows?` <small>${lb.rows.length} student${lb.rows.length===1?"":"s"}</small>`:""}</h3>`;
-  if(!LB_CONFIG) return h+`<p class="muted">The class leaderboard is coming soon.</p>`;
+  if(!LB_CONFIG || !LB_SCHOOL_DOMAIN) return h+`<p class="muted">The class leaderboard is coming soon.</p>`;
   if(DEMO) return h+`<p class="muted">The leaderboard is turned off in demo mode.</p>`;
   if(!lb.ready) return h+`<p class="muted">${lb.err?esc(lb.err):"Loading the leaderboard…"}</p>`;
   if(!lb.user) return h+`<p>Sign in with your school Microsoft account to join the leaderboard and see how you compare with the class.</p>
@@ -4009,14 +4009,14 @@ function lbHTML(){
     <p class="muted" style="font-size:13px">Signed in as ${esc(lbName(lb.user))}. Your XP updates automatically. <button class="linkbtn" id="lbOut">Sign out</button></p>`;
 }
 function lbWire(){
-  if(!LB_CONFIG || DEMO) return;
+  if(!LB_CONFIG || !LB_SCHOOL_DOMAIN || DEMO) return;
   if(tab==="leaderboard" && !lb.ready && !lb.loading) lbLoadSdk();
   const i=$("#lbIn"); if(i) i.onclick=()=>{ lb.err="";
     const pr=new firebase.auth.OAuthProvider("microsoft.com"); pr.setCustomParameters(Object.assign({prompt:"select_account"}, LB_SCHOOL_DOMAIN?{domain_hint:LB_SCHOOL_DOMAIN}:{}, LB_TENANT?{tenant:LB_TENANT}:{}));
     lb.auth.signInWithPopup(pr).catch(e=>{ lb.err=(e && e.code==="auth/popup-closed-by-user")?"":"Sign-in didn't work. Tell Mr Wakefield if this keeps happening."; renderTrophies(); }); };
   const o=$("#lbOut"); if(o) o.onclick=()=>lb.auth.signOut();
 }
-if(LB_CONFIG && !DEMO){ const tb=document.getElementById("tab-leaderboard"); if(tb) tb.hidden=false; if(store.lbOn) setTimeout(lbLoadSdk,1500); }
+if(LB_CONFIG && LB_SCHOOL_DOMAIN && !DEMO){ const tb=document.getElementById("tab-leaderboard"); if(tb) tb.hidden=false; if(store.lbOn) setTimeout(lbLoadSdk,1500); }
 checkStreak(); checkBadges(); save();
 /* ✨ what's new: shown once to returning students after a big update (bump WHATS_NEW_ID for the next one) */
 const WHATS_NEW_ID="2026-11";
