@@ -1571,7 +1571,7 @@ function recAcc2(id, ok, d){ noteMistake(id,ok); const pl=G.plan; if(pl && pl.d=
 function noteLearn(id, ok){ if(!ok){ G.lc[id]=(G.lc[id]||0)+1; G.st.learnMarks=(G.st.learnMarks||0)+1; } else if((G.lc[id]||0)>=3){ G.sec.finally=1; delete G.lc[id]; } else delete G.lc[id]; }
 const WEAK_MIN=8;
 function topicStats(){ return TOPICS.map(t=>{ const [r,n]=G.acc.t[t.key]||[0,0], ids=DATA.filter(d=>d.t===t.key); return {key:t.key, name:t.name, c:t.c, acc:n?r/n:null, n, known:ids.length?ids.filter(d=>status(d.id)==="k").length/ids.length:0}; }); }
-function weakest(k=2){ return topicStats().filter(x=>x.n>=WEAK_MIN).sort((a,b)=>a.acc-b.acc||a.known-b.known).slice(0,k); }
+function weakest(k=2){ return topicStats().filter(x=>x.n>=WEAK_MIN && topicOpen(x.key)).sort((a,b)=>a.acc-b.acc||a.known-b.known).slice(0,k); }
 function renderWeak(){
   const el=$("#weakNudge"); if(!el) return;
   const w=weakest(2);
@@ -1877,7 +1877,7 @@ function renderHud(){
   $("#hudGoalN").textContent=`${Math.min(done,G.goal)}/${G.goal}`;
   $("#hudGoalRing").setAttribute("stroke-dashoffset", (2*Math.PI*12*(1-Math.min(1,done/G.goal))).toFixed(1));
   const nx=nextExam(), he=$("#hudExam");
-  if(he){ he.hidden=!nx; if(nx){ const dd=daysUntil(nx[1]); $("#hudExamN").textContent=dd; $("#hudExamL").textContent=dd===0?nx[0]+" today!":`day${dd===1?"":"s"} to ${nx[0]}`; he.title=dd===0?`${nx[0]} is today. Good luck!`:`${dd} day${dd===1?"":"s"} until ${nx[0]} (${new Date(nx[1]+"T12:00").toLocaleDateString("en-GB",{day:"numeric",month:"long"})})`; } }
+  if(he){ he.hidden=!nx || store.year==="12"; if(nx && store.year!=="12"){ const dd=daysUntil(nx[1]); $("#hudExamN").textContent=dd; $("#hudExamL").textContent=dd===0?nx[0]+" today!":`day${dd===1?"":"s"} to ${nx[0]}`; he.title=dd===0?`${nx[0]} is today. Good luck!`:`${dd} day${dd===1?"":"s"} until ${nx[0]} (${new Date(nx[1]+"T12:00").toLocaleDateString("en-GB",{day:"numeric",month:"long"})})`; } }
   renderPlan(); renderEvents();
   $("#soundBtn").textContent=G.sound?"🔊":"🔇";
   $("#soundBtn").setAttribute("aria-label", G.sound?"Mute sounds":"Turn sounds on");
@@ -3048,7 +3048,7 @@ function chk4(str){ let h=7; for(const ch of str) h=(h*31+ch.charCodeAt(0))%1679
 async function makeReport(){ if(DEMO) return "Demo mode: no real progress report can be made here.";
   const t=today(), live=G.last===t||(G.last&&dayNum(t)-dayNum(G.last)===1)?G.streak:0, ts=topicStats();
   const active=Object.keys(G.hist).filter(k=>G.hist[k]>0 && dayNum(t)-dayNum(k)<14).length;
-  const arr=[1,(store.reportName||"").trim().slice(0,30),dayNum(t),G.xp,live,G.best,knownTotal(),G.st.cards,G.st.cards?Math.round(G.st.right/G.st.cards*100):0,G.st.exam,G.st.stats,Object.keys(G.st.bosses||{}).length,active,G.st.essays||0,TOPICS.length,ts.map(x=>[Math.round(x.known*100),x.n?Math.round(x.acc*100):-1,Math.min(x.n,9999),mastery(x.key).s])];
+  const arr=[1,(store.reportName||"").trim().slice(0,30),dayNum(t),G.xp,live,G.best,knownTotal(),G.st.cards,G.st.cards?Math.round(G.st.right/G.st.cards*100):0,G.st.exam,G.st.stats,Object.keys(G.st.bosses||{}).length,active,G.st.essays||0,TOPICS.length,ts.map(x=>[Math.round(x.known*100),x.n?Math.round(x.acc*100):-1,Math.min(x.n,9999),mastery(x.key).s]),store.year||""];
   let bytes=new TextEncoder().encode(JSON.stringify(arr)), pre="FR1";
   try{ if(window.CompressionStream){ bytes=new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream("deflate-raw"))).arrayBuffer()); pre="FR1Z"; } }catch(e){ bytes=new TextEncoder().encode(JSON.stringify(arr)); pre="FR1"; }
   const body=b64u(bytes); G.st.reports=(G.st.reports||0)+1;
@@ -3114,9 +3114,9 @@ const mistakeIds=()=>Object.keys(G.mistakes).map(Number).filter(id=>BY_ID[id]);
 /* ---- 📋 today's plan ---- */
 function planWeakTopic(){
   const w=weakest(1)[0]; if(w && w.key!=="Exam skills") return w.key;
-  const ts=topicStats().filter(x=>x.key!=="Exam skills").sort((a,b)=>a.known-b.known); return ts[0].key;
+  const ts=topicStats().filter(x=>x.key!=="Exam skills" && topicOpen(x.key)).sort((a,b)=>a.known-b.known); return (ts[0]||topicStats()[0]).key;
 }
-function ensurePlan(){ const t=today(); if(!G.plan || G.plan.d!==t) G.plan={d:t, weak:planWeakTopic(), weakN:0, done:false}; return G.plan; }
+function ensurePlan(){ const t=today(); if(!G.plan || G.plan.d!==t) G.plan={d:t, weak:planWeakTopic(), weakN:0, done:false}; else if(!topicOpen(G.plan.weak)) G.plan.weak=planWeakTopic(); return G.plan; }
 function planTasks(){
   const pl=ensurePlan(), due=dueCount(true), dd=G.daily[today()];
   return [
@@ -3713,7 +3713,7 @@ function renderMock(area,seg){
   const total=mk.items.reduce((a,x)=>a+x.marks,0);
   if(mk.phase==="pick"){
     area.innerHTML=`${seg}<div class="empty" style="text-align:left"><h3 style="text-align:center">📝 Mini mock paper</h3><p style="text-align:center">A short timed paper in the style of the real exam: multiple choice, short answers, Apply it, maths (Paper 2) and an 8-mark essay. About 25–30 marks and 35 minutes. Multiple choice marks itself; you self-mark the rest against model answers.</p>
-      <div class="designs">${Object.entries(PAPERS).map(([k,P])=>`<button class="dcard" data-p="${k}"><b>${P.name}: ${esc(P.sub)}</b><span>${P.t.map(x=>TMAP[x].name).join(" · ")}</span>${(G.mocks||[]).filter(m=>m[0]==+k).length?`<small>Best: ${Math.max(...G.mocks.filter(m=>m[0]==+k).map(m=>Math.round(m[1]/m[2]*100)))}%</small>`:""}</button>`).join("")}</div></div>`;
+      <div class="designs">${Object.entries(PAPERS).filter(([k])=>!(store.year==="12" && k==="3")).map(([k,P])=>`<button class="dcard" data-p="${k}"><b>${P.name}: ${esc(P.sub)}</b><span>${P.t.map(x=>TMAP[x].name).join(" · ")}</span>${(G.mocks||[]).filter(m=>m[0]==+k).length?`<small>Best: ${Math.max(...G.mocks.filter(m=>m[0]==+k).map(m=>Math.round(m[1]/m[2]*100)))}%</small>`:""}</button>`).join("")}</div></div>`;
     area.querySelectorAll("[data-wm]").forEach(b=>b.onclick=()=>{ wr.mode=b.dataset.wm; renderWriting(); });
     area.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{ mk.paper=+b.dataset.p; mk.items=buildMock(mk.paper); mk.phase="sit"; const mins=Math.round(mk.items.reduce((a,x)=>a+x.marks,0)*1.25); mk.end=Date.now()+mins*60000; clearInterval(mk.timer); mk.timer=setInterval(()=>{ const c=$("#mkClock"); if(!c){ return; } const l=mk.end-Date.now(); c.textContent=l>0?fmtTime(l):"Time's up"; if(l<=0){ clearInterval(mk.timer); toast("⏱","Time's up","Finish your sentence, then submit."); } },500); renderWriting(); });
     return;
@@ -3905,7 +3905,7 @@ function renderTrophies(){
   ta.innerHTML=`
 
 <section data-sec="progress" class="ts-exam">
-    ${(()=>{ const tg=dailyTarget();
+    ${store.year==="12"?"":(()=>{ const tg=dailyTarget();
       return `<div class="box" id="examBox"><h3>Exam countdown <small>AQA A-level Psychology, summer 2027</small></h3><div class="exams">${EXAMS.map(([nm,d,sub])=>{ const dd=daysUntil(d); return `<div class="exam ${dd<0?"past":""}"><b>${dd<0?"✓":dd}</b><span>${dd<0?"Done":dd===0?"Today!":dd===1?"day to go":"days to go"}</span><strong>${nm}</strong><small>${new Date(d+"T12:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"long"})} · ${sub}</small></div>`; }).join("")}</div>
         ${tg?`<p class="target">You have <b>${tg.unknown.toLocaleString()}</b> cards not yet known and <b>${tg.days}</b> days until Paper 1. Learning about <b>${tg.perDay}</b> new card${tg.perDay===1?"":"s"} a day gets you through them all. With reviews, a daily goal of <b>${tg.goal}</b> answers would cover it${G.goal===tg.goal?" (that's your goal already ✓)":""}.</p>${G.goal!==tg.goal?`<button class="btn ghost" id="useGoal" data-g="${tg.goal}">Set my daily goal to ${tg.goal}</button>`:""}`:`<p class="target">All three papers are done. Brilliant work. 🎉</p>`}</div>`; })()}
     </section>
@@ -4007,7 +4007,7 @@ function renderTrophies(){
 `;
   wirePet(); lbWire();
   document.querySelectorAll("[data-yr]").forEach(b=>b.onclick=()=>{ const set=y=>{ store.year=y; save(); renderTrophies(); toast(y==="teacher"?"🧑‍🏫":"📅", y==="teacher"?"Teacher mode":"Year "+y+" mode", y==="12"?"Games now use the topics you've been taught.":y==="13"?"Games use the topics you've been taught.":"Every topic is in the games."); };
-    if(b.dataset.yr==="teacher" && !isTeacher()) askTeacherPass(()=>set("teacher")); else set(b.dataset.yr); });
+    if(b.dataset.yr==="teacher" && !isTeacher()) askTeacherPass(()=>set("teacher")); else { set(b.dataset.yr); if(b.dataset.yr==="12"){ y12Topics(); save(); } renderHud(); } });
   document.querySelectorAll(".skin[data-skin]").forEach(b=>b.onclick=()=>{ store.theme=b.dataset.skin; if(!G.themesTried.includes(store.theme)) G.themesTried.push(store.theme); applySkin(store.theme); save(); checkBadges(); renderTrophies(); });
   wireBackup();
   ta.querySelectorAll("[data-bf]").forEach(b=>b.onclick=()=>{ badgeFilter=b.dataset.bf; renderTrophies(); });
@@ -4128,6 +4128,9 @@ if(DEMO_ASK){
   setTimeout(()=>$("#dpIn").focus(),50);
 }
 checkStreak(); checkBadges(); save();
+/* when a student picks Year 12 and still has every topic selected, start them on the topics they've been taught */
+function y12Topics(){ if(store.year!=="12") return; if(store.sel.length<TOPICS.length) return;
+  const open=TOPICS.map(t=>t.key).filter(k=>k!=="Exam skills" && topicOpen(k)); if(open.length){ store.sel=open; if(typeof renderChips==="function") renderChips(); if(typeof topicsChanged==="function") topicsChanged(); } }
 function showYearPicker(force){
   if(DEMO || document.querySelector(".yearpick")) return;
   const o=document.createElement("div"); o.className="overlay";
@@ -4138,7 +4141,7 @@ function showYearPicker(force){
   document.body.appendChild(o);
   const kd=e=>{ if(e.key!=="Tab"&&e.key!=="Enter"&&e.key!==" ") e.stopPropagation(); if(e.key==="Escape" && force){ o.remove(); document.removeEventListener("keydown",kd,true); } };
   document.addEventListener("keydown",kd,true);
-  o.querySelectorAll("[data-y]").forEach(b=>b.onclick=()=>{ store.year=b.dataset.y; save(); o.remove(); document.removeEventListener("keydown",kd,true); if(tab==="arcade") renderArcade(); if(inTrophies()) renderTrophies(); });
+  o.querySelectorAll("[data-y]").forEach(b=>b.onclick=()=>{ store.year=b.dataset.y; y12Topics(); save(); o.remove(); document.removeEventListener("keydown",kd,true); if(tab==="arcade") renderArcade(); if(inTrophies()) renderTrophies(); });
   o.querySelector("[data-y]").focus();
   $("#ypTeacher").onclick=()=>{ o.remove(); document.removeEventListener("keydown",kd,true); askTeacherPass(()=>{ store.year="teacher"; save(); if(tab==="arcade") renderArcade(); if(inTrophies()) renderTrophies(); toast("🧑‍🏫","Teacher mode","Every topic is in the games."); }, ()=>showYearPicker(force)); };
 }

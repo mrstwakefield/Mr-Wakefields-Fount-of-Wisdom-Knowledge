@@ -47,6 +47,7 @@ tr.inactive td:first-child::after{content:" 💤";}
 label.chk{display:inline-flex;gap:6px;align-items:center;font-size:14px}
 @media print{ .noprint{display:none!important} body{background:#fff;color:#000} .box{border-color:#ccc;break-inside:avoid} }
 .heat .st{display:block;font-size:10px;line-height:1;color:#B7791F;letter-spacing:1px}
+.yearf{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -87,15 +88,15 @@ async function decode(code){
   if(pre==="FR1Z") bytes=new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).arrayBuffer());
   const a=JSON.parse(new TextDecoder().decode(bytes));
   if(a[0]!==1) throw new Error("version");
-  return {name:a[1]||"(no name)", day:a[2], xp:a[3], streak:a[4], best:a[5], known:a[6], answered:a[7], acc:a[8], exam:a[9], stats:a[10], bosses:a[11], active:a[12], essays:a[13], topics:a[15]};
+  return {name:a[1]||"(no name)", day:a[2], xp:a[3], streak:a[4], best:a[5], known:a[6], answered:a[7], acc:a[8], exam:a[9], stats:a[10], bosses:a[11], active:a[12], essays:a[13], topics:a[15], year:a[16]==="12"?"Y12":a[16]==="13"?"Y13":a[16]==="teacher"?"Teacher":"–"};
 }
-let rows=[], sortKey="name", sortDir=1;
+let allRows=[], rows=[], sortKey="name", sortDir=1, yearF="all";
 async function run(){
   const text=$("#codes").value, found=[...new Set(text.match(/FR1Z?\.[A-Za-z0-9_-]+\.[a-z0-9]{4}/g)||[])], msg=$("#msg");
   if(!found.length){ msg.className="msg no"; msg.textContent="No codes found. They start with FR1."; return; }
   const out={}; let bad=0;
   for(const c of found){ try{ const r=await decode(c); const k=r.name.trim().toLowerCase(); if(!out[k]||out[k].day<=r.day) out[k]=r; }catch(e){ bad++; } }
-  rows=Object.values(out);
+  allRows=Object.values(out); rows=allRows;
   msg.className="msg "+(bad?"no":"ok"); msg.textContent=`${rows.length} student${rows.length===1?"":"s"} loaded`+(bad?`. ${bad} code${bad===1?" was":"s were"} incomplete or mistyped and skipped.`:".");
   if($("#remember").checked) try{ localStorage.setItem(SAVE_KEY,text); }catch(e){}
   $("#csv").disabled=!rows.length; render();
@@ -103,16 +104,21 @@ async function run(){
 const lvlFor=xp=>{ let n=1; while(xp>=50*n*(n+1)) n++; return n; };
 const heat=v=>v<0?"transparent":`hsl(${Math.round(v*1.2)},65%,${document.documentElement.matches(':root') && matchMedia("(prefers-color-scheme: dark)").matches?32:78}%)`;
 function render(){
-  if(!rows.length){ $("#out").innerHTML=""; return; }
+  if(!allRows.length){ $("#out").innerHTML=""; return; }
+  rows=allRows.filter(r=>yearF==="all"||r.year===yearF);
+  const yf=`<div class="box yearf"><b>Show:</b> ${["all","Y12","Y13"].map(y=>`<button class="btn ${yearF===y?"":"ghost"}" data-yf="${y}">${y==="all"?"Everyone":y}</button>`).join(" ")} <span class="note">${allRows.filter(r=>r.year==="–").length?"Students who haven't picked a year (or sent an older code) only appear under Everyone.":""}</span></div>`;
+  const wireYF=()=>document.querySelectorAll("[data-yf]").forEach(b=>b.onclick=()=>{ yearF=b.dataset.yf; render(); });
+  if(!rows.length){ $("#out").innerHTML=yf+`<div class="box"><p>No students in this group yet.</p></div>`; wireYF(); return; }
   const t=todayNum(), inactive=r=>r.active===0 || t-r.day>14;
   const avgKnown=TOPICS.map((_,i)=>rows.reduce((a,r)=>a+(r.topics[i]?r.topics[i][0]:0),0)/rows.length);
   const accRows=TOPICS.map((_,i)=>rows.filter(r=>r.topics[i]&&r.topics[i][1]>=0&&r.topics[i][2]>=8));
   const avgAcc=accRows.map((rs,i)=>rs.length?rs.reduce((a,r)=>a+r.topics[i][1],0)/rs.length:null);
   const weak=TOPICS.map((tp,i)=>({i,name:tp[0],acc:avgAcc[i],known:avgKnown[i]})).filter(x=>x.name!=="Exam skills").sort((a,b)=>(a.acc??999)-(b.acc??999)||a.known-b.known).slice(0,3);
   const sorted=rows.slice().sort((a,b)=>{ const A=a[sortKey],B=b[sortKey]; return (typeof A==="string"?A.localeCompare(B):A-B)*sortDir; });
-  const cols=[["name","Student"],["level","Level"],["xp","XP"],["known","Cards known"],["acc","Accuracy %"],["streak","Streak"],["active","Days active (14)"],["essays","Essays"],["stars","Mastery ⭐"],["day","Report date"]];
+  const cols=[["name","Student"],["level","Level"],["xp","XP"],["known","Cards known"],["acc","Accuracy %"],["streak","Streak"],["active","Days active (14)"],["year","Year"],["essays","Essays"],["stars","Mastery ⭐"],["day","Report date"]];
   rows.forEach(r=>{ r.level=lvlFor(r.xp); r.stars=(r.topics||[]).reduce((a,x)=>a+((x&&x[3])||0),0); });
   $("#out").innerHTML=`
+  ${yf}
   <div class="box"><h2>Class summary</h2><div class="tiles">
     <div class="tile"><b>${rows.length}</b><span>students</span></div>
     <div class="tile"><b>${Math.round(rows.reduce((a,r)=>a+r.known,0)/rows.length)}</b><span>average cards known</span></div>
@@ -122,18 +128,19 @@ function render(){
   <div class="box"><h2>Weakest topics for the class</h2><ol class="weak">${weak.map(w=>`<li><b>${esc(w.name)}</b>: ${w.acc==null?"not enough answers yet":Math.round(w.acc)+"% average accuracy"}, ${Math.round(w.known)}% of cards known on average</li>`).join("")}</ol>
     <p class="note">Accuracy only counts students who have answered at least 8 questions in a topic.</p></div>
   <div class="box"><h2>Students</h2><div class="scroll"><table id="tbl"><thead><tr>${cols.map(([k,l])=>`<th data-k="${k}" aria-sort="${sortKey===k?(sortDir>0?"ascending":"descending"):"none"}">${l}</th>`).join("")}</tr></thead><tbody>
-    ${sorted.map(r=>`<tr class="${inactive(r)?"inactive":""}"><td>${esc(r.name)}</td><td class="n">${r.level}</td><td class="n">${r.xp.toLocaleString()}</td><td class="n">${r.known.toLocaleString()}</td><td class="n">${r.acc}</td><td class="n">${r.streak}</td><td class="n">${r.active}</td><td class="n">${r.essays}</td><td class="n">${r.stars}</td><td>${dayToDate(r.day).toLocaleDateString("en-GB")}</td></tr>`).join("")}
+    ${sorted.map(r=>`<tr class="${inactive(r)?"inactive":""}"><td>${esc(r.name)}</td><td class="n">${r.level}</td><td class="n">${r.xp.toLocaleString()}</td><td class="n">${r.known.toLocaleString()}</td><td class="n">${r.acc}</td><td class="n">${r.streak}</td><td class="n">${r.active}</td><td>${r.year}</td><td class="n">${r.essays}</td><td class="n">${r.stars}</td><td>${dayToDate(r.day).toLocaleDateString("en-GB")}</td></tr>`).join("")}
   </tbody></table></div></div>
   <div class="box"><h2>Cards known by topic (%)</h2><p class="note">★ = mastery stars in that topic (1 to 3), based on recent accuracy and cards known.</p><div class="scroll"><table class="heat"><thead><tr><th style="cursor:default">Student</th>${TOPICS.map(t=>`<th class="tp">${esc(t[0])}</th>`).join("")}</tr></thead><tbody>
     ${sorted.map(r=>`<tr><td>${esc(r.name)}</td>${TOPICS.map((_,i)=>{ const v=r.topics[i]?r.topics[i][0]:0, a=r.topics[i]?r.topics[i][1]:-1; return `<td class="h" style="background:${heat(v)}" title="${v}% known${a>=0?", "+a+"% accuracy":""}${r.topics[i]&&r.topics[i][3]?", "+r.topics[i][3]+" mastery stars":""}">${v}${r.topics[i]&&r.topics[i][3]?`<small class="st">${"★".repeat(r.topics[i][3])}</small>`:""}</td>`; }).join("")}</tr>`).join("")}
     <tr><td><b>Class average</b></td>${avgKnown.map(v=>`<td class="h" style="background:${heat(v)}"><b>${Math.round(v)}</b></td>`).join("")}</tr>
   </tbody></table></div></div>`;
+  wireYF();
   document.querySelectorAll("#tbl th").forEach(th=>th.onclick=()=>{ const k=th.dataset.k; if(sortKey===k) sortDir*=-1; else { sortKey=k; sortDir=k==="name"?1:-1; } render(); });
 }
 $("#go").onclick=run;
 $("#csv").onclick=()=>{
-  const head=["Student","Level","XP","Cards known","Accuracy %","Streak","Best streak","Days active (14)","Essays","Bosses beaten","Exam Skills best","Stats Lab best","Mastery stars","Report date",...TOPICS.map(t=>t[0]+" % known"),...TOPICS.map(t=>t[0]+" stars")];
-  const lines=[head,...rows.map(r=>[r.name,lvlFor(r.xp),r.xp,r.known,r.acc,r.streak,r.best,r.active,r.essays,r.bosses,r.exam,r.stats,r.stars,dayToDate(r.day).toLocaleDateString("en-GB"),...TOPICS.map((_,i)=>r.topics[i]?r.topics[i][0]:""),...TOPICS.map((_,i)=>r.topics[i]&&r.topics[i][3]!=null?r.topics[i][3]:"")])];
+  const head=["Student","Year","Level","XP","Cards known","Accuracy %","Streak","Best streak","Days active (14)","Essays","Bosses beaten","Exam Skills best","Stats Lab best","Mastery stars","Report date",...TOPICS.map(t=>t[0]+" % known"),...TOPICS.map(t=>t[0]+" stars")];
+  const lines=[head,...rows.map(r=>[r.name,r.year,lvlFor(r.xp),r.xp,r.known,r.acc,r.streak,r.best,r.active,r.essays,r.bosses,r.exam,r.stats,r.stars,dayToDate(r.day).toLocaleDateString("en-GB"),...TOPICS.map((_,i)=>r.topics[i]?r.topics[i][0]:""),...TOPICS.map((_,i)=>r.topics[i]&&r.topics[i][3]!=null?r.topics[i][3]:"")])];
   const csv=lines.map(l=>l.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
   const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download="class-progress.csv"; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),500);
 };
