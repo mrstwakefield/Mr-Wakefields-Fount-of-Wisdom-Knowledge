@@ -1120,6 +1120,10 @@ function fmtAnswer(a,id){
   return "<p style='margin:0'>"+esc(a)+"</p>";
 }
 function pool(){ const s=new Set(store.sel); return DATA.filter(d=>s.has(d.t)); }
+/* topics taught later in the course stay out of the games and challenges until these dates (flashcards, quiz and writing still have them) */
+const TOPIC_OPEN={"Schizophrenia":"2027-01-28","Issues and Debates part I":"2027-03-20"};
+const topicOpen=k=>!TOPIC_OPEN[k] || today()>=TOPIC_OPEN[k];
+const openDate=k=>{ const d=new Date(TOPIC_OPEN[k]+"T12:00:00"); return d.toLocaleDateString("en-GB",{day:"numeric",month:"short"}); };
 const MC_MAX=220, mcOK = d => d.a.length<=MC_MAX;
 
 /* ---------- meter + chips ---------- */
@@ -2169,7 +2173,7 @@ const EXAM = {
     return mcq(`${m===8?"An":"A"} ${m}-mark question ${stem?"with a scenario ('Refer to…')":"with no scenario"}. How many marks are usually for ${names[which]}?`, String(split[which]), [0,2,3,4,5,6,8,10].map(String).filter(x=>x!==String(split[which])).sort(()=>rng()-.5), `The usual split is AO1 ${split[0]}, AO2 ${split[1]}, AO3 ${split[2]}.`, rng, "Mark splits");
   },
   timing(rng){ const m=pickR([4,6,8,12,16],rng), t=m*1.25; return mcq(`A paper is 2 hours for 96 marks. Roughly how long should you spend on a ${m}-mark question?`, `About ${fmt1(t)} minutes`, [`About ${fmt1(t*2)} minutes`,`About ${fmt1(m*0.5)} minutes`,`About ${fmt1(t+10)} minutes`,`About ${m} minutes`], `120 ÷ 96 = 1.25 minutes per mark, so ${m} × 1.25 = ${fmt1(t)} minutes.`, rng, "Timing"); },
-  apply(rng){ const [t,stem,a,w,ex]=pickR(APPLY,rng); return mcq(`Apply it: ${stem}\nWhich concept does this best show?`, a, shuffleR(w,rng), ex, rng, "Apply it"); },
+  apply(rng){ const [t,stem,a,w,ex]=pickR(APPLY.filter(x=>topicOpen(x[0])),rng); return mcq(`Apply it: ${stem}\nWhich concept does this best show?`, a, shuffleR(w,rng), ex, rng, "Apply it"); },
   levels(rng){ const bands=[["Level 4","13–16"],["Level 3","9–12"],["Level 2","5–8"],["Level 1","1–4"]], [l,b]=pickR(bands,rng); return mcq(`In a 16-mark essay, which marks are ${l}?`, b, bands.map(x=>x[1]).filter(x=>x!==b), `16-mark bands: Level 4 13–16, Level 3 9–12, Level 2 5–8, Level 1 1–4.`, rng, "Mark bands"); }
 };
 const EXAM_W={bank:5,apply:4,ao:3,best:3,split:2,timing:1,levels:1};
@@ -2252,7 +2256,7 @@ let GAPS=null; const gaps=()=>GAPS||(GAPS=buildGaps(DATA));
 const ES_C="#0F766E", ST_C="#2596B0";
 /* every arcade question: {q, opts, correct, explain?, tname, c, id?} */
 function qFromCard(d,rng){ const m=mcFor(d,rng), t=TMAP[d.t]; return {q:d.q, opts:m.opts, correct:m.correct, tname:t.name, c:t.c, id:d.id, explain:d.a+(d.y?" 💡 "+d.y:"")}; }
-function qGap(rng){ const sel=new Set(store.sel), list=gaps().filter(g=>sel.has(g.t)), g=list[Math.floor(rng()*list.length)], t=TMAP[g.t]; return {...gapQ(g,gaps(),rng), tname:"Gap fill · "+t.name, c:t.c, id:g.id}; }
+function qGap(rng){ const sel=new Set(store.sel), list=gaps().filter(g=>sel.has(g.t)&&topicOpen(g.t)), g=list[Math.floor(rng()*list.length)], t=TMAP[g.t]; return {...gapQ(g,gaps(),rng), tname:"Gap fill · "+t.name, c:t.c, id:g.id}; }
 function qStats(rng){ const o=statsQ(rng); return {...o, tname:"Stats lab · "+o.tag, c:ST_C}; }
 function qExam(rng){ const o=examQ(rng); return {...o, tname:"Exam skills · "+o.tag, c:ES_C}; }
 
@@ -2291,7 +2295,7 @@ const gotd=()=>GOTD_POOL[((dayNum(today())%GOTD_POOL.length)+GOTD_POOL.length)%G
 const WEEK_TOPICS=TOPICS.filter(t=>t.key!=="Exam skills");
 function weekStart(){ const d=new Date(); d.setDate(d.getDate()-((d.getDay()+6)%7)); return ymd(d); }
 const weekNo=()=>Math.floor((dayNum(weekStart())-dayNum("2026-01-05"))/7)+1;
-const weekTopic=()=>WEEK_TOPICS[((weekNo()%WEEK_TOPICS.length)+WEEK_TOPICS.length)%WEEK_TOPICS.length];
+const weekTopic=()=>{ const L=WEEK_TOPICS.length; let i=((weekNo()%L)+L)%L; for(let n=0;n<L && !topicOpen(WEEK_TOPICS[i].key);n++) i=(i+1)%L; return WEEK_TOPICS[i]; };
 function weeklyQs(){ const t=weekTopic(), rng=rngFrom("weekly-"+weekStart()), c=shuffleR(DATA.filter(d=>d.t===t.key&&mcOK(d)),rng).slice(0,15); return c.map(d=>qFromCard(d,rng)); }
 function weeklyShare(){ const w=G.weekly[weekStart()]; return `Fount of Wisdom A-level Weekly #${weekNo()} · ${weekTopic().name}\n${w.score}/15 · ${fmtTime(w.time)}\n${w.log.map(x=>x?"🟩":"🟥").join("")}`; }
 function bestLabel(k){
@@ -2318,7 +2322,7 @@ function bestLabel(k){
 function renderArcade(){
   const area=$("#arcArea");
   if(arc.phase==="menu"){
-    const dd=G.daily[today()], nCards=pool().filter(mcOK).length, sel=new Set(store.sel), nGap=gaps().filter(g=>sel.has(g.t)).length;
+    const dd=G.daily[today()], nCards=pool().filter(d=>mcOK(d)&&topicOpen(d.t)).length, sel=new Set(store.sel), nGap=gaps().filter(g=>sel.has(g.t)&&topicOpen(g.t)).length;
     const examToday=(G.st.examDay===today());
     const wk=(G.weekly||{})[weekStart()], daysLeft=6-((new Date().getDay()+6)%7);
     const weekBanner=`<button class="weekban" id="weekBan" style="--c:${weekTopic().c}"><span>🏁</span><div><b>Weekly Challenge #${weekNo()}: ${esc(weekTopic().name)}</b><span>${wk&&wk.done?`You scored ${wk.score}/15 this week. New topic on Monday.`:`15 questions, one go. Ends ${daysLeft===0?"tonight":daysLeft===1?"tomorrow":"in "+daysLeft+" days"}.`}</span></div><i>${wk&&wk.done?"See result":"Play"}</i></button>`;
@@ -2343,8 +2347,8 @@ function renderArcade(){
       <p class="arc-note" style="margin:0 0 12px">Pick a topic. Each boss has ${BOSS_HP} HP: every right answer is a hit. Three wrong answers and the boss wins. Questions are the harder cards in that topic, with tricky options. No timer, so read carefully.</p>
       ${Object.keys(G.st.bosses||{}).length?`<div class="hardtog"><button class="btn ${arc.hard?"":"ghost"}" id="hardTog" aria-pressed="${!!arc.hard}">🔥 Hard mode ${arc.hard?"on":"off"}</button><span>Rematch a boss you've beaten: ${BOSS_HP_HARD} HP and only 2 lives.</span></div>`:""}
       <div class="bosses">${TOPICS.map(t=>{ const [bn,bi]=BOSSES[t.key], won=G.st.bosses[t.key], n=DATA.filter(d=>d.t===t.key&&mcOK(d)&&d.a.length>=35).length;
-        const hw=(G.st.bossesHard||{})[t.key], off=n<bossHP()+2 || (arc.hard && !won);
-        return `<button class="bossc ${won?"won":""} ${arc.hard?"hard":""}" style="--c:${t.c}" data-boss="${esc(t.key)}" ${off?"disabled":""}><span class="bi">${bi}</span><b>${esc(bn)}</b><span>${esc(t.name)}</span><span class="bs">${hw?"🔥 Hard mode beaten":won?"✓ Defeated":"Not beaten yet"}</span></button>`; }).join("")}</div>`;
+        const hw=(G.st.bossesHard||{})[t.key], shut=!topicOpen(t.key), off=n<bossHP()+2 || (arc.hard && !won) || shut;
+        return `<button class="bossc ${won?"won":""} ${arc.hard?"hard":""}" style="--c:${t.c}" data-boss="${esc(t.key)}" ${off?"disabled":""}><span class="bi">${bi}</span><b>${esc(bn)}</b><span>${esc(t.name)}</span><span class="bs">${shut?`🔒 Opens ${openDate(t.key)}`:hw?"🔥 Hard mode beaten":won?"✓ Defeated":"Not beaten yet"}</span></button>`; }).join("")}</div>`;
     const ht=$("#hardTog"); if(ht) ht.onclick=()=>{ arc.hard=!arc.hard; renderArcade(); };
     $("#bossBack").onclick=()=>{ arc.phase="menu"; renderArcade(); };
     area.querySelectorAll("[data-boss]").forEach(b=>b.onclick=()=>{ arc.bossTopic=b.dataset.boss; startArc("boss"); });
@@ -2402,7 +2406,7 @@ function fmtTime(ms){ const s=Math.round(ms/1000); return Math.floor(s/60)+":"+S
 function untilMidnight(){ const n=new Date(), m=new Date(n); m.setHours(24,0,0,0); const h=Math.floor((m-n)/36e5), mi=Math.floor((m-n)%36e5/6e4); return h?`${h}h ${mi}m`:`${mi}m`; }
 function shareText(){ const dd=G.daily[today()]; return `Fount of Wisdom A-level Daily 10 #${dailyNo()}\n${dd.score}/10 · ${fmtTime(dd.time)}\n${dd.log.map(x=>x?"🟩":"🟥").join("")}`; }
 function dailyQs(){
-  const rng=rngFrom("daily-"+today()), cards=shuffleR(DATA.filter(d=>mcOK(d)&&d.t!=="Exam skills"),rng).slice(0,7);
+  const rng=rngFrom("daily-"+today()), cards=shuffleR(DATA.filter(d=>mcOK(d)&&d.t!=="Exam skills"&&topicOpen(d.t)),rng).slice(0,7);
   const qs=cards.map(d=>qFromCard(d,rng)); qs.splice(2,0,qExam(rng)); qs.splice(5,0,qStats(rng)); qs.splice(8,0,qExam(rng));
   return qs;
 }
@@ -2419,10 +2423,10 @@ function nextQ(){
   for(let tries=0;tries<25;tries++){
     let q;
     if(m.src==="flaw"){ const f=FLAWS[Math.floor(rng()*FLAWS.length)]; q={...mcq("Spot the flaw: "+f[0]+"\nWhat is the main problem with this study?", f[1], shuffleR(f[2],rng), f[3], rng, "Spot the flaw"), tname:"Spot the flaw", c:"#2596B0"}; }
-    else if(m.src==="mistakes"){ const ids=mistakeIds().filter(id=>mcOK(BY_ID[id])); q=qFromCard(BY_ID[ids[Math.floor(rng()*ids.length)]],rng); q.tname="🩹 Mistake · "+q.tname; }
+    else if(m.src==="mistakes"){ const ids=mistakeIds().filter(id=>mcOK(BY_ID[id])&&topicOpen(BY_ID[id].t)); q=qFromCard(BY_ID[ids[Math.floor(rng()*ids.length)]],rng); q.tname="🩹 Mistake · "+q.tname; }
     else if(m.src==="detective") q=qDetective(rng); else if(m.src==="whoami") q=qWhoAmI(rng);
     else if(m.src==="exam") q=qExam(rng); else if(m.src==="stats") q=qStats(rng); else if(m.src==="gap") q=qGap(rng);
-    else { const p=pool().filter(mcOK); q=qFromCard(p[Math.floor(rng()*p.length)],rng); }
+    else { const p=pool().filter(d=>mcOK(d)&&topicOpen(d.t)); q=qFromCard(p[Math.floor(rng()*p.length)],rng); }
     const key=q.q.slice(0,90); if(!arc.seen.has(key) || tries===24){ arc.seen.add(key); return q; }
   }
 }
@@ -3288,9 +3292,9 @@ const STUDIES = [
 ];
 const METHODS=["Lab experiment","Field experiment","Natural experiment","Quasi-experiment","Controlled observation","Naturalistic observation","Case study","Questionnaire","Meta-analysis","Longitudinal study"];
 const METHOD_NEAR={"Content analysis":["Questionnaire"],"Lab experiment":["Controlled observation","Quasi-experiment"],"Controlled observation":["Lab experiment","Naturalistic observation"],"Quasi-experiment":["Natural experiment","Lab experiment"],"Natural experiment":["Quasi-experiment","Longitudinal study","Field experiment"],"Longitudinal study":["Naturalistic observation","Questionnaire","Natural experiment"],"Field experiment":["Natural experiment"],"Questionnaire":["Longitudinal study"],"Meta-analysis":[],"Case study":[]};
-function studyOthers(s){ const same=STUDIES.filter(x=>x!==s && x.t===s.t), rest=STUDIES.filter(x=>x!==s && x.t!==s.t); return shuffle(same).concat(shuffle(rest)); }
+function studyOthers(s){ const same=STUDIES.filter(x=>x!==s && x.t===s.t), rest=STUDIES.filter(x=>x!==s && x.t!==s.t && topicOpen(x.t)); return shuffle(same).concat(shuffle(rest)); }
 function qDetective(rng){
-  const s=pickR(STUDIES,rng), t=TMAP[s.t], others=studyOthers(s), kinds=["who","find","crit"]; if(s.m) kinds.push("method");
+  const s=pickR(STUDIES.filter(x=>topicOpen(x.t)),rng), t=TMAP[s.t], others=studyOthers(s), kinds=["who","find","crit"]; if(s.m) kinds.push("method");
   const k=pickR(kinds,rng), file="🗂️ Case file: "+s.d+"\n";
   let q;
   if(k==="who") q=mcq(file+"Which study is this?", s.who, others.map(x=>x.who), s.who+": "+s.f, rng, "who");
@@ -3300,7 +3304,7 @@ function qDetective(rng){
   return {...q, tname:"Study Detective · "+t.name, c:t.c};
 }
 function qWhoAmI(rng){
-  const s=pickR(STUDIES,rng), t=TMAP[s.t], others=studyOthers(s);
+  const s=pickR(STUDIES.filter(x=>topicOpen(x.t)),rng), t=TMAP[s.t], others=studyOthers(s);
   const q=mcq("Who am I?", s.who, others.map(x=>x.who), s.who+": "+s.f, rng, "whoami");
   arc.clue=1;
   return {...q, clues:["👥 My participants: "+s.p, "🔬 What I did: "+s.d, "📊 What I found: "+s.f, "💡 "+s.x], tname:"Who Am I? · "+t.name, c:t.c};
@@ -3497,7 +3501,7 @@ APPLY.push(
 /* ---- 🔗 study matcher, 🧩 put it in order ---- */
 const MATCH_RE=/^What did (.+?) find(?: about [^?]+)?\??$/i;
 function matchPairs(){
-  const sel=new Set(store.sel); let src=DATA.filter(d=>d.t!=="Exam skills" && MATCH_RE.test(d.q) && d.a.length>=25 && d.a.length<=140);
+  const sel=new Set(store.sel); let src=DATA.filter(d=>d.t!=="Exam skills" && topicOpen(d.t) && MATCH_RE.test(d.q) && d.a.length>=25 && d.a.length<=140);
   const mine=src.filter(d=>sel.has(d.t)); if(mine.length>=15) src=mine;
   const seen=new Set(), out=[];
   for(const d of shuffle(src)){ const who=d.q.match(MATCH_RE)[1].replace(/^the /,"The "); const k=who.toLowerCase().replace(/\s*\(\d{4}\)/,""); if(seen.has(k)) continue; seen.add(k); out.push({id:d.id, who, find:d.a, c:TMAP[d.t].c}); if(out.length===15) break; }
@@ -3506,13 +3510,13 @@ function matchPairs(){
 const mg={phase:"", pairs:[], round:0, left:[], right:[], sel:null, matched:new Set(), wrong:0, xp:0, t0:0, seqs:[], si:0, picked:[], checked:false, right2:0};
 function startMatch(){ mg.pairs=matchPairs(); mg.round=0; mg.wrong=0; mg.xp=0; mg.t0=Date.now(); mg.phase="match"; arc.phase="mini"; arc.mode="match"; setupRound(); renderArcade(); }
 function setupRound(){ const r=mg.pairs.slice(mg.round*5, mg.round*5+5); mg.left=shuffle(r); mg.right=shuffle(r); mg.sel=null; mg.matched=new Set(); }
-function startTimeline(){ const sel=new Set(store.sel); let s=TIMELINES.filter(x=>sel.has(x.t)); if(s.length<4) s=TIMELINES;
+function startTimeline(){ const sel=new Set(store.sel), all=TIMELINES.filter(x=>topicOpen(x.t)); let s=all.filter(x=>sel.has(x.t)); if(s.length<4) s=all;
   mg.seqs=shuffle(s).slice(0,4).map(x=>({t:x.t, title:x.title, steps:x.items.map(i=>i[0]), years:Object.fromEntries(x.items)}));
   mg.tl=true; mg.si=0; mg.picked=[]; mg.checked=false; mg.right2=0; mg.xp=0; mg.places=0; mg.placesTotal=0; mg.phase="order"; arc.phase="mini"; arc.mode="timeline"; mg.shuffled=shuffle(mg.seqs[0].steps); renderArcade(); }
-function startSort(){ const sel=new Set(store.sel); let s=SORT_SETS.filter(x=>sel.has(x.t)); if(s.length<3) s=SORT_SETS;
+function startSort(){ const sel=new Set(store.sel), all=SORT_SETS.filter(x=>topicOpen(x.t)); let s=all.filter(x=>sel.has(x.t)); if(s.length<3) s=all;
   mg.sets=shuffle(s).slice(0,3); mg.si=0; mg.items=shuffle(mg.sets[0].items); mg.ii=0; mg.right2=0; mg.total=mg.sets.reduce((a,x)=>a+x.items.length,0); mg.xp=0; mg.last=null; mg.busy=false;
   mg.phase="sort"; arc.phase="mini"; arc.mode="sort"; renderArcade(); }
-function startOrder(){ mg.tl=false; const sel=new Set(store.sel); let s=SEQUENCES.filter(x=>sel.has(x.t)); if(s.length<5) s=SEQUENCES; mg.seqs=shuffle(s).slice(0,5); mg.si=0; mg.picked=[]; mg.checked=false; mg.right2=0; mg.xp=0; mg.places=0; mg.placesTotal=0; mg.phase="order"; arc.phase="mini"; arc.mode="order"; mg.shuffled=shuffle(mg.seqs[0].steps); renderArcade(); }
+function startOrder(){ mg.tl=false; const sel=new Set(store.sel), all=SEQUENCES.filter(x=>topicOpen(x.t)); let s=all.filter(x=>sel.has(x.t)); if(s.length<5) s=all; mg.seqs=shuffle(s).slice(0,5); mg.si=0; mg.picked=[]; mg.checked=false; mg.right2=0; mg.xp=0; mg.places=0; mg.placesTotal=0; mg.phase="order"; arc.phase="mini"; arc.mode="order"; mg.shuffled=shuffle(mg.seqs[0].steps); renderArcade(); }
 function renderMini(area){
   if(mg.phase==="sort"){
     const set=mg.sets[mg.si], t=TMAP[set.t], it=mg.items[mg.ii];
