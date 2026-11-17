@@ -3451,15 +3451,15 @@ function cleanName(raw){
   return n;
 }
 const PET_SAYS={
-  rat:["Squeak! Let's revise. I'll hold the flashcards.","Cheese is my positive reinforcement. What's yours?","Skinner studied my cousins, you know.","I've been rehearsing. Maintenance rehearsal, obviously.","Lab rat by name, A* by nature."],
-  pigeon:["Coo! Every right answer is reinforcement. Keep pecking!","Skinner taught pigeons to play ping-pong. True story.","Seeds for answers? Best deal in psychology.","Peck the right answer. That's operant conditioning."],
-  monkey:["Ooh ooh! I'd pick the cloth mother every time.","Contact comfort beats milk. Harlow said so.","You're my secure base now.","Cuddles first, revision second. Okay, revision first."],
-  goose:["Honk! I'm following you now. That's imprinting.","Lorenz walked, the goslings followed. You revise, I follow.","Critical period alert: revise now!","Honk honk! Where are we going? Paper 1?"],
-  dog:["Woof! I get excited every time you open this site. Conditioned!","Ding! That's my conditioned stimulus.","Extinction? Not on my watch. Keep revising!","Pavlov would be proud of us both."],
-  peacock:["Behold my tail: sexual selection at its finest.","Peahens choose the best tail. Examiners choose the best answers.","Intersexual selection, darling.","Fully fanned and ready for revision."],
+  rat:["Squeak! Let's revise. I'll hold the flashcards.","Cheese is my positive reinforcement.","Skinner studied my cousins, you know.","I've been rehearsing. Maintenance rehearsal, obviously.","Lab rat by name, A* by nature."],
+  pigeon:["Coo! Every right answer is reinforcement.","Skinner taught pigeons to play ping-pong. True story.","Coo coo! That's operant conditioning.","One more question? Coo!"],
+  monkey:["Ooh ooh! I'd pick the cloth mother every time.","Contact comfort beats food. Harlow said so.","You're my secure base now.","Ooh ooh! Revision time!"],
+  goose:["Honk! You were the first thing I saw. That's imprinting.","Critical period alert: revise now!","Honk honk! Is it Paper 1 yet?","Lorenz's goslings would be proud."],
+  dog:["Woof! Ding! That's my conditioned stimulus.","Extinction? Not on my watch. Keep revising!","Pavlov would be proud of us both.","Woof woof! Classical conditioning!"],
+  peacock:["Look at all these eyespots!","Darwin was fascinated by peacocks.","Strutting into revision.","Fully fanned and ready to revise."],
   bobo:["Boing! I always bounce back. So can you.","Watch a model, copy the model. Social learning!","Wobble wobble. Vicarious reinforcement incoming!","Knocked down? Bounce back up. That's the rule."]
 };
-const PET_ZZ=["Mmm… five more minutes… consolidating memories…","zzz… is it Paper 1 yet…","zzz… the hippocampus… mmm…","…revise… later… zzz…"];
+const PET_ZZ=["Five more minutes… consolidating memories…","zzz… is it Paper 1 yet…","zzz… the hippocampus…","…revise… later… zzz…"];
 const petReduce=()=>{ try{ return matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){ return false; } };
 function petSay(a,text,zz){ a.querySelectorAll(".pet-bubble").forEach(b=>b.remove());
   const b=document.createElement("span"); b.className="pet-bubble"+(zz?" zz":""); b.setAttribute("role","status"); b.textContent=text; a.appendChild(b);
