@@ -1688,7 +1688,7 @@ function levelUp(n){
   sfx("lvl"); confetti(200);
   const o=document.createElement("div"); o.className="overlay";
   o.innerHTML=`<div class="levelup" role="dialog" aria-modal="true" aria-label="Level up"><div class="kick">Level up!</div><div class="num">${n}</div>
-    <h3>${r!==old?"New rank: "+esc(r):esc(r)}</h3>${n%10===0&&n<=100?`<p class="unlock">🏅 New certificate unlocked! Print it from the Badges tab.</p>`:""}${SKINS.filter(k=>k.lvl===n).map(k=>`<p class="unlock">🎨 New theme unlocked: <b>${esc(k.name)}</b>. Pick it in the Themes tab.</p>`).join("")}${n===PIGEON_LVL?`<p class="unlock">🐦 New pet unlocked: <b>Skinner's pigeon</b>! Swap pets on the Progress tab.</p>`:""}<p>${lvlStart(n+1)-G.xp} XP to level ${n+1}. Keep it going.</p><button class="btn" id="luOk">Let's go</button></div>`;
+    <h3>${r!==old?"New rank: "+esc(r):esc(r)}</h3>${n%10===0&&n<=100?`<p class="unlock">🏅 New certificate unlocked! Print it from the Badges tab.</p>`:""}${SKINS.filter(k=>k.lvl===n).map(k=>`<p class="unlock">🎨 New theme unlocked: <b>${esc(k.name)}</b>. Pick it in the Themes tab.</p>`).join("")}${Object.values(PETS).filter(p=>p.lvl===n).map(p=>`<p class="unlock">${p.emo} New pet unlocked: <b>${esc(p.label)}</b>! Swap pets on the Progress tab.</p>`).join("")}<p>${lvlStart(n+1)-G.xp} XP to level ${n+1}. Keep it going.</p><button class="btn" id="luOk">Let's go</button></div>`;
   document.body.appendChild(o);
   const close=()=>{ o.remove(); document.removeEventListener("keydown",esc2,true); };
   const esc2=e=>{ if(e.key==="Tab") return; e.stopPropagation(); if(e.key==="Escape"||e.key==="Enter"||e.key===" "){ e.preventDefault(); close(); } };
@@ -3163,16 +3163,24 @@ function planTasks(){
 
 /* ---- 🐀 revision pet (the same lab rat as the GCSE site): grows with right answers, dances when you hit your goal, falls asleep when you stop ---- */
 const PET_STAGES=[[0,"Baby rat"],[100,"Young rat"],[500,"Lab rat"],[2000,"Research rat"],[5000,"Wise rat"],[12000,"Professor rat"]];
-const PIGEON_LVL=15;
 const PETS={
-  rat:{emo:"🐀",noun:"lab rat",def:"Professor Squeaks",treat:"🧀",treatName:"Cheese",stages:PET_STAGES.map(x=>x[1])},
-  pigeon:{emo:"🐦",noun:"pigeon",def:"Professor Coo",treat:"🌽",treatName:"Corn",stages:["Pigeon chick","Young pigeon","Lab pigeon","Research pigeon","Wise pigeon","Professor pigeon"]}
+  rat:{lvl:0,emo:"🐀",noun:"lab rat",label:"Lab rat",def:"Professor Squeaks",treat:"🧀",treatName:"Cheese",stages:PET_STAGES.map(x=>x[1])},
+  pigeon:{lvl:20,emo:"🐦",noun:"pigeon",label:"Skinner's pigeon",def:"Skinner's Pigeon",treat:"🌽",treatName:"Corn",stages:["Pigeon chick","Young pigeon","Lab pigeon","Research pigeon","Wise pigeon","Professor pigeon"],
+    fact:"Skinner trained pigeons with operant conditioning, reinforcing them with grain. Your corn is positive reinforcement."},
+  monkey:{lvl:40,emo:"🐒",noun:"monkey",label:"Harlow's monkey",def:"Harlow's Monkey",treat:"🍌",treatName:"Bananas",stages:["Baby monkey","Young monkey","Lab monkey","Research monkey","Wise monkey","Professor monkey"],
+    fact:"Harlow's baby monkeys spent most of their time with a soft cloth 'mother' rather than a wire one that gave milk: contact comfort mattered more than food."},
+  goose:{lvl:60,emo:"🪿",noun:"goose",label:"Lorenz's goose",def:"Lorenz's Goose",treat:"🌾",treatName:"Grain",stages:["Gosling","Young goose","Lab goose","Research goose","Wise goose","Professor goose"],
+    fact:"Lorenz's goslings imprinted on him, following the first moving object they saw during a critical period."},
+  dog:{lvl:80,emo:"🐕",noun:"dog",label:"Pavlov's dog",def:"Pavlov's Dog",treat:"🦴",treatName:"Bones",stages:["Little dog","Young dog","Lab dog","Research dog","Wise dog","Professor dog"],
+    fact:"Pavlov's dogs learned to salivate at a sound that had been paired with food: classical conditioning."},
+  peacock:{lvl:100,emo:"🦚",noun:"peacock",label:"Darwin's peacock",def:"Darwin's Peacock",treat:"🍇",treatName:"Berries",stages:["Peachick","Young peacock","Lab peacock","Research peacock","Wise peacock","Professor peacock"],
+    fact:"The peacock's tail is the classic example of sexual selection: peahens choose males with the most impressive tails (intersexual selection)."}
 };
-const pigeonOpen=()=>lvlFor(G.xp)>=PIGEON_LVL||isTeacher()||DEMO;
-function petType(){ return G.petType==="pigeon"&&pigeonOpen()?"pigeon":"rat"; }
+const petOpen=k=>!!PETS[k] && (lvlFor(G.xp)>=PETS[k].lvl||isTeacher()||DEMO);
+function petType(){ return PETS[G.petType]&&petOpen(G.petType)?G.petType:"rat"; }
 const PT=()=>PETS[petType()];
 const stageName=i=>PT().stages[i];
-function petName(){ return petType()==="pigeon" ? (G.pigeonName||PETS.pigeon.def) : (G.petName||"Professor Squeaks"); }
+function petName(){ const t=petType(); return t==="rat" ? (G.petName||"Professor Squeaks") : ((G.petNames||{})[t]||PETS[t].def); }
 function petStage(){ const n=G.st.right||0; let s=0; PET_STAGES.forEach(([v],i)=>{ if(n>=v) s=i; }); return s; }
 function petDaysAway(){ const days=Object.keys(G.hist||{}).filter(d=>G.hist[d]>0).sort(); if(!days.length) return -1; return dayNum(today())-dayNum(days[days.length-1]); }
 function petMood(){
@@ -3192,7 +3200,7 @@ const PET_MSG = {
   asleep:"has fallen fast asleep 💤 Answer some questions to wake him up!",
 };
 function petSVG(stage, mood, px){
-  if(petType()==="pigeon") return pigeonSVG(stage, mood, px);
+  const pt=petType(); if(pt!=="rat") return PET_ART[pt](stage, mood, px);
   const sc=.62+stage*.076, sleepy=mood==="sleepy"||mood==="asleep", happy=mood==="ecstatic"||mood==="happy"||mood==="new";
   const eye = x => sleepy ? `<path d="M${x-5} 50 q5 ${mood==="asleep"?4:3} 10 0" stroke="#2A2230" stroke-width="2.6" fill="none" stroke-linecap="round"/>`
                           : `<circle cx="${x}" cy="49" r="4.4" fill="#2A2230"/><circle cx="${x+1.5}" cy="47.4" r="1.4" fill="#fff"/>`;
@@ -3244,21 +3252,99 @@ function pigeonSVG(stage, mood, px){
     ${mood==="ecstatic"?`<g class="pet-spark" font-size="16"><text x="12" y="24">✨</text><text x="128" y="44">🎉</text></g>`:""}
   </svg>`;
 }
+/* shared bits for the unlockable pets: eyes, mouth, lab coat (3), glasses (4), graduation cap (5), name tag (2) */
+function petWrap(kind, stage, mood, px, inner, zx){
+  const sleepy=mood==="sleepy"||mood==="asleep", sc=.62+stage*.076; zx=zx||[102,42];
+  return `<svg class="pet-svg ${mood}" viewBox="0 0 160 120" width="${px}" height="${px*.75}" role="img" aria-label="Your ${PETS[kind].noun}, ${esc(PETS[kind].stages[stage])}, ${mood}">
+    <g class="pet-body"><g transform="translate(80 118) scale(${sc}) translate(-80 -118)">${inner}</g></g>
+    ${sleepy?`<g class="pet-z" fill="#7B8BB8" font-family="var(--display)" font-weight="800"><text x="${zx[0]}" y="${zx[1]}" font-size="15">z</text><text x="${zx[0]+12}" y="${zx[1]-11}" font-size="19">Z</text>${mood==="asleep"?`<text x="${zx[0]+26}" y="${zx[1]-20}" font-size="22">Z</text>`:""}</g>`:""}
+    ${mood==="ecstatic"?`<g class="pet-spark" font-size="16"><text x="12" y="24">✨</text><text x="128" y="44">🎉</text></g>`:""}
+  </svg>`;
+}
+const petMoodFlags=m=>({sleepy:m==="sleepy"||m==="asleep", happy:m==="ecstatic"||m==="happy"||m==="new"});
+function petEye(x,y,mood,iris){ const {sleepy}=petMoodFlags(mood);
+  if(sleepy) return `<path d="M${x-5} ${y+1} q5 ${mood==="asleep"?4:3} 10 0" stroke="#2A2230" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+  return (iris?`<circle cx="${x}" cy="${y}" r="5.4" fill="${iris}"/>`:"")+`<circle cx="${x}" cy="${y}" r="${iris?3:4.4}" fill="#2A2230"/><circle cx="${x+1.4}" cy="${y-1.5}" r="1.3" fill="#fff"/>`; }
+function petMouth(x,y,mood){ return petMoodFlags(mood).happy?`<path d="M${x-6} ${y} q6 6 12 0" stroke="#2A2230" stroke-width="2.2" fill="none" stroke-linecap="round"/>`:`<path d="M${x-5} ${y+2} h10" stroke="#2A2230" stroke-width="2" stroke-linecap="round"/>`; }
+function petGlasses(stage,eyes,side){ if(stage<4) return ""; const [a,b]=eyes;
+  return side?`<g stroke="#2A2230" stroke-width="2.2" fill="none"><circle cx="${a[0]}" cy="${a[1]}" r="8.5"/><path d="M${a[0]+8.5} ${a[1]-1} h14"/></g>`
+             :`<g stroke="#2A2230" stroke-width="2.2" fill="none"><circle cx="${a[0]}" cy="${a[1]}" r="8"/><circle cx="${b[0]}" cy="${b[1]}" r="8"/><path d="M${a[0]+8} ${a[1]} H${b[0]-8}"/></g>`; }
+function petCap(stage,x,top){ if(stage<5) return ""; const y=top-4;
+  return `<g><path d="M${x-24} ${y} l24 -10 l24 10 l-24 10z" fill="#1E2233"/><rect x="${x-12}" y="${y}" width="24" height="9" fill="#1E2233"/><path d="M${x+24} ${y} v12" stroke="#E2B53E" stroke-width="2"/><circle cx="${x+24}" cy="${y+13}" r="2.5" fill="#E2B53E"/></g>`; }
+const petTag=(stage,x,y)=>stage===2?`<path d="M${x-8} ${y} l8 -5 l8 5 l-8 5z" fill="#E11D74"/>`:"";
+const petCoat=(stage,d,seam)=>stage>=3?`<path d="${d}" fill="#FFFFFF" opacity=".95"/>${seam?`<path d="${seam}" stroke="#D6DAE2" stroke-width="2"/>`:""}`:"";
+const PET_ART={
+  pigeon:(stage,mood,px)=>pigeonSVG(stage,mood,px),
+  monkey:(stage,mood,px)=>{ const F="#A86F45", S="#F2C9A8";
+    return petWrap("monkey",stage,mood,px,`
+      <path d="M116 98 q34 2 30 -28 q-3 -14 -14 -9" stroke="${F}" stroke-width="5.5" fill="none" stroke-linecap="round" class="pet-tail"/>
+      <ellipse cx="86" cy="88" rx="34" ry="26" fill="${F}"/><ellipse cx="86" cy="94" rx="20" ry="16" fill="${S}" opacity=".7"/>
+      ${petCoat(stage,"M58 72 q28 18 56 0 l6 38 h-68z","M86 76 v32")}
+      <ellipse cx="68" cy="112" rx="10" ry="5" fill="${S}"/><ellipse cx="104" cy="112" rx="10" ry="5" fill="${S}"/>
+      <circle cx="31" cy="54" r="11" fill="${F}"/><circle cx="31" cy="54" r="6" fill="${S}"/><circle cx="89" cy="54" r="11" fill="${F}"/><circle cx="89" cy="54" r="6" fill="${S}"/>
+      <circle cx="60" cy="54" r="28" fill="${F}"/>
+      <circle cx="51" cy="49" r="10" fill="${S}"/><circle cx="69" cy="49" r="10" fill="${S}"/><ellipse cx="60" cy="63" rx="19" ry="14" fill="${S}"/>
+      ${petEye(51,49,mood)}${petEye(69,49,mood)}${petGlasses(stage,[[51,49],[69,49]])}
+      <circle cx="57" cy="60" r="1.6" fill="#6B4226"/><circle cx="63" cy="60" r="1.6" fill="#6B4226"/>
+      ${petMouth(60,66,mood)}${petCap(stage,60,28)}${petTag(stage,60,84)}`); },
+  goose:(stage,mood,px)=>{ const young=stage<2, B=young?"#F6D55C":"#F4F1EA", W=young?"#E9C23E":"#DCD6CA";
+    return petWrap("goose",stage,mood,px,`
+      <path class="pet-tail" d="M126 78 l20 -8 l-4 16z" fill="${W}"/>
+      <path d="M80 104 v8 m-6 0 h12 M100 104 v8 m-6 0 h12" stroke="#F29A2E" stroke-width="3.6" stroke-linecap="round"/>
+      <ellipse cx="94" cy="84" rx="38" ry="24" fill="${B}" stroke="#D9D2C3" stroke-width="${young?0:1.2}"/>
+      <ellipse cx="102" cy="80" rx="25" ry="14" fill="${W}"/><path d="M84 80 q16 6 36 0" stroke="${young?"#D6AE2C":"#C3BBAA"}" stroke-width="2" fill="none"/>
+      ${petCoat(stage,"M64 74 q18 16 44 8 l4 24 h-50z","M82 84 v22")}
+      <path d="M70 80 Q58 66 54 44" stroke="${B}" stroke-width="17" fill="none" stroke-linecap="round"/>
+      <circle cx="52" cy="40" r="14" fill="${B}"/>
+      ${petEye(50,38,mood)}${petGlasses(stage,[[50,38]],true)}
+      <ellipse cx="57" cy="47" rx="4" ry="2.6" fill="#F2B8C6" opacity=".8"/>
+      ${petMoodFlags(mood).happy?`<path d="M40 40 l-15 3 l15 2z" fill="#F29A2E"/><path d="M40 46 l-12 1 l12 2z" fill="#E0861E"/>`:`<path d="M40 40 l-15 4 l15 4z" fill="#F29A2E"/>`}
+      ${petCap(stage,52,26)}${petTag(stage,62,72)}`,[76,30]); },
+  dog:(stage,mood,px)=>{ const F="#D9A066", D="#8E5A2E", M="#F5E2C6";
+    return petWrap("dog",stage,mood,px,`
+      <path d="M116 90 q22 -4 24 -26" stroke="${F}" stroke-width="7" fill="none" stroke-linecap="round" class="pet-tail"/>
+      <ellipse cx="88" cy="88" rx="36" ry="27" fill="${F}"/>
+      ${petCoat(stage,"M60 70 q28 18 56 0 l6 40 h-68z","M88 74 v34")}
+      <ellipse cx="70" cy="112" rx="10" ry="5" fill="${M}"/><ellipse cx="104" cy="112" rx="10" ry="5" fill="${M}"/>
+      <circle cx="60" cy="54" r="27" fill="${F}"/>
+      <ellipse cx="33" cy="58" rx="9" ry="18" fill="${D}" transform="rotate(16 33 58)"/><ellipse cx="87" cy="58" rx="9" ry="18" fill="${D}" transform="rotate(-16 87 58)"/>
+      <ellipse cx="60" cy="65" rx="15" ry="11" fill="${M}"/>
+      ${petEye(50,49,mood)}${petEye(70,49,mood)}${petGlasses(stage,[[50,49],[70,49]])}
+      <ellipse cx="60" cy="60" rx="5.5" ry="4" fill="#2A2230"/>
+      ${petMouth(60,67,mood)}${petMoodFlags(mood).happy?`<ellipse cx="62" cy="73" rx="3.6" ry="4.4" fill="#E88AA2"/>`:""}
+      ${stage!==2?`<path d="M42 78 q18 8 36 0" stroke="#C0392B" stroke-width="4" fill="none" stroke-linecap="round"/>`:""}
+      ${petCap(stage,60,27)}${petTag(stage,60,84)}`); },
+  peacock:(stage,mood,px)=>{ const young=stage<2, B=young?"#B98B5A":"#2F6FC0", N=young?"#A9794A":"#2557A8";
+    const fan=young?`<path class="pet-tail" d="M114 84 l26 -6 l-2 14z" fill="#8A6A3E"/>`
+      :`<g class="pet-tail">${(R=>[-66,-49,-33,-16,0,16,33,49,66].map(a=>`<g transform="rotate(${a} 102 92)"><ellipse cx="102" cy="${92-R/2-2}" rx="10" ry="${R/2+2}" fill="#2E8B57"/><circle cx="102" cy="${92-R+9}" r="7" fill="#E2B53E"/><circle cx="102" cy="${92-R+9}" r="3.9" fill="#1E3F8F"/></g>`).join(""))(stage>=4?60:stage>=3?54:46)}</g>`;
+    return petWrap("peacock",stage,mood,px,`${fan}
+      <path d="M80 104 v8 m-6 0 h12 M98 104 v8 m-6 0 h12" stroke="#8C8C96" stroke-width="3.4" stroke-linecap="round"/>
+      <ellipse cx="90" cy="86" rx="32" ry="22" fill="${B}"/><ellipse cx="98" cy="84" rx="20" ry="13" fill="${young?"#9C7344":"#B08A55"}"/>
+      ${petCoat(stage,"M64 76 q16 14 38 8 l4 22 h-46z","M80 84 v22")}
+      <path d="M70 82 Q60 68 56 48" stroke="${N}" stroke-width="15" fill="none" stroke-linecap="round"/>
+      <circle cx="55" cy="44" r="13" fill="${B}"/>
+      ${young?"":`<g stroke="${N}" stroke-width="1.6"><path d="M54 31 l-5 -12 M57 31 l0 -13 M60 32 l5 -12"/></g><g fill="${B}"><circle cx="49" cy="19" r="2.6"/><circle cx="57" cy="18" r="2.6"/><circle cx="65" cy="20" r="2.6"/></g>`}
+      <path d="M46 40 q5 -3 9 0" stroke="#fff" stroke-width="2" fill="none" opacity=".85"/>
+      ${petEye(51,44,mood)}${petGlasses(stage,[[51,44]],true)}
+      <ellipse cx="58" cy="51" rx="4" ry="2.4" fill="#F2B8C6" opacity=".8"/>
+      ${petMoodFlags(mood).happy?`<path d="M43 44 l-11 3 l11 2z" fill="#6B6B76"/><path d="M42 49 l-8 1 l8 2z" fill="#55555F"/>`:`<path d="M43 44 l-11 4 l11 3z" fill="#6B6B76"/>`}
+      ${petCap(stage,55,31)}${petTag(stage,64,74)}`,[20,40]); }
+};
 function petLine(m){ return m==="new" ? `Meet <b>${esc(petName())}</b>, your new ${PT().noun}! Answer questions to help him grow.` : `<b>${esc(petName())}</b> ${esc(PET_MSG[m])}`; }
 const petCheese=()=>Math.min(3,Math.floor(((G.hist||{})[today()]||0)/10));
 function petBoxHTML(){
   const st=petStage(), mood=petMood(), n=G.st.right||0, next=PET_STAGES[st+1], cheese=petCheese();
-  const P=PT(), pOpen=pigeonOpen(), lv=lvlFor(G.xp);
+  const P=PT(), cur=petType();
   return `<div class="box pet-box"><div class="pet-art">${petSVG(st,mood,220)}</div>
     <div class="pet-info"><h3 style="margin:0">${P.emo} <span>${esc(petName())}</span> <button class="linkbtn" id="petRename" style="font-size:14px">Rename</button></h3>
       <p class="muted" style="margin:2px 0 8px">${esc(stageName(st))}${next?` · ${(next[0]-n).toLocaleString()} more right answers to become a ${esc(stageName(st+1).toLowerCase())}`:" · fully grown legend 🎓"}</p>
       ${next?`<div class="xpbar" style="margin-bottom:10px"><i style="width:${(n-PET_STAGES[st][0])/(next[0]-PET_STAGES[st][0])*100}%"></i></div>`:""}
       <p class="pet-msg">${petLine(mood)}</p>
       <p class="muted" style="margin:6px 0 0;font-size:15px">${P.treatName} today: ${P.treat.repeat(cheese)}${`<span style='opacity:.25'>${P.treat}</span>`.repeat(3-cheese)} <span style="font-size:13px">(one for every 10 answers)</span></p>
-      ${petType()==="pigeon"?`<p class="muted" style="margin:6px 0 0;font-size:14px">🔬 Skinner trained pigeons with operant conditioning, reinforcing them with grain. Your corn is positive reinforcement.</p>`:""}
+      ${P.fact?`<p class="muted" style="margin:6px 0 0;font-size:14px">🔬 ${esc(P.fact)}</p>`:""}
       <div class="pet-pick" role="group" aria-label="Choose your pet"><span class="muted">Pet:</span>
-        <button class="petbtn" data-pet="rat" aria-pressed="${petType()==="rat"}">🐀 Lab rat</button>
-        <button class="petbtn" data-pet="pigeon" aria-pressed="${petType()==="pigeon"}" ${pOpen?"":"disabled"}>🐦 Skinner's pigeon${pOpen?"":` 🔒 level ${PIGEON_LVL}`}</button></div>
+        ${Object.entries(PETS).map(([k,p])=>{ const ok=petOpen(k); return `<button class="petbtn" data-pet="${k}" aria-pressed="${cur===k}" ${ok?"":"disabled"}>${p.emo} ${esc(p.label)}${ok?"":` 🔒 ${p.lvl}`}</button>`; }).join("")}</div>
+      <p class="muted" style="margin:6px 0 0;font-size:13px">A new pet from a famous study unlocks every 20 levels. Swap back any time.</p>
     </div></div>`;
 }
 const NAME_BLOCK = (()=>{ try{ return JSON.parse(atob("W1siZnVjayIsICJmdWsiLCAiZmNrIiwgInNoaXQiLCAiY3VudCIsICJiaXRjaCIsICJiYXN0YXJkIiwgIndhbmsiLCAidHdhdCIsICJwdXNzeSIsICJzbHV0IiwgIndob3JlIiwgIm5pZ2ciLCAibmlnZ2EiLCAiZmFnZyIsICJmYWdnb3QiLCAicmV0YXJkIiwgInJhcGUiLCAicmFwaXN0IiwgInBvcm4iLCAicGVuaXMiLCAidmFnaW5hIiwgImRpbGRvIiwgImJvbGxvY2siLCAiYmVsbGVuZCIsICJ0b3NzZXIiLCAibm9uY2UiLCAic3Bhc3RpYyIsICJuYXppIiwgImhpdGxlciIsICJqaXp6IiwgImJ1a2tha2UiLCAiY2xpdCIsICJzaGFnIiwgImJ1Z2dlciIsICJtaW5nZSIsICJrbm9iIiwgIm1vdGhlcmYiLCAic2gxdCIsICJwYWVkbyIsICJwZWRvIiwgImluY2VsIiwgImhvcm55IiwgImJvb2IiLCAidGVzdGljbGUiLCAic2Nyb3QiLCAiZGlja2hlYWQiLCAiY29ja3N1Y2siLCAiYXJzZWhvbGUiLCAiYXNzaG9sZSIsICJ3YW5rZXIiLCAibWlsZiIsICJvbmx5ZmFucyIsICJreXMiLCAia2lsbHlvdXJzZWxmIiwgInN1aWNpZGUiLCAiY29vbiIsICJjaGluayIsICJnb29rIiwgImtpa2UiLCAid29nIiwgInRyYW5ueSIsICJkeWtlIiwgImhvbW8iXSwgWyJkaWNrIiwgImNvY2siLCAiYXJzZSIsICJhc3MiLCAidGl0IiwgInRpdHMiLCAidGl0dHkiLCAiY3VtIiwgInNleCIsICJzZXh5IiwgImFuYWwiLCAiYW51cyIsICJwb28iLCAicG9vcCIsICJwZWUiLCAicGlzcyIsICJwcmljayIsICJjcmFwIiwgInNsYWciLCAic2thbmsiLCAiaG9lIiwgImhvIiwgInNwYXoiLCAicGFraSIsICJnYXkiLCAibGVzYm8iLCAiYnV0dCIsICJidW0iLCAiYmFsbHMiLCAibnV0IiwgIm51dHMiLCAiZmFydCIsICJ0dXJkIiwgImRhbW4iLCAiaGVsbCIsICJ3aWxseSIsICJ3ZWUiLCAiYmoiLCAiZGsiLCAic3RmdSIsICJ3dGYiLCAiZnUiLCAiZm1sIiwgImxtZmFvIiwgImhvcmUiLCAidGhvdCIsICJzaW1wIiwgImR1bWIiLCAiaWRpb3QiLCAic3R1cGlkIiwgInVnbHkiLCAiZmF0IiwgImxvc2VyIiwgIm1vcm9uIiwgInN1Y2tzIiwgInNtZWxseSIsICJzdGlua3kiLCAia2lsbCIsICJkaWUiLCAiZGVhZCIsICJtdXJkZXIiLCAiZ3VuIiwgImJvbWIiLCAiZHJ1Z3MiLCAid2VlZCIsICJjcmFjayJdXQ==")); }catch(e){ return [[],[]]; } })();
@@ -3277,9 +3363,9 @@ function cleanName(raw){
 function wirePet(){
   document.querySelectorAll("[data-pet]").forEach(c=>c.onclick=()=>{ if(c.disabled) return; G.petType=c.dataset.pet; save(); renderTrophies(); petHud(); });
   const b=$("#petRename"); if(b) b.onclick=()=>{
-  const pig=petType()==="pigeon";
+  const pt=petType();
   let n=prompt(`Name your ${PT().noun} (letters only, up to 20):`, petName());
-  while(n!==null){ const ok=cleanName(n); if(ok){ if(pig) G.pigeonName=ok; else G.petName=ok; save(); renderTrophies(); petHud(); return; }
+  while(n!==null){ const ok=cleanName(n); if(ok){ if(pt==="rat") G.petName=ok; else { G.petNames=G.petNames||{}; G.petNames[pt]=ok; } save(); renderTrophies(); petHud(); return; }
     n=prompt("Let's keep it friendly! Pick a different name (letters only, 2–20 characters):", PT().def); }
 }; }
 function petHud(){ const b=$("#petStrip"); if(!b) return; const m=petMood(), st=petStage(), cheese=petCheese();
@@ -3289,7 +3375,7 @@ function petHud(){ const b=$("#petStrip"); if(!b) return; const m=petMood(), st=
   b.setAttribute("aria-label",`${petName()} the ${PT().noun}: ${PET_MSG[m]} Open progress`); }
 function petCheck(){
   if(G.petName && !cleanName(G.petName)) delete G.petName;
-  if(G.pigeonName && !cleanName(G.pigeonName)) delete G.pigeonName;
+  if(G.petNames) for(const k in G.petNames) if(!cleanName(G.petNames[k])) delete G.petNames[k];
   G.petS=G.petS||{stage:petStage(), mood:""}; const p=G.petS, st=petStage(), m=petMood(), nm=petName();
   if(st>p.stage){ p.stage=st; save(); setTimeout(()=>{ toast(PT().emo,`${nm} grew into a ${stageName(st).toLowerCase()}!`,st>=5?"He's wearing a graduation cap. Legendary.":st>=4?"Look, glasses! So wise.":st>=3?"He's got his own lab coat now.":"Keep revising to help him grow."); confetti(100); },600); }
   if((p.mood==="sleepy"||p.mood==="asleep") && (m==="happy"||m==="ecstatic")) setTimeout(()=>toast(PT().emo,`${nm} woke up!`,"He's so happy to see you revising again."),400);
@@ -4616,7 +4702,7 @@ const TOUR=[
   ["🗂️","Flashcards","<p>Pick your topics above, then answer each card:</p><ul><li><b>Multiple choice</b>: tap an answer or press 1–4.</li><li><b>⌨️ Type it</b>: type your answer and it's marked for you on the key terms. Typed answers earn <b>2× XP</b>.</li><li><b>✏️ Gap fill</b>: type the missing key term.</li></ul><p>Cards you get wrong come back until you know them.</p>"],
   ["✍️","Quiz and Writing","<p>Try a <b>Quick quiz</b>, or head to <b>Writing</b> for 16- and 8-mark essays, Design a study and timed mini mocks. Long writing earns <b>2× XP</b>.</p><p>Parents and carers can test you too in <b>👪 Parent mode</b>.</p>"],
   ["🕹️","Arcade","<p>The Daily 10, the Weekly Challenge, Boss Battles, Study Detective, Who Am I?, Sort It, Timeline, Spot the Flaw and more.</p><p>Check the <b>🎲 Game of the Day</b> for double XP.</p>"],
-  ["🐀","Level up","<p>Every answer earns XP. Climb 100 levels, keep your 🔥 streak, earn ⭐ mastery stars in every topic, and collect badges and themes.</p><p>Your lab rat, <b>Professor Squeaks</b>, grows as you revise and gets sleepy if you stay away. Reach level 15 to swap him for Skinner's pigeon. 🐦</p><p>Psst… there are secret scrolls hidden around the site. 📜</p>"],
+  ["🐀","Level up","<p>Every answer earns XP. Climb 100 levels, keep your 🔥 streak, earn ⭐ mastery stars in every topic, and collect badges and themes.</p><p>Your lab rat, <b>Professor Squeaks</b>, grows as you revise and gets sleepy if you stay away. Every 20 levels unlocks a new pet from a famous study. 🐦🐒🪿🐕🦚</p><p>Psst… there are secret scrolls hidden around the site. 📜</p>"],
   ["💾","Keep your progress safe","<p>Your progress is saved in <b>this browser only</b>. Nothing goes online.</p><p>Back it up in the <b>💾 Saves</b> tab every week or so, especially before you change phone or clear your browser. You can also send Mr Wakefield a progress report from there.</p><p>Good luck. Keep right on! 💙</p>"]
 ];
 const WHATS_NEW=["🟩 <b>Psychle:</b> guess the daily psychology word in six tries, then share your result.","🔗 <b>Connections:</b> find four hidden groups of four terms.","🤥 <b>Two Truths and a Lie</b>, 👆 <b>True or False</b> (swipe!) and 📈 <b>Higher or Lower</b> with real study findings.","✍️ <b>Exam technique:</b> Build the Paragraph and Be the Examiner.","📅 <b>Year 12 or 13?</b> Games only use topics you've been taught. Change your year in 💾 Saves."];
