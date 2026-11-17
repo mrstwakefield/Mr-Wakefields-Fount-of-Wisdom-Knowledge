@@ -619,6 +619,8 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .pet-z text{animation:petz 2.4s ease-in-out infinite}
 .pet-z text:nth-child(2){animation-delay:.4s}.pet-z text:nth-child(3){animation-delay:.8s}
 @keyframes petdance{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-6px) rotate(3deg)}}
+.pet-svg.happy .bobo-wob,.pet-svg.new .bobo-wob{animation:bobowob 1.4s ease-in-out infinite alternate;transform-origin:80px 112px;transform-box:view-box}
+@keyframes bobowob{from{transform:rotate(-7deg)}to{transform:rotate(7deg)}}
 @keyframes petwag{from{transform:rotate(-6deg)}to{transform:rotate(8deg)}}
 @keyframes petz{0%,100%{opacity:.2;transform:translateY(4px)}50%{opacity:1;transform:translateY(-2px)}}
 @media (prefers-reduced-motion:reduce){.pet-svg *{animation:none!important}}
@@ -912,6 +914,9 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 :root[data-skin="petpeacock"]{--paper:#0B2A3A;--card:#123F55;--ink:#F2F7FA;--muted:#A9C8D6;--line:#1E5F7A;--soft:#16506B;--good:#6EE7A8;--good-bg:#174A3A;--warn:#F2C14E;--warn-bg:#3E3514;color-scheme:dark}
 :root[data-skin="petpeacock"] body{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22140%22%20height%3D%22140%22%20opacity%3D%22.4%22%3E%3Ctext%20x%3D%2210%22%20y%3D%2244%22%20font-size%3D%2230%22%3E%F0%9F%A6%9A%3C/text%3E%3Ctext%20x%3D%2278%22%20y%3D%22112%22%20font-size%3D%2230%22%3E%F0%9F%AA%B6%3C/text%3E%3Ctext%20x%3D%2284%22%20y%3D%2244%22%20font-size%3D%2218%22%3E%E2%9C%A8%3C/text%3E%3Ctext%20x%3D%2218%22%20y%3D%22108%22%20font-size%3D%2218%22%3E%F0%9F%AA%B6%3C/text%3E%3C/svg%3E");background-size:140px 140px}
 :root[data-skin="petpeacock"] .xpbar i{background:linear-gradient(90deg,#1E3F8F,#2E8B57,#E2B53E,#2E8B57,#1E3F8F)}
+:root[data-skin="petbobo"]{--paper:#FDE2E2;--card:#FFFFFF;--ink:#2A1420;--muted:#6B2E3E;--line:#F2A0A0;--soft:#E3F0FF;--good:#1C7F57;--good-bg:#D9F2E4;--warn:#B71C1C;--warn-bg:#FFE0E0;color-scheme:light}
+:root[data-skin="petbobo"] body{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22140%22%20height%3D%22140%22%20opacity%3D%22.45%22%3E%3Ctext%20x%3D%2210%22%20y%3D%2244%22%20font-size%3D%2230%22%3E%F0%9F%8E%88%3C/text%3E%3Ctext%20x%3D%2278%22%20y%3D%22112%22%20font-size%3D%2230%22%3E%F0%9F%8E%AA%3C/text%3E%3Ctext%20x%3D%2284%22%20y%3D%2244%22%20font-size%3D%2218%22%3E%E2%AD%90%3C/text%3E%3Ctext%20x%3D%2218%22%20y%3D%22108%22%20font-size%3D%2218%22%3E%F0%9F%94%B4%3C/text%3E%3C/svg%3E");background-size:140px 140px}
+:root[data-skin="petbobo"] .xpbar i{background:repeating-linear-gradient(90deg,#E53935 0 12px,#FFFFFF 12px 24px,#1E5FAF 24px 36px)}
 :root[data-skin="squeaks"]{--paper:#FF7EB6;--card:#FFF4B0;--ink:#2A1030;--muted:#6A1F4E;--line:#E0428C;--soft:#FFD93B;--good:#0E7A3E;--good-bg:#C9F7D6;--warn:#B0124F;--warn-bg:#FFD0E2;color-scheme:light}
 :root[data-skin="squeaks"] body{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22140%22%20height%3D%22140%22%20opacity%3D%22.5%22%3E%3Ctext%20x%3D%2210%22%20y%3D%2244%22%20font-size%3D%2230%22%3E%F0%9F%90%80%3C/text%3E%3Ctext%20x%3D%2270%22%20y%3D%22104%22%20font-size%3D%2230%22%3E%F0%9F%A7%80%3C/text%3E%3Ctext%20x%3D%2274%22%20y%3D%2240%22%20font-size%3D%2218%22%3E%F0%9F%8E%93%3C/text%3E%3Ctext%20x%3D%2216%22%20y%3D%22100%22%20font-size%3D%2218%22%3E%E2%9C%A8%3C/text%3E%3C/svg%3E");background-size:140px 140px}
 :root[data-skin="squeaks"] .xpbar i{background:repeating-linear-gradient(45deg,#FF2E88 0 12px,#FFD93B 12px 24px,#7CE0FF 24px 36px)}
@@ -1141,6 +1146,7 @@ const SKINS=[
   {id:"petgoose", name:"Lorenz's Goose", lvl:60, sw:["#BFE6F2","#F29A2E"], desc:"Unlocks with Lorenz's goose: follow the first thing you see 🪿"},
   {id:"petdog", name:"Pavlov's Dog", lvl:80, sw:["#F6D9A0","#C0392B"], desc:"Unlocks with Pavlov's dog: ding ding, you're conditioned 🔔"},
   {id:"petpeacock", name:"Darwin's Peacock", lvl:100, sw:["#0B2A3A","#2E8B57"], desc:"Unlocks with Darwin's peacock: the most impressive tail wins 🦚"},
+  {id:"petbobo", name:"Bobo Doll", lvl:999, hidden:true, unlock:()=>petOpen("bobo"), sw:["#FDE2E2","#E53935"], desc:"Bonus: bounce back from a wrong answer with 15 right in a row 🎈"},
   {id:"squeaks", name:"Professor Squeaks", lvl:100, sw:["#FF7EB6","#FFD93B"], desc:"Level 100: graduation day for your lab rat 🐀🧀🎓"},
   {id:"stan", name:"Stan Gold", lvl:100, sw:["#12100A","#F2C14E"], desc:"Dedicated Wakefield Stans only"},
   {id:"y12class", name:"Class of 2028", lvl:999, hidden:true, unlock:()=>store.year==="12"||isTeacher(), sw:["#EAF3FE","#6198EC"], desc:"Year 12 only 💙"},
@@ -1775,7 +1781,7 @@ function goalMet(){
 function answer({ok, el, mode, gold, boost}){
   checkStreak();
   const t=today();
-  G.st.cards++; if(ok) G.st.right++;
+  G.st.cards++; if(ok) G.st.right++; boboTrack(ok);
   if(ok){ combo++; if(combo>G.st.combo) G.st.combo=combo; } else { if(combo===7) G.sec.miller=1; combo=0; }
   const base = mode==="quiz" ? (ok?15:4) : mode==="arcade" ? (ok?6:1) : (ok?10:3);
   let mult = ok ? comboMult() : 1;
@@ -3202,9 +3208,17 @@ const PETS={
   dog:{lvl:80,emo:"🐕",noun:"dog",label:"Pavlov's dog",def:"Pavlov's Dog",treat:"🦴",treatName:"Bones",stages:["Little dog","Young dog","Lab dog","Research dog","Wise dog","Professor dog"],
     fact:"Pavlov's dogs learned to salivate at a sound that had been paired with food: classical conditioning."},
   peacock:{lvl:100,emo:"🦚",noun:"peacock",label:"Darwin's peacock",def:"Darwin's Peacock",treat:"🍇",treatName:"Berries",stages:["Peachick","Young peacock","Lab peacock","Research peacock","Wise peacock","Professor peacock"],
-    fact:"The peacock's tail is the classic example of sexual selection: peahens choose males with the most impressive tails (intersexual selection)."}
+    fact:"The peacock's tail is the classic example of sexual selection: peahens choose males with the most impressive tails (intersexual selection)."},
+  bobo:{lvl:0,bonus:true,emo:"🎈",noun:"Bobo doll",label:"Bandura's Bobo doll",def:"Bandura's Bobo",treat:"🎈",treatName:"Balloons",stages:["Mini Bobo","Young Bobo","Lab Bobo","Research Bobo","Wise Bobo","Professor Bobo"],
+    fact:"In Bandura's Bobo doll study, children who watched an adult model hit the doll were more likely to copy them: learning by observing a model."}
 };
-const petOpen=k=>!!PETS[k] && (lvlFor(G.xp)>=PETS[k].lvl||isTeacher()||DEMO);
+const BOBO_N=15; /* bonus pet: after a wrong answer, get the next BOBO_N right in a row */
+const petOpen=k=>!!PETS[k] && (PETS[k].bonus ? !!G.bobo : lvlFor(G.xp)>=PETS[k].lvl) || (!!PETS[k] && (isTeacher()||DEMO));
+function boboTrack(ok){
+  if(!ok){ G.bb=0; return; }
+  if(G.bb==null || G.bb<0) return; G.bb++; if(G.bb>(G.bbBest||0)) G.bbBest=G.bb;
+  if(G.bb>=BOBO_N && !G.bobo){ G.bobo=1; save(); setTimeout(()=>{ confetti(200); sfx("badge"); toast("🎈","Bonus pet unlocked: Bandura's Bobo doll!",`You bounced back with ${BOBO_N} right in a row. The Bobo Doll theme is yours too.`); },700); }
+}
 function petType(){ return PETS[G.petType]&&petOpen(G.petType)?G.petType:"rat"; }
 const PT=()=>PETS[petType()];
 const stageName=i=>PT().stages[i];
@@ -3342,6 +3356,21 @@ const PET_ART={
       ${petMouth(60,67,mood)}${petMoodFlags(mood).happy?`<ellipse cx="62" cy="73" rx="3.6" ry="4.4" fill="#E88AA2"/>`:""}
       ${stage!==2?`<path d="M42 78 q18 8 36 0" stroke="#C0392B" stroke-width="4" fill="none" stroke-linecap="round"/>`:""}
       ${petCap(stage,60,27)}${petTag(stage,60,84)}`); },
+  bobo:(stage,mood,px)=>{ const R="#E53935", W="#FFF8F0";
+    return petWrap("bobo",stage,mood,px,`<g class="bobo-wob"><g transform="translate(80 114) scale(1.12) translate(-80 -114)">
+      <ellipse cx="80" cy="108" rx="32" ry="10" fill="#C62828"/>
+      <path d="M52 104 Q46 74 62 62 H98 Q114 74 108 104z" fill="#F4F1EA"/>
+      <g fill="${R}"><circle cx="66" cy="80" r="4"/><circle cx="94" cy="76" r="4"/><circle cx="80" cy="94" r="4"/><circle cx="62" cy="98" r="3.4"/><circle cx="99" cy="96" r="3.4"/></g>
+      <path d="M52 92 Q80 100 108 92" stroke="#1E5FAF" stroke-width="4" fill="none"/>
+      ${petCoat(stage,"M54 66 q26 14 52 0 l4 36 h-60z","M80 70 v32")}
+      <circle cx="59" cy="44" r="9" fill="${R}"/><circle cx="101" cy="44" r="9" fill="${R}"/>
+      <circle cx="80" cy="46" r="22" fill="${W}"/>
+      <path d="M66 36 q6 -5 12 0 M82 36 q6 -5 12 0" stroke="#1E5FAF" stroke-width="2" fill="none" stroke-linecap="round"/>
+      ${petEye(72,43,mood)}${petEye(88,43,mood)}${petGlasses(stage,[[72,43],[88,43]])}
+      <ellipse cx="66" cy="54" rx="5" ry="3.4" fill="#F28B8B" opacity=".8"/><ellipse cx="94" cy="54" rx="5" ry="3.4" fill="#F28B8B" opacity=".8"/>
+      <circle cx="80" cy="51" r="5.5" fill="${R}"/>
+      ${petMoodFlags(mood).happy?`<path d="M70 58 q10 9 20 0" stroke="${R}" stroke-width="3" fill="none" stroke-linecap="round"/>`:`<path d="M73 60 h14" stroke="${R}" stroke-width="2.6" stroke-linecap="round"/>`}
+      ${petCap(stage,80,26)}${petTag(stage,80,68)}</g></g>`,[108,28]); },
   peacock:(stage,mood,px)=>{ const young=stage<2, B=young?"#B98B5A":"#2F6FC0", N=young?"#A9794A":"#2557A8";
     const fan=young?`<path class="pet-tail" d="M114 84 l26 -6 l-2 14z" fill="#8A6A3E"/>`
       :`<g class="pet-tail">${(R=>[-66,-49,-33,-16,0,16,33,49,66].map(a=>`<g transform="rotate(${a} 102 92)"><ellipse cx="102" cy="${92-R/2-2}" rx="10" ry="${R/2+2}" fill="#2E8B57"/><circle cx="102" cy="${92-R+9}" r="7" fill="#E2B53E"/><circle cx="102" cy="${92-R+9}" r="3.9" fill="#1E3F8F"/></g>`).join(""))(stage>=4?60:stage>=3?54:46)}</g>`;
@@ -3371,8 +3400,9 @@ function petBoxHTML(){
       <p class="muted" style="margin:6px 0 0;font-size:15px">${P.treatName} today: ${P.treat.repeat(cheese)}${`<span style='opacity:.25'>${P.treat}</span>`.repeat(3-cheese)} <span style="font-size:13px">(one for every 10 answers)</span></p>
       ${P.fact?`<p class="muted" style="margin:6px 0 0;font-size:14px">🔬 ${esc(P.fact)}</p>`:""}
       <div class="pet-pick" role="group" aria-label="Choose your pet"><span class="muted">Pet:</span>
-        ${Object.entries(PETS).map(([k,p])=>{ const ok=petOpen(k); return `<button class="petbtn" data-pet="${k}" aria-pressed="${cur===k}" ${ok?"":"disabled"}>${p.emo} ${esc(p.label)}${ok?"":` 🔒 ${p.lvl}`}</button>`; }).join("")}</div>
+        ${Object.entries(PETS).map(([k,p])=>{ const ok=petOpen(k); return `<button class="petbtn" data-pet="${k}" aria-pressed="${cur===k}" ${ok?"":"disabled"}>${p.emo} ${esc(p.label)}${ok?"":` 🔒 ${p.bonus?"bonus":p.lvl}`}</button>`; }).join("")}</div>
       <p class="muted" style="margin:6px 0 0;font-size:13px">A new pet from a famous study unlocks every 20 levels. Swap back any time.</p>
+      ${petOpen("bobo")?"":`<p class="muted" style="margin:6px 0 0;font-size:13px">🎈 <b>Bonus pet challenge: Bounce back.</b> Like a Bobo doll, after you get a question wrong, get the next ${BOBO_N} right in a row. Best so far: ${Math.min(G.bbBest||0,BOBO_N)}/${BOBO_N}</p>`}
     </div></div>`;
 }
 const NAME_BLOCK = (()=>{ try{ return JSON.parse(atob("W1siZnVjayIsICJmdWsiLCAiZmNrIiwgInNoaXQiLCAiY3VudCIsICJiaXRjaCIsICJiYXN0YXJkIiwgIndhbmsiLCAidHdhdCIsICJwdXNzeSIsICJzbHV0IiwgIndob3JlIiwgIm5pZ2ciLCAibmlnZ2EiLCAiZmFnZyIsICJmYWdnb3QiLCAicmV0YXJkIiwgInJhcGUiLCAicmFwaXN0IiwgInBvcm4iLCAicGVuaXMiLCAidmFnaW5hIiwgImRpbGRvIiwgImJvbGxvY2siLCAiYmVsbGVuZCIsICJ0b3NzZXIiLCAibm9uY2UiLCAic3Bhc3RpYyIsICJuYXppIiwgImhpdGxlciIsICJqaXp6IiwgImJ1a2tha2UiLCAiY2xpdCIsICJzaGFnIiwgImJ1Z2dlciIsICJtaW5nZSIsICJrbm9iIiwgIm1vdGhlcmYiLCAic2gxdCIsICJwYWVkbyIsICJwZWRvIiwgImluY2VsIiwgImhvcm55IiwgImJvb2IiLCAidGVzdGljbGUiLCAic2Nyb3QiLCAiZGlja2hlYWQiLCAiY29ja3N1Y2siLCAiYXJzZWhvbGUiLCAiYXNzaG9sZSIsICJ3YW5rZXIiLCAibWlsZiIsICJvbmx5ZmFucyIsICJreXMiLCAia2lsbHlvdXJzZWxmIiwgInN1aWNpZGUiLCAiY29vbiIsICJjaGluayIsICJnb29rIiwgImtpa2UiLCAid29nIiwgInRyYW5ueSIsICJkeWtlIiwgImhvbW8iXSwgWyJkaWNrIiwgImNvY2siLCAiYXJzZSIsICJhc3MiLCAidGl0IiwgInRpdHMiLCAidGl0dHkiLCAiY3VtIiwgInNleCIsICJzZXh5IiwgImFuYWwiLCAiYW51cyIsICJwb28iLCAicG9vcCIsICJwZWUiLCAicGlzcyIsICJwcmljayIsICJjcmFwIiwgInNsYWciLCAic2thbmsiLCAiaG9lIiwgImhvIiwgInNwYXoiLCAicGFraSIsICJnYXkiLCAibGVzYm8iLCAiYnV0dCIsICJidW0iLCAiYmFsbHMiLCAibnV0IiwgIm51dHMiLCAiZmFydCIsICJ0dXJkIiwgImRhbW4iLCAiaGVsbCIsICJ3aWxseSIsICJ3ZWUiLCAiYmoiLCAiZGsiLCAic3RmdSIsICJ3dGYiLCAiZnUiLCAiZm1sIiwgImxtZmFvIiwgImhvcmUiLCAidGhvdCIsICJzaW1wIiwgImR1bWIiLCAiaWRpb3QiLCAic3R1cGlkIiwgInVnbHkiLCAiZmF0IiwgImxvc2VyIiwgIm1vcm9uIiwgInN1Y2tzIiwgInNtZWxseSIsICJzdGlua3kiLCAia2lsbCIsICJkaWUiLCAiZGVhZCIsICJtdXJkZXIiLCAiZ3VuIiwgImJvbWIiLCAiZHJ1Z3MiLCAid2VlZCIsICJjcmFjayJdXQ==")); }catch(e){ return [[],[]]; } })();
