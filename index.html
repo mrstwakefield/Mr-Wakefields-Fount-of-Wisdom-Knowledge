@@ -897,9 +897,12 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 :root[data-skin="school"] .top h1 span{color:var(--muted);font-variant:normal}
 :root[data-skin="school"] .hud{border-top:6px solid #5E4B3D}
 :root[data-skin="school"] .xpbar i{background:#345EE4}
-:root[data-skin="squeaks"]{--paper:#F4F1F6;--card:#FFFFFF;--ink:#1E2233;--muted:#5B5F73;--line:#DCD6E2;--soft:#F7E4EA;--good:#1C7F57;--good-bg:#DDF3E8;--warn:#B4325E;--warn-bg:#FBE3EB;color-scheme:light}
-:root[data-skin="squeaks"] .xpbar i{background:linear-gradient(90deg,#C9CCD6,#F2B8C6,#E88AA2)}
-:root[data-skin="squeaks"] body{background-image:radial-gradient(circle at 12px 12px,rgba(201,204,214,.35) 3px,transparent 3.5px);background-size:44px 44px}
+:root[data-skin="squeaks"]{--paper:#FF7EB6;--card:#FFF4B0;--ink:#2A1030;--muted:#6A1F4E;--line:#E0428C;--soft:#FFD93B;--good:#0E7A3E;--good-bg:#C9F7D6;--warn:#B0124F;--warn-bg:#FFD0E2;color-scheme:light}
+:root[data-skin="squeaks"] body{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22140%22%20height%3D%22140%22%20opacity%3D%22.5%22%3E%3Ctext%20x%3D%2210%22%20y%3D%2244%22%20font-size%3D%2230%22%3E%F0%9F%90%80%3C/text%3E%3Ctext%20x%3D%2270%22%20y%3D%22104%22%20font-size%3D%2230%22%3E%F0%9F%A7%80%3C/text%3E%3Ctext%20x%3D%2274%22%20y%3D%2240%22%20font-size%3D%2218%22%3E%F0%9F%8E%93%3C/text%3E%3Ctext%20x%3D%2216%22%20y%3D%22100%22%20font-size%3D%2218%22%3E%E2%9C%A8%3C/text%3E%3C/svg%3E");background-size:140px 140px}
+:root[data-skin="squeaks"] .xpbar i{background:repeating-linear-gradient(45deg,#FF2E88 0 12px,#FFD93B 12px 24px,#7CE0FF 24px 36px)}
+:root[data-skin="squeaks"] .box,:root[data-skin="squeaks"] .hud,:root[data-skin="squeaks"] .petstrip{border:3px solid #E0428C;box-shadow:6px 6px 0 #2A1030}
+:root[data-skin="squeaks"] header p,:root[data-skin="squeaks"] .sub,:root[data-skin="squeaks"] .count{text-shadow:0 0 6px #FF7EB6,0 0 10px #FF7EB6}
+:root[data-skin="squeaks"] h1{color:#2A1030;text-shadow:3px 3px 0 #FFD93B,6px 6px 0 #7CE0FF}
 :root[data-skin="stan"]{--paper:#12100A;--card:#1E1A0F;--ink:#FFF6D6;--muted:#CDBB85;--line:#3B3218;--soft:#2C2614;--good:#7EDC9F;--good-bg:#1C3424;--warn:#F2C14E;--warn-bg:#3A2E10;color-scheme:dark}
 :root[data-skin="stan"] .xpbar i,:root[data-skin="gold"] .xpbar i{background:linear-gradient(90deg,#B8860B,#F2C14E,#FFE9A3)}
 :root[data-skin="neon"] .xpbar i{background:linear-gradient(90deg,#3CF2A0,#00D1FF,#B26BFF)}
@@ -1118,7 +1121,7 @@ const SKINS=[
   {id:"labcoat", name:"Lab Coat", lvl:88, sw:["#F4FAFA","#0F766E"], desc:"Clinical white and teal 🥼"},
   {id:"results", name:"Results Day", lvl:92, sw:["#E8D5B5","#B8860B"], desc:"Brown envelope, gold grades ✉️"},
   {id:"school", name:"The School", lvl:96, sw:["#E3C800","#345EE4"], desc:"Yellow cladding, blue letters 🏫"},
-  {id:"squeaks", name:"Professor Squeaks", lvl:100, sw:["#F4F1F6","#E88AA2"], desc:"Level 100: graduation day for your lab rat 🐀🎓"},
+  {id:"squeaks", name:"Professor Squeaks", lvl:100, sw:["#FF7EB6","#FFD93B"], desc:"Level 100: graduation day for your lab rat 🐀🧀🎓"},
   {id:"stan", name:"Stan Gold", lvl:100, sw:["#12100A","#F2C14E"], desc:"Dedicated Wakefield Stans only"},
   {id:"y12class", name:"Class of 2028", lvl:999, hidden:true, unlock:()=>store.year==="12"||isTeacher(), sw:["#EAF3FE","#6198EC"], desc:"Year 12 only 💙"},
   {id:"y12primacy", name:"Primacy Effect", lvl:999, hidden:true, unlock:()=>store.year==="12"||isTeacher(), sw:["#0E2A3A","#5EE0D0"], desc:"Year 12 only: the first things you learn stick best"},
