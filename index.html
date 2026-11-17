@@ -3466,7 +3466,7 @@ function petSay(a,text,zz){ a.querySelectorAll(".pet-bubble").forEach(b=>b.remov
   clearTimeout(petSay.t); petSay.t=setTimeout(()=>b.remove(),3200); }
 function petDance(){ const a=$("#petArt"); if(!a) return;
   const t=petType(), m=petMood(), asleep=m==="sleepy"||m==="asleep", pick=l=>l[Math.floor(Math.random()*l.length)];
-  if(asleep){ petSay(a, pick(PET_ZZ.concat([`zzz… ${PT().treatName.toLowerCase()}…`])), true); tone(196,.25,"sine",0,.04); return; }
+  if(asleep){ petSay(a, pick(PET_ZZ), true); tone(196,.25,"sine",0,.04); return; }
   petSay(a, pick(PET_SAYS[t]||PET_SAYS.rat));
   [523,659,784,659,880].forEach((f,i)=>tone(f,.14,"triangle",i*.11));
   if(petReduce()) return;
