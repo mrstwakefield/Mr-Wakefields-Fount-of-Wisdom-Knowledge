@@ -608,6 +608,10 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .pet-art{flex:none}
 .pet-info{flex:1;min-width:220px}
 .pet-msg{margin:0;font-size:17px}
+.pet-pick{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px;font-size:14px}
+.petbtn{border:2px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:5px 12px;font:inherit;font-weight:700;cursor:pointer}
+.petbtn[aria-pressed=true]{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.petbtn:disabled{opacity:.55;cursor:not-allowed}
 .box .pet-info h3{display:flex;align-items:baseline;gap:8px;justify-content:flex-start}
 @media (max-width:560px){.petbtn svg{width:34px;height:26px}.hud{gap:6px!important}.hud .iconbtn{width:36px;min-width:36px;height:38px;padding:0}.hud .petbtn{width:auto;padding:0 2px}.hud .focusbtn{width:auto;min-width:36px;padding:0 6px}.hud .hud-stat{padding-left:8px;padding-right:8px}.hud #hudGoal .goalring{display:none}}
 .pet-svg.ecstatic .pet-body{animation:petdance .7s ease-in-out infinite alternate;transform-origin:80px 110px;transform-box:view-box}
@@ -1684,7 +1688,7 @@ function levelUp(n){
   sfx("lvl"); confetti(200);
   const o=document.createElement("div"); o.className="overlay";
   o.innerHTML=`<div class="levelup" role="dialog" aria-modal="true" aria-label="Level up"><div class="kick">Level up!</div><div class="num">${n}</div>
-    <h3>${r!==old?"New rank: "+esc(r):esc(r)}</h3>${n%10===0&&n<=100?`<p class="unlock">🏅 New certificate unlocked! Print it from the Badges tab.</p>`:""}${SKINS.filter(k=>k.lvl===n).map(k=>`<p class="unlock">🎨 New theme unlocked: <b>${esc(k.name)}</b>. Pick it in the Themes tab.</p>`).join("")}<p>${lvlStart(n+1)-G.xp} XP to level ${n+1}. Keep it going.</p><button class="btn" id="luOk">Let's go</button></div>`;
+    <h3>${r!==old?"New rank: "+esc(r):esc(r)}</h3>${n%10===0&&n<=100?`<p class="unlock">🏅 New certificate unlocked! Print it from the Badges tab.</p>`:""}${SKINS.filter(k=>k.lvl===n).map(k=>`<p class="unlock">🎨 New theme unlocked: <b>${esc(k.name)}</b>. Pick it in the Themes tab.</p>`).join("")}${n===PIGEON_LVL?`<p class="unlock">🐦 New pet unlocked: <b>Skinner's pigeon</b>! Swap pets on the Progress tab.</p>`:""}<p>${lvlStart(n+1)-G.xp} XP to level ${n+1}. Keep it going.</p><button class="btn" id="luOk">Let's go</button></div>`;
   document.body.appendChild(o);
   const close=()=>{ o.remove(); document.removeEventListener("keydown",esc2,true); };
   const esc2=e=>{ if(e.key==="Tab") return; e.stopPropagation(); if(e.key==="Escape"||e.key==="Enter"||e.key===" "){ e.preventDefault(); close(); } };
@@ -3159,7 +3163,16 @@ function planTasks(){
 
 /* ---- 🐀 revision pet (the same lab rat as the GCSE site): grows with right answers, dances when you hit your goal, falls asleep when you stop ---- */
 const PET_STAGES=[[0,"Baby rat"],[100,"Young rat"],[500,"Lab rat"],[2000,"Research rat"],[5000,"Wise rat"],[12000,"Professor rat"]];
-function petName(){ return G.petName||"Professor Squeaks"; }
+const PIGEON_LVL=15;
+const PETS={
+  rat:{emo:"🐀",noun:"lab rat",def:"Professor Squeaks",treat:"🧀",treatName:"Cheese",stages:PET_STAGES.map(x=>x[1])},
+  pigeon:{emo:"🐦",noun:"pigeon",def:"Professor Coo",treat:"🌽",treatName:"Corn",stages:["Pigeon chick","Young pigeon","Lab pigeon","Research pigeon","Wise pigeon","Professor pigeon"]}
+};
+const pigeonOpen=()=>lvlFor(G.xp)>=PIGEON_LVL||isTeacher()||DEMO;
+function petType(){ return G.petType==="pigeon"&&pigeonOpen()?"pigeon":"rat"; }
+const PT=()=>PETS[petType()];
+const stageName=i=>PT().stages[i];
+function petName(){ return petType()==="pigeon" ? (G.pigeonName||PETS.pigeon.def) : (G.petName||"Professor Squeaks"); }
 function petStage(){ const n=G.st.right||0; let s=0; PET_STAGES.forEach(([v],i)=>{ if(n>=v) s=i; }); return s; }
 function petDaysAway(){ const days=Object.keys(G.hist||{}).filter(d=>G.hist[d]>0).sort(); if(!days.length) return -1; return dayNum(today())-dayNum(days[days.length-1]); }
 function petMood(){
@@ -3171,7 +3184,7 @@ function petMood(){
   return "asleep";
 }
 const PET_MSG = {
-  new:"Meet your new lab rat! Answer questions to help him grow.",
+  new:"Meet your new pet! Answer questions to help him grow.",
   ecstatic:"is dancing! 🎉 You smashed your daily goal.",
   happy:"is happy you're revising today. Hit your goal to make him dance!",
   waiting:"is waiting for you. Answer a few questions to keep him happy.",
@@ -3179,6 +3192,7 @@ const PET_MSG = {
   asleep:"has fallen fast asleep 💤 Answer some questions to wake him up!",
 };
 function petSVG(stage, mood, px){
+  if(petType()==="pigeon") return pigeonSVG(stage, mood, px);
   const sc=.62+stage*.076, sleepy=mood==="sleepy"||mood==="asleep", happy=mood==="ecstatic"||mood==="happy"||mood==="new";
   const eye = x => sleepy ? `<path d="M${x-5} 50 q5 ${mood==="asleep"?4:3} 10 0" stroke="#2A2230" stroke-width="2.6" fill="none" stroke-linecap="round"/>`
                           : `<circle cx="${x}" cy="49" r="4.4" fill="#2A2230"/><circle cx="${x+1.5}" cy="47.4" r="1.4" fill="#fff"/>`;
@@ -3204,16 +3218,48 @@ function petSVG(stage, mood, px){
     ${mood==="ecstatic"?`<g class="pet-spark" font-size="16"><text x="12" y="24">✨</text><text x="128" y="44">🎉</text></g>`:""}
   </svg>`;
 }
-function petLine(m){ return m==="new" ? `Meet <b>${esc(petName())}</b>, your new lab rat! Answer questions to help him grow.` : `<b>${esc(petName())}</b> ${esc(PET_MSG[m])}`; }
+function pigeonSVG(stage, mood, px){
+  const sc=.62+stage*.076, sleepy=mood==="sleepy"||mood==="asleep", happy=mood==="ecstatic"||mood==="happy"||mood==="new";
+  const eye = sleepy ? `<path d="M45 47 q5 ${mood==="asleep"?4:3} 10 0" stroke="#2A2230" stroke-width="2.6" fill="none" stroke-linecap="round"/>`
+                     : `<circle cx="50" cy="46" r="5.4" fill="#F08A24"/><circle cx="50" cy="46" r="3" fill="#2A2230"/><circle cx="51.3" cy="44.6" r="1.1" fill="#fff"/>`;
+  return `<svg class="pet-svg ${mood}" viewBox="0 0 160 120" width="${px}" height="${px*.75}" role="img" aria-label="Your pigeon, ${esc(stageName(stage))}, ${mood}">
+    <g class="pet-body"><g transform="translate(80 118) scale(${sc}) translate(-80 -118)">
+      <g class="pet-tail"><path d="M120 78 l32 -8 l2 18 l-30 8z" fill="#8E99AE"/><path d="M148 71 l4 -1 l2 18 l-4 1z" fill="#3B4254"/></g>
+      <path d="M78 104 v8 m-5 0 h10 M98 104 v8 m-5 0 h10" stroke="#E07A8E" stroke-width="3.4" stroke-linecap="round"/>
+      <ellipse cx="92" cy="84" rx="40" ry="25" fill="#AEB8CB"/>
+      <ellipse cx="100" cy="80" rx="27" ry="15" fill="#97A3BA"/>
+      <path d="M86 78 q14 5 30 1 M90 86 q13 5 28 1" stroke="#3B4254" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+      ${stage>=3?`<path d="M64 72 q14 16 42 10 l4 24 h-50z" fill="#FFFFFF" opacity=".95"/><path d="M80 82 v24" stroke="#D6DAE2" stroke-width="2"/>`:""}
+      <ellipse cx="62" cy="68" rx="17" ry="19" fill="#5E9C8A"/><ellipse cx="66" cy="74" rx="12" ry="11" fill="#8A6FB0" opacity=".75"/>
+      <circle cx="56" cy="48" r="18" fill="#B9C3D5"/>
+      ${eye}
+      ${stage>=4?`<g stroke="#2A2230" stroke-width="2.2" fill="none"><circle cx="50" cy="46" r="8.5"/><path d="M58.5 45 h14"/></g>`:""}
+      <ellipse cx="57" cy="56" rx="5" ry="3" fill="#F2B8C6" opacity=".8"/>
+      <ellipse cx="40" cy="48" rx="4" ry="2.6" fill="#F3F1EA"/>
+      ${happy?`<path d="M39 49 l-13 3 l13 2z" fill="#3A3A44"/><path d="M38 54 l-10 1.5 l10 2z" fill="#3A3A44"/>`:`<path d="M39 49 l-13 4 l13 3z" fill="#3A3A44"/>`}
+      ${stage>=5?`<g><path d="M32 26 l24 -10 l24 10 l-24 10z" fill="#1E2233"/><rect x="44" y="26" width="24" height="8" fill="#1E2233"/><path d="M80 26 v12" stroke="#E2B53E" stroke-width="2"/><circle cx="80" cy="39" r="2.5" fill="#E2B53E"/></g>`:""}
+      ${stage===2?`<path d="M58 84 l8 -5 l8 5 l-8 5z" fill="#E11D74"/>`:""}
+    </g></g>
+    ${sleepy?`<g class="pet-z" fill="#7B8BB8" font-family="var(--display)" font-weight="800"><text x="88" y="34" font-size="15">z</text><text x="100" y="23" font-size="19">Z</text>${mood==="asleep"?'<text x="114" y="14" font-size="22">Z</text>':""}</g>`:""}
+    ${mood==="ecstatic"?`<g class="pet-spark" font-size="16"><text x="12" y="24">✨</text><text x="128" y="44">🎉</text></g>`:""}
+  </svg>`;
+}
+function petLine(m){ return m==="new" ? `Meet <b>${esc(petName())}</b>, your new ${PT().noun}! Answer questions to help him grow.` : `<b>${esc(petName())}</b> ${esc(PET_MSG[m])}`; }
 const petCheese=()=>Math.min(3,Math.floor(((G.hist||{})[today()]||0)/10));
 function petBoxHTML(){
   const st=petStage(), mood=petMood(), n=G.st.right||0, next=PET_STAGES[st+1], cheese=petCheese();
+  const P=PT(), pOpen=pigeonOpen(), lv=lvlFor(G.xp);
   return `<div class="box pet-box"><div class="pet-art">${petSVG(st,mood,220)}</div>
-    <div class="pet-info"><h3 style="margin:0">🐀 <span>${esc(petName())}</span> <button class="linkbtn" id="petRename" style="font-size:14px">Rename</button></h3>
-      <p class="muted" style="margin:2px 0 8px">${esc(PET_STAGES[st][1])}${next?` · ${(next[0]-n).toLocaleString()} more right answers to become a ${esc(next[1].toLowerCase())}`:" · fully grown legend 🎓"}</p>
+    <div class="pet-info"><h3 style="margin:0">${P.emo} <span>${esc(petName())}</span> <button class="linkbtn" id="petRename" style="font-size:14px">Rename</button></h3>
+      <p class="muted" style="margin:2px 0 8px">${esc(stageName(st))}${next?` · ${(next[0]-n).toLocaleString()} more right answers to become a ${esc(stageName(st+1).toLowerCase())}`:" · fully grown legend 🎓"}</p>
       ${next?`<div class="xpbar" style="margin-bottom:10px"><i style="width:${(n-PET_STAGES[st][0])/(next[0]-PET_STAGES[st][0])*100}%"></i></div>`:""}
       <p class="pet-msg">${petLine(mood)}</p>
-      <p class="muted" style="margin:6px 0 0;font-size:15px">Cheese today: ${"🧀".repeat(cheese)}${"<span style='opacity:.25'>🧀</span>".repeat(3-cheese)} <span style="font-size:13px">(one for every 10 answers)</span></p></div></div>`;
+      <p class="muted" style="margin:6px 0 0;font-size:15px">${P.treatName} today: ${P.treat.repeat(cheese)}${`<span style='opacity:.25'>${P.treat}</span>`.repeat(3-cheese)} <span style="font-size:13px">(one for every 10 answers)</span></p>
+      ${petType()==="pigeon"?`<p class="muted" style="margin:6px 0 0;font-size:14px">🔬 Skinner trained pigeons with operant conditioning, reinforcing them with grain. Your corn is positive reinforcement.</p>`:""}
+      <div class="pet-pick" role="group" aria-label="Choose your pet"><span class="muted">Pet:</span>
+        <button class="petbtn" data-pet="rat" aria-pressed="${petType()==="rat"}">🐀 Lab rat</button>
+        <button class="petbtn" data-pet="pigeon" aria-pressed="${petType()==="pigeon"}" ${pOpen?"":"disabled"}>🐦 Skinner's pigeon${pOpen?"":` 🔒 level ${PIGEON_LVL}`}</button></div>
+    </div></div>`;
 }
 const NAME_BLOCK = (()=>{ try{ return JSON.parse(atob("W1siZnVjayIsICJmdWsiLCAiZmNrIiwgInNoaXQiLCAiY3VudCIsICJiaXRjaCIsICJiYXN0YXJkIiwgIndhbmsiLCAidHdhdCIsICJwdXNzeSIsICJzbHV0IiwgIndob3JlIiwgIm5pZ2ciLCAibmlnZ2EiLCAiZmFnZyIsICJmYWdnb3QiLCAicmV0YXJkIiwgInJhcGUiLCAicmFwaXN0IiwgInBvcm4iLCAicGVuaXMiLCAidmFnaW5hIiwgImRpbGRvIiwgImJvbGxvY2siLCAiYmVsbGVuZCIsICJ0b3NzZXIiLCAibm9uY2UiLCAic3Bhc3RpYyIsICJuYXppIiwgImhpdGxlciIsICJqaXp6IiwgImJ1a2tha2UiLCAiY2xpdCIsICJzaGFnIiwgImJ1Z2dlciIsICJtaW5nZSIsICJrbm9iIiwgIm1vdGhlcmYiLCAic2gxdCIsICJwYWVkbyIsICJwZWRvIiwgImluY2VsIiwgImhvcm55IiwgImJvb2IiLCAidGVzdGljbGUiLCAic2Nyb3QiLCAiZGlja2hlYWQiLCAiY29ja3N1Y2siLCAiYXJzZWhvbGUiLCAiYXNzaG9sZSIsICJ3YW5rZXIiLCAibWlsZiIsICJvbmx5ZmFucyIsICJreXMiLCAia2lsbHlvdXJzZWxmIiwgInN1aWNpZGUiLCAiY29vbiIsICJjaGluayIsICJnb29rIiwgImtpa2UiLCAid29nIiwgInRyYW5ueSIsICJkeWtlIiwgImhvbW8iXSwgWyJkaWNrIiwgImNvY2siLCAiYXJzZSIsICJhc3MiLCAidGl0IiwgInRpdHMiLCAidGl0dHkiLCAiY3VtIiwgInNleCIsICJzZXh5IiwgImFuYWwiLCAiYW51cyIsICJwb28iLCAicG9vcCIsICJwZWUiLCAicGlzcyIsICJwcmljayIsICJjcmFwIiwgInNsYWciLCAic2thbmsiLCAiaG9lIiwgImhvIiwgInNwYXoiLCAicGFraSIsICJnYXkiLCAibGVzYm8iLCAiYnV0dCIsICJidW0iLCAiYmFsbHMiLCAibnV0IiwgIm51dHMiLCAiZmFydCIsICJ0dXJkIiwgImRhbW4iLCAiaGVsbCIsICJ3aWxseSIsICJ3ZWUiLCAiYmoiLCAiZGsiLCAic3RmdSIsICJ3dGYiLCAiZnUiLCAiZm1sIiwgImxtZmFvIiwgImhvcmUiLCAidGhvdCIsICJzaW1wIiwgImR1bWIiLCAiaWRpb3QiLCAic3R1cGlkIiwgInVnbHkiLCAiZmF0IiwgImxvc2VyIiwgIm1vcm9uIiwgInN1Y2tzIiwgInNtZWxseSIsICJzdGlua3kiLCAia2lsbCIsICJkaWUiLCAiZGVhZCIsICJtdXJkZXIiLCAiZ3VuIiwgImJvbWIiLCAiZHJ1Z3MiLCAid2VlZCIsICJjcmFjayJdXQ==")); }catch(e){ return [[],[]]; } })();
 function cleanName(raw){
@@ -3228,21 +3274,26 @@ function cleanName(raw){
   if(words.some(w=>NAME_BLOCK[1].some(b=>squash(b)===w)) || NAME_BLOCK[1].some(b=>squash(b)===flat)) return null;
   return n;
 }
-function wirePet(){ const b=$("#petRename"); if(b) b.onclick=()=>{
-  let n=prompt("Name your lab rat (letters only, up to 20):", petName());
-  while(n!==null){ const ok=cleanName(n); if(ok){ G.petName=ok; save(); renderTrophies(); petHud(); return; }
-    n=prompt("Let's keep it friendly! Pick a different name (letters only, 2–20 characters):", "Professor Squeaks"); }
+function wirePet(){
+  document.querySelectorAll("[data-pet]").forEach(c=>c.onclick=()=>{ if(c.disabled) return; G.petType=c.dataset.pet; save(); renderTrophies(); petHud(); });
+  const b=$("#petRename"); if(b) b.onclick=()=>{
+  const pig=petType()==="pigeon";
+  let n=prompt(`Name your ${PT().noun} (letters only, up to 20):`, petName());
+  while(n!==null){ const ok=cleanName(n); if(ok){ if(pig) G.pigeonName=ok; else G.petName=ok; save(); renderTrophies(); petHud(); return; }
+    n=prompt("Let's keep it friendly! Pick a different name (letters only, 2–20 characters):", PT().def); }
 }; }
 function petHud(){ const b=$("#petStrip"); if(!b) return; const m=petMood(), st=petStage(), cheese=petCheese();
   b.hidden=false; b.className="petstrip "+m;
-  b.innerHTML=`<span class="ps-art">${petSVG(st,m,120)}</span><span class="ps-txt">${petLine(m)}</span><span class="ps-cheese" aria-label="${cheese} of 3 cheese today">${"🧀".repeat(cheese)}${"<i>🧀</i>".repeat(3-cheese)}</span>`;
-  b.setAttribute("aria-label",`${petName()} the lab rat: ${PET_MSG[m]} Open progress`); }
+  const T=PT().treat;
+  b.innerHTML=`<span class="ps-art">${petSVG(st,m,120)}</span><span class="ps-txt">${petLine(m)}</span><span class="ps-cheese" aria-label="${cheese} of 3 ${PT().treatName.toLowerCase()} today">${T.repeat(cheese)}${`<i>${T}</i>`.repeat(3-cheese)}</span>`;
+  b.setAttribute("aria-label",`${petName()} the ${PT().noun}: ${PET_MSG[m]} Open progress`); }
 function petCheck(){
   if(G.petName && !cleanName(G.petName)) delete G.petName;
+  if(G.pigeonName && !cleanName(G.pigeonName)) delete G.pigeonName;
   G.petS=G.petS||{stage:petStage(), mood:""}; const p=G.petS, st=petStage(), m=petMood(), nm=petName();
-  if(st>p.stage){ p.stage=st; save(); setTimeout(()=>{ toast("🐀",`${nm} grew into a ${PET_STAGES[st][1].toLowerCase()}!`,st>=5?"He's wearing a graduation cap. Legendary.":st>=4?"Look, glasses! So wise.":st>=3?"He's got his own lab coat now.":"Keep revising to help him grow."); confetti(100); },600); }
-  if((p.mood==="sleepy"||p.mood==="asleep") && (m==="happy"||m==="ecstatic")) setTimeout(()=>toast("🐀",`${nm} woke up!`,"He's so happy to see you revising again."),400);
-  if(p.mood!=="ecstatic" && m==="ecstatic" && p.mood) setTimeout(()=>toast("🐀",`${nm} is dancing!`,"Daily goal smashed. 🧀🧀🧀"),800);
+  if(st>p.stage){ p.stage=st; save(); setTimeout(()=>{ toast(PT().emo,`${nm} grew into a ${stageName(st).toLowerCase()}!`,st>=5?"He's wearing a graduation cap. Legendary.":st>=4?"Look, glasses! So wise.":st>=3?"He's got his own lab coat now.":"Keep revising to help him grow."); confetti(100); },600); }
+  if((p.mood==="sleepy"||p.mood==="asleep") && (m==="happy"||m==="ecstatic")) setTimeout(()=>toast(PT().emo,`${nm} woke up!`,"He's so happy to see you revising again."),400);
+  if(p.mood!=="ecstatic" && m==="ecstatic" && p.mood) setTimeout(()=>toast(PT().emo,`${nm} is dancing!`,"Daily goal smashed. "+PT().treat.repeat(3)),800);
   if(p.mood!==m){ p.mood=m; save(); }
   petHud();
 }
@@ -3843,6 +3894,134 @@ function renderPsychleOrConn(area){
 function startParagraph(){ const all=PARAGRAPHS.filter(x=>topicOpen(x.t)), sel=new Set(store.sel); let s=all.filter(x=>sel.has(x.t)); if(s.length<4) s=all;
   mg.seqs=shuffle(s).slice(0,4).map(x=>({t:x.t, title:x.title, steps:x.steps})); mg.tl=false; mg.par=true; mg.si=0; mg.picked=[]; mg.checked=false; mg.right2=0; mg.xp=0; mg.places=0; mg.placesTotal=0; mg.phase="order"; arc.phase="mini"; arc.mode="paragraph"; mg.shuffled=shuffle(mg.seqs[0].steps); renderArcade(); }
 
+/* ===== broader question base (Nov 2026) ===== */
+PSY_WORDS.push(
+ ["COMPLIANCE","Social Influence","Going along with the group in public while privately disagreeing"],
+ ["NORMATIVE","Social Influence","Normative social influence: conforming to be liked or accepted"],
+ ["AUTHORITY","Social Influence","A person with the power to give orders, e.g. Milgram's experimenter"],
+ ["MAJORITY","Social Influence","The larger group whose views put pressure on individuals"],
+ ["LEGITIMACY","Social Influence","Legitimacy of authority: society gives some people the right to give orders"],
+ ["PROACTIVE","Memory","Proactive interference: old learning disrupts new learning"],
+ ["CONTEXT","Memory","Context-dependent forgetting: the external setting differs at recall"],
+ ["LEADING","Memory","A leading question suggests the answer, e.g. 'smashed' versus 'hit'"],
+ ["ANXIETY","Memory","A factor affecting eyewitness accuracy, which can help or hinder recall"],
+ ["SENSORY","Memory","The sensory register: the first store in the multi-store model"],
+ ["BUFFER","Memory","The episodic buffer, added to the working memory model in 2000"],
+ ["REHEARSAL","Memory","Repeating information so it stays in STM and transfers to LTM"],
+ ["CAREGIVER","Attachment","The person who looks after an infant"],
+ ["SEPARATION","Attachment","Being physically apart from an attachment figure"],
+ ["IMPRINTING","Attachment","Young animals following the first moving object they see"],
+ ["STRANGER","Attachment","Stranger anxiety: distress when an unfamiliar person approaches"],
+ ["ROMANIAN","Attachment","The English and Romanian Adoptees study looked at institutionalised children"],
+ ["HUMANISTIC","Approaches","The approach focused on free will, self-actualisation and the whole person"],
+ ["MASLOW","Approaches","He proposed the hierarchy of needs"],
+ ["ROGERS","Approaches","He developed client-centred therapy and the idea of congruence"],
+ ["PAVLOV","Approaches","His dogs learned to salivate at the sound of a bell"],
+ ["SKINNER","Approaches","He studied operant conditioning with rats and pigeons"],
+ ["BANDURA","Approaches","He developed social learning theory and the Bobo doll studies"],
+ ["FREUD","Approaches","The founder of the psychodynamic approach"],
+ ["PLASTICITY","Biopsychology","The brain's ability to change through learning and experience"],
+ ["AMYGDALA","Biopsychology","A brain structure involved in fear and emotion"],
+ ["CORTEX","Biopsychology","The outer layer of the brain"],
+ ["ADRENALINE","Biopsychology","The hormone released from the adrenal medulla in fight or flight"],
+ ["GLAND","Biopsychology","An organ of the endocrine system that releases hormones"],
+ ["REFLEX","Biopsychology","An automatic response controlled by the spinal cord"],
+ ["MOTOR","Biopsychology","The motor area controls voluntary movement"],
+ ["HYPOTHESIS","RM","A precise, testable prediction"],
+ ["RANGE","RM","The difference between the highest and lowest scores"],
+ ["QUASI","RM","A quasi-experiment: the IV is a difference between people that already exists"],
+ ["FIELD","RM","A field experiment: the IV is manipulated in a natural setting"],
+ ["RELIABLE","RM","Consistent: giving the same results if repeated"],
+ ["ABSTRACT","RM","A short summary at the start of a scientific report"],
+ ["DEBRIEF","RM","Telling participants the true aim of a study afterwards"],
+ ["CONSENT","RM","Informed consent: agreeing to take part, knowing what's involved"],
+ ["RANDOM","RM","A random sample: everyone has an equal chance of being picked"],
+ ["STRATIFIED","RM","A sample with sub-groups in the same proportions as the population"],
+ ["DEPRESSION","Psychopathology","A mood disorder with lowered mood and low energy"],
+ ["COMPULSION","Psychopathology","A repetitive behaviour performed to reduce anxiety (OCD)"],
+ ["ABNORMAL","Psychopathology","Defined by statistical infrequency, social norms, functioning or ideal mental health"],
+ ["IRRATIONAL","Psychopathology","Irrational beliefs: Ellis argued these cause depression"],
+ ["PARASOCIAL","Relationships","A one-sided relationship, e.g. with a celebrity"],
+ ["DISCLOSE","Relationships","Self-disclosure: revealing personal information to a partner"],
+ ["GATING","Relationships","Gates are obstacles to forming relationships, often absent online"],
+ ["DYADIC","Relationships","Duck's dyadic phase: partners confront and discuss the problems"],
+ ["BREAKDOWN","Relationships","Duck's phase model explains relationship breakdown"],
+ ["RUSBULT","Relationships","She developed the investment model of commitment"],
+ ["DIATHESIS","Schizophrenia","The diathesis-stress model: vulnerability plus a trigger"],
+ ["CLOZAPINE","Schizophrenia","An atypical antipsychotic"],
+ ["PSYCHOSIS","Schizophrenia","A loss of contact with reality, as in schizophrenia"],
+ ["OFFENDER","Forensic Psychology","Someone who commits a crime"],
+ ["CUSTODIAL","Forensic Psychology","A custodial sentence: being sent to prison"],
+ ["EYSENCK","Forensic Psychology","His personality theory links extraversion and neuroticism to offending"],
+ ["KOHLBERG","Forensic Psychology","His levels of moral reasoning are used to explain offending"],
+ ["DETERRENCE","Forensic Psychology","An aim of prison: putting people off offending"],
+ ["HOSTILE","Forensic Psychology","Hostile attribution bias: seeing threat in neutral faces"],
+ ["CULTURE","Issues and Debates part I","Culture bias: judging other cultures by the standards of your own"],
+ ["GENDER","Issues and Debates part I","Gender bias: alpha and beta bias, and androcentrism"],
+ ["NATURE","Issues and Debates part I","Nature: behaviour as a product of inherited, genetic factors"],
+ ["NURTURE","Issues and Debates part I","Nurture: behaviour as a product of the environment and experience"]
+);
+HILO.push(
+ ["Asch (variation): conformity with 3 confederates",31.8,"Social Influence"],
+ ["Asch (variation): conformity when one confederate disagreed",5.5,"Social Influence"],
+ ["Milgram (variation): obedience with teacher and learner in the same room",40,"Social Influence"],
+ ["Milgram (variation): obedience when the teacher had to force the learner's hand onto a plate",30,"Social Influence"],
+ ["Milgram (variation): obedience when orders were given by phone",20.5,"Social Influence"],
+ ["Milgram (variation): obedience in a run-down office block",47.5,"Social Influence"],
+ ["Milgram (variation): obedience when the experimenter was an ordinary member of the public",20,"Social Influence"],
+ ["Rank and Jacobson (1977): nurses who obeyed (2 of 18)",11,"Social Influence"],
+ ["Bahrick et al. (1975): free recall of classmates' names after 15 years",60,"Memory"],
+ ["Bahrick et al. (1975): free recall of classmates' names after 48 years",30,"Memory"],
+ ["Schaffer and Emerson (1964): babies whose first specific attachment was to the mother",65,"Attachment"],
+ ["Schaffer and Emerson (1964): babies whose first specific attachment was to the father",3,"Attachment"],
+ ["Hazan and Shaver (1987): insecure-avoidant adults",25,"Attachment"],
+ ["Hazan and Shaver (1987): insecure-resistant adults",19,"Attachment"],
+ ["Bowlby (1944): thieves classed as affectionless psychopaths (14 of 44)",32,"Attachment"],
+ ["Öst (1989): improvement after one session of exposure for specific phobias",90,"Psychopathology"],
+ ["Christiansen (1977): criminality concordance in female identical twins",21,"Forensic Psychology"],
+ ["Christiansen (1977): criminality concordance in female non-identical twins",8,"Forensic Psychology"],
+ ["Gottesman (1991): schizophrenia risk with two parents who have it",46,"Schizophrenia"],
+ ["Gottesman (1991): schizophrenia risk for a sibling of someone with it",9,"Schizophrenia"],
+ ["Gottesman (1991): schizophrenia risk in the general population",1,"Schizophrenia"],
+ ["Arnett (2008): participants in top journals from the USA",68,"Issues and Debates part I"]
+);
+PARAGRAPHS.push(
+ {t:"Memory", title:"Support for the working memory model", steps:["A strength of the working memory model is support from case studies of brain damage.","Shallice and Warrington found that patient KF had poor STM for verbal information but much better STM for visual information.","This suggests there are separate short-term stores for verbal and visual information.","This supports the working memory model's idea of separate slave systems, rather than a single STM store."]},
+ {t:"Memory", title:"A strength of the cognitive interview", steps:["A strength of the cognitive interview is evidence that it improves recall.","Fisher et al. found that detectives trained in the enhanced cognitive interview gathered more correct information from real witnesses.","This suggests the techniques help witnesses retrieve more of what they saw.","Therefore the cognitive interview has useful real-world applications for the police."]},
+ {t:"Attachment", title:"A limitation of the Strange Situation", steps:["A limitation of the Strange Situation is that it may be culture-bound.","Takahashi found that many Japanese infants were too distressed to continue when left alone, and none were classed as avoidant.","This may be because Japanese infants are rarely separated from their mothers, so the procedure means something different to them.","This suggests the Strange Situation is an imposed etic and may not be valid in other cultures."]},
+ {t:"Psychopathology", title:"Support for Beck's cognitive explanation", steps:["A strength of the cognitive explanation of depression is research support.","Grazioli and Terry found that pregnant women judged high in cognitive vulnerability were more likely to develop depression after giving birth.","This suggests faulty thinking comes before depression rather than being caused by it.","This supports Beck's idea that negative schemas make people vulnerable to depression."]},
+ {t:"Psychopathology", title:"A limitation of the genetic explanation of OCD", steps:["A limitation of the genetic explanation of OCD is that genes cannot be the whole story.","Nestadt et al. found that OCD concordance in identical twins was 68%, not 100%.","If OCD were purely genetic, identical twins, who share all their genes, would always both have it.","This suggests environmental factors also play a role, so a diathesis-stress explanation may be better."]},
+ {t:"Biopsychology", title:"A limitation of split-brain research", steps:["A limitation of split-brain research is that it is hard to generalise from.","Sperry's research involved only 11 patients, all of whom had severe epilepsy.","Their epilepsy and medication may have changed how their brains worked before surgery.","This means findings about lateralisation may not apply to people with typical brains."]},
+ {t:"RM", title:"A limitation of correlational research", steps:["A limitation of correlational research is that it cannot show cause and effect.","For example, a correlation between hours of sleep and exam scores does not show that sleep improves performance.","A third variable, such as motivation, could affect both sleep and exam results.","Therefore correlations can only suggest relationships that need testing with experiments."]},
+ {t:"Relationships", title:"A limitation of the matching hypothesis", steps:["A limitation of the matching hypothesis is contradictory research.","Walster et al. found that, at a 'computer dance', students preferred the most attractive partners, whatever their own attractiveness.","This suggests people aim for the most attractive partner rather than one who matches them.","This challenges the matching hypothesis, at least for first meetings."]},
+ {t:"Schizophrenia", title:"Evidence for antipsychotic drugs", steps:["A strength of antipsychotic drugs is evidence that they reduce relapse.","Leucht et al. found that 64% of patients on placebos relapsed within a year, compared with 27% on antipsychotics.","This shows the drugs make a real difference compared with no active treatment.","Therefore antipsychotics are an effective treatment for many people with schizophrenia."]},
+ {t:"Forensic Psychology", title:"Support for the genetic explanation of offending", steps:["A strength of the genetic explanation of offending is twin research.","Christiansen found that criminality concordance was 35% in male identical twins compared with 13% in male non-identical twins.","Identical twins share all their genes, so higher concordance suggests genes play a role.","However, concordance is far from 100%, so environmental factors must also be important."]}
+);
+EXAMINER.push(
+ ["Social Influence","Outline what is meant by normative social influence.",2,"Conforming because you want to be liked or accepted by a group, which usually leads to compliance.",2,"Accurate, with extra detail (compliance)."],
+ ["Social Influence","Outline what is meant by normative social influence.",2,"When you copy people.",0,"Too vague: no mention of wanting to be liked or accepted."],
+ ["Social Influence","Explain one strength of research into minority influence.",3,"Moscovici found a consistent minority made participants say 'green' on 8.42% of trials, compared with 1.25% when inconsistent. This shows consistency matters, supporting the explanation.",3,"Clear strength, accurate evidence and an explanation of why it supports the explanation."],
+ ["Memory","Outline what is meant by proactive interference.",2,"When old learning disrupts the recall of new learning, for example typing your old PIN.",2,"Accurate definition with a relevant example."],
+ ["Memory","Outline what is meant by proactive interference.",2,"When new information makes you forget old information.",0,"This describes retroactive interference, not proactive."],
+ ["Memory","Explain one limitation of the multi-store model.",3,"It's too simple.",1,"A relevant point, but it isn't explained or supported with evidence."],
+ ["Attachment","Outline Lorenz's research into imprinting.",3,"Lorenz split goose eggs so half hatched with their mother and half with him. The goslings followed the first moving thing they saw, even Lorenz, which shows imprinting in a critical period.",3,"Procedure and findings, with a correct conclusion."],
+ ["Attachment","Outline what is meant by disinhibited attachment.",2,"Being equally friendly and affectionate towards familiar people and strangers.",2,"Accurate and clear."],
+ ["Psychopathology","Outline one characteristic of OCD.",2,"Compulsions: repetitive behaviours, such as hand washing, that the person feels they must perform to reduce anxiety.",2,"A correct characteristic with an example and an explanation."],
+ ["Psychopathology","Outline the statistical infrequency definition of abnormality.",2,"Abnormal behaviour is behaviour that is rare, e.g. an IQ below 70.",2,"Correct definition with a relevant example."],
+ ["Approaches","Outline what is meant by vicarious reinforcement.",2,"Learning through seeing someone else being rewarded for a behaviour, which makes you more likely to copy it.",2,"Accurate and clear."],
+ ["Approaches","Outline what is meant by vicarious reinforcement.",2,"When you get a reward for doing something.",0,"This is direct reinforcement, not vicarious (observing others)."],
+ ["Biopsychology","Outline what is meant by brain plasticity.",2,"The brain's ability to change and adapt as a result of learning and experience.",2,"Accurate definition."],
+ ["RM","Explain why a researcher might use a pilot study.",2,"To check the procedure and materials work, so problems can be fixed before the main study, saving time and money.",2,"A clear reason, explained."]
+);
+SORT_SETS.push(
+ {t:"RM", title:"Which experimental design?", b:["Independent groups","Repeated measures","Matched pairs"], items:[["Different participants in each condition",0],["Order effects are a problem",1],["Participants are paired on key variables",2],["Counterbalancing is needed",1],["Participant variables are a problem",0],["Takes the most time to set up",2],["The same participants do every condition",1],["Random allocation to conditions",0]]},
+ {t:"RM", title:"Which type of experiment?", b:["Lab experiment","Field experiment","Natural experiment"], items:[["IV manipulated in a controlled setting",0],["IV manipulated in a natural setting",1],["The IV varies naturally",2],["Hofling's hospital study",1],["Loftus and Palmer's study",0],["Rutter's ERA study",2],["Bickman's uniform study",1],["Baddeley's word list study",0]]},
+ {t:"Biopsychology", title:"Which hemisphere?", b:["Left","Right"], items:[["Language production",0],["Language comprehension",0],["Facial recognition",1],["Visuo-spatial processing",1],["Controls the right side of the body",0],["Controls the left side of the body",1]]},
+ {t:"Forensic Psychology", title:"Which aim of custodial sentencing?", b:["Deterrence","Incapacitation","Retribution","Rehabilitation"], items:[["Making prison unpleasant so people avoid it",0],["Protecting the public",1],["Punishment in proportion to the crime",2],["Education and training in prison",3],["Removing the offender from society",1],["Making the offender pay for the harm caused",2],["Therapy to change offending behaviour",3],["Putting other people off offending",0]]},
+ {t:"Relationships", title:"Which phase of breakdown (Duck)?", b:["Intrapsychic","Dyadic","Social","Grave-dressing"], items:[["Brooding privately on dissatisfaction",0],["Confronting the partner",1],["Telling friends and family",2],["Creating a story of the break-up",3],["Discussing whether to save the relationship",1],["Friends take sides",2],["Thinking about leaving",0],["Tidying up memories of the relationship",3]]},
+ {t:"Attachment", title:"Classical or operant conditioning (learning theory)?", b:["Classical","Operant"], items:[["Food produces pleasure (UCS → UCR)",0],["The caregiver becomes a conditioned stimulus",0],["Crying is reinforced by being fed",1],["Drive reduction",1],["The caregiver is associated with food",0],["Hunger as a primary drive",1]]}
+);
+
 /* ---- 🔗 study matcher, 🧩 put it in order ---- */
 const MATCH_RE=/^What did (.+?) find(?: about [^?]+)?\??$/i;
 function matchPairs(){
@@ -4437,7 +4616,7 @@ const TOUR=[
   ["🗂️","Flashcards","<p>Pick your topics above, then answer each card:</p><ul><li><b>Multiple choice</b>: tap an answer or press 1–4.</li><li><b>⌨️ Type it</b>: type your answer and it's marked for you on the key terms. Typed answers earn <b>2× XP</b>.</li><li><b>✏️ Gap fill</b>: type the missing key term.</li></ul><p>Cards you get wrong come back until you know them.</p>"],
   ["✍️","Quiz and Writing","<p>Try a <b>Quick quiz</b>, or head to <b>Writing</b> for 16- and 8-mark essays, Design a study and timed mini mocks. Long writing earns <b>2× XP</b>.</p><p>Parents and carers can test you too in <b>👪 Parent mode</b>.</p>"],
   ["🕹️","Arcade","<p>The Daily 10, the Weekly Challenge, Boss Battles, Study Detective, Who Am I?, Sort It, Timeline, Spot the Flaw and more.</p><p>Check the <b>🎲 Game of the Day</b> for double XP.</p>"],
-  ["🐀","Level up","<p>Every answer earns XP. Climb 100 levels, keep your 🔥 streak, earn ⭐ mastery stars in every topic, and collect badges and themes.</p><p>Your lab rat, <b>Professor Squeaks</b>, grows as you revise and gets sleepy if you stay away.</p><p>Psst… there are secret scrolls hidden around the site. 📜</p>"],
+  ["🐀","Level up","<p>Every answer earns XP. Climb 100 levels, keep your 🔥 streak, earn ⭐ mastery stars in every topic, and collect badges and themes.</p><p>Your lab rat, <b>Professor Squeaks</b>, grows as you revise and gets sleepy if you stay away. Reach level 15 to swap him for Skinner's pigeon. 🐦</p><p>Psst… there are secret scrolls hidden around the site. 📜</p>"],
   ["💾","Keep your progress safe","<p>Your progress is saved in <b>this browser only</b>. Nothing goes online.</p><p>Back it up in the <b>💾 Saves</b> tab every week or so, especially before you change phone or clear your browser. You can also send Mr Wakefield a progress report from there.</p><p>Good luck. Keep right on! 💙</p>"]
 ];
 const WHATS_NEW=["🟩 <b>Psychle:</b> guess the daily psychology word in six tries, then share your result.","🔗 <b>Connections:</b> find four hidden groups of four terms.","🤥 <b>Two Truths and a Lie</b>, 👆 <b>True or False</b> (swipe!) and 📈 <b>Higher or Lower</b> with real study findings.","✍️ <b>Exam technique:</b> Build the Paragraph and Be the Examiner.","📅 <b>Year 12 or 13?</b> Games only use topics you've been taught. Change your year in 💾 Saves."];
