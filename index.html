@@ -366,6 +366,21 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .dperr{min-height:1.3em;color:var(--warn-ink);font-weight:700;margin:0 0 10px}
 .yearpick{max-width:400px;text-align:center}.yearpick .tour-ico{font-size:48px}
 .yearnote{margin:0 0 12px;padding:10px 12px;border-radius:12px;background:var(--soft);font-size:14px}
+.psy-board{display:grid;gap:6px;justify-content:center;margin:6px 0 14px}
+.psy-row{display:grid;grid-template-columns:repeat(var(--n),minmax(30px,48px));gap:6px}
+.psy-c{aspect-ratio:1;display:grid;place-items:center;border:2px solid var(--line);border-radius:8px;font-weight:800;font-size:clamp(16px,4.5vw,24px);background:var(--card)}
+.psy-c.typed{border-color:var(--ink)}
+.psy-c.mg,.psy-k.mg{background:#2E8B57;border-color:#2E8B57;color:#fff}.psy-c.my,.psy-k.my{background:#C9A227;border-color:#C9A227;color:#fff}.psy-c.mx,.psy-k.mx{background:#787C7E;border-color:#787C7E;color:#fff}
+.psy-kb{display:grid;gap:6px;max-width:560px;margin:0 auto}.psy-kr{display:flex;gap:4px;justify-content:center}
+.psy-k{flex:1;min-width:0;max-width:44px;height:48px;border:0;border-radius:8px;background:var(--soft);font-weight:800;font-size:15px;color:var(--ink)}.psy-k.wide{max-width:72px;flex:1.6;font-size:13px}
+.psy-end{text-align:center}.psy-end h3{margin:4px 0 6px}
+.conn-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.conn-t{min-height:64px;padding:8px 6px;border-radius:12px;border:2px solid var(--line);background:var(--soft);font-weight:700;font-size:14px;line-height:1.25;color:var(--ink)}
+.conn-t.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+@media (max-width:520px){.conn-t{font-size:12px;min-height:58px;padding:6px 4px}}
+.conn-solved{border-radius:12px;padding:10px 12px;margin:0 0 8px;color:#1B1B1B;text-align:center;display:grid;gap:2px}.conn-solved small{opacity:.75}.conn-solved span{font-size:14px}
+.conn-solved.missed{background:var(--soft);color:var(--ink);border:2px dashed var(--line)}
+.conn-dots{letter-spacing:4px;font-size:18px}.conn-msg{text-align:center;min-height:1.4em;font-weight:700;margin:10px 0 0}
 .boss-quote{font-style:italic;font-weight:700;font-size:18px;margin:0 0 6px}
 .hardtog{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px}.hardtog span{color:var(--muted);font-size:14px}
 .bossc.hard:not(:disabled){box-shadow:0 0 0 2px #F97316 inset}
@@ -2347,6 +2362,13 @@ const MODES = {
   match:{icon:"🔗", name:"Study Matcher", c:"#D6478F", kind:"mini", src:"match", desc:"Match the researcher to what they found. Three rounds of five, from the topics you've selected."},
   detective:{icon:"🕵️", name:"Study Detective", c:"#52525B", kind:"round", n:8, src:"detective", desc:"A case file describes a study. Work out who did it, what they found, the method and a criticism that fits. Explanations after every answer."},
   whoami:{icon:"🎭", name:"Who Am I?", c:"#9A7440", kind:"round", n:6, src:"whoami", desc:"Clues about a famous study appear one at a time. Guess the researcher early for up to triple XP, or reveal more clues to play it safe."},
+  psychle:{icon:"🟩", name:"Psychle", c:"#2E8B57", kind:"mini", src:"psychle", desc:"Guess today's psychology key term in six tries. Green = right letter, right place; yellow = in the word, wrong place. A new word every day."},
+  connections:{icon:"🔗", name:"Connections", c:"#8B5CF6", kind:"mini", src:"connections", desc:"Sixteen terms, four hidden groups of four. Find the links before you run out of mistakes."},
+  truths:{icon:"🤥", name:"Two Truths and a Lie", c:"#DB2777", kind:"round", n:8, src:"truths", desc:"Three statements about a famous study, and one is false. Can you spot the lie?"},
+  tf:{icon:"👆", name:"True or False", c:"#0EA5E9", kind:"blitz", src:"tf", desc:"Is the answer shown right or wrong? Swipe right for true, left for false (or use the arrow keys). 60 seconds."},
+  hilo:{icon:"📈", name:"Higher or Lower", c:"#F59E0B", kind:"round", n:10, src:"hilo", desc:"Real findings from key studies. Is the next percentage higher or lower? Learn the numbers that make evaluation points sharp."},
+  paragraph:{icon:"🧱", name:"Build the Paragraph", c:"#0F766E", kind:"mini", src:"paragraph", desc:"Put the sentences of a top AO3 paragraph in order: Point, Evidence, Explanation, Link."},
+  examiner:{icon:"🎯", name:"Be the Examiner", c:"#B45309", kind:"round", n:8, src:"examiner", desc:"Read a student's answer and decide how many marks it gets, then see why."},
   sort:{icon:"🗂️", name:"Sort It", c:"#0F766E", kind:"mini", src:"sort", desc:"Tap each card into the right box: NSI or ISI, STM or LTM, positive or negative symptoms and more. Three quick sets."},
   timeline:{icon:"📅", name:"Timeline", c:"#C2410C", kind:"mini", src:"timeline", desc:"Tap famous studies and theories into date order, from oldest to newest. The years are revealed when you check."},
   order:{icon:"🧩", name:"Put It in Order", c:"#7B5BE0", kind:"mini", src:"order", desc:"Tap the steps into the right order: synaptic transmission, Duck's phases, CBT, report sections and more."},
@@ -2361,8 +2383,8 @@ const arc={phase:"menu", mode:null, qs:[], i:0, score:0, right:0, lives:3, end:0
 const dailyNo = () => dayNum(today())-dayNum("2026-01-01")+1;
 const M = () => MODES[arc.mode];
 /* how the arcade menu is grouped on phones (desktop shows one grid in the MODES order) */
-const ARC_GROUPS=[["📰","Daily and weekly",["daily","weekly","exam"]],["⚡","Quick play",["blitz","surv","gap","match","sort","timeline","order"]],["🕵️","Study skills",["stats","flaw","detective","whoami","mistakes"]],["👹","Challenges",["boss"]],["👪","For teachers and parents",["parent","proj"]]];
-const GOTD_POOL=["blitz","surv","gap","stats","flaw","match","order","detective","whoami","sort","timeline"];
+const ARC_GROUPS=[["📰","Daily and weekly",["daily","psychle","weekly","exam"]],["⚡","Quick play",["tf","blitz","surv","gap","connections","hilo","match","sort","timeline","order"]],["🕵️","Study skills",["stats","flaw","detective","whoami","truths","mistakes"]],["✍️","Exam technique",["paragraph","examiner"]],["👹","Challenges",["boss"]],["👪","For teachers and parents",["parent","proj"]]];
+const GOTD_POOL=["blitz","surv","gap","stats","flaw","match","order","detective","whoami","sort","timeline","tf","hilo","truths","connections","paragraph","examiner"];
 const gotd=()=>GOTD_POOL[((dayNum(today())%GOTD_POOL.length)+GOTD_POOL.length)%GOTD_POOL.length];
 /* weekly challenge: rotates through the content topics every Monday */
 const WEEK_TOPICS=TOPICS.filter(t=>t.key!=="Exam skills");
@@ -2374,6 +2396,11 @@ function weeklyShare(){ const w=G.weekly[weekStart()]; return `Fount of Wisdom A
 function bestLabel(k){
   if(k==="weekly"){ const w=(G.weekly||{})[weekStart()]; return w&&w.done?`Done this week: ${w.score}/15 ✓`:`This week: ${weekTopic().name}`; }
   const st=G.st;
+  if(k==="psychle"){ const ps=(G.psychle||{})[today()+(store.year||"")]; return ps&&ps.done?(ps.won?`Today: solved in ${ps.g.length} ✓`:"Today: done. New word tomorrow"):"Today's word is waiting"; }
+  if(k==="connections") return st.connWins?`Puzzles solved: ${st.connWins}`:"No score yet";
+  if(k==="tf") return st.tfBest?`Best: ${st.tfBest} right`:"No score yet";
+  if(k==="paragraph") return st.parBest?`Best: ${st.parBest}/4 paragraphs`:"No score yet";
+  if(k==="truths"||k==="hilo"||k==="examiner") return st[k+"Best"]!=null?`Best: ${st[k+"Best"]}/${MODES[k].n}`:"No score yet";
   if(k==="sort") return st.sortBest?`Best: ${st.sortBest}% sorted`:"No score yet";
   if(k==="timeline") return st.timelineBest?`Best: ${st.timelineBest}/4 timelines`:"No score yet";
   if(k==="whoami") return st.whoFirst?`Guessed on the first clue: ${st.whoFirst}`:"No score yet";
@@ -2404,7 +2431,9 @@ function renderArcade(){
       ${(()=>{ const card=k=>{ const m=MODES[k];
         const dis = (m.src==="cards" && !nCards) || (m.src==="gap" && nGap<4) || (m.src==="mistakes" && !mistakeIds().filter(id=>mcOK(BY_ID[id])&&topicOpen(BY_ID[id].t)).length)
           || ((k==="detective"||k==="whoami") && !STUDIES.some(x=>topicOpen(x.t))) || (k==="sort" && !SORT_SETS.some(x=>topicOpen(x.t))) || (k==="timeline" && !TIMELINES.some(x=>topicOpen(x.t)))
-          || (k==="order" && !SEQUENCES.some(x=>topicOpen(x.t))) || (k==="match" && matchPairs().length<5);
+          || (k==="order" && !SEQUENCES.some(x=>topicOpen(x.t))) || (k==="match" && matchPairs().length<5)
+          || (k==="truths" && !STUDIES.some(x=>topicOpen(x.t))) || (k==="hilo" && HILO.filter(x=>topicOpen(x[2])).length<2) || (k==="paragraph" && !PARAGRAPHS.some(x=>topicOpen(x.t)))
+          || (k==="examiner" && !EXAMINER.some(x=>topicOpen(x[0]))) || (k==="psychle" && !PSY_WORDS.some(x=>topicOpen(x[1]))) || (k==="connections" && connGroups(Math.random).length<4);
         const tag = k===gotd() ? `<span class="new gotd">🎲 Today 2×</span>` : m.featured ? `<span class="new">2× XP</span>` : (k==="daily"&&!(dd&&dd.done)) ? '<span class="new">NEW</span>' : "";
         return `<button class="mode ${m.featured?"featured":""} ${k===gotd()?"gotd":""}" style="--c:${m.c}" data-mode="${k}" ${dis?"disabled":""}>${tag}<span class="mi">${m.icon}</span><h3>${m.name}${m.featured?' <small>Featured</small>':""}</h3><p>${m.desc}</p><span class="best">${bestLabel(k)}</span></button>`; };
         const used=new Set(ARC_GROUPS.flatMap(g=>g[2])), rest=Object.keys(MODES).filter(k=>!used.has(k));
@@ -2415,8 +2444,8 @@ function renderArcade(){
       <p class="arc-note">Blitz, Survival and Gap Fill use the topics you've selected above${nCards?"":", so pick at least one"}. Exam Skills and Stats Lab cover the whole course. Wrong answers on revision cards are added to your still-learning pile. Use keys 1 to 4 to answer, and Enter for the next question.</p>`;
     $("#weekBan").onclick=()=>startArc("weekly");
     const yc=$("#yearChange"); if(yc) yc.onclick=()=>showYearPicker(true);
-    $("#gotdBan").onclick=()=>{ const g=gotd(); if(g==="match") startMatch(); else if(g==="order") startOrder(); else if(g==="sort") startSort(); else if(g==="timeline") startTimeline(); else startArc(g); };
-    area.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{ const md=b.dataset.mode; if(md==="boss"){ arc.phase="bossmenu"; renderArcade(); } else if(md==="match") startMatch(); else if(md==="order") startOrder(); else if(md==="sort") startSort(); else if(md==="timeline") startTimeline(); else if(md==="proj") openProjector(); else if(md==="parent") openParent(); else startArc(md); });
+    $("#gotdBan").onclick=()=>{ const g=gotd(); if(g==="match") startMatch(); else if(g==="order") startOrder(); else if(g==="sort") startSort(); else if(g==="timeline") startTimeline(); else if(g==="connections") startConnections(); else if(g==="paragraph") startParagraph(); else startArc(g); };
+    area.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{ const md=b.dataset.mode; if(md==="boss"){ arc.phase="bossmenu"; renderArcade(); } else if(md==="match") startMatch(); else if(md==="order") startOrder(); else if(md==="sort") startSort(); else if(md==="timeline") startTimeline(); else if(md==="psychle") startPsychle(); else if(md==="connections") startConnections(); else if(md==="paragraph") startParagraph(); else if(md==="proj") openProjector(); else if(md==="parent") openParent(); else startArc(md); });
     return;
   }
   if(arc.phase==="bossmenu"){
@@ -2448,6 +2477,7 @@ function renderArcade(){
       <div id="fb"></div></div>
       <p style="text-align:right;margin-top:10px"><button class="linkbtn" id="arcQuit">${once?"Stop (counts as your go)":"End game"}</button></p>`;
     area.querySelectorAll(".opt").forEach(b=>b.onclick=()=>arcPick(+b.dataset.i));
+    if(arc.mode==="tf"){ const qa=area.querySelector(".quiz-q"); let x0=null; qa.addEventListener("touchstart",e=>{ x0=e.touches[0].clientX; },{passive:true}); qa.addEventListener("touchend",e=>{ if(x0==null) return; const dx=e.changedTouches[0].clientX-x0; x0=null; if(Math.abs(dx)>60){ qa.style.transform=`translateX(${dx>0?40:-40}px) rotate(${dx>0?3:-3}deg)`; arcPick(dx>0?1:0); } }); }
     const cm=$("#clueMore"); if(cm) cm.onclick=()=>{ arc.clue=Math.min(4,arc.clue+1); renderArcade(); const nb=$("#clueMore"); if(nb) nb.focus(); };
     $("#arcQuit").onclick=()=>arcFinish();
     arcTick();
@@ -2502,6 +2532,7 @@ function nextQ(){
     if(m.src==="flaw"){ const f=FLAWS[Math.floor(rng()*FLAWS.length)]; q={...mcq("Spot the flaw: "+f[0]+"\nWhat is the main problem with this study?", f[1], shuffleR(f[2],rng), f[3], rng, "Spot the flaw"), tname:"Spot the flaw", c:"#2596B0"}; }
     else if(m.src==="mistakes"){ const ids=mistakeIds().filter(id=>mcOK(BY_ID[id])&&topicOpen(BY_ID[id].t)); q=qFromCard(BY_ID[ids[Math.floor(rng()*ids.length)]],rng); q.tname="🩹 Mistake · "+q.tname; }
     else if(m.src==="detective") q=qDetective(rng); else if(m.src==="whoami") q=qWhoAmI(rng);
+    else if(m.src==="truths") q=qTruths(rng); else if(m.src==="hilo") q=qHilo(rng); else if(m.src==="examiner") q=qExaminer(rng); else if(m.src==="tf") q=qTF(rng);
     else if(m.src==="exam") q=qExam(rng); else if(m.src==="stats") q=qStats(rng); else if(m.src==="gap") q=qGap(rng);
     else { const p=pool().filter(d=>mcOK(d)&&topicOpen(d.t)); q=qFromCard(p[Math.floor(rng()*p.length)],rng); }
     const key=q.q.slice(0,90); if(!arc.seen.has(key) || tries===24){ arc.seen.add(key); return q; }
@@ -2583,7 +2614,7 @@ function arcPick(i){
   }
   setTimeout(advance, ok ? 380 : 1300);
 }
-function arcFinishHook(){ if(arc.mode==="detective") G.st.detBest=Math.max(G.st.detBest||0,arc.right); if(arc.mode==="flaw" && arc.log.length>=MODES.flaw.n) G.st.flaws=(G.st.flaws||0)+1; }
+function arcFinishHook(){ if(["truths","hilo","examiner"].includes(arc.mode)) G.st[arc.mode+"Best"]=Math.max(G.st[arc.mode+"Best"]||0,arc.right); if(arc.mode==="tf") G.st.tfBest=Math.max(G.st.tfBest||0,arc.right); if(arc.mode==="detective") G.st.detBest=Math.max(G.st.detBest||0,arc.right); if(arc.mode==="flaw" && arc.log.length>=MODES.flaw.n) G.st.flaws=(G.st.flaws||0)+1; }
 function arcFinish(){ arcFinishHook();
   if(arc.phase!=="play") return;
   clearInterval(arc.timer); arc.phase="done"; arc.best=false; arc.fb=false;
@@ -3575,6 +3606,243 @@ APPLY.push(
   ["Forensic Psychology","Police use statistics about similar crimes to work out the likely characteristics of an unknown offender.","Data-driven (investigative) profiling",["The typology approach","Restorative justice","Anger management"],"Data-driven profiling uses statistical analysis of crime data, rather than typologies."]
 );
 
+/* ===== 🎮 more games (Nov 2026): Psychle, Connections, Two Truths and a Lie, True or False, Higher or Lower, Build the Paragraph, Be the Examiner ===== */
+/* Psychle words: [word, topic key, clue shown after the game] */
+const PSY_WORDS=[
+ ["AGENTIC","Social Influence","Agentic state: feeling you aren't responsible because you're acting for an authority figure"],
+ ["OBEDIENCE","Social Influence","Following a direct order from an authority figure"],
+ ["MINORITY","Social Influence","Minority influence: a small group changing the majority's view through consistency and commitment"],
+ ["UNIFORM","Social Influence","A situational variable: Milgram's experimenter wore a lab coat, and Bickman used a guard's uniform"],
+ ["PROXIMITY","Social Influence","How close the authority figure or victim is, which affects obedience"],
+ ["DISSENTER","Social Influence","Someone who breaks the group's unanimity, making it easier for others to resist"],
+ ["CONFORM","Social Influence","To change your behaviour or views because of group pressure"],
+ ["ENCODING","Memory","Changing information into a form that can be stored (acoustic, semantic or visual)"],
+ ["CHUNKING","Memory","Grouping items into larger units to fit more into STM"],
+ ["RECENCY","Memory","The recency effect: the last items in a list are recalled well because they're still in STM"],
+ ["PRIMACY","Memory","The primacy effect: the first items in a list are recalled well because they've been rehearsed into LTM"],
+ ["DURATION","Memory","How long a memory store holds information"],
+ ["CAPACITY","Memory","How much information a memory store can hold"],
+ ["ACOUSTIC","Memory","Coding by sound, the main type of coding in STM"],
+ ["SEMANTIC","Memory","Coding by meaning, the main type of coding in LTM"],
+ ["RETRIEVAL","Memory","Getting information back out of memory"],
+ ["MONOTROPY","Attachment","Bowlby's idea that infants form one special attachment"],
+ ["SECURE","Attachment","The attachment type where the infant uses the caregiver as a safe base"],
+ ["AVOIDANT","Attachment","Insecure-avoidant: little distress at separation and avoiding the caregiver on reunion"],
+ ["RESISTANT","Attachment","Insecure-resistant: high distress at separation and resisting comfort on reunion"],
+ ["BOWLBY","Attachment","He proposed monotropy, the critical period and the internal working model"],
+ ["LORENZ","Attachment","He showed goslings imprint on the first moving object they see"],
+ ["HARLOW","Attachment","His monkeys preferred a cloth mother to a wire one that gave milk"],
+ ["SCHEMA","Approaches","A mental framework of beliefs and expectations built from experience"],
+ ["OPERANT","Approaches","Operant conditioning: learning through consequences (reinforcement and punishment)"],
+ ["SUPEREGO","Approaches","The moral part of the personality, which punishes with guilt"],
+ ["DENIAL","Approaches","A defence mechanism: refusing to accept reality"],
+ ["VICARIOUS","Approaches","Vicarious reinforcement: learning from the consequences others receive"],
+ ["GENOTYPE","Approaches","A person's genetic make-up"],
+ ["SYNAPSE","Biopsychology","The gap between two neurons, crossed by neurotransmitters"],
+ ["NEURON","Biopsychology","A nerve cell that carries electrical signals"],
+ ["BROCA","Biopsychology","Broca's area: the speech production area in the left frontal lobe"],
+ ["WERNICKE","Biopsychology","Wernicke's area: the language comprehension area in the left temporal lobe"],
+ ["DENDRITE","Biopsychology","The branches of a neuron that receive signals"],
+ ["HORMONE","Biopsychology","A chemical messenger released by a gland into the bloodstream"],
+ ["PITUITARY","Biopsychology","The 'master gland', controlled by the hypothalamus"],
+ ["VARIABLE","RM","Anything that can change or be changed in a study"],
+ ["PILOT","RM","A pilot study: a small trial run before the main study"],
+ ["VALIDITY","RM","Whether a study measures what it claims to measure"],
+ ["MEDIAN","RM","The middle value when scores are put in order"],
+ ["ORDINAL","RM","Data that can be put in order, but with unequal gaps (e.g. ratings)"],
+ ["NOMINAL","RM","Data in separate categories you can only count"],
+ ["PARADIGM","RM","A set of shared assumptions and methods within a science"],
+ ["EMPIRICAL","RM","Based on direct observation and measurement"],
+ ["SAMPLE","RM","The group of people who take part in a study"],
+ ["PHOBIA","Psychopathology","An irrational fear of an object or situation"],
+ ["FLOODING","Psychopathology","A behavioural therapy: immediate, full exposure to the feared stimulus"],
+ ["OBSESSION","Psychopathology","A recurring, intrusive thought that causes anxiety (OCD)"],
+ ["SEROTONIN","Psychopathology","A neurotransmitter linked to OCD and depression"],
+ ["TRIAD","Psychopathology","Beck's negative triad: negative views of the self, the world and the future"],
+ ["EQUITY","Relationships","Equity theory: we're happiest when rewards and costs feel fair"],
+ ["MATCHING","Relationships","The matching hypothesis: choosing partners of similar attractiveness"],
+ ["FILTER","Relationships","Kerckhoff and Davis' filter theory of partner choice"],
+ ["DOPAMINE","Schizophrenia","The neurotransmitter at the centre of the dopamine hypothesis"],
+ ["AVOLITION","Schizophrenia","A negative symptom: severe loss of motivation"],
+ ["DELUSION","Schizophrenia","A positive symptom: a firmly held false belief"],
+ ["TYPOLOGY","Forensic Psychology","The typology approach to profiling: organised and disorganised offenders"],
+ ["PROFILE","Forensic Psychology","Offender profiling: working out the likely characteristics of an offender"],
+ ["HOLISM","Issues and Debates part I","Looking at the whole person rather than breaking behaviour into parts"],
+ ["ALPHA","Issues and Debates part I","Alpha bias: exaggerating differences between men and women"]
+];
+
+/* Higher or Lower: [study and measure, percentage, topic key] */
+const HILO=[
+ ["Milgram (1963): participants who went all the way to 450V",65,"Social Influence"],
+ ["Asch (1951): conformity on the critical trials",36.8,"Social Influence"],
+ ["Asch (1951): participants who never conformed",25,"Social Influence"],
+ ["Hofling et al. (1966): nurses who obeyed (21 of 22)",95,"Social Influence"],
+ ["Burger (2009): participants willing to continue past 150V",70,"Social Influence"],
+ ["Moscovici (1969): 'green' answers with a consistent minority",8.42,"Social Influence"],
+ ["Moscovici (1969): 'green' answers with an inconsistent minority",1.25,"Social Influence"],
+ ["Holland (1967): internals who refused to continue",37,"Social Influence"],
+ ["Holland (1967): externals who refused to continue",23,"Social Influence"],
+ ["Bahrick et al. (1975): face recognition after 15 years",90,"Memory"],
+ ["Bahrick et al. (1975): face recognition after 48 years",70,"Memory"],
+ ["Johnson and Scott (1976): correct identifications when the man held a pen",49,"Memory"],
+ ["Johnson and Scott (1976): correct identifications when the man held a knife",33,"Memory"],
+ ["Yuille and Cutshall (1986): accuracy of the most stressed witnesses",88,"Memory"],
+ ["Gabbert et al. (2003): recalled details they hadn't seen, after discussion",71,"Memory"],
+ ["Zeanah et al. (2005): securely attached children raised at home",74,"Attachment"],
+ ["Zeanah et al. (2005): securely attached children in institutions",19,"Attachment"],
+ ["Hazan and Shaver (1987): securely attached adults",56,"Attachment"],
+ ["Nestadt et al. (2010): OCD concordance in identical twins",68,"Psychopathology"],
+ ["Nestadt et al. (2010): OCD concordance in non-identical twins",31,"Psychopathology"],
+ ["March et al. (2007): teenagers who improved with CBT alone",81,"Psychopathology"],
+ ["March et al. (2007): teenagers who improved with CBT plus antidepressants",86,"Psychopathology"],
+ ["Christiansen (1977): criminality concordance in male identical twins",35,"Forensic Psychology"],
+ ["Christiansen (1977): criminality concordance in male non-identical twins",13,"Forensic Psychology"],
+ ["Gottesman (1991): schizophrenia concordance in identical twins",48,"Schizophrenia"],
+ ["Gottesman (1991): schizophrenia concordance in non-identical twins",17,"Schizophrenia"],
+ ["Leucht et al. (2012): relapse within a year on a placebo",64,"Schizophrenia"],
+ ["Leucht et al. (2012): relapse within a year on antipsychotics",27,"Schizophrenia"],
+ ["Arnett (2008): participants from Western industrialised countries",96,"Issues and Debates part I"]
+];
+
+/* Build the Paragraph: AO3 paragraphs in Point, Evidence, Explanation, Link order */
+const PARAGRAPHS=[
+ {t:"Social Influence", title:"A limitation of Milgram's research", steps:["A limitation of Milgram's research is that participants may not have believed the shocks were real.","Orne and Holland argued that many participants guessed the set-up, and later analysis of the recordings suggested only about half believed the shocks were real.","If participants knew the learner wasn't really being hurt, they may have been playing along rather than genuinely obeying.","This reduces the internal validity of the study, so it may not tell us much about real obedience."]},
+ {t:"Social Influence", title:"Support for informational social influence", steps:["A strength of informational social influence as an explanation of conformity is that it is supported by research.","Lucas et al. found that students conformed more to wrong answers on difficult maths problems than on easy ones.","When the task was harder, participants were less sure of the right answer, so they looked to others for information.","This supports the idea that people conform when they want to be right, increasing the validity of ISI."]},
+ {t:"Memory", title:"Support for the multi-store model", steps:["A strength of the multi-store model is research showing that STM and LTM are separate stores.","Baddeley found that people confused acoustically similar words in STM, but semantically similar words in LTM.","This suggests the two stores code information differently, as the model predicts.","This supports the multi-store model's claim that STM and LTM are distinct."]},
+ {t:"Memory", title:"A limitation of research into leading questions", steps:["A limitation of research into leading questions is that it often lacks mundane realism.","In Loftus and Palmer's study, participants watched film clips of car crashes rather than seeing a real accident.","Watching a clip doesn't create the stress of witnessing a real crash, which could affect memory.","This means the findings may not generalise to real eyewitnesses, lowering ecological validity."]},
+ {t:"Attachment", title:"A limitation of learning theory", steps:["A limitation of learning theory is that research suggests food isn't the main reason for attachment.","Harlow found that baby monkeys preferred a cloth-covered 'mother' to a wire one that gave milk, especially when frightened.","This suggests that comfort, not food, is what drives attachment.","Therefore learning theory's idea of 'cupboard love' is likely to be wrong."]},
+ {t:"Attachment", title:"A strength of research into cultural variations", steps:["A strength of research into cultural variations is the large sample used by Van IJzendoorn and Kroonenberg.","Their meta-analysis combined 32 studies from 8 countries, with nearly 2,000 children in total.","Large samples reduce the impact of unusual results from any single study.","This increases confidence that their findings about cultural similarities are reliable."]},
+ {t:"Psychopathology", title:"Evidence for CBT for depression", steps:["A strength of CBT for depression is evidence that it is effective.","March et al. found that 81% of depressed teenagers improved after 36 weeks of CBT, the same rate as with antidepressants.","This suggests CBT works as well as drugs, without the side effects.","Therefore CBT is a useful treatment option, especially for people who want to avoid medication."]},
+ {t:"Approaches", title:"Support for social learning theory", steps:["A strength of social learning theory is research support for vicarious reinforcement.","Bandura found children were less likely to copy an aggressive model if they had seen the model punished.","This shows children learn from the consequences of other people's behaviour, not just their own.","This supports the role of vicarious reinforcement, which behaviourism alone cannot explain."]},
+ {t:"Biopsychology", title:"Support for brain plasticity", steps:["Research supports the idea that the brain is plastic.","Maguire et al. found London taxi drivers had a larger posterior hippocampus than controls, and it was larger the longer they had driven.","This suggests that learning the city's streets physically changed their brains.","This supports brain plasticity, although the drivers may have differed from the controls in other ways."]},
+ {t:"RM", title:"A strength of laboratory experiments", steps:["A strength of laboratory experiments is the high level of control.","For example, researchers can keep extraneous variables such as noise and time of day the same in every condition.","This makes it more likely that any change in the DV was caused by the IV.","Therefore lab experiments can establish cause and effect, giving them high internal validity."]},
+ {t:"Schizophrenia", title:"Support for the dopamine hypothesis", steps:["A strength of the dopamine hypothesis is support from drug treatments.","Typical antipsychotics, which block dopamine receptors, reduce positive symptoms such as hallucinations in many patients.","If reducing dopamine activity reduces symptoms, too much dopamine may be part of the cause.","This supports the dopamine hypothesis, although a drug working doesn't prove what caused the disorder."]},
+ {t:"Forensic Psychology", title:"A limitation of the typology approach", steps:["A limitation of the typology approach is that the organised/disorganised split may be too simple.","Canter et al. analysed 100 US serial killings and found organised features were common in most cases.","This suggests offenders don't fall neatly into two separate types.","Therefore profiles based on this typology could mislead investigators."]},
+ {t:"Relationships", title:"A limitation of social exchange theory", steps:["A limitation of social exchange theory is that it may get cause and effect the wrong way round.","Argyle suggested people only start weighing up costs and rewards once they are already dissatisfied.","This means dissatisfaction may cause the cost–benefit thinking, rather than the other way round.","Therefore social exchange theory may not explain why relationships break down."]},
+ {t:"Issues and Debates part I", title:"Beta bias in stress research", steps:["Some psychological research shows beta bias, assuming findings from men apply equally to women.","Early research into the fight or flight response was mostly carried out on male animals and men.","Taylor et al. suggested females may be more likely to 'tend and befriend', so fight or flight may not describe women's stress response.","This shows how beta bias can lead to theories that don't apply to everyone."]}
+];
+
+/* Be the Examiner: [topic, question, max marks, student answer, correct mark, why] (original practice items, not real exam questions) */
+const EXAMINER=[
+ ["Social Influence","Outline what is meant by the agentic state.",2,"A mental state where a person feels they aren't responsible for their actions because they see themselves as acting for an authority figure.",2,"Accurate and clear: it covers both the lack of responsibility and acting for an authority figure."],
+ ["Social Influence","Outline what is meant by the agentic state.",2,"When someone obeys an order.",0,"This describes obedience, not the agentic state. There's nothing about responsibility or acting as an agent."],
+ ["Attachment","Explain one limitation of Bowlby's monotropic theory.",3,"It isn't very good.",0,"No actual limitation is identified."],
+ ["Attachment","Explain one limitation of Bowlby's monotropic theory.",3,"One limitation is that Schaffer and Emerson found many babies formed multiple attachments.",2,"A relevant limitation with evidence, but it isn't explained: how does this challenge monotropy?"],
+ ["Attachment","Explain one limitation of Bowlby's monotropic theory.",3,"Schaffer and Emerson found many babies formed multiple attachments at the same time, and their main attachment wasn't always to the mother. This challenges Bowlby's idea that one special attachment matters more than all others, so monotropy may be wrong.",3,"Limitation, evidence and a clear explanation of why it challenges the theory."],
+ ["RM","Identify the IV and the DV: students revised either with music or in silence, then took a memory test.",2,"IV: whether they revised with music. DV: memory.",1,"The IV is right, but the DV needs to be operationalised, e.g. the score on the memory test."],
+ ["RM","Identify the IV and the DV: students revised either with music or in silence, then took a memory test.",2,"The IV is revising with music or in silence; the DV is the score on the memory test.",2,"Both are correct, and the DV is operationalised."],
+ ["Psychopathology","Outline one strength of systematic desensitisation.",2,"It works because it is effective.",0,"This is circular and gives no detail or evidence."],
+ ["Psychopathology","Outline one strength of systematic desensitisation.",2,"It is effective: Gilroy et al. found people treated for spider phobia with SD were less fearful than a control group.",2,"A clear strength backed by relevant evidence."],
+ ["RM","Explain what is meant by a Type I error.",2,"A false positive.",1,"A correct idea, but it needs explaining: rejecting the null hypothesis when it is actually true."],
+ ["Memory","Outline the capacity of short-term memory.",2,"STM can hold about 7 ± 2 items, according to Miller, though this can be increased by chunking.",2,"Accurate figure, attributed to research, with extra detail about chunking."],
+ ["Memory","Outline the capacity of short-term memory.",2,"It's quite small.",0,"Too vague: no figure or detail is given."],
+ ["Biopsychology","Outline the role of the sympathetic nervous system.",2,"It prepares the body for fight or flight, for example by increasing heart rate.",2,"A correct role with a relevant example."],
+ ["Approaches","Outline what is meant by a schema.",2,"A mental framework of beliefs and expectations about something, built up from experience.",2,"Accurate and well expressed."]
+];
+
+function qTruths(rng){
+  const pool=STUDIES.filter(x=>topicOpen(x.t)), s=pickR(pool,rng), t=TMAP[s.t];
+  const fields=[["p","Participants"],["d","Procedure"],["f","Finding"]], lie=Math.floor(rng()*3), [fk,fl]=fields[lie];
+  const others=studyOthers(s).filter(o=>o[fk] && o[fk]!==s[fk]), o=others[0];
+  const opts=fields.map(([k,l],i)=>l+": "+(i===lie?o[k]:s[k]));
+  return {q:"Study: "+s.who+"\nWhich statement is the lie?", opts, correct:lie, explain:`The ${fl.toLowerCase()} shown was really from ${o.who}. ${s.who}: ${s[fk]}`, tname:"Two Truths and a Lie · "+t.name, c:t.c};
+}
+function qHilo(rng){
+  const pool=HILO.filter(x=>topicOpen(x[2])); let a,b,n=0;
+  do{ a=pickR(pool,rng); b=pickR(pool,rng); n++; } while((a===b||a[1]===b[1]) && n<50);
+  const fmt=v=>(Math.round(v*100)/100)+"%", up=b[1]>a[1], t=TMAP[b[2]];
+  return {q:`${a[0]}: ${fmt(a[1])}\n\nIs this one higher or lower?\n${b[0]}`, opts:["⬆️ Higher","⬇️ Lower"], correct:up?0:1, explain:`${b[0]}: ${fmt(b[1])}`, tname:"Higher or Lower · "+t.name, c:t.c};
+}
+function qExaminer(rng){
+  const pool=EXAMINER.filter(x=>topicOpen(x[0])), [tk,q,max,ans,mark,why]=pickR(pool,rng), t=TMAP[tk];
+  const opts=[...Array(max+1)].map((_,i)=>i+" mark"+(i===1?"":"s"));
+  return {q:`📝 ${q} [${max} marks]\n\nStudent answer: “${ans}”\n\nHow many marks would you give?`, opts, correct:mark, explain:why, tname:"Be the Examiner · "+t.name, c:t.c};
+}
+function qTF(rng){
+  const sel=new Set(store.sel); let pool=DATA.filter(d=>mcOK(d) && d.t!=="Exam skills" && topicOpen(d.t) && sel.has(d.t)); if(pool.length<10) pool=DATA.filter(d=>mcOK(d) && d.t!=="Exam skills" && topicOpen(d.t));
+  const d=pickR(pool,rng), t=TMAP[d.t], truth=rng()<0.5; let shown=d.a;
+  if(!truth){ const m=mcFor(d,rng); const w=m.opts.filter((o,i)=>i!==m.correct); shown=w.length?pickR(w,rng):d.a; }
+  const isTrue=shown===d.a;
+  return {q:d.q+"\n\nAnswer: “"+shown+"”", opts:["❌ False","✅ True"], correct:isTrue?1:0, explain:d.a, tname:"True or False · "+t.name, c:t.c, id:d.id};
+}
+
+/* ---- 🟩 Psychle: one word a day (the same for everyone in a year group) ---- */
+function psyToday(){ const pool=PSY_WORDS.filter(w=>topicOpen(w[1])); const rng=rngFrom("psychle-"+today()+"-"+(store.year||"")); return pickR(pool,rng); }
+function startPsychle(){ const w=psyToday(); G.psychle=G.psychle||{}; const k=today()+(store.year||"");
+  if(!G.psychle[k] || G.psychle[k].w!==w[0]) G.psychle[k]={w:w[0], g:[], done:false, won:false};
+  mg.ps=G.psychle[k]; mg.psw=w; mg.cur=""; mg.phase="psychle"; arc.phase="mini"; arc.mode="psychle"; renderArcade(); }
+function psyMarks(guess, word){ const res=Array(word.length).fill("x"), left={};
+  for(let i=0;i<word.length;i++){ if(guess[i]===word[i]) res[i]="g"; else left[word[i]]=(left[word[i]]||0)+1; }
+  for(let i=0;i<word.length;i++){ if(res[i]!=="g" && left[guess[i]]){ res[i]="y"; left[guess[i]]--; } }
+  return res; }
+function psyKey(k){
+  const ps=mg.ps, W=ps.w, L=W.length; if(ps.done) return;
+  if(k==="back"){ mg.cur=mg.cur.slice(0,-1); }
+  else if(k==="enter"){ if(mg.cur.length<L){ toast("🟩","Not enough letters",`The word has ${L} letters.`); return; }
+    ps.g.push(mg.cur); mg.cur="";
+    if(ps.g[ps.g.length-1]===W || ps.g.length>=6){ ps.done=true; ps.won=ps.g[ps.g.length-1]===W;
+      const xp=ps.won?20+(6-ps.g.length)*10:5; addXP(xp,false); mg.psXP=xp; G.st.psyWins=(G.st.psyWins||0)+(ps.won?1:0); G.hist[today()]=(G.hist[today()]||0)+1;
+      if(ps.won){ sfx("lvl"); confetti(150); } else sfx("no"); checkBadges(); }
+    save(); }
+  else if(/^[a-z]$/i.test(k) && mg.cur.length<L){ mg.cur+=k.toUpperCase(); }
+  renderArcade();
+}
+function psyShare(){ const ps=mg.ps; return `Psychle (A-level) ${today()}\n${ps.won?ps.g.length:"X"}/6\n`+ps.g.map(g=>psyMarks(g,ps.w).map(c=>c==="g"?"🟩":c==="y"?"🟨":"⬜").join("")).join("\n"); }
+document.addEventListener("keydown",e=>{ if(tab!=="arcade" || arc.phase!=="mini" || mg.phase!=="psychle" || e.target.matches("input,textarea") || e.metaKey||e.ctrlKey||e.altKey || document.querySelector(".overlay")) return;
+  const k=e.key.toLowerCase(); if(k==="enter"){ e.preventDefault(); psyKey("enter"); } else if(k==="backspace"){ e.preventDefault(); psyKey("back"); } else if(/^[a-z]$/.test(k)){ e.preventDefault(); psyKey(k); } });
+
+/* ---- 🔗 Connections: four hidden groups of four ---- */
+function connGroups(rng){
+  const cands=[];
+  TOPICS.forEach(t=>{ if(!topicOpen(t.key)) return; const st=STUDIES.filter(x=>x.t===t.key); if(st.length>=4) cands.push({label:t.name+" researchers", t:t.key, src:"st-"+t.key, items:shuffleR(st,rng).slice(0,4).map(x=>x.who.replace(/\s*\(\d{4}\)/,"").replace(/ et al$/,""))}); });
+  SORT_SETS.forEach((set,si)=>{ if(!topicOpen(set.t)) return; set.b.forEach((b,bi)=>{ const its=set.items.filter(i=>i[1]===bi && i[0].length<=34).map(i=>i[0]); if(its.length>=4) cands.push({label:b, sub:set.title, t:set.t, src:"set-"+si, items:shuffleR(its,rng).slice(0,4)}); }); });
+  const out=[], used=new Set(), srcs=new Set(), perTopic={};
+  for(const c of shuffleR(cands,rng)){ if(out.length===4) break; if(srcs.has(c.src) || (perTopic[c.t]||0)>=2 || (c.src.startsWith("st-") && [...srcs].filter(x=>x.startsWith("st-")).length>=2) || c.items.some(i=>used.has(i.toLowerCase()))) continue; out.push(c); srcs.add(c.src); perTopic[c.t]=(perTopic[c.t]||0)+1; c.items.forEach(i=>used.add(i.toLowerCase())); }
+  return out;
+}
+function startConnections(){ const g=connGroups(Math.random); if(g.length<4){ toast("🔗","Not enough topics unlocked yet","Try again later in the year."); return; }
+  mg.cg=g; mg.tiles=shuffle(g.flatMap((x,gi)=>x.items.map(it=>({it,gi})))); mg.sel=new Set(); mg.solved=[]; mg.miss=0; mg.xp=0; mg.msg=""; mg.phase="connections"; arc.phase="mini"; arc.mode="connections"; renderArcade(); }
+function connSubmit(){ const picked=[...mg.sel].map(i=>mg.tiles[i]), gi=picked[0].gi;
+  if(picked.every(p=>p.gi===gi)){ mg.solved.push(gi); mg.tiles=mg.tiles.filter(t=>t.gi!==gi); mg.sel=new Set(); mg.msg=""; const xp=10; mg.xp+=xp; addXP(xp,false); sfx("ok"); G.hist[today()]=(G.hist[today()]||0)+1; if(mg.solved.length===4) return connEnd(true); }
+  else { const counts={}; picked.forEach(p=>counts[p.gi]=(counts[p.gi]||0)+1); mg.miss++; sfx("no"); mg.msg=Math.max(...Object.values(counts))===3?"So close: one away!":"Not a group. Try again."; if(mg.miss>=4) return connEnd(false); }
+  renderArcade(); }
+function connEnd(won){ const bonus=won?(4-mg.miss)*5:0; mg.xp+=bonus; if(bonus) addXP(bonus,false); if(won){ confetti(140); sfx("lvl"); G.st.connWins=(G.st.connWins||0)+1; } mg.won=won; mg.phase="conndone"; save(); checkBadges(); renderArcade(); }
+const CONN_COL=["#F2C94C","#6FCF97","#56CCF2","#BB6BD9"];
+function renderPsychleOrConn(area){
+  if(mg.phase==="psychle"){ const ps=mg.ps, W=ps.w, L=W.length, rows=[];
+    for(let r=0;r<6;r++){ const g=ps.g[r], cur=r===ps.g.length&&!ps.done?mg.cur:"", m=g?psyMarks(g,W):null;
+      rows.push(`<div class="psy-row" style="--n:${L}">${[...Array(L)].map((_,i)=>`<span class="psy-c ${m?"m"+m[i]:""} ${!g&&cur[i]?"typed":""}">${g?g[i]:(cur[i]||"")}</span>`).join("")}</div>`); }
+    const best={}; ps.g.forEach(g=>psyMarks(g,W).forEach((c,i)=>{ const L2=g[i], rank={g:3,y:2,x:1}; if(!best[L2]||rank[c]>rank[best[L2]]) best[L2]=c; }));
+    const kb=["QWERTYUIOP","ASDFGHJKL","⏎ZXCVBNM⌫"].map(r=>`<div class="psy-kr">${[...r].map(ch=>{ const k=ch==="⏎"?"enter":ch==="⌫"?"back":ch.toLowerCase(); return `<button class="psy-k ${ch==="⏎"||ch==="⌫"?"wide":""} ${best[ch]?"m"+best[ch]:""}" data-k="${k}">${ch==="⏎"?"Enter":ch}</button>`; }).join("")}</div>`).join("");
+    const t=TMAP[mg.psw[1]];
+    area.innerHTML=`<div class="arc-top"><span class="big">🟩 Psychle</span><span class="spacer"></span><span>${L} letters · ${esc(t.name)}</span></div>
+      <div class="psy-board">${rows.join("")}</div>
+      ${ps.done?`<div class="psy-end"><h3>${ps.won?"🎉 Got it in "+ps.g.length+"!":"The word was "+W}</h3><p><b>${W}</b>: ${esc(mg.psw[2])}</p><p class="muted">+${mg.psXP||0} XP. A new word tomorrow.</p><div class="share">${esc(psyShare())}</div><br><button class="btn ghost" id="psyCopy">Copy result</button> <button class="btn ghost" id="arcMenu">Arcade menu</button></div>`:`<div class="psy-kb">${kb}</div>`}`;
+    area.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>psyKey(b.dataset.k));
+    const cp=$("#psyCopy"); if(cp) cp.onclick=()=>{ try{ navigator.clipboard.writeText(psyShare()); toast("📋","Copied",""); }catch(e){} };
+    const am=$("#arcMenu"); if(am) am.onclick=()=>{ arc.phase="menu"; renderArcade(); };
+    return true; }
+  if(mg.phase==="connections"||mg.phase==="conndone"){
+    const solved=mg.solved.map(gi=>{ const g=mg.cg[gi]; return `<div class="conn-solved" style="background:${CONN_COL[mg.solved.indexOf(gi)]}"><b>${esc(g.label)}</b>${g.sub?`<small>${esc(g.sub)}</small>`:""}<span>${g.items.map(esc).join(" · ")}</span></div>`; }).join("");
+    if(mg.phase==="conndone"){ const rest=mg.cg.map((g,gi)=>gi).filter(gi=>!mg.solved.includes(gi)).map(gi=>{ const g=mg.cg[gi]; return `<div class="conn-solved missed"><b>${esc(g.label)}</b>${g.sub?`<small>${esc(g.sub)}</small>`:""}<span>${g.items.map(esc).join(" · ")}</span></div>`; }).join("");
+      area.innerHTML=`<div class="arc-top"><span class="big">🔗 Connections</span></div>${solved}${rest}<div class="empty"><h3>${mg.won?"🎉 All four groups!":"Out of mistakes"}</h3><p>+${mg.xp} XP</p><button class="btn" id="connAgain">New puzzle</button> <button class="btn ghost" id="arcMenu">Arcade menu</button></div>`;
+      $("#connAgain").onclick=startConnections; $("#arcMenu").onclick=()=>{ arc.phase="menu"; renderArcade(); }; return true; }
+    area.innerHTML=`<div class="arc-top"><span class="big">🔗 Connections</span><span class="spacer"></span><span>Mistakes left</span><span class="conn-dots">${"●".repeat(4-mg.miss)}${"○".repeat(mg.miss)}</span></div>
+      <p class="arc-note" style="margin:0 0 10px">Find four groups of four. Tap four terms that go together, then Submit.</p>
+      ${solved}<div class="conn-grid">${mg.tiles.map((t,i)=>`<button class="conn-t ${mg.sel.has(i)?"on":""}" data-ct="${i}">${esc(t.it)}</button>`).join("")}</div>
+      <p class="conn-msg" aria-live="polite">${esc(mg.msg)}</p>
+      <div class="card-actions"><button class="btn ghost" id="connShuf">Shuffle</button><button class="btn ghost" id="connClear">Deselect</button><button class="btn" id="connGo" ${mg.sel.size===4?"":"disabled"}>Submit</button></div>
+      <p style="text-align:right;margin-top:10px"><button class="linkbtn" id="mgQuit">End game</button></p>`;
+    area.querySelectorAll("[data-ct]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.ct; if(mg.sel.has(i)) mg.sel.delete(i); else if(mg.sel.size<4) mg.sel.add(i); renderArcade(); });
+    $("#connShuf").onclick=()=>{ const keep=[...mg.sel].map(i=>mg.tiles[i]); mg.tiles=shuffle(mg.tiles); mg.sel=new Set(keep.map(k=>mg.tiles.indexOf(k))); renderArcade(); };
+    $("#connClear").onclick=()=>{ mg.sel=new Set(); renderArcade(); };
+    $("#connGo").onclick=connSubmit; $("#mgQuit").onclick=()=>connEnd(false);
+    return true; }
+  return false;
+}
+function startParagraph(){ const all=PARAGRAPHS.filter(x=>topicOpen(x.t)), sel=new Set(store.sel); let s=all.filter(x=>sel.has(x.t)); if(s.length<4) s=all;
+  mg.seqs=shuffle(s).slice(0,4).map(x=>({t:x.t, title:x.title, steps:x.steps})); mg.tl=false; mg.par=true; mg.si=0; mg.picked=[]; mg.checked=false; mg.right2=0; mg.xp=0; mg.places=0; mg.placesTotal=0; mg.phase="order"; arc.phase="mini"; arc.mode="paragraph"; mg.shuffled=shuffle(mg.seqs[0].steps); renderArcade(); }
+
 /* ---- 🔗 study matcher, 🧩 put it in order ---- */
 const MATCH_RE=/^What did (.+?) find(?: about [^?]+)?\??$/i;
 function matchPairs(){
@@ -3589,12 +3857,13 @@ function startMatch(){ mg.pairs=matchPairs(); mg.round=0; mg.wrong=0; mg.xp=0; m
 function setupRound(){ const r=mg.pairs.slice(mg.round*5, mg.round*5+5); mg.left=shuffle(r); mg.right=shuffle(r); mg.sel=null; mg.matched=new Set(); }
 function startTimeline(){ const sel=new Set(store.sel), all=TIMELINES.filter(x=>topicOpen(x.t)); let s=all.filter(x=>sel.has(x.t)); if(s.length<4) s=all;
   mg.seqs=shuffle(s).slice(0,4).map(x=>({t:x.t, title:x.title, steps:x.items.map(i=>i[0]), years:Object.fromEntries(x.items)}));
-  mg.tl=true; mg.si=0; mg.picked=[]; mg.checked=false; mg.right2=0; mg.xp=0; mg.places=0; mg.placesTotal=0; mg.phase="order"; arc.phase="mini"; arc.mode="timeline"; mg.shuffled=shuffle(mg.seqs[0].steps); renderArcade(); }
+  mg.tl=true; mg.par=false; mg.si=0; mg.picked=[]; mg.checked=false; mg.right2=0; mg.xp=0; mg.places=0; mg.placesTotal=0; mg.phase="order"; arc.phase="mini"; arc.mode="timeline"; mg.shuffled=shuffle(mg.seqs[0].steps); renderArcade(); }
 function startSort(){ const sel=new Set(store.sel), all=SORT_SETS.filter(x=>topicOpen(x.t)); let s=all.filter(x=>sel.has(x.t)); if(s.length<3) s=all;
   mg.sets=shuffle(s).slice(0,3); mg.si=0; mg.items=shuffle(mg.sets[0].items); mg.ii=0; mg.right2=0; mg.total=mg.sets.reduce((a,x)=>a+x.items.length,0); mg.xp=0; mg.last=null; mg.busy=false;
   mg.phase="sort"; arc.phase="mini"; arc.mode="sort"; renderArcade(); }
-function startOrder(){ mg.tl=false; const sel=new Set(store.sel), all=SEQUENCES.filter(x=>topicOpen(x.t)); let s=all.filter(x=>sel.has(x.t)); if(s.length<5) s=all; mg.seqs=shuffle(s).slice(0,5); mg.si=0; mg.picked=[]; mg.checked=false; mg.right2=0; mg.xp=0; mg.places=0; mg.placesTotal=0; mg.phase="order"; arc.phase="mini"; arc.mode="order"; mg.shuffled=shuffle(mg.seqs[0].steps); renderArcade(); }
+function startOrder(){ mg.tl=false; mg.par=false; const sel=new Set(store.sel), all=SEQUENCES.filter(x=>topicOpen(x.t)); let s=all.filter(x=>sel.has(x.t)); if(s.length<5) s=all; mg.seqs=shuffle(s).slice(0,5); mg.si=0; mg.picked=[]; mg.checked=false; mg.right2=0; mg.xp=0; mg.places=0; mg.placesTotal=0; mg.phase="order"; arc.phase="mini"; arc.mode="order"; mg.shuffled=shuffle(mg.seqs[0].steps); renderArcade(); }
 function renderMini(area){
+  if(renderPsychleOrConn(area)) return;
   if(mg.phase==="sort"){
     const set=mg.sets[mg.si], t=TMAP[set.t], it=mg.items[mg.ii];
     area.innerHTML=`<div class="arc-top"><span class="big">🗂️ Sort it</span><span class="spacer"></span><span>Set</span><span class="big">${mg.si+1}/${mg.sets.length}</span></div>
@@ -3630,13 +3899,13 @@ function renderMini(area){
   if(mg.phase==="order"){
     const s=mg.seqs[mg.si], t=TMAP[s.t];
     const avail=mg.shuffled.filter(x=>!mg.picked.includes(x));
-    area.innerHTML=`<div class="arc-top"><span class="big">${mg.tl?"📅 Timeline":"🧩 Put it in order"}</span><span class="spacer"></span><span>${mg.tl?"Timeline":"Sequence"}</span><span class="big">${mg.si+1}/${mg.seqs.length}</span></div>
+    area.innerHTML=`<div class="arc-top"><span class="big">${mg.par?"🧱 Build the paragraph":mg.tl?"📅 Timeline":"🧩 Put it in order"}</span><span class="spacer"></span><span>${mg.par?"Paragraph":mg.tl?"Timeline":"Sequence"}</span><span class="big">${mg.si+1}/${mg.seqs.length}</span></div>
       <div class="quiz-q" style="--c:${t.c}"><div class="tag">${esc(t.name)}</div><div class="q" style="font-size:clamp(20px,2.6vw,26px);margin:8px 0 12px">${esc(s.title)}</div>
-      <p class="muted" style="margin:0 0 10px">${mg.tl?"Tap them in date order, oldest first":"Tap the steps in the right order"}${mg.checked?"":". Tap a placed step to put it back."}</p>
+      <p class="muted" style="margin:0 0 10px">${mg.par?"Tap the sentences in order: Point → Evidence → Explanation → Link":mg.tl?"Tap them in date order, oldest first":"Tap the steps in the right order"}${mg.checked?"":". Tap a placed step to put it back."}</p>
       <ol class="order-done">${mg.picked.map((x,i)=>`<li class="${mg.checked?(x===s.steps[i]?"ok":"no"):""}"><button data-un="${i}" ${mg.checked?"disabled":""}>${esc(x)}${mg.checked&&s.years?` <b class="yr">${s.years[x]}</b>`:""}</button>${mg.checked&&x!==s.steps[i]?`<small>Should be: ${esc(s.steps[i])}${s.years?" ("+s.years[s.steps[i]]+")":""}</small>`:""}</li>`).join("")}</ol>
       <div class="order-avail">${avail.map(x=>`<button class="opt" data-pick="${esc(x)}">${esc(x)}</button>`).join("")}</div>
       ${mg.picked.length===s.steps.length&&!mg.checked?`<div class="card-actions"><button class="btn" id="ordCheck">Check order</button></div>`:""}
-      ${mg.checked?`<p class="place-msg">${mg.lastPlaced===s.steps.length?"🎯 Perfect order!":`${mg.lastPlaced}/${s.steps.length} in the right place${mg.lastPlaced?` (+${mg.lastPlaced*3} XP)`:""}`}</p><div class="card-actions"><button class="btn" id="ordNext">${mg.si+1>=mg.seqs.length?"See results":mg.tl?"Next timeline":"Next sequence"}</button></div>`:""}</div>
+      ${mg.checked?`<p class="place-msg">${mg.lastPlaced===s.steps.length?"🎯 Perfect order!":`${mg.lastPlaced}/${s.steps.length} in the right place${mg.lastPlaced?` (+${mg.lastPlaced*3} XP)`:""}`}</p><div class="card-actions"><button class="btn" id="ordNext">${mg.si+1>=mg.seqs.length?"See results":mg.par?"Next paragraph":mg.tl?"Next timeline":"Next sequence"}</button></div>`:""}</div>
       <p style="text-align:right;margin-top:10px"><button class="linkbtn" id="mgQuit">End game</button></p>`;
     area.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>{ mg.picked.push(b.dataset.pick); renderArcade(); });
     if(!mg.checked) wireOrderDrag(area);
@@ -3650,10 +3919,10 @@ function renderMini(area){
     $("#mgQuit").onclick=finishMini; return;
   }
   // results
-  area.innerHTML=`<div class="empty"><h3>${mg.phase==="matchdone"?"🔗 Study matcher":mg.phase==="sortdone"?"🗂️ Sort it":mg.tl?"📅 Timeline":"🧩 Put it in order"} over</h3>
-    ${mg.phase==="sortdone"?`<p class="score">${mg.right2}/${mg.total}</p><p class="muted">cards sorted correctly</p>`:mg.phase==="matchdone"?`<p class="score">${mg.matchedTotal}/${mg.pairs.length}</p><p class="muted">pairs matched · ${mg.wrong} wrong guess${mg.wrong===1?"":"es"} · ${fmtTime(Date.now()-mg.t0)}</p>`:`<p class="score">${mg.right2}/${mg.seqs.length}</p><p class="muted">${mg.tl?"timelines":"sequences"} in perfect order · ${mg.places||0}/${mg.placesTotal||0} items in the right place</p>`}
+  area.innerHTML=`<div class="empty"><h3>${mg.phase==="matchdone"?"🔗 Study matcher":mg.phase==="sortdone"?"🗂️ Sort it":mg.par?"🧱 Build the paragraph":mg.tl?"📅 Timeline":"🧩 Put it in order"} over</h3>
+    ${mg.phase==="sortdone"?`<p class="score">${mg.right2}/${mg.total}</p><p class="muted">cards sorted correctly</p>`:mg.phase==="matchdone"?`<p class="score">${mg.matchedTotal}/${mg.pairs.length}</p><p class="muted">pairs matched · ${mg.wrong} wrong guess${mg.wrong===1?"":"es"} · ${fmtTime(Date.now()-mg.t0)}</p>`:`<p class="score">${mg.right2}/${mg.seqs.length}</p><p class="muted">${mg.par?"paragraphs":mg.tl?"timelines":"sequences"} in perfect order · ${mg.places||0}/${mg.placesTotal||0} items in the right place</p>`}
     <p style="margin-top:10px">+${mg.xp} XP earned</p><button class="btn" id="mgAgain">Play again</button> <button class="btn ghost" id="arcMenu">Arcade menu</button></div>`;
-  $("#mgAgain").onclick=()=>mg.phase==="matchdone"?startMatch():mg.phase==="sortdone"?startSort():mg.tl?startTimeline():startOrder();
+  $("#mgAgain").onclick=()=>mg.phase==="matchdone"?startMatch():mg.phase==="sortdone"?startSort():mg.par?startParagraph():mg.tl?startTimeline():startOrder();
   $("#arcMenu").onclick=()=>{ arc.phase="menu"; renderArcade(); };
 }
 function wireOrderDrag(area){
@@ -3686,7 +3955,7 @@ document.addEventListener("keydown",e=>{ if(tab!=="arcade" || arc.phase!=="mini"
   const n=mg.sets[mg.si].b.length; if(/^[1-3]$/.test(e.key) && +e.key<=n){ e.preventDefault(); sortPick(+e.key-1); } });
 function finishMini(){
   if(mg.phase==="match"){ mg.matchedTotal=mg.round*5+(mg.round*5<mg.pairs.length?mg.matched.size:0); const bonus=mg.matchedTotal*2; mg.xp+=bonus; addXP(bonus,false); G.st.matchBest=Math.max(G.st.matchBest||0,mg.matchedTotal); if(mg.matchedTotal>=15 && mg.wrong===0) G.st.matchPerfect=1; mg.phase="matchdone"; }
-  else if(mg.phase==="order"){ const bonus=mg.right2*10; mg.xp+=bonus; addXP(bonus,false); if(mg.tl){ G.st.timelineBest=Math.max(G.st.timelineBest||0,mg.right2); G.st.timelines=(G.st.timelines||0)+1; } else { G.st.orderBest=Math.max(G.st.orderBest||0,mg.right2); G.st.orders=(G.st.orders||0)+1; } mg.phase="orderdone"; }
+  else if(mg.phase==="order"){ const bonus=mg.right2*10; mg.xp+=bonus; addXP(bonus,false); if(mg.par){ G.st.parBest=Math.max(G.st.parBest||0,mg.right2); } else if(mg.tl){ G.st.timelineBest=Math.max(G.st.timelineBest||0,mg.right2); G.st.timelines=(G.st.timelines||0)+1; } else { G.st.orderBest=Math.max(G.st.orderBest||0,mg.right2); G.st.orders=(G.st.orders||0)+1; } mg.phase="orderdone"; }
   else if(mg.phase==="sort"){ const bonus=mg.right2; mg.xp+=bonus; addXP(bonus,false); G.st.sortBest=Math.max(G.st.sortBest||0,Math.round(mg.right2/Math.max(1,mg.total)*100)); G.st.sorts=(G.st.sorts||0)+1; mg.phase="sortdone"; }
   if(mg.xp>0) confetti(90);
   palCheck(); checkBadges(); save(); renderArcade();
@@ -4027,6 +4296,7 @@ function renderTrophies(){
 document.addEventListener("keydown",e=>{
   if(tab!=="arcade" || arc.phase!=="play" || e.target.matches("input,textarea") || e.metaKey||e.ctrlKey||e.altKey) return;
   if(arc.fb && e.key==="Enter"){ e.preventDefault(); const f=arc.fb; arc.fb=false; f(); return; }
+  if(arc.mode==="tf" && (e.key==="ArrowRight"||e.key==="ArrowLeft")){ e.preventDefault(); arcPick(e.key==="ArrowRight"?1:0); return; }
   if(["1","2","3","4"].includes(e.key)){ e.preventDefault(); arcPick(+e.key-1); }
 });
 (()=>{ const t=today(), past=Object.keys(G.hist).filter(k=>k<t && G.hist[k]>0).sort(), last=past[past.length-1];
@@ -4043,7 +4313,7 @@ if(DEMO){ const t=today();
   TOPICS.forEach(tp=>{ G.st.bosses[tp.key]=t; G.st.bossesHard[tp.key]=t; G.rec[tp.key]="1".repeat(30); G.acc.t[tp.key]=[90,100]; });
   G.st.right=15000; G.st.cards=16000; G.petName="Professor Squeaks"; G.petS={stage:5, mood:"ecstatic"};
   BADGES.forEach(b=>{ G.badges[b[0]]=t; });
-  store.seenNew="2026-11"; G.lastBackup=t; save();
+  store.seenNew=WHATS_NEW_ID; G.lastBackup=t; save();
   const bar=document.createElement("div"); bar.className="demobar"; bar.innerHTML=`🎓 <b>Demo mode</b>: everything is unlocked. Nothing here affects anyone's real progress. <a href="${location.pathname}">Leave demo</a>`; document.body.appendChild(bar);
 }
 
@@ -4161,7 +4431,7 @@ function askTeacherPass(onOk, onCancel){
 /* ===== 📖 WELCOME TOUR + ✨ WHAT'S NEW =====
    New students see the tour once; returning students see "What's new" once per update (bump WHATS_NEW_ID).
    Anyone can replay the tour from "📖 How it works" at the bottom of the page. */
-const WHATS_NEW_ID="2026-11";
+const WHATS_NEW_ID="2026-11b";
 const TOUR=[
   ["🧠","Welcome to the Fount!","<p>Everything you need for A-level Psychology in one place, with thousands of questions across the whole AQA specification.</p><p>Here's a 30-second tour. You can find it again any time from <b>📖 How it works</b> at the bottom of the page.</p>"],
   ["🗂️","Flashcards","<p>Pick your topics above, then answer each card:</p><ul><li><b>Multiple choice</b>: tap an answer or press 1–4.</li><li><b>⌨️ Type it</b>: type your answer and it's marked for you on the key terms. Typed answers earn <b>2× XP</b>.</li><li><b>✏️ Gap fill</b>: type the missing key term.</li></ul><p>Cards you get wrong come back until you know them.</p>"],
@@ -4170,7 +4440,7 @@ const TOUR=[
   ["🐀","Level up","<p>Every answer earns XP. Climb 100 levels, keep your 🔥 streak, earn ⭐ mastery stars in every topic, and collect badges and themes.</p><p>Your lab rat, <b>Professor Squeaks</b>, grows as you revise and gets sleepy if you stay away.</p><p>Psst… there are secret scrolls hidden around the site. 📜</p>"],
   ["💾","Keep your progress safe","<p>Your progress is saved in <b>this browser only</b>. Nothing goes online.</p><p>Back it up in the <b>💾 Saves</b> tab every week or so, especially before you change phone or clear your browser. You can also send Mr Wakefield a progress report from there.</p><p>Good luck. Keep right on! 💙</p>"]
 ];
-const WHATS_NEW=["📅 <b>Year 12 or 13?</b> Pick your year: Year 12 games unlock topics as you're taught them.","🃏 <b>Flashcards ask for an answer.</b> Pick from four options, or switch to <i>Type it</i> for double XP. They're marked for you.","🕵️ <b>New games:</b> Study Detective, Who Am I?, Sort It and Timeline, plus a 🎲 Game of the Day with double XP.","👹 <b>Bosses talk back,</b> and there's a hard mode once you've beaten one.","🐀 <b>Meet Professor Squeaks,</b> your lab rat. Revise to feed him and help him grow.","⭐ <b>Mastery stars:</b> earn up to 3 in every topic (see Progress).","🏅 <b>100 levels</b> and lots of new themes to unlock."];
+const WHATS_NEW=["🟩 <b>Psychle:</b> guess the daily psychology word in six tries, then share your result.","🔗 <b>Connections:</b> find four hidden groups of four terms.","🤥 <b>Two Truths and a Lie</b>, 👆 <b>True or False</b> (swipe!) and 📈 <b>Higher or Lower</b> with real study findings.","✍️ <b>Exam technique:</b> Build the Paragraph and Be the Examiner.","📅 <b>Year 12 or 13?</b> Games only use topics you've been taught. Change your year in 💾 Saves."];
 function askYearAfter(){ if(!store.year && !DEMO) setTimeout(()=>showYearPicker(false),300); }
 function showTour(steps, onDone){
   if(document.querySelector(".tour")) return;
