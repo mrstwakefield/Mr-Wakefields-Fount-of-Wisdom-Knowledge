@@ -1150,7 +1150,7 @@ const SKINS=[
   {id:"petgoose", name:"Lorenz's Goose", lvl:60, sw:["#BFE6F2","#F29A2E"], desc:"Unlocks with Lorenz's goose: follow the first thing you see 🪿"},
   {id:"petdog", name:"Pavlov's Dog", lvl:80, sw:["#F6D9A0","#C0392B"], desc:"Unlocks with Pavlov's dog: ding ding, you're conditioned 🔔"},
   {id:"petpeacock", name:"Darwin's Peacock", lvl:100, sw:["#0B2A3A","#2E8B57"], desc:"Unlocks with Darwin's peacock: the most impressive tail wins 🦚"},
-  {id:"petbobo", name:"Bobo Doll", lvl:999, hidden:true, unlock:()=>petOpen("bobo"), sw:["#FDE2E2","#E53935"], desc:"Bonus: bounce back from a wrong answer with 15 right in a row 🎈"},
+  {id:"petbobo", name:"Bobo Doll", lvl:999, hidden:true, unlock:()=>petOpen("bobo"), sw:["#FDE2E2","#E53935"], desc:"Bonus: bounce back from a wrong answer with 50 right in a row 🎈"},
   {id:"squeaks", name:"Professor Squeaks", lvl:100, sw:["#FF7EB6","#FFD93B"], desc:"Level 100: graduation day for your lab rat 🐀🧀🎓"},
   {id:"stan", name:"Stan Gold", lvl:100, sw:["#12100A","#F2C14E"], desc:"Dedicated Wakefield Stans only"},
   {id:"y12class", name:"Class of 2028", lvl:999, hidden:true, unlock:()=>store.year==="12"||isTeacher(), sw:["#EAF3FE","#6198EC"], desc:"Year 12 only 💙"},
@@ -3220,7 +3220,7 @@ const PETS={
   bobo:{lvl:0,bonus:true,emo:"🎈",noun:"Bobo doll",label:"Bandura's Bobo doll",def:"Bandura's Bobo",treat:"🎈",treatName:"Balloons",stages:["Mini Bobo","Young Bobo","Lab Bobo","Research Bobo","Wise Bobo","Professor Bobo"],
     fact:"In Bandura's Bobo doll study, children who watched an adult model hit the doll were more likely to copy them: learning by observing a model."}
 };
-const BOBO_N=15; /* bonus pet: after a wrong answer, get the next BOBO_N right in a row */
+const BOBO_N=50; /* bonus pet: after a wrong answer, get the next BOBO_N right in a row */
 const petOpen=k=>!!PETS[k] && (PETS[k].bonus ? !!G.bobo : lvlFor(G.xp)>=PETS[k].lvl) || (!!PETS[k] && (isTeacher()||DEMO));
 function boboTrack(ok){
   if(!ok){ G.bb=0; return; }
