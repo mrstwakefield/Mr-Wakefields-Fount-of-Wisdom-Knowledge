@@ -1789,7 +1789,7 @@ function goalMet(){
 function answer({ok, el, mode, gold, boost}){
   checkStreak();
   const t=today();
-  G.st.cards++; if(ok) G.st.right++; boboTrack(ok);
+  G.st.cards++; if(ok){ G.st.right++; const pt=petType(); if(pt!=="rat"){ G.pg=G.pg||{}; G.pg[pt]=(G.pg[pt]||0)+1; } } boboTrack(ok);
   if(ok){ combo++; if(combo>G.st.combo) G.st.combo=combo; } else { if(combo===7) G.sec.miller=1; combo=0; }
   const base = mode==="quiz" ? (ok?15:4) : mode==="arcade" ? (ok?6:1) : (ok?10:3);
   let mult = ok ? comboMult() : 1;
@@ -3225,13 +3225,21 @@ const petOpen=k=>!!PETS[k] && (PETS[k].bonus ? !!G.bobo : lvlFor(G.xp)>=PETS[k].
 function boboTrack(ok){
   if(!ok){ G.bb=0; return; }
   if(G.bb==null || G.bb<0) return; G.bb++; if(G.bb>(G.bbBest||0)) G.bbBest=G.bb;
-  if(G.bb>=BOBO_N && !G.bobo){ G.bobo=1; save(); setTimeout(()=>{ confetti(200); sfx("badge"); toast("🎈","Bonus pet unlocked: Bandura's Bobo doll!",`You bounced back with ${BOBO_N} right in a row. The Bobo Doll theme is yours too.`); },700); }
+  if(G.bb>=BOBO_N && !G.bobo){ G.bobo=1; G.boboLvl=lvlFor(G.xp); save(); setTimeout(()=>{ confetti(200); sfx("badge"); toast("🎈","Bonus pet unlocked: Bandura's Bobo doll!",`You bounced back with ${BOBO_N} right in a row. The Bobo Doll theme is yours too.`); },700); }
 }
 function petType(){ return PETS[G.petType]&&petOpen(G.petType)?G.petType:"rat"; }
 const PT=()=>PETS[petType()];
 const stageName=i=>PT().stages[i];
 function petName(){ const t=petType(); return t==="rat" ? (G.petName||"Professor Squeaks") : ((G.petNames||{})[t]||PETS[t].def); }
-function petStage(){ const n=G.st.right||0; let s=0; PET_STAGES.forEach(([v],i)=>{ if(n>=v) s=i; }); return s; }
+/* each pet grows on its own: right answers while it's your pet, or one stage every 4 levels after it unlocks (whichever is further on),
+   so every pet is fully grown before the next one arrives 20 levels later */
+const RAT_AT=[0,25,100,250,450,750], PET_AT=[0,50,200,500,1000,1500], LVLS_PER_STAGE=4;
+const petAt=t=>t==="rat"?RAT_AT:PET_AT;
+const petCount=t=>t==="rat"?(G.st.right||0):((G.pg||{})[t]||0);
+const petFrom=t=>t==="bobo"?(G.boboLvl||lvlFor(G.xp)):PETS[t].lvl||0;
+function petStageOf(t){ const n=petCount(t), at=petAt(t); let s=0; at.forEach((v,i)=>{ if(n>=v) s=i; });
+  const byLvl=Math.floor(Math.max(0,lvlFor(G.xp)-Math.max(1,petFrom(t)))/LVLS_PER_STAGE); return Math.min(5,Math.max(s,t==="rat"?Math.floor(lvlFor(G.xp)/LVLS_PER_STAGE):byLvl)); }
+function petStage(){ return petStageOf(petType()); }
 function petDaysAway(){ const days=Object.keys(G.hist||{}).filter(d=>G.hist[d]>0).sort(); if(!days.length) return -1; return dayNum(today())-dayNum(days[days.length-1]); }
 function petMood(){
   const away=petDaysAway(), td=(G.hist||{})[today()]||0;
@@ -3254,7 +3262,7 @@ function petSVG(stage, mood, px){
   const sc=.62+stage*.076, sleepy=mood==="sleepy"||mood==="asleep", happy=mood==="ecstatic"||mood==="happy"||mood==="new";
   const eye = x => sleepy ? `<path d="M${x-5} 50 q5 ${mood==="asleep"?4:3} 10 0" stroke="#2A2230" stroke-width="2.6" fill="none" stroke-linecap="round"/>`
                           : `<circle cx="${x}" cy="49" r="4.4" fill="#2A2230"/><circle cx="${x+1.5}" cy="47.4" r="1.4" fill="#fff"/>`;
-  return `<svg class="pet-svg ${mood}" viewBox="0 0 160 120" width="${px}" height="${px*.75}" role="img" aria-label="Your lab rat, ${esc(PET_STAGES[stage][1])}, ${mood}">
+  return `<svg class="pet-svg ${mood}" viewBox="0 0 160 120" width="${px}" height="${px*.75}" role="img" aria-label="Your lab rat, ${esc(PETS.rat.stages[stage])}, ${mood}">
     <g class="pet-body"><g transform="translate(80 118) scale(${sc}) translate(-80 -118)">
       <path d="M118 96 q32 -4 30 -30 q-2 -14 -12 -12" stroke="#E8A3B4" stroke-width="5" fill="none" stroke-linecap="round" class="pet-tail"/>
       <ellipse cx="88" cy="88" rx="38" ry="28" fill="#C9CCD6"/>
@@ -3398,12 +3406,13 @@ const PET_ART={
 function petLine(m){ return m==="new" ? `Meet <b>${esc(petName())}</b>, your new ${PT().noun}! Answer questions to help him grow.` : `<b>${esc(petName())}</b> ${esc(PET_MSG[m])}`; }
 const petCheese=()=>Math.min(3,Math.floor(((G.hist||{})[today()]||0)/10));
 function petBoxHTML(){
-  const st=petStage(), mood=petMood(), n=G.st.right||0, next=PET_STAGES[st+1], cheese=petCheese();
-  const P=PT(), cur=petType();
+  const cur=petType(), st=petStage(), mood=petMood(), n=petCount(cur), at=petAt(cur), next=st<5, cheese=petCheese();
+  const P=PT(), needN=next?Math.max(0,at[st+1]-n):0, needL=next?(cur==="rat"?0:Math.max(1,petFrom(cur)))+(st+1)*LVLS_PER_STAGE:0;
+  const pct=next?Math.max(0,Math.min(100,(n-at[st])/(at[st+1]-at[st])*100)):100;
   return `<div class="box pet-box"><div class="pet-art">${petSVG(st,mood,220)}</div>
     <div class="pet-info"><h3 style="margin:0">${P.emo} <span>${esc(petName())}</span> <button class="linkbtn" id="petRename" style="font-size:14px">Rename</button></h3>
-      <p class="muted" style="margin:2px 0 8px">${esc(stageName(st))}${next?` · ${(next[0]-n).toLocaleString()} more right answers to become a ${esc(stageName(st+1).toLowerCase())}`:" · fully grown legend 🎓"}</p>
-      ${next?`<div class="xpbar" style="margin-bottom:10px"><i style="width:${(n-PET_STAGES[st][0])/(next[0]-PET_STAGES[st][0])*100}%"></i></div>`:""}
+      <p class="muted" style="margin:2px 0 8px">${esc(stageName(st))}${next?` · ${needN.toLocaleString()} more right answers (or reach level ${needL}) to become a ${esc(stageName(st+1).toLowerCase())}`:" · fully grown legend 🎓"}</p>
+      ${next?`<div class="xpbar" style="margin-bottom:10px"><i style="width:${pct}%"></i></div>`:""}
       <p class="pet-msg">${petLine(mood)}</p>
       <p class="muted" style="margin:6px 0 0;font-size:15px">${P.treatName} today: ${P.treat.repeat(cheese)}${`<span style='opacity:.25'>${P.treat}</span>`.repeat(3-cheese)} <span style="font-size:13px">(one for every 10 answers)</span></p>
       ${P.fact?`<p class="muted" style="margin:6px 0 0;font-size:14px">🔬 ${esc(P.fact)}</p>`:""}
@@ -3442,9 +3451,10 @@ function petHud(){ const b=$("#petStrip"); if(!b) return; const m=petMood(), st=
 function petCheck(){
   if(G.petName && !cleanName(G.petName)) delete G.petName;
   if(G.petNames) for(const k in G.petNames) if(!cleanName(G.petNames[k])) delete G.petNames[k];
-  G.petS=G.petS||{stage:petStage(), mood:""}; const p=G.petS, st=petStage(), m=petMood(), nm=petName();
+  G.petS=G.petS||{stage:petStage(), mood:""}; const p=G.petS, st=petStage(), m=petMood(), nm=petName(), pt=petType();
+  p.by=p.by||{}; if(p.by[pt]==null) p.by[pt]=pt==="rat"?(p.stage||0):st;
   const em=PT().emo, tr=PT().treat;
-  if(st>p.stage){ p.stage=st; save(); const sn=stageName(st).toLowerCase(); setTimeout(()=>{ toast(em,`${nm} grew into a ${sn}!`,st>=5?"He's wearing a graduation cap. Legendary.":st>=4?"Look, glasses! So wise.":st>=3?"He's got his own lab coat now.":"Keep revising to help him grow."); confetti(100); },600); }
+  if(st>p.by[pt]){ p.by[pt]=st; p.stage=st; save(); const sn=stageName(st).toLowerCase(); setTimeout(()=>{ toast(em,`${nm} grew into a ${sn}!`,st>=5?"He's wearing a graduation cap. Legendary.":st>=4?"Look, glasses! So wise.":st>=3?"He's got his own lab coat now.":"Keep revising to help him grow."); confetti(100); },600); }
   if((p.mood==="sleepy"||p.mood==="asleep") && (m==="happy"||m==="ecstatic")) setTimeout(()=>toast(em,`${nm} woke up!`,"He's so happy to see you revising again."),400);
   if(p.mood!=="ecstatic" && m==="ecstatic" && p.mood) setTimeout(()=>toast(em,`${nm} is dancing!`,"Daily goal smashed. "+tr.repeat(3)),800);
   if(p.mood!==m){ p.mood=m; save(); }
@@ -4643,7 +4653,7 @@ if(DEMO){ const t=today();
   SECRET_SCROLLS.forEach(x=>{ G.scrolls[x.id]=t; G.chal[x.id]=t; });
   G.st.bossesHard=G.st.bossesHard||{}; G.rec=G.rec||{};
   TOPICS.forEach(tp=>{ G.st.bosses[tp.key]=t; G.st.bossesHard[tp.key]=t; G.rec[tp.key]="1".repeat(30); G.acc.t[tp.key]=[90,100]; });
-  G.st.right=15000; G.st.cards=16000; G.petName="Professor Squeaks"; G.petS={stage:5, mood:"ecstatic"};
+  G.st.right=15000; G.st.cards=16000; G.petName="Professor Squeaks"; G.petS={stage:5, mood:"ecstatic", by:{rat:5,pigeon:5,monkey:5,goose:5,dog:5,peacock:5,bobo:5}}; G.pg={pigeon:2000,monkey:2000,goose:2000,dog:2000,peacock:2000,bobo:2000};
   BADGES.forEach(b=>{ G.badges[b[0]]=t; });
   store.seenNew=WHATS_NEW_ID; G.lastBackup=t; save();
   const bar=document.createElement("div"); bar.className="demobar"; bar.innerHTML=`🎓 <b>Demo mode</b>: everything is unlocked. Nothing here affects anyone's real progress. <a href="${location.pathname}">Leave demo</a>`; document.body.appendChild(bar);
