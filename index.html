@@ -1030,6 +1030,7 @@ const BY_ID = Object.fromEntries(DATA.map(d=>[d.id,d]));
 
 /* ---------- storage ---------- */
 /* demo mode (add ?demo to the address): everything unlocked, kept separate from real progress and reset on every visit */
+const WHATS_NEW_ID="2026-11b"; /* bump to show "What's new" again */
 let DEMO_ASK=false;
 const DEMO_HASH="r1gxcg";
 const demoHash=x=>{ let a=5381; for(const c of String(x).trim().toLowerCase()) a=((a*33)^c.charCodeAt(0))>>>0; return a.toString(36); };
@@ -4696,7 +4697,6 @@ function askTeacherPass(onOk, onCancel){
 /* ===== 📖 WELCOME TOUR + ✨ WHAT'S NEW =====
    New students see the tour once; returning students see "What's new" once per update (bump WHATS_NEW_ID).
    Anyone can replay the tour from "📖 How it works" at the bottom of the page. */
-const WHATS_NEW_ID="2026-11b";
 const TOUR=[
   ["🧠","Welcome to the Fount!","<p>Everything you need for A-level Psychology in one place, with thousands of questions across the whole AQA specification.</p><p>Here's a 30-second tour. You can find it again any time from <b>📖 How it works</b> at the bottom of the page.</p>"],
   ["🗂️","Flashcards","<p>Pick your topics above, then answer each card:</p><ul><li><b>Multiple choice</b>: tap an answer or press 1–4.</li><li><b>⌨️ Type it</b>: type your answer and it's marked for you on the key terms. Typed answers earn <b>2× XP</b>.</li><li><b>✏️ Gap fill</b>: type the missing key term.</li></ul><p>Cards you get wrong come back until you know them.</p>"],
