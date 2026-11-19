@@ -70,6 +70,7 @@ h1 span b{font-weight:500}
 .chip .dot{width:12px;height:12px;border-radius:4px;background:var(--c);flex:none;opacity:.35}
 .chip .foot2{display:flex;align-items:center;gap:8px}
 .chip .n{font-weight:400;color:var(--muted);font-size:13px;white-space:nowrap}
+.chip .chipdate{font-size:12.5px;font-weight:700;color:var(--muted);line-height:1.2}
 .chip .bar{flex:1;height:5px;border-radius:9px;background:var(--soft);overflow:hidden}
 .chip .bar i{display:block;height:100%;background:var(--c)}
 .chip[aria-pressed="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 9%,transparent)}
@@ -1259,7 +1260,7 @@ function renderChips(){
   $("#chips").innerHTML = TOPICS.map(t=>{
     const items = DATA.filter(d=>d.t===t.key); const k = items.filter(d=>status(d.id)==="k").length;
     const on = store.sel.includes(t.key);
-    return `<button class="chip" style="--c:${t.c}" aria-pressed="${on}" data-key="${esc(t.key)}"><span class="row"><span class="dot"></span>${esc(t.name)}${(()=>{const f=items.length?k/items.length:0;return f>=1?'<span class="medal" title="Gold: all known">🥇</span>':f>=.8?'<span class="medal" title="Silver: 80% known">🥈</span>':f>=.5?'<span class="medal" title="Bronze: 50% known">🥉</span>':""})()}</span><span class="foot2"><span class="bar"><i style="width:${items.length?k/items.length*100:0}%"></i></span><span class="n">${k}/${items.length}</span><span class="stars s${mastery(t.key).s}" title="Mastery: ${mastery(t.key).s} of 3 stars">${starStr(mastery(t.key).s)}</span></span></button>`;
+    return `<button class="chip" style="--c:${t.c}" aria-pressed="${on}" data-key="${esc(t.key)}"><span class="row"><span class="dot"></span>${esc(t.name)}${(()=>{const f=items.length?k/items.length:0;return f>=1?'<span class="medal" title="Gold: all known">🥇</span>':f>=.8?'<span class="medal" title="Silver: 80% known">🥈</span>':f>=.5?'<span class="medal" title="Bronze: 50% known">🥉</span>':""})()}</span><span class="foot2"><span class="bar"><i style="width:${items.length?k/items.length*100:0}%"></i></span><span class="n">${k}/${items.length}</span><span class="stars s${mastery(t.key).s}" title="Mastery: ${mastery(t.key).s} of 3 stars">${starStr(mastery(t.key).s)}</span></span>${topicOpen(t.key)?"":`<span class="chipdate">🎮 ${yearMap()[t.key]==="y13"?"In games in Year 13":"In games from "+openDate(t.key).replace(/ /g,"\u00a0")}</span>`}</button>`;
   }).join("");
 }
 $("#chips").addEventListener("click", e=>{
