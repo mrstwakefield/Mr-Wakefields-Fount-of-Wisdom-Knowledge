@@ -2025,6 +2025,12 @@ function testFor(kind,design,lev){
   if(design==="u") return {N:"Chi-squared",O:"Mann-Whitney",I:"Unrelated t-test"}[lev];
   return {N:"Sign test",O:"Wilcoxon",I:"Related t-test"}[lev];
 }
+/* wrong options for "which test?": tests that are one decision away from the right one, so they're all tempting */
+function nearTests(s){ const t=testFor(s.kind,s.design,s.lev), L=["N","O","I"], other=s.design==="u"?"r":"u", out=[];
+  if(s.kind==="diff"){ L.filter(l=>l!==s.lev).forEach(l=>out.push(testFor("diff",s.design,l))); out.push(testFor("diff",other,s.lev)); out.push(testFor("corr",null,s.lev==="I"?"I":"O")); }
+  else if(s.kind==="corr"){ out.push(s.lev==="I"?"Spearman's rho":"Pearson's r", "Chi-squared", s.lev==="I"?"Related t-test":"Wilcoxon", s.lev==="I"?"Unrelated t-test":"Mann-Whitney"); }
+  else out.push("Sign test","Mann-Whitney","Spearman's rho","Wilcoxon");
+  return [...new Set(out)].filter(x=>x!==t); }
 function scenarioText(rng){
   const r=rng(), s=pickR(SC,rng);
   if(r<0.62){
@@ -2042,13 +2048,31 @@ function scenarioText(rng){
   const c=pickR(ASSOC,rng);
   return {kind:"assoc", lev:"N", text:`A psychologist recorded ${c.a} and ${c.b} for ${c.who}, and counted how many fell into each category.`, dv:`${c.a} and ${c.b}`};
 }
+/* real critical values at p ≤ 0.05 (one-tailed, two-tailed), from the standard tables students use */
+const CV_RHO={5:[.900,1],6:[.829,.886],7:[.714,.786],8:[.643,.738],9:[.600,.700],10:[.564,.648],11:[.536,.618],12:[.503,.587],13:[.484,.560],14:[.464,.538],15:[.443,.521],16:[.429,.503],17:[.414,.485],18:[.401,.472],19:[.391,.460],20:[.380,.447],25:[.337,.398],30:[.306,.362]};
+const CV_R={3:[.8054,.8783],4:[.7293,.8114],5:[.6694,.7545],6:[.6215,.7067],7:[.5822,.6664],8:[.5494,.6319],9:[.5214,.6021],10:[.4973,.5760],11:[.4762,.5529],12:[.4575,.5324],13:[.4409,.5139],14:[.4259,.4973],15:[.4124,.4821],16:[.4000,.4683],17:[.3887,.4555],18:[.3783,.4438],19:[.3687,.4329],20:[.3598,.4227],25:[.3233,.3809],30:[.2960,.3494]};
+const CV_T={4:[2.132,2.776],5:[2.015,2.571],6:[1.943,2.447],7:[1.895,2.365],8:[1.860,2.306],9:[1.833,2.262],10:[1.812,2.228],11:[1.796,2.201],12:[1.782,2.179],13:[1.771,2.160],14:[1.761,2.145],15:[1.753,2.131],16:[1.746,2.120],17:[1.740,2.110],18:[1.734,2.101],19:[1.729,2.093],20:[1.725,2.086],22:[1.717,2.074],24:[1.711,2.064],26:[1.706,2.056],28:[1.701,2.048],30:[1.697,2.042]};
+const CV_WILC={8:[5,3],9:[8,5],10:[11,8],11:[13,10],12:[17,13],13:[21,17],14:[25,21],15:[30,25],16:[35,29],17:[41,34],18:[47,40],19:[53,46],20:[60,52]};
+const CV_MW={6:[7,5],7:[11,8],8:[15,13],9:[21,17],10:[27,23],11:[34,30],12:[42,37],13:[51,45],14:[61,55],15:[72,64]};
+const CV_CHI={1:[2.71,3.84],2:[4.61,5.99],3:[6.25,7.82]};
+const cvRows=o=>Object.keys(o).map(Number);
+const CRIT_TESTS=[
+  {name:"Spearman's rho",article:"a",sym:"rho",gt:true,rows:()=>cvRows(CV_RHO),crit:(n,two)=>CV_RHO[n][two?1:0]===1?null:CV_RHO[n][two?1:0],size:n=>`N = ${n}`,max:()=>1},
+  {name:"Pearson's r",article:"a",sym:"r",gt:true,rows:()=>cvRows(CV_R),crit:(df,two)=>CV_R[df][two?1:0],size:df=>`N = ${df+2}, so df = ${df}`,max:()=>1},
+  {name:"related t-test",article:"a",sym:"t",gt:true,rows:()=>cvRows(CV_T).filter(d=>d<=20),crit:(df,two)=>CV_T[df][two?1:0],size:df=>`N = ${df+1}, so df = ${df}`,max:()=>9},
+  {name:"unrelated t-test",article:"an",sym:"t",gt:true,rows:()=>cvRows(CV_T).filter(d=>d%2===0),crit:(df,two)=>CV_T[df][two?1:0],size:df=>`two groups of ${df/2+1}, so df = ${df}`,max:()=>9},
+  {name:"chi-squared test",article:"a",sym:"χ²",gt:true,rows:()=>cvRows(CV_CHI),crit:(df,two)=>CV_CHI[df][two?1:0],size:df=>`df = ${df}`,max:()=>40},
+  {name:"sign test",article:"a",sym:"S",gt:false,int:true,rows:()=>[8,9,10,11,12,13,14,15,16,18,20],crit:(n,two)=>{ const c=signCrit(n,two?0.025:0.05); return c<0?null:c; },size:n=>`N = ${n}`,max:n=>Math.floor(n/2)},
+  {name:"Wilcoxon test",article:"a",sym:"T",gt:false,int:true,rows:()=>cvRows(CV_WILC),crit:(n,two)=>CV_WILC[n][two?1:0],size:n=>`N = ${n}`,max:n=>Math.floor(n*(n+1)/4)},
+  {name:"Mann-Whitney test",article:"a",sym:"U",gt:false,int:true,rows:()=>cvRows(CV_MW),crit:(n,two)=>CV_MW[n][two?1:0],size:n=>`two groups of ${n}`,max:n=>Math.floor(n*n/2)}
+];
 const STATS = {
   chooseTest(rng){
     const s=scenarioText(rng), t=testFor(s.kind,s.design,s.lev);
     const why = s.kind==="diff" ? `It looks for a difference between two conditions, the design is ${s.designName} (${s.design==="u"?"unrelated":"related"} data), and the data is ${LEVELS[s.lev]}.`
       : s.kind==="corr" ? `It looks for a relationship (correlation) between two co-variables, and the data is ${s.lev==="I"?"interval for both":"at least ordinal (use the lower level if they differ)"}.`
       : `It looks for an association between two variables, the data is nominal (frequencies in categories), and the data in each cell is independent.`;
-    return mcq(`${s.text}\nWhich statistical test should be used?`, t, shuffleR(TESTS.filter(x=>x!==t),rng), `${t}. ${why}`, rng, "Choosing a test");
+    return mcq(`${s.text}\nWhich statistical test should be used?`, t, shuffleR(nearTests(s),rng), `${t}. ${why}`, rng, "Choosing a test");
   },
   level(rng){
     const s=pickR(SC,rng), lev=pickR(["N","O","I"],rng);
@@ -2063,29 +2087,29 @@ const STATS = {
       {u:"Different participants were randomly allocated to each condition.",r:"The same participants did both conditions.","m":"Participants were paired on a key variable and each member of the pair did one condition."}[s.designName==="independent groups"?"u":s.designName==="repeated measures"?"r":"m"], rng, "Experimental design");
   },
   significance(rng){
-    const T=pickR([["Spearman's rho","rho",1,"r"],["Pearson's r","r",1,"r"],["Related t-test","t",1,"t"],["Unrelated t-test","t",1,"t"],["Chi-squared","χ²",1,"x"],["Sign test","S",0,"s"],["Wilcoxon","T",0,"w"],["Mann-Whitney","U",0,"u"]],rng);
-    const [name,sym,gt,k]=T; let crit, calc;
-    const sig=rng()<0.5, eq=rng()<0.12;
-    if(k==="r"){ crit=+(0.3+rng()*0.4).toFixed(3); calc=eq?crit:+(crit+(sig===!!gt?1:-1)*(0.02+rng()*0.2)).toFixed(3); }
-    else if(k==="t"){ crit=+(1.7+rng()*1.0).toFixed(3); calc=eq?crit:+(crit+(sig===!!gt?1:-1)*(0.1+rng()*1.2)).toFixed(3); }
-    else if(k==="x"){ crit=pickR([3.84,5.99,7.82],rng); calc=eq?crit:+(crit+(sig?1:-1)*(0.3+rng()*3)).toFixed(2); }
-    else if(k==="s"){ crit=rint(1,5,rng); calc=eq?crit:Math.max(0,crit+(sig?-rint(1,2,rng):rint(1,3,rng))); }
-    else { crit=rint(10,60,rng); calc=eq?crit:Math.max(0,crit+(sig?-rint(1,9,rng):rint(1,12,rng))); }
+    const T=pickR(CRIT_TESTS,rng), two=rng()<0.5, row=pickR(T.rows(),rng), crit=T.crit(row,two);
+    if(crit==null) return STATS.significance(rng);
+    const gt=T.gt, sig=rng()<0.5, eq=rng()<0.12, max=T.max(row);
+    let calc;
+    if(T.int){ calc = eq ? crit : sig===gt ? crit+rint(1,Math.max(2,Math.round(crit*0.4)+2),rng) : crit-rint(1,Math.max(1,Math.min(crit,Math.round(crit*0.4)+2)),rng); calc=Math.max(0,Math.min(max,calc)); }
+    else { const step=T.sym==="t"?(0.15+rng()*1.1):(0.02+rng()*0.18); calc = eq ? crit : +(crit+(sig===gt?1:-1)*step).toFixed(3); calc=Math.max(0.01,Math.min(max,calc)); }
     const isSig = gt ? calc>=crit : calc<=crit;
     const A="Significant – the calculated value is equal to or greater than the critical value",
           B="Significant – the calculated value is equal to or less than the critical value",
           C="Not significant – the calculated value is less than the critical value",
           D="Not significant – the calculated value is greater than the critical value";
     const right = gt ? (isSig?A:C) : (isSig?B:D);
-    const rule = gt ? `${name} has an R in its name, so the calculated value must be equal to or greater than the critical value to be significant.` : `${name} has no R in its name, so the calculated value must be equal to or less than the critical value to be significant.`;
-    return mcq(`A researcher analysed their data using a ${name}. The calculated value of ${sym} was ${calc}. The critical value at p ≤ 0.05 is ${crit}.\nIs the result significant?`, right, [A,B,C,D].filter(x=>x!==right), `${rule} ${calc} ${isSig?"meets":"does not meet"} this, so the null hypothesis is ${isSig?"rejected and the alternative hypothesis accepted":"retained"}.`, rng, "Significance");
+    const rule = gt ? `${T.name} has an R in its name, so the calculated value must be equal to or greater than the critical value to be significant.` : `${T.name} has no R in its name, so the calculated value must be equal to or less than the critical value to be significant.`;
+    return mcq(`A researcher analysed their data using ${T.article} ${T.name} (${T.size(row)}, ${two?"non-directional hypothesis, so two-tailed":"directional hypothesis, so one-tailed"}). The calculated value of ${T.sym} was ${calc}. The critical value at p ≤ 0.05 is ${crit}.\nIs the result significant?`, right, [A,B,C,D].filter(x=>x!==right), `${rule} ${calc} ${isSig?"meets":"does not meet"} this, so the null hypothesis is ${isSig?"rejected and the alternative hypothesis accepted":"accepted"}.`, rng, "Significance");
   },
   tails(rng){
     const s=pickR(SC,rng), dir=rng()<0.5;
     const h = dir ? `${s.who.charAt(0).toUpperCase()+s.who.slice(1)} who ${s.iv[0]} will score higher on ${s.I.replace(/^the |^their /,"")} than those who ${s.iv[1]}.`
                   : `There will be a difference in ${s.I.replace(/^the |^their /,"")} between ${s.who} who ${s.iv[0]} and those who ${s.iv[1]}.`;
-    const opts=["One-tailed, because the hypothesis is directional","Two-tailed, because the hypothesis is non-directional","One-tailed, because the hypothesis is non-directional","Two-tailed, because the hypothesis is directional"];
-    return mcq(`Hypothesis: "${h}"\nWhich critical value should the researcher look up?`, opts[dir?0:1], opts.filter((_,i)=>i!==(dir?0:1)), dir?"It predicts which condition will do better, so it is directional: use a one-tailed test.":"It predicts a difference but not which way, so it is non-directional: use a two-tailed test.", rng, "Hypotheses and tails");
+    const right = dir ? "One-tailed, because the hypothesis is directional" : "Two-tailed, because the hypothesis is non-directional";
+    const wrongs = dir ? ["Two-tailed, because there are two conditions being compared","Two-tailed, because the hypothesis is non-directional","One-tailed, because there is only one independent variable"]
+                       : ["One-tailed, because the hypothesis is directional","One-tailed, because there is only one dependent variable","Two-tailed, because there are two groups of participants"];
+    return mcq(`Hypothesis: "${h}"\nWhich critical value should the researcher look up?`, right, wrongs, dir?"It predicts which condition will do better, so it is directional: use a one-tailed test. The number of conditions or variables doesn't decide the tails.":"It predicts a difference but not which way, so it is non-directional: use a two-tailed test. The number of conditions or variables doesn't decide the tails.", rng, "One- or two-tailed");
   },
   signTest(rng){
     const n=rint(10,14,rng), s=pickR(SC,rng), before=[], after=[]; let plus=0, minus=0, ties=0;
@@ -2102,7 +2126,8 @@ const STATS = {
     const sig=crit>=0 && S<=crit;
     return mcq(intro+`The hypothesis is directional. For N = ${N}, the critical value of S at p ≤ 0.05 (one-tailed) is ${crit<0?"not available":crit}.\nWhat should the researcher conclude?`,
       sig?`Significant – S = ${S} is equal to or less than ${crit}`:`Not significant – S = ${S} is greater than ${crit}`,
-      [sig?`Not significant – S = ${S} is less than ${crit}`:`Significant – S = ${S} is greater than ${crit}`, `Significant – N = ${N} is greater than ${crit}`, `Not significant – N = ${N} is greater than ${crit}`, `Significant – S = ${Math.max(plus,minus)} is greater than ${crit}`],
+      sig?[`Not significant – S = ${S} is not greater than ${crit}`, `Not significant – S must be greater than ${crit} to be significant`, `Significant – the more frequent sign (${Math.max(plus,minus)}) is greater than ${crit}`]
+         :[`Significant – S = ${S} is greater than ${crit}`, `Significant – S must be greater than ${crit} to be significant`, `Not significant – the more frequent sign (${Math.max(plus,minus)}) is greater than ${crit}`],
       `Ignore the ${ties} tie${ties===1?"":"s"}, so N = ${N}. Pluses = ${plus}, minuses = ${minus}, so S = ${S}. For the sign test, S must be equal to or less than the critical value (${crit}) to be significant.`, rng, "Sign test");
   },
   descriptive(rng){
@@ -2123,7 +2148,7 @@ const STATS = {
   percent(rng){
     const n=rint(16,60,rng), a=rint(3,n-3,rng), s=pickR(["obeyed the instruction","conformed at least once","recalled all the words","chose the cognitive interview","showed a secure attachment"],rng);
     const p=a/n*100;
-    return mcq(`In a study, ${a} out of ${n} participants ${s}.\nWhat percentage is this, to 1 decimal place?`, dp1(p)+"%", [dp1((n-a)/n*100)+"%", dp1(n/a)+"%", (Math.round(p)+1)+".0%", dp1(p+1)+"%", dp1(a/(n+a)*100)+"%"], `Divide the part by the total and multiply by 100: ${a} ÷ ${n} × 100 = ${p.toFixed(3)}…, which is ${dp1(p)}% to 1 d.p.`, rng, "Percentages");
+    return mcq(`In a study, ${a} out of ${n} participants ${s}.\nWhat percentage is this, to 1 decimal place?`, dp1(p)+"%", [dp1((n-a)/n*100)+"%", (Math.floor(p*10)/10).toFixed(1)+"%", dp1(a/(n-1)*100)+"%", dp1((a+1)/n*100)+"%", dp1(a/(n+a)*100)+"%", dp1(p+1)+"%"], `Divide the part by the total and multiply by 100: ${a} ÷ ${n} × 100 = ${p.toFixed(3)}…, which is ${dp1(p)}% to 1 d.p.`, rng, "Percentages");
   },
   pctChange(rng){
     const b=rint(20,80,rng), a=b+rint(-15,25,rng); if(a===b) return STATS.pctChange(rng);
@@ -2138,22 +2163,28 @@ const STATS = {
   fraction(rng){
     const n=pickR([12,16,20,24,30,36,40,48],rng), a=rint(2,n-2,rng), g=gcd(a,n);
     if(g===1) return STATS.fraction(rng);
-    return mcq(`${a} of the ${n} participants in a memory study used chunking.\nWhat fraction is this, in its simplest form?`, `${a/g}/${n/g}`, [`${a}/${n}`, `${(n-a)/gcd(n-a,n)}/${n/gcd(n-a,n)}`, `${a/g}/${n/g+1}`, `${n/g}/${a/g}`], `Divide the top and bottom by ${g}: ${a}/${n} = ${a/g}/${n/g}.`, rng, "Fractions");
+    return mcq(`${a} of the ${n} participants in a memory study used chunking.\nWhat fraction is this, in its simplest form?`, `${a/g}/${n/g}`, [`${a}/${n}`, `${(n-a)/gcd(n-a,n)}/${n/gcd(n-a,n)}`, `${a/g}/${n/g+1}`, `${a/gcd(a,n-a)}/${(n-a)/gcd(a,n-a)}`, `${Math.max(1,a/g-1)}/${n/g}`, `${a/g+1}/${n/g}`, `${a/g}/${n/g-1}`].filter(x=>{ const [p,q]=x.split("/").map(Number); return p<q; }), `Divide the top and bottom by ${g}: ${a}/${n} = ${a/g}/${n/g}.`, rng, "Fractions");
   },
   standardForm(rng){
     const man=(rint(11,99,rng)/10), e=rint(2,5,rng), small=rng()<0.6;
     const num = small ? (man/Math.pow(10,e)).toFixed(e+1).replace(/0+$/,"") : String(Math.round(man*Math.pow(10,e)));
     const m=String(man), sup=n=>String(n).split("").map(c=>"⁰¹²³⁴⁵⁶⁷⁸⁹⁻"["0123456789-".indexOf(c)]).join("");
     const right=`${m} × 10${sup(small?-e:e)}`;
-    return mcq(`Write ${num} in standard form.`, right, [`${m} × 10${sup(small?e:-e)}`, `${m} × 10${sup(small?-(e+1):e+1)}`, `${(man*10).toFixed(0)} × 10${sup(small?-(e+1):e-1)}`, `${m} × 10${sup(small?-(e-1):e-1)}`], `Move the decimal point so there is one non-zero digit before it (${m}), then count how many places it moved: ${e} places ${small?"to the right, so the power is negative":"to the left, so the power is positive"}.`, rng, "Standard form");
+    return mcq(`Write ${num} in standard form.`, right, [`${m} × 10${sup(small?e:-e)}`, `${m} × 10${sup(small?-(e+1):e+1)}`, `${m} × 10${sup(small?-(e-1):e-1)}`, `${m} × 10${sup(small?e+1:-(e+1))}`], `Move the decimal point so there is one non-zero digit before it (${m}), then count how many places it moved: ${e} places ${small?"to the right, so the power is negative":"to the left, so the power is positive"}.`, rng, "Standard form");
   },
   sigFigs(rng){
-    const sf=rint(1,3,rng), x=+(rint(1001,9999,rng)/Math.pow(10,rint(1,5,rng))).toPrecision(4);
-    const clean=v=>String(+(+v).toPrecision(10));
-    const r=+x.toPrecision(sf), unit=Math.pow(10,Math.floor(Math.log10(Math.abs(r)))-sf+1);
-    if(clean(r)===clean(x)) return STATS.sigFigs(rng);
-    const wrong=[x.toPrecision(sf+1), Math.trunc(x/unit)*unit, r+unit, r-unit, x.toFixed(sf), r+2*unit, r*10, r/10].map(clean).filter(v=>v!==clean(r)&&+v>0);
-    return mcq(`Round ${clean(x)} to ${sf} significant figure${sf>1?"s":""}.`, clean(r), wrong, `Start counting at the first non-zero digit and keep ${sf} digit${sf>1?"s":""}, rounding the last one using the next digit: ${clean(x)} → ${clean(r)}.`, rng, "Significant figures");
+    // exact decimal maths: the number is k ÷ 10^p with k a 4-digit whole number, so halves always round up as taught
+    const sf=rint(1,3,rng), k=rint(1001,9999,rng), p=rint(1,5,rng);
+    const dec=(R,e)=>{ if(e>=0) return String(R)+"0".repeat(e); let t=String(R).padStart(-e+1,"0"); return t.slice(0,t.length+e)+"."+t.slice(t.length+e); };
+    const trim=t=>t.includes(".")?t.replace(/0+$/,"").replace(/\.$/,""):t;
+    const roundAt=(m,up=true)=>{ if(m<=0) return dec(k,-p); const P=Math.pow(10,m); let R=Math.floor(k/P); if(up && (k%P)*2>=P) R++; let e=m-p; if(String(R).length>4-m){ R=R/10; e++; } return dec(R,e); };
+    const m=4-sf; if(k%Math.pow(10,m)===0) return STATS.sigFigs(rng);
+    const x=trim(dec(k,-p)), right=roundAt(m);
+    const P=Math.pow(10,m), R0=Math.floor(k/P)+((k%P)*2>=P?1:0);
+    const wrong=[trim(right), roundAt(m,false), roundAt(m-1), (m+1<=3?roundAt(m+1):null), (String(R0+1).length===String(R0).length?dec(R0+1,m-p):null), (R0>1?dec(R0-1,m-p):null), (p-sf>0&&p-sf<4&&p-sf!==m?roundAt(p-sf):null), (m-1>0?roundAt(m-1,false):null), (String(R0+2).length===String(R0).length?dec(R0+2,m-p):null), (R0>2?dec(R0-2,m-p):null)]
+      .filter(v=>v && v!==right && +v>0);
+    const zeros=right!==trim(right)?` The zero${right.length-trim(right).length>1?"s":""} at the end count${right.length-trim(right).length>1?"":"s"} as significant figures, so ${right} not ${trim(right)}.`:"";
+    return mcq(`Round ${x} to ${sf} significant figure${sf>1?"s":""}.`, right, wrong, `Start counting at the first non-zero digit and keep ${sf} digit${sf>1?"s":""}, rounding the last one using the next digit (5 or more rounds up): ${x} → ${right}.${zeros}`, rng, "Significant figures");
   },
   skew(rng){
     const kind=pickR(["pos","neg","norm"],rng), mo=rint(8,20,rng);
@@ -2167,16 +2198,16 @@ const STATS = {
     const r=(rng()<0.5?-1:1)*+(0.05+rng()*0.9).toFixed(2), a=Math.abs(r);
     const str=a>=0.7?"strong":a>=0.4?"moderate":"weak", dir=r>0?"positive":"negative";
     const right=`A ${str} ${dir} correlation`;
-    return mcq(`A correlation coefficient of ${r>0?"+":""}${r} was found between two co-variables.\nWhat does this show?`, right, [`A ${str} ${dir==="positive"?"negative":"positive"} correlation`, `A ${str==="strong"?"weak":"strong"} ${dir} correlation`, "No correlation", `A ${str==="moderate"?"strong":"moderate"} ${dir} correlation`], `The sign shows the direction (${dir}: as one goes up, the other goes ${dir==="positive"?"up":"down"}). The size shows strength: ${a} is ${str}.`, rng, "Correlation");
+    return mcq(`A correlation coefficient of ${r>0?"+":""}${r} was found between two co-variables.\nWhat does this show?`, right, [`A ${str} ${dir==="positive"?"negative":"positive"} correlation`, `A ${str==="strong"?"moderate":"strong"} ${dir} correlation`, str==="weak"?"No correlation":`A ${str==="strong"?"weak":"weak"} ${dir} correlation`, `A ${str==="moderate"?"weak":"moderate"} ${dir==="positive"?"negative":"positive"} correlation`], `The sign shows the direction (${dir}: as one goes up, the other goes ${dir==="positive"?"up":"down"}). The size shows strength: ${a} is ${str}.`, rng, "Correlation");
   },
   errors(rng){
     const lenient=rng()<0.5;
-    return mcq(`A researcher used a significance level of ${lenient?"p ≤ 0.10":"p ≤ 0.01"} and ${lenient?"found a significant result":"did not find a significant result"}.\nWhich error is most likely to have been made?`, lenient?"Type I error (false positive)":"Type II error (false negative)", ["Type I error (false positive)","Type II error (false negative)","Investigator effect","Order effect"],
+    return mcq(`A researcher used a significance level of ${lenient?"p ≤ 0.10":"p ≤ 0.01"} and ${lenient?"found a significant result":"did not find a significant result"}.\nWhich error is most likely to have been made?`, lenient?"Type I error (false positive)":"Type II error (false negative)", ["Type I error (false positive)","Type II error (false negative)","Type I error (false negative)","Type II error (false positive)"],
       lenient?"A lenient significance level (0.10) makes it easier to reject the null hypothesis when it is actually true, which is a Type I error.":"A stringent significance level (0.01) makes it harder to reject the null hypothesis, so a real effect may be missed (accepting the null when it is false), which is a Type II error.", rng, "Type I and II errors");
   },
   pmeaning(rng){
     const p=pickR(["0.05","0.01","0.10"],rng), pc={"0.05":"5%","0.01":"1%","0.10":"10%"}[p];
-    return mcq(`What does p ≤ ${p} mean?`, `There is a ${pc} or less probability that the results are due to chance`, [`There is a ${pc} probability that the hypothesis is correct`, `${pc} of participants showed the effect`, `There is at least a ${pc} probability that the results are due to chance`, `The results are ${100-parseFloat(pc)}% due to chance`], `p is the probability that the results happened by chance (if the null hypothesis is true). p ≤ ${p} means ${pc} or less.`, rng, "Probability");
+    return mcq(`What does p ≤ ${p} mean?`, `There is a ${pc} or less probability that the results are due to chance`, [`There is a ${pc} or more probability that the results are due to chance`, `There is a ${100-parseFloat(pc)}% or less probability that the results are due to chance`, `There is a ${pc} or less probability that the results are due to the IV`, `There is a ${pc} probability that the alternative hypothesis is correct`], `p is the probability that the results happened by chance (if the null hypothesis is true). p ≤ ${p} means ${pc} or less.`, rng, "Probability");
   }
 };
 const STATS_KINDS=Object.keys(STATS);
