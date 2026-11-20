@@ -1902,7 +1902,7 @@ const BADGES = [
   ["perfect","💯","Flawless","Full marks in a quiz",()=>G.st.perfect>=1],
   ["blitz20","⏱️","Speed demon","20 right in one Blitz",()=>G.st.blitzR>=20],
   ["surv25","❤️","Survivor","Reach 25 in Survival",()=>G.st.surv>=25],
-  ["daily","📰","Daily driver","Finish a Daily 10",()=>Object.keys(G.daily).some(k=>G.daily[k].done)],
+  ["daily","📰","Daily driver","Finish a Daily 10",()=>Object.keys(G.daily).some(k=>G.daily[k].done && (G.daily[k].n==null || G.daily[k].n>=5))],
   ["daily10","🎯","Daily perfection","Score 10/10 on a Daily 10",()=>Object.values(G.daily).some(v=>v.done&&v.score===10)],
   ["l5","⭐","Rising star","Reach level 5",()=>lvlFor(G.xp)>=5],
   ["l10","🌟","Shining","Reach level 10",()=>lvlFor(G.xp)>=10],
@@ -2771,16 +2771,18 @@ function arcFinish(){ arcFinishHook();
   }
   if(m.kind==="weekly"){
     const log=arc.qs.map((q,i)=>arc.log[i]?arc.log[i].ok:false), score=log.filter(Boolean).length;
-    G.weekly[weekStart()]={started:true, done:true, score, time:Date.now()-arc.t0, log, qa:arc.qs.map(q=>[q.q,q.opts[q.correct]])};
+    const answeredW=arc.log.filter(Boolean).length, realW=answeredW>=8;   // a real go: at least 8 of the 15 answered
+    G.weekly[weekStart()]={started:true, done:true, n:answeredW, score, time:Date.now()-arc.t0, log, qa:arc.qs.map(q=>[q.q,q.opts[q.correct]])};
     arc.log=arc.qs.map((q,i)=>({q:q.q, a:q.opts[q.correct], ok:log[i]}));
-    G.st.weeklies=(G.st.weeklies||0)+1; if(score===15) G.st.weeklyPerfect=1;
-    bonus=40+score*5; if(score===15) bonus+=60; if(score>=12) arc.best=true;
+    if(realW){ G.st.weeklies=(G.st.weeklies||0)+1; if(score===15) G.st.weeklyPerfect=1; }
+    bonus=(realW?40:0)+score*5; if(score===15) bonus+=60; if(score>=12) arc.best=true;
   }
   if(m.kind==="daily"){
     const log=arc.qs.map((q,i)=>arc.log[i]?arc.log[i].ok:false), score=log.filter(Boolean).length;
-    G.daily[today()]={started:true, done:true, score, time:Date.now()-arc.t0, log, qa:arc.qs.map(q=>[q.q,q.opts[q.correct]])};
+    const answeredD=arc.log.filter(Boolean).length;   // a real go: at least 5 of the 10 answered
+    G.daily[today()]={started:true, done:true, n:answeredD, score, time:Date.now()-arc.t0, log, qa:arc.qs.map(q=>[q.q,q.opts[q.correct]])};
     arc.log=arc.qs.map((q,i)=>({q:q.q, a:q.opts[q.correct]+(q.explain&&q.explain!==q.opts[q.correct]?" — "+q.explain:""), ok:log[i]}));
-    bonus=30+score*5; if(score===10) bonus+=50;
+    bonus=(answeredD>=5?30:0)+score*5; if(score===10) bonus+=50;
   }
   arc.xp+=bonus; addXP(bonus,false);
   if(arc.best || (m.kind==="daily" && G.daily[today()].score>=8) || (m.kind==="round" && arc.right===m.n)){ confetti(200); sfx("lvl"); }
@@ -3088,6 +3090,12 @@ const DESIGNS = [
 /* ---- ✍️ writing: essays and design a study ---- */
 const DRAFT_KEY="rr-psych-drafts";
 const WRITING_BOOST=2; // long writing (essays, design a study) earns double XP
+/* XP guards for self-marked work: XP needs real writing, and there's a daily limit */
+const wordCount=t=>{ t=String(t||"").trim(); return t?t.split(/\s+/).length:0; };
+const ESSAY_MIN_WORDS={4:25,6:40,8:60,12:100,16:150};
+const WRITING_XP_PER_DAY=6, MOCK_XP_PER_DAY=3;
+function writingXPLeft(kind){ const t=today(); G.wxp=G.wxp&&G.wxp.d===t?G.wxp:{d:t,essay:0,mock:0}; return (kind==="mock"?MOCK_XP_PER_DAY:WRITING_XP_PER_DAY)-(G.wxp[kind]||0); }
+function useWritingXP(kind){ writingXPLeft(kind); G.wxp[kind]=(G.wxp[kind]||0)+1; }
 function drafts(){ try{ return JSON.parse(localStorage.getItem(DRAFT_KEY)||"{}"); }catch(e){ return {}; } }
 function saveDraft(id,txt){ const d=drafts(); if(txt) d[id]=txt; else delete d[id]; try{ localStorage.setItem(DRAFT_KEY,JSON.stringify(d)); }catch(e){} }
 const wr={mode:"essay", topic:"", marks:"", cur:null, revealed:false, timerEnd:0, timer:null, design:null, step:0, picks:[], done:false, result:null};
@@ -3158,11 +3166,18 @@ function wireMarking(e){
   document.querySelectorAll('input[name="wrLvl"]').forEach(r=>r.onchange=()=>{ const [lo,hi]=ESSAY_LEVELS[e.m][+r.value][1].split("–").map(Number); sel.innerHTML=Array.from({length:hi-lo+1},(_,i)=>`<option ${i===hi-lo?"selected":""}>${lo+i}</option>`).join(""); sel.disabled=false; sv.disabled=false; });
   sv.onclick=()=>{
     const ticks=document.querySelectorAll('#wrMark input[type=checkbox]:checked').length, mark=+sel.value, li=+document.querySelector('input[name="wrLvl"]:checked').value;
-    const xp=Math.min(100, 30+ticks*5)*WRITING_BOOST;
-    G.st.essays=(G.st.essays||0)+1; if(e.m===16 && mark>=13) G.st.essayL4=1;
+    const words=wordCount(($("#wrText")||{}).value || drafts()[e.id]), need=ESSAY_MIN_WORDS[e.m]||e.m*9;
+    const doneToday=(G.essayLog||[]).some(x=>x[0]===e.id && x[3]===today());
+    let xp=Math.min(100, 30+ticks*5)*WRITING_BOOST, why="";
+    if(words<need){ xp=0; why=`Write at least ${need} words to earn XP for a ${e.m}-mark answer (you wrote ${words}).`; }
+    else if(doneToday){ xp=0; why="You've already earned XP for this question today. Try a different one."; }
+    else if(writingXPLeft("essay")<=0){ xp=0; why=`That's ${WRITING_XP_PER_DAY} essays today, brilliant! Essays earn XP again tomorrow.`; }
+    if(xp>0){ useWritingXP("essay"); G.st.essays=(G.st.essays||0)+1; if(e.m===16 && mark>=13) G.st.essayL4=1; }
     G.essayLog=(G.essayLog||[]).concat([[e.id,mark,e.m,today()]]).slice(-30);
     wr.result={mark, level:ESSAY_LEVELS[e.m][li][0], xp};
-    addXP(xp,false); toast("✍️","Essay self-marked: "+mark+"/"+e.m,"+"+xp+" XP (double XP for long writing)."); confetti(90); save(); checkBadges(); renderWriting();
+    if(xp>0){ addXP(xp,false); toast("✍️","Essay self-marked: "+mark+"/"+e.m,"+"+xp+" XP (double XP for long writing)."); confetti(90); }
+    else toast("✍️","Essay self-marked: "+mark+"/"+e.m,why);
+    save(); checkBadges(); renderWriting();
   };
 }
 function renderDesign(area,seg){
@@ -3201,7 +3216,7 @@ function renderDesign(area,seg){
   area.querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>{ wr.picks[wr.step]=+b.dataset.o; sfx(st.o[+b.dataset.o][1]===2?"ok":"no"); renderWriting(); });
   $("#dQuit").onclick=()=>{ wr.design=null; renderWriting(); };
   const dn=$("#dNext"); if(dn) dn.onclick=()=>{
-    if(wr.step+1>=n){ wr.done=true; const score=wr.picks.reduce((a,p,i)=>a+D.steps[i].o[p][1],0); G.designsDone=[...new Set((G.designsDone||[]).concat(D.id))]; G.st.designs=(G.st.designs||0)+1; addXP((40+score*3)*WRITING_BOOST,false); toast("🔬","Study designed","+"+((40+score*3)*WRITING_BOOST)+" XP (double XP for long writing)"); confetti(90); save(); checkBadges(); }
+    if(wr.step+1>=n){ wr.done=true; const score=wr.picks.reduce((a,p,i)=>a+D.steps[i].o[p][1],0); const firstTime=!(G.designsDone||[]).includes(D.id); G.designsDone=[...new Set((G.designsDone||[]).concat(D.id))]; const dxp=firstTime?(40+score*3)*WRITING_BOOST:0; if(firstTime){ G.st.designs=(G.st.designs||0)+1; addXP(dxp,false); } toast("🔬","Study designed",firstTime?"+"+dxp+" XP (double XP for long writing)":"No XP this time: each design earns XP once, but it's still great practice."); confetti(90); save(); checkBadges(); }
     else wr.step++;
     renderWriting(); window.scrollTo({top:$("#wrArea").offsetTop-80,behavior:reduced()?"auto":"smooth"});
   };
@@ -3285,7 +3300,7 @@ function planTasks(){
   const pl=ensurePlan(), due=dueCount(true), dd=G.daily[today()];
   return [
     {id:"due", icon:"📅", label: due?`Review ${due} due card${due===1?"":"s"}`:"No reviews due today", done:due===0},
-    {id:"daily", icon:"📰", label:"Play the Daily 10", done:!!(dd&&dd.done)},
+    {id:"daily", icon:"📰", label:"Play the Daily 10", done:!!(dd&&dd.done&&(dd.n==null||dd.n>=5))},
     {id:"weak", icon:"🎯", label:`10 cards on ${TMAP[pl.weak].name} (${Math.min(pl.weakN,10)}/10)`, done:pl.weakN>=10}
   ];
 }
@@ -4546,7 +4561,10 @@ function renderMock(area,seg){
       const score=mk.items.reduce((a,x)=>a+x.got,0), byT={}, byAO={1:[0,0],2:[0,0],3:[0,0]};
       mk.items.forEach(it=>{ (byT[it.t]=byT[it.t]||[0,0]); byT[it.t][0]+=it.got; byT[it.t][1]+=it.marks;
         if(it.type==="essay"){ const sp=aoSplit(it.essay), f=it.got/8; [1,2,3].forEach((a,j)=>{ byAO[a][0]+=sp[j]*f; byAO[a][1]+=sp[j]; }); } else { byAO[it.ao][0]+=it.got; byAO[it.ao][1]+=it.marks; } });
-      const xp=(40+score*3)*WRITING_BOOST; G.mocks=(G.mocks||[]).concat([[mk.paper,score,total,today()]]).slice(-30); if(score/total>=0.8) G.st.mock80=1;
+      const xpScore=mk.items.reduce((a,x)=>a+(x.type==="mc" || wordCount(x.text)>=(x.type==="short"?5:40) ? x.got : 0),0);
+      const tried=mk.items.filter(x=>x.type==="mc"?x.ans>=0:wordCount(x.text)>=(x.type==="short"?5:40)).length, realGo=tried>=mk.items.length/2;
+      const mockOK=writingXPLeft("mock")>0, xp=mockOK?((realGo?40:0)+xpScore*3)*WRITING_BOOST:0; if(mockOK) useWritingXP("mock"); else toast("📝","No XP for this mock",`Mocks earn XP ${MOCK_XP_PER_DAY} times a day. Your marks are still saved.`);
+      G.mocks=(G.mocks||[]).concat([[mk.paper,score,total,today()]]).slice(-30); if(score/total>=0.8) G.st.mock80=1;
       mk.res={score, byT, byAO, xp}; mk.phase="done"; G.st.mocksN=Math.max(G.st.mocksN||0,(G.mocks||[]).length-1)+1; addXP(xp,false); confetti(140); sfx("lvl"); save(); checkBadges(); renderWriting(); window.scrollTo({top:$("#wrArea").offsetTop-80,behavior:reduced()?"auto":"smooth"});
     };
     return;
