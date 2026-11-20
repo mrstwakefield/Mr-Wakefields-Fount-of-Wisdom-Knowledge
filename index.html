@@ -1030,6 +1030,84 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 :root[data-skin="squeaks"]{--paper:#FF7EB6;--card:#FFF4B0;--ink:#2A1030;--muted:#6A1F4E;--line:#E0428C;--soft:#FFD93B;--good:#0E7A3E;--good-bg:#C9F7D6;--warn:#B0124F;--warn-bg:#FFD0E2;color-scheme:light}
 :root[data-skin="squeaks"] body{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22140%22%20height%3D%22140%22%20opacity%3D%22.5%22%3E%3Ctext%20x%3D%2210%22%20y%3D%2244%22%20font-size%3D%2230%22%3E%F0%9F%90%80%3C/text%3E%3Ctext%20x%3D%2270%22%20y%3D%22104%22%20font-size%3D%2230%22%3E%F0%9F%A7%80%3C/text%3E%3Ctext%20x%3D%2274%22%20y%3D%2240%22%20font-size%3D%2218%22%3E%F0%9F%8E%93%3C/text%3E%3Ctext%20x%3D%2216%22%20y%3D%22100%22%20font-size%3D%2218%22%3E%E2%9C%A8%3C/text%3E%3C/svg%3E");background-size:140px 140px}
 :root[data-skin="squeaks"] .xpbar i{background:repeating-linear-gradient(45deg,#FF2E88 0 12px,#FFD93B 12px 24px,#7CE0FF 24px 36px)}
+/* ---- little animated scenes for the pet themes (one per theme, under the title) ---- */
+.skinfx{display:none;position:relative;width:min(340px,100%);height:124px;margin:12px 0 0;pointer-events:none;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:color-mix(in srgb,var(--card) 88%,transparent)}
+:root[data-skin="petgoose"] #fx-petgoose,:root[data-skin="petdog"] #fx-petdog,:root[data-skin="petcat"] #fx-petcat,:root[data-skin="petpeacock"] #fx-petpeacock,:root[data-skin="pethans"] #fx-pethans,:root[data-skin="petbobo"] #fx-petbobo,:root[data-skin="squeaks"] #fx-squeaks{display:block}
+.skinfx svg{display:block;width:100%;height:100%}
+.skinfx .fa{position:absolute}
+.skinfx .fl{position:absolute;top:6px;left:10px;font-weight:700;font-size:11px;line-height:1.15;color:var(--muted);z-index:5}
+/* Lorenz and his goslings */
+#fx-petgoose .gnd{position:absolute;left:0;right:0;bottom:0;height:9px;background:#7CC36B}
+#fx-petgoose .gw{position:absolute;bottom:4px;left:-260px;display:flex;align-items:flex-end;gap:0;animation:gooseWalk 12s linear infinite}
+#fx-petgoose .gg{width:58px;height:58px;margin-right:-12px;animation:waddle .45s ease-in-out infinite alternate}
+#fx-petgoose .gg:nth-child(2){animation-delay:-.15s}#fx-petgoose .gg:nth-child(3){animation-delay:-.3s}#fx-petgoose .gg:nth-child(4){animation-delay:-.1s}
+#fx-petgoose .lz{width:48px;height:88px;margin-left:8px}
+#fx-petgoose .lz .l1,#fx-petgoose .lz .l2{transform-box:view-box;transform-origin:23px 58px;animation:lzStep .45s ease-in-out infinite alternate}
+#fx-petgoose .lz .l2{animation-direction:alternate-reverse}
+@keyframes gooseWalk{from{left:-260px}to{left:100%}}
+@keyframes waddle{from{transform:translateY(0) rotate(-7deg)}to{transform:translateY(-3px) rotate(7deg)}}
+@keyframes lzStep{from{transform:rotate(-16deg)}to{transform:rotate(16deg)}}
+/* Pavlov: bell, then drool before the food */
+#fx-petdog .db{left:22px;top:34px;font-size:36px;transform-origin:50% 0;animation:bellRing 6s infinite}
+#fx-petdog .dd{left:64px;top:30px;font-weight:800;font-size:14px;color:var(--warn);opacity:0;animation:ding 6s infinite}
+#fx-petdog .dg{right:62px;bottom:2px;width:96px;height:96px}
+#fx-petdog .dr{width:7px;height:10px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:#3E9BD8;right:106px;bottom:34px;opacity:0;animation:drool 6s infinite}
+#fx-petdog .dr+.dr{animation-delay:.5s;right:98px}
+#fx-petdog .bw{right:16px;bottom:8px;font-size:32px;opacity:0;animation:bowl 6s infinite}
+@keyframes bellRing{0%,16%,100%{transform:rotate(0)}3%{transform:rotate(24deg)}6%{transform:rotate(-24deg)}9%{transform:rotate(18deg)}12%{transform:rotate(-12deg)}}
+@keyframes ding{0%{opacity:0;transform:translateY(4px)}4%,16%{opacity:1;transform:none}22%,100%{opacity:0;transform:translateY(-6px)}}
+@keyframes drool{0%,14%{opacity:0;transform:translateY(0)}18%{opacity:1}34%{opacity:1;transform:translateY(24px)}37%,100%{opacity:0;transform:translateY(26px)}}
+@keyframes bowl{0%,42%{opacity:0;transform:translateY(8px)}48%,84%{opacity:1;transform:none}92%,100%{opacity:0}}
+/* Thorndike's puzzle box */
+#fx-petcat .cb{left:14px;bottom:8px;width:110px;height:84px;border:4px solid #8B5A2B;border-right:0;border-radius:4px 0 0 4px;background:#F3D9B5}
+#fx-petcat .cs{position:absolute;inset:0;background:repeating-linear-gradient(90deg,#8B5A2B 0 6px,transparent 6px 22px);z-index:3}
+#fx-petcat .cd{left:124px;bottom:8px;width:9px;height:84px;background:#6B4220;border-radius:2px;z-index:4;animation:catDoor 8s ease-in-out infinite}
+#fx-petcat .lv{left:96px;bottom:12px;width:5px;height:32px;background:#3A3A3A;border-radius:3px;transform-origin:50% 100%;z-index:2;animation:catLever 8s ease-in-out infinite}
+#fx-petcat .lv::before{content:"";position:absolute;top:-6px;left:-3px;width:11px;height:11px;border-radius:50%;background:#C0392B}
+#fx-petcat .ct{left:20px;bottom:10px;width:66px;height:66px;z-index:2;animation:catOut 8s ease-in-out infinite}
+#fx-petcat .ct svg{animation:catPaw 8s ease-in-out infinite}
+#fx-petcat .fs{right:16px;bottom:12px;font-size:28px;animation:catFish 8s infinite}
+@keyframes catDoor{0%,40%{transform:none}46%,86%{transform:translateY(-80px)}93%,100%{transform:none}}
+@keyframes catLever{0%,30%{transform:rotate(-22deg)}36%,86%{transform:rotate(26deg)}93%,100%{transform:rotate(-22deg)}}
+@keyframes catPaw{0%,26%,40%,100%{transform:none}30%,34%{transform:translateX(10px) rotate(8deg)}}
+@keyframes catOut{0%,46%{left:20px;opacity:1}60%,84%{left:calc(100% - 112px);opacity:1}88%{left:calc(100% - 112px);opacity:0}90%{left:20px;opacity:0}96%,100%{left:20px;opacity:1}}
+@keyframes catFish{0%,62%{opacity:1;transform:none}66%{opacity:0;transform:scale(.4)}92%{opacity:0}97%,100%{opacity:1;transform:none}}
+/* Darwin's peacock */
+#fx-petpeacock .pk{left:18px;bottom:0;width:112px;height:112px;transform-origin:50% 100%;animation:strut 2.4s ease-in-out infinite}
+#fx-petpeacock .ph{right:14px;bottom:2px;width:84px;height:84px}
+#fx-petpeacock .hz{right:52px;bottom:76px;font-size:15px;opacity:0;animation:heartUp 3s ease-out infinite}
+#fx-petpeacock .hz+.hz{animation-delay:1s;right:72px}#fx-petpeacock .hz+.hz+.hz{animation-delay:2s;right:40px}
+#fx-petpeacock .sp{font-size:14px;animation:twinkle 1.8s ease-in-out infinite}
+@keyframes strut{0%,100%{transform:translateX(0) rotate(0)}25%{transform:translateX(8px) rotate(3deg)}75%{transform:translateX(-4px) rotate(-3deg)}}
+@keyframes heartUp{0%{opacity:0;transform:translateY(0) scale(.6)}15%{opacity:1;transform:scale(1)}100%{opacity:0;transform:translateY(-40px)}}
+@keyframes twinkle{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1.15)}}
+/* Clever Hans */
+#fx-pethans .hb{left:12px;top:30px;width:124px;height:60px;background:#1F4A3A;border:5px solid #8B5A2B;border-radius:4px;color:#fff;font-weight:800;font-size:20px;line-height:50px;text-align:center;white-space:nowrap}
+#fx-pethans .hq,#fx-pethans .ha{display:inline-block;width:14px}
+#fx-pethans .hq{animation:hansQ 7s infinite}
+#fx-pethans .ha{color:#F2C14E;margin-left:-14px;opacity:0;animation:hansA 7s infinite}
+#fx-pethans .hh{right:14px;bottom:2px;width:100px;height:100px;transform-origin:70% 100%;animation:hansTap 7s infinite}
+#fx-pethans .hn{right:112px;bottom:70px;font-weight:800;font-size:18px;color:var(--warn);opacity:0;animation:hansN 7s infinite}
+#fx-pethans .cl{right:120px;bottom:20px;font-size:22px;opacity:0;animation:hansA 7s infinite}
+@keyframes hansQ{0%,54%{opacity:1}58%,92%{opacity:0}96%,100%{opacity:1}}
+@keyframes hansA{0%,54%{opacity:0}58%,92%{opacity:1}96%,100%{opacity:0}}
+@keyframes hansTap{0%,6%,10%,14%,18%,22%,26%,30%,34%,38%,42%,100%{transform:none}8%,16%,24%,32%,40%{transform:translateY(-6px) rotate(-4deg)}}
+@keyframes hansN{0%{opacity:0;transform:scale(.6)}2%{opacity:1;transform:translateY(-4px) scale(1)}7%{opacity:0;transform:translateY(-14px)}100%{opacity:0}}
+/* Bandura's Bobo doll */
+#fx-petbobo .bd{left:calc(50% - 20px);bottom:4px;width:92px;height:92px;transform-origin:50% 96%;animation:boboTip 4s infinite}
+#fx-petbobo .ml{left:calc(50% - 104px);bottom:34px;width:76px;height:42px;transform-origin:6% 50%;animation:boboMallet 4s infinite}
+#fx-petbobo .bg{right:14px;top:30px;font-weight:800;font-size:16px;color:#E53935;opacity:0;animation:boing 4s infinite}
+@keyframes boboTip{0%,22%,60%,100%{transform:rotate(0)}28%{transform:rotate(36deg)}38%{transform:rotate(-16deg)}46%{transform:rotate(9deg)}54%{transform:rotate(-4deg)}}
+@keyframes boboMallet{0%,8%,42%,100%{transform:rotate(-55deg)}22%{transform:rotate(6deg)}28%{transform:rotate(0)}}
+@keyframes boing{0%,30%{opacity:0;transform:scale(.7)}36%{opacity:1;transform:scale(1.15)}54%{opacity:1;transform:none}62%,100%{opacity:0}}
+/* Professor Squeaks runs the maze */
+#fx-squeaks .mz{position:absolute;left:12px;top:16px;width:220px;height:100px}
+#fx-squeaks .rt{position:absolute;left:0;top:0;width:40px;height:40px;offset-path:path("M14 82H202V50H20V18H184");offset-rotate:0deg;animation:ratRun 9s linear infinite}
+#fx-squeaks .ch{position:absolute;left:194px;top:6px;font-size:20px;animation:cheese 9s infinite}
+#fx-squeaks .fl{left:auto;right:10px;top:auto;bottom:12px;width:92px;text-align:right}
+@keyframes ratRun{0%{offset-distance:0%;opacity:1}80%,96%{offset-distance:100%;opacity:1}99%,100%{offset-distance:100%;opacity:0}}
+@keyframes cheese{0%,80%{opacity:1;transform:none}86%{opacity:1;transform:scale(1.3)}92%,100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.skinfx *{animation:none!important}}
 :root[data-skin="squeaks"] .box,:root[data-skin="squeaks"] .hud,:root[data-skin="squeaks"] .petstrip{border:3px solid #E0428C;box-shadow:6px 6px 0 #2A1030}
 :root[data-skin="squeaks"] header p,:root[data-skin="squeaks"] .sub,:root[data-skin="squeaks"] .count{text-shadow:0 0 6px #FF7EB6,0 0 10px #FF7EB6}
 :root[data-skin="squeaks"] h1{color:#2A1030;text-shadow:3px 3px 0 #FFD93B,6px 6px 0 #7CE0FF}
@@ -1316,7 +1394,21 @@ function harlowMake(){ if(document.getElementById("harlowFx")) return; const top
   const cloth=`<svg viewBox="0 0 60 90"><rect x="10" y="82" width="40" height="6" rx="2" fill="#6B4E35"/><circle cx="19" cy="9" r="5" fill="#E7B48C"/><circle cx="41" cy="9" r="5" fill="#E7B48C"/><circle cx="30" cy="15" r="12" fill="#F2C9A8" stroke="#C99A73" stroke-width="1.5"/><circle cx="25.5" cy="14" r="3.4" fill="#fff"/><circle cx="34.5" cy="14" r="3.4" fill="#fff"/><circle cx="26" cy="14.6" r="1.8" fill="#2B2B2B"/><circle cx="35" cy="14.6" r="1.8" fill="#2B2B2B"/><path d="M26 20q4 3 8 0" fill="none" stroke="#A86F45" stroke-width="1.4" stroke-linecap="round"/><rect x="13" y="28" width="34" height="54" rx="15" fill="#F7E3CE" stroke="#D9B48E" stroke-width="1.5"/><g fill="#EBCBA8"><circle cx="21" cy="40" r="1.6"/><circle cx="31" cy="37" r="1.6"/><circle cx="39" cy="44" r="1.6"/><circle cx="25" cy="52" r="1.6"/><circle cx="36" cy="57" r="1.6"/><circle cx="20" cy="64" r="1.6"/><circle cx="31" cy="69" r="1.6"/><circle cx="40" cy="72" r="1.6"/></g></svg>`;
   d.innerHTML=`<span class="hl hlw">Wire 🍼</span><span class="hl hlc">Cloth 🤎</span><div class="hm hw">${wire}</div><div class="hm hc">${cloth}</div><span class="hh">💛</span><div class="hb">${PET_ART.monkey(0,"happy",74)}</div>`;
   const h=top.querySelector("h1"); h?h.after(d):top.appendChild(d); }
-function applySkin(id){ if(id==="petmonkey") setTimeout(harlowMake,0); if(id==="fount") setTimeout(fountStart,0); else fountStop(); if(id==="petpigeon") setTimeout(pongMake,0); if(id==="arcade8" && !document.getElementById("pixelCss")){ const l=document.createElement("link"); l.id="pixelCss"; l.rel="stylesheet"; l.href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"; document.head.appendChild(l); } const r=document.documentElement; r.removeAttribute("data-skin"); r.removeAttribute("data-theme"); if(id==="light"||id==="dark") r.setAttribute("data-theme",id); else if(id && id!=="auto") r.setAttribute("data-skin",id); }
+const LORENZ=`<svg viewBox="0 0 48 88"><g class="l1"><rect x="18" y="56" width="7" height="28" rx="3" fill="#3B3B4A"/></g><g class="l2"><rect x="22" y="56" width="7" height="28" rx="3" fill="#2A2A36"/></g><rect x="13" y="30" width="22" height="32" rx="6" fill="#6B8E3D"/><rect x="26" y="34" width="6" height="22" rx="3" fill="#56772F"/><circle cx="25" cy="20" r="9.5" fill="#F2C9A8"/><path d="M16 22q9 18 18 0q-1 8-9 10q-8-2-9-10z" fill="#F1F1F1" stroke="#CFCFCF" stroke-width=".8"/><circle cx="28.5" cy="18" r="1.4" fill="#222"/><circle cx="34" cy="21" r="1.8" fill="#E8B08A"/><rect x="11" y="11" width="28" height="3" rx="1.5" fill="#4A3728"/><rect x="15" y="4" width="20" height="8" rx="3" fill="#4A3728"/></svg>`;
+const MALLET=`<svg viewBox="0 0 76 42"><rect x="2" y="18" width="50" height="7" rx="3.5" fill="#F2C14E" stroke="#C9941F" stroke-width="1"/><rect x="48" y="3" width="25" height="36" rx="9" fill="#E53935"/><rect x="57" y="3" width="7" height="36" fill="#fff" opacity=".85"/></svg>`;
+const MAZE=`<svg viewBox="0 0 220 100" width="220" height="100"><g fill="none" stroke="#2A1030" stroke-width="3" stroke-linecap="round"><rect x="2" y="2" width="216" height="96" rx="4"/><path d="M2 66H182M38 34H218"/></g></svg>`;
+const SKIN_FX={
+  petgoose:()=>`<span class="fl">Lorenz: imprinting 🐣</span><div class="gnd"></div><div class="gw">${[0,1,2,3].map(()=>`<div class="gg">${PET_ART.goose(0,"happy",58)}</div>`).join("")}<div class="lz">${LORENZ}</div></div>`,
+  petdog:()=>`<span class="fl">Bell → drool, before any food 🔔</span><span class="fa db">🔔</span><span class="fa dd">ding!</span><div class="fa dg">${PET_ART.dog(3,"happy",96)}</div><span class="fa dr"></span><span class="fa dr"></span><span class="fa bw">🍖</span>`,
+  petcat:()=>`<span class="fl" style="left:auto;right:10px">Trial and error 🐟</span><div class="fa cb"><div class="cs"></div></div><div class="fa lv"></div><div class="fa ct">${PET_ART.cat(3,"happy",66)}</div><div class="fa cd"></div><span class="fa fs">🐟</span>`,
+  petpeacock:()=>`<span class="fl">Darwin: the showiest tail wins</span><div class="fa pk">${PET_ART.peacock(2,"happy",112)}</div><span class="fa sp" style="left:24px;top:30px">✨</span><span class="fa sp" style="left:118px;top:44px;animation-delay:.6s">✨</span><span class="fa sp" style="left:70px;top:22px;animation-delay:1.2s">✨</span><div class="fa ph">${PET_ART.peacock(1,"happy",84)}</div><span class="fa hz">💛</span><span class="fa hz">💛</span><span class="fa hz">💛</span>`,
+  pethans:()=>`<span class="fl">Clever Hans counts (or does he?) 🐴</span><div class="fa hb">2 + 3 = <span class="hq">?</span><span class="ha">5</span></div>${[1,2,3,4,5].map(n=>`<span class="fa hn" style="animation-delay:${(n*0.56).toFixed(2)}s">${n}</span>`).join("")}<span class="fa cl">👏</span><div class="fa hh">${PET_ART.hans(3,"happy",100)}</div>`,
+  petbobo:()=>`<span class="fl">Bandura's Bobo doll always bounces back 🎈</span><div class="fa ml">${MALLET}</div><div class="fa bd">${PET_ART.bobo(3,"happy",92)}</div><span class="fa bg">BOING!</span>`,
+  squeaks:()=>`<div class="mz">${MAZE}<span class="ch">🧀</span><div class="rt">${petSVG(5,"happy",40)}</div></div><span class="fl">Professor Squeaks runs the maze 🎓</span>`
+};
+function skinFxMake(id){ const f=SKIN_FX[id]; if(!f || document.getElementById("fx-"+id)) return; const top=document.querySelector(".top"); if(!top) return;
+  const d=document.createElement("div"); d.className="skinfx"; d.id="fx-"+id; d.setAttribute("aria-hidden","true"); d.innerHTML=f(); const h=top.querySelector("h1"); h?h.after(d):top.appendChild(d); }
+function applySkin(id){ setTimeout(()=>skinFxMake(id),0); if(id==="petmonkey") setTimeout(harlowMake,0); if(id==="fount") setTimeout(fountStart,0); else fountStop(); if(id==="petpigeon") setTimeout(pongMake,0); if(id==="arcade8" && !document.getElementById("pixelCss")){ const l=document.createElement("link"); l.id="pixelCss"; l.rel="stylesheet"; l.href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"; document.head.appendChild(l); } const r=document.documentElement; r.removeAttribute("data-skin"); r.removeAttribute("data-theme"); if(id==="light"||id==="dark") r.setAttribute("data-theme",id); else if(id && id!=="auto") r.setAttribute("data-skin",id); }
 if(store.theme==="sunset"){ store.theme="tamworth"; save(); }
 if(store.theme==="graph"){ store.theme="slime"; save(); }
 if(store.theme==="postit"||store.theme==="highlighter"){ store.theme=store.theme==="postit"?"lanyard":"senior"; save(); } // replaced by the lanyard themes // Sunset became Tamworth Castle
