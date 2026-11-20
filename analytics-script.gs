@@ -37,6 +37,9 @@ function doPost(e) {
     addMap_(cells, "Game: ", d.games);
     addMap_(cells, "Topic Qs: ", d.tq);
     addMap_(cells, "Topic right: ", d.tr);
+    addMap_(cells, "AO Qs: ", d.aq);
+    addMap_(cells, "AO right: ", d.ar);
+    cells["Cards"] = JSON.stringify(cleanCards_(d.c));
 
     var keys = Object.keys(cells);
     for (var k = 0; k < keys.length; k++) {
@@ -77,6 +80,15 @@ function doPost(e) {
   }
 }
 
+function cleanCards_(c) {
+  var out = {};
+  if (!c) return out;
+  Object.keys(c).slice(0, 2000).forEach(function (id) {
+    if (/^\d{1,6}$/.test(id) && c[id] && c[id].length === 2) out[id] = [num_(c[id][0]), num_(c[id][1])];
+  });
+  return out;
+}
+
 function addMap_(cells, prefix, map) {
   if (!map) return;
   var keys = Object.keys(map);
@@ -85,82 +97,138 @@ function addMap_(cells, prefix, map) {
   }
 }
 
+var SITE = "https://mrstwakefield.github.io/Mr-Wakefields-Fount-of-Wisdom-Knowledge/index.html";
+var TOPIC_NAMES = {"RM": "Research methods", "Issues and Debates part I": "Issues and debates", "Psychopathology": "Clinical psychology",
+  "Forensic Psychology": "Forensic", "Social Influence": "Social influence"};
+
 function refreshSummary() {
   var raw = sheet_(RAW);
   var sum = sheet_(SUM);
-  sum.clear();
   var data = raw.getDataRange().getValues();
-  if (data.length < 2) {
-    sum.getRange(1, 1).setValue("No data yet.");
-    return;
-  }
+  sum.clear();
+  if (data.length < 2) { sum.getRange(1, 1).setValue("No data yet."); return; }
   var head = data[0];
   var rows = data.slice(1).filter(function (x) { return x[0]; });
-  var cQ = head.indexOf("Questions");
-  var cC = head.indexOf("Correct");
-  var cY = head.indexOf("Year");
+  var cQ = head.indexOf("Questions"), cC = head.indexOf("Correct"), cDev = head.indexOf("Device");
+  var cCards = head.indexOf("Cards");
+  var tz = Session.getScriptTimeZone();
+  var todayStr = Utilities.formatDate(new Date(), tz, "yyyy-MM-dd");
+  var weekAgo = Utilities.formatDate(new Date(Date.now() - 6 * 864e5), tz, "yyyy-MM-dd");
+  var real = rows.filter(function (x) { return String(x[cDev]) !== "testrow1"; });
 
-  var days = [];
-  rows.forEach(function (x) { var dy = String(x[0]); if (days.indexOf(dy) < 0) days.push(dy); });
-  days.sort().reverse();
-  var last7 = days.slice(0, 7);
-  var recent = rows.filter(function (x) { return last7.indexOf(String(x[0])) >= 0; });
-
-  var out = [];
-  out.push(["Fount usage stats (anonymous)", "", "", "Updated " + new Date().toLocaleString("en-GB")]);
-  out.push(["", "", "", ""]);
-  out.push(["Daily use", "Active devices", "Questions", "Accuracy %"]);
-  days.slice(0, 14).forEach(function (dy) {
-    var r = rows.filter(function (x) { return String(x[0]) === dy; });
-    var t = totals_(r, cQ, cC);
-    out.push([dy, r.length, t.q, t.acc]);
+  // ---- headline numbers
+  var devs = {}, perDay = {}, q = 0, c = 0, games = {}, active = 0, week = 0;
+  real.forEach(function (x) {
+    var dy = String(x[0]);
+    devs[x[cDev]] = 1;
+    perDay[dy] = perDay[dy] || { n: 0, q: 0 };
+    perDay[dy].n++; perDay[dy].q += Number(x[cQ]) || 0;
+    q += Number(x[cQ]) || 0; c += Number(x[cC]) || 0;
+    if (dy === todayStr) active++;
+    if (dy >= weekAgo && dy <= todayStr) week++;
   });
-
-  out.push(["", "", "", ""]);
-  out.push(["Last 7 days by year", "Devices", "Questions", "Accuracy %"]);
-  ["12", "13", ""].forEach(function (y) {
-    var r = recent.filter(function (x) { return String(x[cY]) === y; });
-    if (!r.length) return;
-    var devs = [];
-    r.forEach(function (x) { if (devs.indexOf(x[1]) < 0) devs.push(x[1]); });
-    var t = totals_(r, cQ, cC);
-    out.push([y ? "Year " + y : "Year not set", devs.length, t.q, t.acc]);
-  });
-
-  out.push(["", "", "", ""]);
-  out.push(["Most played games (7 days)", "Times played", "", ""]);
-  var games = [];
   head.forEach(function (name, i) {
     if (String(name).indexOf("Game: ") !== 0) return;
-    var n = 0;
-    recent.forEach(function (x) { n += Number(x[i]) || 0; });
-    if (n > 0) games.push([String(name).slice(6), n, "", ""]);
+    var n = 0; real.forEach(function (x) { n += Number(x[i]) || 0; });
+    if (n) games[String(name).slice(6)] = n;
   });
-  games.sort(function (a, b) { return b[1] - a[1]; });
-  out = out.concat(games);
+  var busiest = Object.keys(perDay).sort(function (a, b) { return perDay[b].n - perDay[a].n || perDay[b].q - perDay[a].q; })[0];
+  var topGame = Object.keys(games).sort(function (a, b) { return games[b] - games[a]; })[0];
 
-  out.push(["", "", "", ""]);
-  out.push(["Topics (7 days)", "Questions", "Accuracy %", ""]);
-  var topics = [];
-  head.forEach(function (name, i) {
-    if (String(name).indexOf("Topic Qs: ") !== 0) return;
-    var topic = String(name).slice(10);
-    var ri = head.indexOf("Topic right: " + topic);
-    var q = 0, c = 0;
-    recent.forEach(function (x) { q += Number(x[i]) || 0; if (ri >= 0) c += Number(x[ri]) || 0; });
-    if (q > 0) topics.push([topic, q, Math.round(c / q * 100), ""]);
+  var out = [];
+  out.push(["Fount usage stats (anonymous)", "", "", "", "Updated " + new Date().toLocaleString("en-GB")]);
+  out.push(["", "", "", "", ""]);
+  out.push(["Headline numbers", "", "", "", ""]);
+  out.push(["Students (all time)", Object.keys(devs).length, "", "", ""]);
+  out.push(["Active today", active, "", "", ""]);
+  out.push(["Student-days in the last 7 days", week, "", "", ""]);
+  out.push(["Questions answered", q, "", "", ""]);
+  out.push(["% right overall", q ? Math.round(c / q * 100) + "%" : "", "", "", ""]);
+  out.push(["Busiest day", busiest ? busiest + " (" + perDay[busiest].n + " students)" : "", "", "", ""]);
+  out.push(["Most played game", topGame ? topGame + " (" + games[topGame] + " times)" : "", "", "", ""]);
+
+  // ---- hardest and easiest cards (answered at least 10 times)
+  var cards = {};
+  if (cCards >= 0) real.forEach(function (x) {
+    var m = {}; try { m = JSON.parse(x[cCards] || "{}"); } catch (e) {}
+    Object.keys(m).forEach(function (id) {
+      var v = m[id];
+      cards[id] = cards[id] || [0, 0];
+      cards[id][0] += Number(v[0]) || 0;
+      cards[id][1] += Number(v[1]) || 0;
+    });
   });
-  topics.sort(function (a, b) { return b[1] - a[1]; });
-  out = out.concat(topics);
+  var list = [];
+  Object.keys(cards).forEach(function (id) {
+    var n = cards[id][0];
+    if (n >= 10) list.push([id, n, Math.round(cards[id][1] / n * 100)]);
+  });
+  var text = cardText_();
+  var cardRow = function (r) { var t = text[r[0]] || ["", ""]; return [Number(r[0]), TOPIC_NAMES[t[0]] || t[0], t[1], r[1], r[2] + "%"]; };
+  out.push(["", "", "", "", ""]);
+  out.push(["😬 Hardest 10 cards", "Topic", "Question", "Answers", "% right"]);
+  list.slice().sort(function (a, b) { return a[2] - b[2] || b[1] - a[1]; }).slice(0, 10).forEach(function (r) { out.push(cardRow(r)); });
+  if (!list.length) out.push(["No card has been answered 10 times yet.", "", "", "", ""]);
+  out.push(["", "", "", "", ""]);
+  out.push(["😎 Easiest 10 cards", "Topic", "Question", "Answers", "% right"]);
+  list.slice().sort(function (a, b) { return b[2] - a[2] || b[1] - a[1]; }).slice(0, 10).forEach(function (r) { out.push(cardRow(r)); });
+  if (!list.length) out.push(["No card has been answered 10 times yet.", "", "", "", ""]);
 
-  sum.getRange(1, 1, out.length, 4).setValues(out);
+  // ---- topics and assessment objectives, weakest first
+  out.push(["", "", "", "", ""]);
+  out.push(["📚 Topics, weakest first", "Answers", "% right", "", ""]);
+  pairs_(head, real, "Topic Qs: ", "Topic right: ").forEach(function (r) { out.push([r[0], r[1], r[2] + "%", "", ""]); });
+  out.push(["", "", "", "", ""]);
+  out.push(["🎯 Assessment objectives, weakest first", "Answers", "% right", "", ""]);
+  pairs_(head, real, "AO Qs: ", "AO right: ").forEach(function (r) { out.push([r[0], r[1], r[2] + "%", "", ""]); });
+
+  // ---- extras: daily use
+  out.push(["", "", "", "", ""]);
+  out.push(["Daily use (last 14 days)", "Students", "Questions", "", ""]);
+  Object.keys(perDay).sort().reverse().slice(0, 14).forEach(function (dy) { out.push([dy, perDay[dy].n, perDay[dy].q, "", ""]); });
+
+  sum.getRange(1, 1, out.length, 5).setValues(out);
   sum.getRange(1, 1).setFontWeight("bold").setFontSize(14);
   for (var i = 0; i < out.length; i++) {
-    if (/^(Daily use|Last 7 days|Most played|Topics)/.test(out[i][0])) {
-      sum.getRange(i + 1, 1, 1, 4).setFontWeight("bold").setBackground("#E3E8F2");
+    if (/^(Headline|😬|😎|📚|🎯|Daily use)/.test(out[i][0])) {
+      sum.getRange(i + 1, 1, 1, 5).setFontWeight("bold").setBackground("#E3E8F2");
     }
   }
-  sum.autoResizeColumns(1, 4);
+  sum.setColumnWidth(1, 260); sum.setColumnWidth(3, 420);
+  sum.getRange(1, 3, out.length, 1).setWrap(true);
+}
+
+// answers and % right for a family of columns, weakest first
+function pairs_(head, rows, qPrefix, rPrefix) {
+  var res = [];
+  head.forEach(function (name, i) {
+    if (String(name).indexOf(qPrefix) !== 0) return;
+    var key = String(name).slice(qPrefix.length), ri = head.indexOf(rPrefix + key), q = 0, c = 0;
+    rows.forEach(function (x) { q += Number(x[i]) || 0; if (ri >= 0) c += Number(x[ri]) || 0; });
+    if (q > 0) res.push([key, q, Math.round(c / q * 100)]);
+  });
+  return res.sort(function (a, b) { return a[2] - b[2]; });
+}
+
+// question text for each card, fetched from the public website once a day
+function cardText_() {
+  var cache = sheet_("Card text");
+  var stamp = cache.getRange(1, 1).getValue();
+  if (!(stamp instanceof Date) || Date.now() - stamp.getTime() > 864e5) {
+    try {
+      var html = UrlFetchApp.fetch(SITE, { muteHttpExceptions: true }).getContentText();
+      var m = html.match(/const DATA = (\[[\s\S]*?\]);\n/);
+      if (m) {
+        var rows = JSON.parse(m[1]).map(function (d) { return [d.id, d.t, String(d.q).slice(0, 300)]; });
+        cache.clear();
+        cache.getRange(1, 1).setValue(new Date());
+        cache.getRange(2, 1, rows.length, 3).setValues(rows);
+      }
+    } catch (e) {}
+  }
+  var map = {}, n = cache.getLastRow();
+  if (n > 1) cache.getRange(2, 1, n - 1, 3).getValues().forEach(function (r) { map[String(r[0])] = [r[1], r[2]]; });
+  return map;
 }
 
 function totals_(rows, cQ, cC) {

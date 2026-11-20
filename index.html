@@ -1717,7 +1717,7 @@ function cardType(d){
   if(/\(\d{4}\)|stud(y|ies)|research|found|find|procedure|sample|aim|conclu|investigat|experiment/i.test(d.q)) return "Studies";
   return "Concepts";
 }
-function recAcc(id, ok){ const d=BY_ID[id]; if(!d) return; anTopic(d.t, ok); const s0=mastery(d.t).s; G.rec=G.rec||{}; G.rec[d.t]=((G.rec[d.t]||"")+(ok?"1":"0")).slice(-MASTERY_WIN); recAcc2(id,ok,d); const s1=mastery(d.t).s;
+function recAcc(id, ok){ const d=BY_ID[id]; if(!d) return; anTopic(d.t, ok); anCard(d, ok); const s0=mastery(d.t).s; G.rec=G.rec||{}; G.rec[d.t]=((G.rec[d.t]||"")+(ok?"1":"0")).slice(-MASTERY_WIN); recAcc2(id,ok,d); const s1=mastery(d.t).s;
   if(s1>s0){ const t=TMAP[d.t]; setTimeout(()=>{ toast("⭐",`${t.name}: ${s1} star${s1>1?"s":""}!`, s1===3?"Topic mastered. Keep it topped up.":"See what's needed for the next star in Progress."); sfx("badge"); checkBadges(); if(typeof renderChips==="function") renderChips(); },500); } }
 const MASTERY_WIN=30;
 function mastery(key){
@@ -3745,12 +3745,17 @@ const anOn=()=>!!ANALYTICS_URL && !DEMO && !isTeacher() && !store.anOff;
 function anDay(){ const t=today(); if(!G.an || G.an.d!==t){ if(G.an && !G.an.final) anSend(G.an,true); G.an={d:t,q:0,r:0,g:{},tq:{},tr:{}}; } return G.an; }
 function anAnswer(ok){ const a=anDay(); a.q++; if(ok) a.r++; }
 function anTopic(t,ok){ const a=anDay(), k=(TMAP[t]||{}).name||t; a.tq[k]=(a.tq[k]||0)+1; if(ok) a.tr[k]=(a.tr[k]||0)+1; }
+/* the assessment objective a card mainly tests, for the stats sheet */
+function anAO(d){ if(d.t==="Exam skills") return "Exam skills"; if(cardType(d)==="Evaluation") return "AO3";
+  if(/\n|scenario|in the context|apply|a psychologist|a researcher|which (test|design|concept)/i.test(d.q)) return "AO2"; return "AO1"; }
+function anCard(d,ok){ const a=anDay(); a.c=a.c||{}; a.aq=a.aq||{}; a.ar=a.ar||{}; const c=a.c[d.id]=a.c[d.id]||[0,0]; c[0]++; if(ok) c[1]++;
+  const ao=anAO(d); a.aq[ao]=(a.aq[ao]||0)+1; if(ok) a.ar[ao]=(a.ar[ao]||0)+1; }
 function anGame(mode){ const a=anDay(), k=(MODES[mode]&&MODES[mode].name)||mode; a.g[k]=(a.g[k]||0)+1; }
 function anDevice(){ if(!G.anId){ G.anId=Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-3); save(); } return G.anId; }
 let anLast=0;
 function anSend(a,final){
   if(!anOn() || !a || (!a.q && !Object.keys(a.g).length)) return;
-  const body=JSON.stringify({v:1, day:a.d, dev:anDevice(), yr:store.year||"", lvl:lvlFor(G.xp), plat:matchMedia("(pointer:coarse)").matches?"phone/tablet":"computer", q:a.q, r:a.r, games:a.g, tq:a.tq, tr:a.tr});
+  const body=JSON.stringify({v:1, day:a.d, dev:anDevice(), yr:store.year||"", lvl:lvlFor(G.xp), plat:matchMedia("(pointer:coarse)").matches?"phone/tablet":"computer", q:a.q, r:a.r, games:a.g, tq:a.tq, tr:a.tr, c:a.c||{}, aq:a.aq||{}, ar:a.ar||{}});
   try{ fetch(ANALYTICS_URL,{method:"POST",mode:"no-cors",keepalive:true,headers:{"Content-Type":"text/plain"},body}); if(final) a.final=true; }catch(e){}
 }
 function anFlush(force){ if(!anOn()) return; const now=Date.now(); if(!force && now-anLast<180000) return; anLast=now; anSend(anDay(),false); }
