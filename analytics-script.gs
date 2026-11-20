@@ -1,268 +1,179 @@
-// Fount usage stats: paste ALL of this into Extensions > Apps Script, replacing what's there.
-var RAW = "Raw data";
-var SUM = "Summary";
-var FIXED = ["Date", "Device", "Year", "Level", "Device type", "Questions", "Correct", "Accuracy %", "Last update"];
+/**
+ * Mr Wakefield's Fount (A-level): anonymous usage counts.
+ *
+ * Paste this whole file into your Google Sheet: Extensions → Apps Script.
+ * Then: Deploy → New deployment → ⚙️ "Select type" → Web app → Execute as "Me" →
+ * Who has access "Anyone" → Deploy. Copy the web-app URL (ends in /exec).
+ *
+ * Updating the script later: paste the new version, save, then
+ * Deploy → Manage deployments → ✏️ Edit → Version: "New version" → Deploy.
+ * That keeps the same web address. Then run "setup" once from the editor.
+ *
+ * The revision site only ever sends totals: games started, right/wrong per
+ * mode and per card, the date, the year group, and two one-off flags
+ * ("first time this device has sent anything", "first time today").
+ * No names, no device IDs.
+ */
+
+const TABS = {
+  "Daily": ["Date", "Year", "Questions answered", "Right", "% right", "Games started", "Active students", "New students"],
+  "Games": ["Game", "Times started", "Last played"],
+  "Modes": ["Mode", "Right", "Wrong", "Answers", "% right"],
+  "Cards": ["Card #", "Topic", "Question", "Right", "Wrong", "Answers", "% right", "AO"],
+};
+const TEXT_COLS = ["Topic", "Question", "Last played", "AO"];
+const MIN_ANSWERS = 10;   // a card needs this many answers before it counts as hardest/easiest
+
+/** Makes the tabs (and updates their headings). Runs itself whenever data arrives. */
+function setup() {
+  const ss = SpreadsheetApp.getActive();
+  if (!ss.getSheetByName("Summary")) ss.insertSheet("Summary", 0);
+  Object.entries(TABS).forEach(([name, head]) => {
+    const sh = ss.getSheetByName(name) || ss.insertSheet(name);
+    sh.getRange(1, 1, 1, head.length).setValues([head]).setFontWeight("bold");
+    sh.setFrozenRows(1);
+  });
+  const old = ss.getSheetByName("Card text");   // left over from the first version
+  if (old) ss.deleteSheet(old);
+  const first = ss.getSheetByName("Sheet1");
+  if (first && first.getLastRow() === 0 && ss.getSheets().length > 1) ss.deleteSheet(first);
+}
+
+function doGet() {
+  return ContentService.createTextOutput("The Fount analytics endpoint is working.");
+}
 
 function doPost(e) {
-  var lock = LockService.getScriptLock();
+  const lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
-    var d = JSON.parse(e.postData.contents);
-    if (d.v !== 1) return out_("bad");
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(d.day)) return out_("bad");
-    if (!/^[a-z0-9]{4,20}$/.test(d.dev)) return out_("bad");
+    const p = JSON.parse((e && e.postData && e.postData.contents) || "{}");
+    if (!p || p.v !== 1) return done_();
+    setup();
+    const date = safeDate_(p.d), year = ["y12", "y13"].includes(p.y) ? p.y : "";
+    const num = v => Math.max(0, Math.min(500, Math.floor(Number(v) || 0)));   // ignore silly numbers
+    const u = p.u || {}, active = u.d === 1 ? 1 : 0, fresh = u.n === 1 ? 1 : 0;
 
-    var sh = sheet_(RAW);
-    var width = Math.max(sh.getLastColumn(), 1);
-    var head = sh.getRange(1, 1, 1, width).getValues()[0];
-    if (!head[0]) {
-      sh.getRange(1, 1, 1, FIXED.length).setValues([FIXED]).setFontWeight("bold");
-      sh.setFrozenRows(1);
-      sh.getRange("A:B").setNumberFormat("@");
-      head = FIXED.slice();
-    }
+    let right = 0, answered = 0;
+    upsert_("Modes", 1, Object.entries(p.modes || {}).slice(0, 40).map(([m, rw]) => {
+      const r = num(rw && rw[0]), w = num(rw && rw[1]); right += r; answered += r + w;
+      return { key: [clean_(m, 40)], add: [r, w] };
+    }), (row, a) => { row[1] += a[0]; row[2] += a[1]; row[3] = row[1] + row[2]; row[4] = pct_(row[1], row[3]); });
 
-    var q = num_(d.q);
-    var r = num_(d.r);
-    var cells = {};
-    cells["Date"] = d.day;
-    cells["Device"] = d.dev;
-    cells["Year"] = String(d.yr || "").slice(0, 8);
-    cells["Level"] = num_(d.lvl);
-    cells["Device type"] = String(d.plat || "").slice(0, 20);
-    cells["Questions"] = q;
-    cells["Correct"] = r;
-    cells["Accuracy %"] = q ? Math.round(r / q * 100) : "";
-    cells["Last update"] = new Date();
-    addMap_(cells, "Game: ", d.games);
-    addMap_(cells, "Topic Qs: ", d.tq);
-    addMap_(cells, "Topic right: ", d.tr);
-    addMap_(cells, "AO Qs: ", d.aq);
-    addMap_(cells, "AO right: ", d.ar);
-    cells["Cards"] = JSON.stringify(cleanCards_(d.c));
+    let games = 0;
+    upsert_("Games", 1, Object.entries(p.plays || {}).slice(0, 40).map(([g, n]) => { const k = num(n); games += k; return { key: [clean_(g, 40)], add: [k] }; }),
+      (row, a) => { row[1] += a[0]; row[2] = date; });
 
-    var keys = Object.keys(cells);
-    for (var k = 0; k < keys.length; k++) {
-      if (head.indexOf(keys[k]) < 0) {
-        head.push(keys[k]);
-        sh.getRange(1, head.length).setValue(keys[k]).setFontWeight("bold");
-      }
-    }
-    var row = [];
-    for (var h = 0; h < head.length; h++) {
-      row.push(cells.hasOwnProperty(head[h]) ? cells[head[h]] : "");
-    }
+    upsert_("Daily", 2, [{ key: [date, year], add: [answered, right, games, active, fresh] }],
+      (row, a) => { row[2] += a[0]; row[3] += a[1]; row[4] = pct_(row[3], row[2]); row[5] += a[2]; row[6] += a[3]; row[7] += a[4]; });
 
-    // find this device's row for today, searching the most recent 3000 rows
-    var last = sh.getLastRow();
-    var start = Math.max(2, last - 3000);
-    var n = last - start + 1;
-    var at = -1;
-    if (n > 0) {
-      var v = sh.getRange(start, 1, n, 2).getDisplayValues();
-      for (var i = v.length - 1; i >= 0; i--) {
-        if (v[i][0] === d.day && v[i][1] === d.dev) {
-          at = start + i;
-          break;
-        }
-      }
-    }
-    if (at > 0) {
-      sh.getRange(at, 1, 1, row.length).setValues([row]);
-    } else {
-      sh.appendRow(row);
-    }
-    return out_("ok");
+    const cards = (Array.isArray(p.cards) ? p.cards : []).slice(0, 300);
+    upsert_("Cards", 1, cards.map(c => ({ key: [Math.floor(Number(c[0]) || 0)], add: [num(c[1]), num(c[2])], topic: clean_(c[3], 40), q: clean_(c[4], 120), ao: clean_(c[5], 20) }))
+      .filter(c => c.key[0] > 0),
+      (row, a, c) => { row[1] = c.topic || row[1]; row[2] = c.q || row[2]; row[3] += a[0]; row[4] += a[1]; row[5] = row[3] + row[4]; row[6] = pct_(row[3], row[5]); row[7] = c.ao || row[7]; });
+
+    buildSummary_();
   } catch (err) {
-    return out_("error");
+    // bad data is ignored
   } finally {
     lock.releaseLock();
   }
+  return done_();
 }
 
-function cleanCards_(c) {
-  var out = {};
-  if (!c) return out;
-  Object.keys(c).slice(0, 2000).forEach(function (id) {
-    if (/^\d{1,6}$/.test(id) && c[id] && c[id].length === 2) out[id] = [num_(c[id][0]), num_(c[id][1])];
-  });
-  return out;
-}
-
-function addMap_(cells, prefix, map) {
-  if (!map) return;
-  var keys = Object.keys(map);
-  for (var i = 0; i < keys.length; i++) {
-    cells[prefix + clean_(keys[i])] = num_(map[keys[i]]);
-  }
-}
-
-var SITE = "https://mrstwakefield.github.io/Mr-Wakefields-Fount-of-Wisdom-Knowledge/index.html";
-var TOPIC_NAMES = {"RM": "Research methods", "Issues and Debates part I": "Issues and debates", "Psychopathology": "Clinical psychology",
-  "Forensic Psychology": "Forensic", "Social Influence": "Social influence"};
-
-function refreshSummary() {
-  var raw = sheet_(RAW);
-  var sum = sheet_(SUM);
-  var data = raw.getDataRange().getValues();
-  sum.clear();
-  if (data.length < 2) { sum.getRange(1, 1).setValue("No data yet."); return; }
-  var head = data[0];
-  var rows = data.slice(1).filter(function (x) { return x[0]; });
-  var cQ = head.indexOf("Questions"), cC = head.indexOf("Correct"), cDev = head.indexOf("Device");
-  var cCards = head.indexOf("Cards");
-  var tz = Session.getScriptTimeZone();
-  var todayStr = Utilities.formatDate(new Date(), tz, "yyyy-MM-dd");
-  var weekAgo = Utilities.formatDate(new Date(Date.now() - 6 * 864e5), tz, "yyyy-MM-dd");
-  var real = rows.filter(function (x) { return String(x[cDev]) !== "testrow1"; });
-
-  // ---- headline numbers
-  var devs = {}, perDay = {}, q = 0, c = 0, games = {}, active = 0, week = 0;
-  real.forEach(function (x) {
-    var dy = String(x[0]);
-    devs[x[cDev]] = 1;
-    perDay[dy] = perDay[dy] || { n: 0, q: 0 };
-    perDay[dy].n++; perDay[dy].q += Number(x[cQ]) || 0;
-    q += Number(x[cQ]) || 0; c += Number(x[cC]) || 0;
-    if (dy === todayStr) active++;
-    if (dy >= weekAgo && dy <= todayStr) week++;
-  });
-  head.forEach(function (name, i) {
-    if (String(name).indexOf("Game: ") !== 0) return;
-    var n = 0; real.forEach(function (x) { n += Number(x[i]) || 0; });
-    if (n) games[String(name).slice(6)] = n;
-  });
-  var busiest = Object.keys(perDay).sort(function (a, b) { return perDay[b].n - perDay[a].n || perDay[b].q - perDay[a].q; })[0];
-  var topGame = Object.keys(games).sort(function (a, b) { return games[b] - games[a]; })[0];
-
-  var out = [];
-  out.push(["Fount usage stats (anonymous)", "", "", "", "Updated " + new Date().toLocaleString("en-GB")]);
-  out.push(["", "", "", "", ""]);
-  out.push(["Headline numbers", "", "", "", ""]);
-  out.push(["Students (all time)", Object.keys(devs).length, "", "", ""]);
-  out.push(["Active today", active, "", "", ""]);
-  out.push(["Student-days in the last 7 days", week, "", "", ""]);
-  out.push(["Questions answered", q, "", "", ""]);
-  out.push(["% right overall", q ? Math.round(c / q * 100) + "%" : "", "", "", ""]);
-  out.push(["Busiest day", busiest ? busiest + " (" + perDay[busiest].n + " students)" : "", "", "", ""]);
-  out.push(["Most played game", topGame ? topGame + " (" + games[topGame] + " times)" : "", "", "", ""]);
-
-  // ---- hardest and easiest cards (answered at least 10 times)
-  var cards = {};
-  if (cCards >= 0) real.forEach(function (x) {
-    var m = {}; try { m = JSON.parse(x[cCards] || "{}"); } catch (e) {}
-    Object.keys(m).forEach(function (id) {
-      var v = m[id];
-      cards[id] = cards[id] || [0, 0];
-      cards[id][0] += Number(v[0]) || 0;
-      cards[id][1] += Number(v[1]) || 0;
-    });
-  });
-  var list = [];
-  Object.keys(cards).forEach(function (id) {
-    var n = cards[id][0];
-    if (n >= 10) list.push([id, n, Math.round(cards[id][1] / n * 100)]);
-  });
-  var text = cardText_();
-  var cardRow = function (r) { var t = text[r[0]] || ["", ""]; return [Number(r[0]), TOPIC_NAMES[t[0]] || t[0], t[1], r[1], r[2] + "%"]; };
-  out.push(["", "", "", "", ""]);
-  out.push(["😬 Hardest 10 cards", "Topic", "Question", "Answers", "% right"]);
-  list.slice().sort(function (a, b) { return a[2] - b[2] || b[1] - a[1]; }).slice(0, 10).forEach(function (r) { out.push(cardRow(r)); });
-  if (!list.length) out.push(["No card has been answered 10 times yet.", "", "", "", ""]);
-  out.push(["", "", "", "", ""]);
-  out.push(["😎 Easiest 10 cards", "Topic", "Question", "Answers", "% right"]);
-  list.slice().sort(function (a, b) { return b[2] - a[2] || b[1] - a[1]; }).slice(0, 10).forEach(function (r) { out.push(cardRow(r)); });
-  if (!list.length) out.push(["No card has been answered 10 times yet.", "", "", "", ""]);
-
-  // ---- topics and assessment objectives, weakest first
-  out.push(["", "", "", "", ""]);
-  out.push(["📚 Topics, weakest first", "Answers", "% right", "", ""]);
-  pairs_(head, real, "Topic Qs: ", "Topic right: ").forEach(function (r) { out.push([r[0], r[1], r[2] + "%", "", ""]); });
-  out.push(["", "", "", "", ""]);
-  out.push(["🎯 Assessment objectives, weakest first", "Answers", "% right", "", ""]);
-  pairs_(head, real, "AO Qs: ", "AO right: ").forEach(function (r) { out.push([r[0], r[1], r[2] + "%", "", ""]); });
-
-  // ---- extras: daily use
-  out.push(["", "", "", "", ""]);
-  out.push(["Daily use (last 14 days)", "Students", "Questions", "", ""]);
-  Object.keys(perDay).sort().reverse().slice(0, 14).forEach(function (dy) { out.push([dy, perDay[dy].n, perDay[dy].q, "", ""]); });
-
-  sum.getRange(1, 1, out.length, 5).setValues(out);
-  sum.getRange(1, 1).setFontWeight("bold").setFontSize(14);
-  for (var i = 0; i < out.length; i++) {
-    if (/^(Headline|😬|😎|📚|🎯|Daily use)/.test(out[i][0])) {
-      sum.getRange(i + 1, 1, 1, 5).setFontWeight("bold").setBackground("#E3E8F2");
-    }
-  }
-  sum.setColumnWidth(1, 260); sum.setColumnWidth(3, 420);
-  sum.getRange(1, 3, out.length, 1).setWrap(true);
-}
-
-// answers and % right for a family of columns, weakest first
-function pairs_(head, rows, qPrefix, rPrefix) {
-  var res = [];
-  head.forEach(function (name, i) {
-    if (String(name).indexOf(qPrefix) !== 0) return;
-    var key = String(name).slice(qPrefix.length), ri = head.indexOf(rPrefix + key), q = 0, c = 0;
-    rows.forEach(function (x) { q += Number(x[i]) || 0; if (ri >= 0) c += Number(x[ri]) || 0; });
-    if (q > 0) res.push([key, q, Math.round(c / q * 100)]);
-  });
-  return res.sort(function (a, b) { return a[2] - b[2]; });
-}
-
-// question text for each card, fetched from the public website once a day
-function cardText_() {
-  var cache = sheet_("Card text");
-  var stamp = cache.getRange(1, 1).getValue();
-  if (!(stamp instanceof Date) || Date.now() - stamp.getTime() > 864e5) {
-    try {
-      var html = UrlFetchApp.fetch(SITE, { muteHttpExceptions: true }).getContentText();
-      var m = html.match(/const DATA = (\[[\s\S]*?\]);\n/);
-      if (m) {
-        var rows = JSON.parse(m[1]).map(function (d) { return [d.id, d.t, String(d.q).slice(0, 300)]; });
-        cache.clear();
-        cache.getRange(1, 1).setValue(new Date());
-        cache.getRange(2, 1, rows.length, 3).setValues(rows);
-      }
-    } catch (e) {}
-  }
-  var map = {}, n = cache.getLastRow();
-  if (n > 1) cache.getRange(2, 1, n - 1, 3).getValues().forEach(function (r) { map[String(r[0])] = [r[1], r[2]]; });
-  return map;
-}
-
-function totals_(rows, cQ, cC) {
-  var q = 0, c = 0;
-  rows.forEach(function (x) { q += Number(x[cQ]) || 0; c += Number(x[cC]) || 0; });
-  return { q: q, acc: q ? Math.round(c / q * 100) : "" };
-}
-
-function setup() {
-  sheet_(RAW);
-  sheet_(SUM);
-  ScriptApp.getProjectTriggers().forEach(function (t) { ScriptApp.deleteTrigger(t); });
-  ScriptApp.newTrigger("refreshSummary").timeBased().everyHours(1).create();
-  refreshSummary();
-}
+/** The Summary tab: headline numbers, hardest/easiest cards, weakest topics and AOs. Rebuilt on every update. */
+function buildSummary() { setup(); buildSummary_(); }
+/** The first version ran this every hour; keeping the name means that timer just refreshes the Summary. */
+function refreshSummary() { buildSummary(); }
 
 function onOpen() {
-  SpreadsheetApp.getUi().createMenu("Fount stats").addItem("Refresh summary", "refreshSummary").addToUi();
+  SpreadsheetApp.getUi().createMenu("Fount stats").addItem("Refresh summary", "buildSummary").addToUi();
+}
+function buildSummary_() {
+  const ss = SpreadsheetApp.getActive(), sh = ss.getSheetByName("Summary");
+  const rows = name => { const s = ss.getSheetByName(name), n = s.getLastRow(); return n > 1 ? s.getRange(2, 1, n - 1, TABS[name].length).getValues() : []; };
+  const daily = rows("Daily"), games = rows("Games"), cards = rows("Cards");
+  const today = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
+  const dayKey = v => v instanceof Date ? Utilities.formatDate(v, Session.getScriptTimeZone(), "yyyy-MM-dd") : String(v);
+  const sum = (arr, i, f) => arr.filter(f || (() => true)).reduce((t, r) => t + (Number(r[i]) || 0), 0);
+  const qs = sum(daily, 2), rt = sum(daily, 3);
+  const week = []; for (let i = 0; i < 7; i++) { const d = new Date(); d.setDate(d.getDate() - i); week.push(Utilities.formatDate(d, Session.getScriptTimeZone(), "yyyy-MM-dd")); }
+  const byDay = {}; daily.forEach(r => { const k = dayKey(r[0]); byDay[k] = (byDay[k] || 0) + (Number(r[6]) || 0); });
+  const busiest = Object.entries(byDay).sort((a, b) => b[1] - a[1])[0];
+  const topGame = games.slice().sort((a, b) => b[1] - a[1])[0];
+
+  const enough = cards.filter(r => Number(r[5]) >= MIN_ANSWERS);
+  const cardRow = r => ["#" + r[0], r[1], r[2], r[5], r[6] + "%"];
+  const hardest = enough.slice().sort((a, b) => a[6] - b[6] || b[5] - a[5]).slice(0, 10).map(cardRow);
+  const easiest = enough.slice().sort((a, b) => b[6] - a[6] || b[5] - a[5]).slice(0, 10).map(cardRow);
+  const group = i => { const g = {}; cards.forEach(r => { const k = r[i] || "(unknown)"; g[k] = g[k] || [0, 0]; g[k][0] += Number(r[3]) || 0; g[k][1] += Number(r[5]) || 0; });
+    return Object.entries(g).filter(([, v]) => v[1] > 0).map(([k, v]) => [k, v[1], pct_(v[0], v[1]) + "%", pct_(v[0], v[1])]).sort((a, b) => a[3] - b[3]).map(r => r.slice(0, 3)); };
+  const topics = group(1), aos = group(7);
+
+  const out = [];   // [row, col, values[][], bold?]
+  const put = (r, c, vals, bold) => out.push([r, c, vals, bold]);
+  put(1, 1, [["📊 Fount summary", "Updated " + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "d MMM yyyy, HH:mm")]], true);
+  put(3, 1, [["Headline numbers", ""]], true);
+  put(4, 1, [
+    ["Students (all time)", sum(daily, 7)],
+    ["Active today", sum(daily, 6, r => dayKey(r[0]) === today)],
+    ["Student-days, last 7 days", sum(daily, 6, r => week.includes(dayKey(r[0])))],
+    ["Questions answered", qs],
+    ["% right overall", pct_(rt, qs) + "%"],
+    ["Busiest day", busiest ? busiest[0] + " (" + busiest[1] + " students)" : "–"],
+    ["Most played game", topGame ? topGame[0] + " (" + topGame[1] + ")" : "–"],
+  ]);
+  const table = (r, c, title, head, body, empty) => { put(r, c, [[title].concat(new Array(head.length - 1).fill(""))], true); put(r + 1, c, [head], true);
+    if (body.length) put(r + 2, c, body); else put(r + 2, c, [[empty].concat(new Array(head.length - 1).fill(""))]); return r + 3 + Math.max(1, body.length); };
+  let r = 13;
+  r = table(r, 1, "😬 Hardest cards (at least " + MIN_ANSWERS + " answers)", ["Card", "Topic", "Question", "Answers", "% right"], hardest, "Not enough answers yet");
+  r = table(r, 1, "😎 Easiest cards (at least " + MIN_ANSWERS + " answers)", ["Card", "Topic", "Question", "Answers", "% right"], easiest, "Not enough answers yet");
+  let r2 = table(3, 4, "📚 Topics, weakest first", ["Topic", "Answers", "% right"], topics, "No answers yet");
+  table(r2, 4, "🎯 Assessment objectives, weakest first", ["AO", "Answers", "% right"], aos, "No answers yet");
+
+  sh.clear();
+  out.forEach(([row, col, vals, bold]) => { const g = sh.getRange(row, col, vals.length, vals[0].length); g.setValues(vals); if (bold) g.setFontWeight("bold"); });
+  sh.getRange(1, 1).setFontSize(16);
+  sh.setColumnWidth(1, 220); sh.setColumnWidth(3, 380); sh.setColumnWidth(4, 230);
 }
 
-function sheet_(name) {
-  var ss = SpreadsheetApp.getActive();
-  return ss.getSheetByName(name) || ss.insertSheet(name);
+/** Add to existing rows (matched on the first `keyCols` columns) or append new ones, in one write. */
+function upsert_(tab, keyCols, items, apply) {
+  if (!items.length) return;
+  const sh = SpreadsheetApp.getActive().getSheetByName(tab), width = TABS[tab].length;
+  const last = sh.getLastRow(), data = last > 1 ? sh.getRange(2, 1, last - 1, width).getValues() : [];
+  data.forEach(row => { for (let j = keyCols; j < width; j++) if (row[j] === "" && !TEXT_COLS.includes(TABS[tab][j])) row[j] = 0; });   // new columns on old rows
+  const index = {};
+  data.forEach((row, i) => { index[keyOf_(row.slice(0, keyCols))] = i; });
+  items.forEach(it => {
+    let i = index[keyOf_(it.key)];
+    if (i === undefined) {
+      const row = new Array(width).fill(0);
+      it.key.forEach((v, j) => row[j] = v);
+      for (let j = keyCols; j < width; j++) if (TEXT_COLS.includes(TABS[tab][j])) row[j] = "";
+      data.push(row); i = index[keyOf_(it.key)] = data.length - 1;
+    }
+    apply(data[i], it.add, it);
+  });
+  if (data.length) sh.getRange(2, 1, data.length, width).setValues(data);
 }
 
-function num_(v) {
-  v = Number(v);
-  return isFinite(v) && v >= 0 && v < 10000000 ? Math.round(v) : 0;
+function keyOf_(vals) {
+  return vals.map(v => v instanceof Date ? Utilities.formatDate(v, Session.getScriptTimeZone(), "yyyy-MM-dd") : String(v)).join("|");
 }
+function safeDate_(d) { return /^\d{4}-\d{2}-\d{2}$/.test(String(d)) ? String(d) : Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd"); }
+function pct_(r, n) { return n ? Math.round(r / n * 100) : 0; }
+/** Plain text only: stops anything that looks like a formula being stored. */
+function clean_(s, max) { s = String(s == null ? "" : s).replace(/[\r\n\t]+/g, " ").slice(0, max); return /^[=+\-@]/.test(s) ? "'" + s : s; }
+function done_() { return ContentService.createTextOutput("ok"); }
 
-function clean_(s) {
-  return String(s).replace(/[^\w &'-]/g, "").slice(0, 40);
-}
-
-function out_(s) {
-  return ContentService.createTextOutput(s);
+/** Run from the editor to clear all the data (keeps the tabs and headings). */
+function wipeData() {
+  const ss = SpreadsheetApp.getActive();
+  ["Daily", "Games", "Modes", "Cards"].forEach(name => {
+    const sh = ss.getSheetByName(name);
+    if (sh && sh.getLastRow() > 1) sh.deleteRows(2, sh.getLastRow() - 1);
+  });
+  const summary = ss.getSheetByName("Summary");
+  if (summary) summary.clear();
 }
