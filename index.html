@@ -4823,6 +4823,10 @@ async function shareProgressLink(){
 function wireBackup(){
   const msg=$("#saveMsg"); if(!msg) return;
   const at=$("#anToggle"); if(at) at.onchange=()=>{ store.anOff=!at.checked; save(); };
+  const atb=$("#anTest"); if(atb) atb.onclick=async()=>{ const m=$("#anTestMsg");
+    try{ await fetch(ANALYTICS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify({v:1,day:today(),dev:"testrow1",yr:"test",lvl:lvlFor(G.xp),plat:"test",q:1,r:1,games:{"Test row":1},tq:{},tr:{}})});
+      m.className="savemsg ok"; m.textContent="Sent ✓ Check the Raw data tab in a few seconds. Nothing there? Check Deploy → Manage deployments: 'Who has access' must be Anyone, and deploy a new version if you changed the code."; }
+    catch(e){ m.className="savemsg no"; m.textContent="It couldn't be sent: this device may be offline or blocking script.google.com."; } };
   $("#qrSend").onclick=showSendQR; $("#qrScan").onclick=startScanQR; $("#shareLink").onclick=shareProgressLink;
   $("#copySave").onclick=async()=>{
     const code=await makeSaveCode();
@@ -4931,7 +4935,8 @@ function renderTrophies(){
       <p id="repMsg" class="savemsg" aria-live="polite"></p></div>
     </section>
 <section data-sec="saves" class="ts-backup">
-    ${ANALYTICS_URL&&!DEMO?`<div class="box"><h3>📊 Anonymous usage stats</h3><p class="muted" style="margin:0 0 10px;font-size:15px">To help Mr W improve the site, it shares how much it's used: questions answered, games played and topics, with a random device code. Never your name or answers.</p><label class="chk"><input type="checkbox" id="anToggle" ${store.anOff?"":"checked"}> Share anonymous usage stats</label></div>`:""}
+    ${ANALYTICS_URL&&isTeacher()?`<div class="box"><h3>📊 Usage stats check</h3><p class="muted" style="margin:0 0 10px;font-size:15px">Teacher and demo mode never send stats. Use this to check the Google Sheet is connected: it sends one row marked as a test (device <b>testrow1</b>).</p><button class="btn" id="anTest">📊 Send a test row</button> <span class="savemsg" id="anTestMsg" aria-live="polite"></span></div>`:""}
+    ${ANALYTICS_URL&&!DEMO&&!isTeacher()?`<div class="box"><h3>📊 Anonymous usage stats</h3><p class="muted" style="margin:0 0 10px;font-size:15px">To help Mr W improve the site, it shares how much it's used: questions answered, games played and topics, with a random device code. Never your name or answers.</p><label class="chk"><input type="checkbox" id="anToggle" ${store.anOff?"":"checked"}> Share anonymous usage stats</label></div>`:""}
     <div class="box" id="backupBox"><h3>Back up or move your progress <small>Last backed up: ${G.lastBackup?G.lastBackup.split("-").reverse().join("/"):"never"}</small></h3>
       <p class="muted" style="margin:0 0 12px">Your progress is saved in this browser only, so clearing your browser data wipes it. Copy your save code and keep it safe, e.g. email it to yourself. To carry on on another device (school PC, phone, laptop), paste the code there. The code holds your progress only: no name, no login, no personal data.</p>
       <div class="btnrow"><button class="btn" id="copySave">📋 Copy my save code</button><button class="btn ghost" id="dlSave">💾 Download backup file</button></div>
