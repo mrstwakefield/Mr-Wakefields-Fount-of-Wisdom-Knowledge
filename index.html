@@ -944,6 +944,23 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 :root[data-skin="petpigeon"]{--paper:#DDE3EC;--card:#FFFFFF;--ink:#1F2533;--muted:#4E5870;--line:#B7C1D3;--soft:#E6F1EC;--good:#1C7F57;--good-bg:#D9F2E4;--warn:#7A3FA0;--warn-bg:#EEE3F7;color-scheme:light}
 :root[data-skin="petpigeon"] body{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22140%22%20height%3D%22140%22%20opacity%3D%22.45%22%3E%3Ctext%20x%3D%2210%22%20y%3D%2244%22%20font-size%3D%2230%22%3E%F0%9F%90%A6%3C/text%3E%3Ctext%20x%3D%2278%22%20y%3D%22112%22%20font-size%3D%2230%22%3E%F0%9F%8C%BB%3C/text%3E%3Ctext%20x%3D%2284%22%20y%3D%2244%22%20font-size%3D%2218%22%3E%F0%9F%94%98%3C/text%3E%3Ctext%20x%3D%2218%22%20y%3D%22108%22%20font-size%3D%2218%22%3E%F0%9F%8C%BB%3C/text%3E%3C/svg%3E");background-size:140px 140px}
 :root[data-skin="petpigeon"] .xpbar i{background:linear-gradient(90deg,#5E9C8A,#8A6FB0,#5E9C8A)}
+/* Skinner's pigeons playing ping-pong, under the title */
+#pongFx{display:none}
+:root[data-skin="petpigeon"] #pongFx{display:block;position:relative;width:min(340px,100%);height:104px;margin:12px 0 0;pointer-events:none;background:rgba(255,255,255,.75);border:1px solid var(--line);border-radius:18px}
+#pongFx .pt{position:absolute;left:19%;right:19%;bottom:12px;height:9px;background:#2E7D5B;border-top:2px solid #fff;border-radius:2px;box-shadow:0 5px 0 -1px #1F2533}
+#pongFx .pt::after{content:"";position:absolute;left:50%;bottom:9px;width:2px;height:14px;margin-left:-1px;background:#1F2533}
+#pongFx .pp{position:absolute;bottom:4px;width:84px;height:84px;transform-origin:50% 90%}
+#pongFx .pp svg{width:100%;height:100%;display:block}
+#pongFx .pl{left:-6px;animation:pongHitL 1.6s ease-in-out infinite}
+#pongFx .pr{right:-6px;animation:pongHitR 1.6s ease-in-out infinite}
+#pongFx .pl svg{transform:scaleX(-1)}
+#pongFx .bx{position:absolute;left:20%;bottom:0;width:10px;height:10px;animation:pongX .8s linear infinite alternate}
+#pongFx .bx i{position:absolute;left:0;bottom:52px;width:10px;height:10px;border-radius:50%;background:#FF8A3D;box-shadow:inset -2px -2px 0 rgba(0,0,0,.18);animation:pongY .8s linear infinite alternate}
+@keyframes pongX{to{left:calc(80% - 10px)}}
+@keyframes pongY{0%{bottom:52px}30%{bottom:80px}72%{bottom:23px}100%{bottom:50px}}
+@keyframes pongHitL{0%,100%{transform:rotate(-14deg)}12%{transform:rotate(4deg)}30%,85%{transform:rotate(0)}}
+@keyframes pongHitR{0%,35%{transform:rotate(0)}50%{transform:rotate(14deg)}62%{transform:rotate(-4deg)}80%{transform:rotate(0)}}
+@media (prefers-reduced-motion:reduce){#pongFx .pl,#pongFx .pr,#pongFx .bx,#pongFx .bx i{animation:none}#pongFx .bx{left:40%}}
 :root[data-skin="petmonkey"]{--paper:#F3D9B8;--card:#FFF8EE;--ink:#3B2414;--muted:#6E4A2C;--line:#D8B48A;--soft:#F9E7CC;--good:#2E7D32;--good-bg:#DDF0D8;--warn:#A4471A;--warn-bg:#FBE1CF;color-scheme:light}
 :root[data-skin="petmonkey"] body{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22140%22%20height%3D%22140%22%20opacity%3D%22.45%22%3E%3Ctext%20x%3D%2210%22%20y%3D%2244%22%20font-size%3D%2230%22%3E%F0%9F%90%92%3C/text%3E%3Ctext%20x%3D%2278%22%20y%3D%22112%22%20font-size%3D%2230%22%3E%F0%9F%8D%8C%3C/text%3E%3Ctext%20x%3D%2284%22%20y%3D%2244%22%20font-size%3D%2218%22%3E%F0%9F%A7%B8%3C/text%3E%3Ctext%20x%3D%2218%22%20y%3D%22108%22%20font-size%3D%2218%22%3E%F0%9F%8D%8C%3C/text%3E%3C/svg%3E");background-size:140px 140px}
 :root[data-skin="petmonkey"] .xpbar i{background:linear-gradient(90deg,#A86F45,#E8B04A,#FFE066)}
@@ -1220,7 +1237,7 @@ const SKINS=[
   {id:"labcoat", name:"Lab Coat", lvl:88, sw:["#F4FAFA","#0F766E"], desc:"Clinical white and teal 🥼"},
   {id:"results", name:"Results Day", lvl:92, sw:["#E8D5B5","#B8860B"], desc:"Brown envelope, gold grades ✉️"},
   {id:"school", name:"The School", lvl:96, sw:["#E3C800","#345EE4"], desc:"Yellow cladding, blue letters 🏫"},
-  {id:"petpigeon", name:"Skinner's Pigeon", lvl:20, sw:["#DDE3EC","#5E9C8A"], desc:"Unlocks with Skinner's pigeon: reinforcement, but make it fashion 🐦"},
+  {id:"petpigeon", name:"Skinner's Pigeon", lvl:20, sw:["#DDE3EC","#5E9C8A"], desc:"Unlocks with Skinner's pigeon: reinforcement, but make it fashion. Skinner really did teach two pigeons to play ping-pong 🐦🏓"},
   {id:"petmonkey", name:"Harlow's Monkey", lvl:40, sw:["#F3D9B8","#A86F45"], desc:"Unlocks with Harlow's monkey: soft, cosy, contact comfort 🐒"},
   {id:"petgoose", name:"Lorenz's Goose", lvl:60, sw:["#BFE6F2","#F29A2E"], desc:"Unlocks with Lorenz's goose: follow the first thing you see 🐣"},
   {id:"petdog", name:"Pavlov's Dog", lvl:80, sw:["#F6D9A0","#C0392B"], desc:"Unlocks with Pavlov's dog: ding ding, you're conditioned 🔔"},
@@ -1277,7 +1294,9 @@ function fountStart(){ if(fountFx.c) return; const c=document.createElement("can
   document.addEventListener("visibilitychange",fountFx.vis=()=>{ if(document.hidden){ cancelAnimationFrame(fountFx.raf); } else if(fountFx.c){ cancelAnimationFrame(fountFx.raf); draw(); } });
 }
 function fountStop(){ if(!fountFx.c) return; cancelAnimationFrame(fountFx.raf); fountFx.c.remove(); fountFx.c=null; fountFx.p=[]; removeEventListener("resize",fountFx.size); document.removeEventListener("visibilitychange",fountFx.vis); }
-function applySkin(id){ if(id==="fount") setTimeout(fountStart,0); else fountStop(); if(id==="arcade8" && !document.getElementById("pixelCss")){ const l=document.createElement("link"); l.id="pixelCss"; l.rel="stylesheet"; l.href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"; document.head.appendChild(l); } const r=document.documentElement; r.removeAttribute("data-skin"); r.removeAttribute("data-theme"); if(id==="light"||id==="dark") r.setAttribute("data-theme",id); else if(id && id!=="auto") r.setAttribute("data-skin",id); }
+function pongMake(){ if(document.getElementById("pongFx")) return; const top=document.querySelector(".top"); if(!top) return; const d=document.createElement("div"); d.id="pongFx"; d.setAttribute("aria-hidden","true");
+  const bird=()=>PET_ART.pigeon(3,"happy",84); d.innerHTML=`<div class="pt"></div><div class="pp pl">${bird()}</div><div class="pp pr">${bird()}</div><div class="bx"><i></i></div>`; const h=top.querySelector("h1"); h?h.after(d):top.appendChild(d); }
+function applySkin(id){ if(id==="fount") setTimeout(fountStart,0); else fountStop(); if(id==="petpigeon") setTimeout(pongMake,0); if(id==="arcade8" && !document.getElementById("pixelCss")){ const l=document.createElement("link"); l.id="pixelCss"; l.rel="stylesheet"; l.href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"; document.head.appendChild(l); } const r=document.documentElement; r.removeAttribute("data-skin"); r.removeAttribute("data-theme"); if(id==="light"||id==="dark") r.setAttribute("data-theme",id); else if(id && id!=="auto") r.setAttribute("data-skin",id); }
 if(store.theme==="sunset"){ store.theme="tamworth"; save(); }
 if(store.theme==="graph"){ store.theme="slime"; save(); }
 if(store.theme==="postit"||store.theme==="highlighter"){ store.theme=store.theme==="postit"?"lanyard":"senior"; save(); } // replaced by the lanyard themes // Sunset became Tamworth Castle
