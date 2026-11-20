@@ -1041,6 +1041,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 #fx-petgoose .gw{position:absolute;bottom:4px;left:-260px;display:flex;align-items:flex-end;gap:0;animation:gooseWalk 12s linear infinite}
 #fx-petgoose .gg{width:58px;height:58px;margin-right:-12px;animation:waddle .45s ease-in-out infinite alternate}
 #fx-petgoose .gg:nth-child(2){animation-delay:-.15s}#fx-petgoose .gg:nth-child(3){animation-delay:-.3s}#fx-petgoose .gg:nth-child(4){animation-delay:-.1s}
+#fx-petgoose .gg svg{transform:scaleX(-1)}
 #fx-petgoose .lz{width:48px;height:88px;margin-left:8px}
 #fx-petgoose .lz .l1,#fx-petgoose .lz .l2{transform-box:view-box;transform-origin:23px 58px;animation:lzStep .45s ease-in-out infinite alternate}
 #fx-petgoose .lz .l2{animation-direction:alternate-reverse}
@@ -1065,11 +1066,12 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 #fx-petcat .lv{left:96px;bottom:12px;width:5px;height:32px;background:#3A3A3A;border-radius:3px;transform-origin:50% 100%;z-index:2;animation:catLever 8s ease-in-out infinite}
 #fx-petcat .lv::before{content:"";position:absolute;top:-6px;left:-3px;width:11px;height:11px;border-radius:50%;background:#C0392B}
 #fx-petcat .ct{left:20px;bottom:10px;width:66px;height:66px;z-index:2;animation:catOut 8s ease-in-out infinite}
+#fx-petcat .ct{transform:scaleX(-1)}
 #fx-petcat .ct svg{animation:catPaw 8s ease-in-out infinite}
 #fx-petcat .fs{right:16px;bottom:12px;font-size:28px;animation:catFish 8s infinite}
 @keyframes catDoor{0%,40%{transform:none}46%,86%{transform:translateY(-80px)}93%,100%{transform:none}}
 @keyframes catLever{0%,30%{transform:rotate(-22deg)}36%,86%{transform:rotate(26deg)}93%,100%{transform:rotate(-22deg)}}
-@keyframes catPaw{0%,26%,40%,100%{transform:none}30%,34%{transform:translateX(10px) rotate(8deg)}}
+@keyframes catPaw{0%,26%,40%,100%{transform:none}30%,34%{transform:translateX(-10px) rotate(-8deg)}}
 @keyframes catOut{0%,46%{left:20px;opacity:1}60%,84%{left:calc(100% - 112px);opacity:1}88%{left:calc(100% - 112px);opacity:0}90%{left:20px;opacity:0}96%,100%{left:20px;opacity:1}}
 @keyframes catFish{0%,62%{opacity:1;transform:none}66%{opacity:0;transform:scale(.4)}92%{opacity:0}97%,100%{opacity:1;transform:none}}
 /* Darwin's peacock */
