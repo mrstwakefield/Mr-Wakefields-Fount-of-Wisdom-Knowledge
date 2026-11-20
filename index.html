@@ -1136,7 +1136,7 @@ if(DEMO) try{ localStorage.removeItem(KEY); }catch(e){}
 let store = {p:{}, sel:TOPICS.map(t=>t.key), all:TOPICS.map(t=>t.key)};
 try{ const s = JSON.parse(localStorage.getItem(KEY)||"null"); if(s && s.p){ store.p = s.p; if(Array.isArray(s.sel)){ const seen=new Set(Array.isArray(s.all)?s.all:s.sel.concat(["Social Influence","Memory","Attachment","Psychopathology","Approaches","Biopsychology","RM","Issues and Debates part I"])); store.sel = [...new Set(s.sel.map(k=>k.startsWith("Issues and Debates")?"Issues and Debates part I":k))].filter(k=>TMAP[k]).concat(TOPICS.map(t=>t.key).filter(k=>!seen.has(k))); } } }catch(e){}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} }
-try{ const s0=JSON.parse(localStorage.getItem(KEY)||"null"); if(s0) ["sr","theme","gapMode","srMig","a11y","reportName","trophyTab","cardStyle","seenNew","lbOn","toured","year"].forEach(k=>{ if(s0[k]!==undefined) store[k]=s0[k]; }); }catch(e){}
+try{ const s0=JSON.parse(localStorage.getItem(KEY)||"null"); if(s0) ["sr","theme","gapMode","srMig","a11y","reportName","trophyTab","cardStyle","seenNew","lbOn","toured","year","anOff"].forEach(k=>{ if(s0[k]!==undefined) store[k]=s0[k]; }); }catch(e){}
 const status = id => store.p[id] || "";
 
 /* ---------- spaced repetition: Got it → back in 1, 3, 7, 21, then 60 days ---------- */
@@ -1717,7 +1717,7 @@ function cardType(d){
   if(/\(\d{4}\)|stud(y|ies)|research|found|find|procedure|sample|aim|conclu|investigat|experiment/i.test(d.q)) return "Studies";
   return "Concepts";
 }
-function recAcc(id, ok){ const d=BY_ID[id]; if(!d) return; const s0=mastery(d.t).s; G.rec=G.rec||{}; G.rec[d.t]=((G.rec[d.t]||"")+(ok?"1":"0")).slice(-MASTERY_WIN); recAcc2(id,ok,d); const s1=mastery(d.t).s;
+function recAcc(id, ok){ const d=BY_ID[id]; if(!d) return; anTopic(d.t, ok); const s0=mastery(d.t).s; G.rec=G.rec||{}; G.rec[d.t]=((G.rec[d.t]||"")+(ok?"1":"0")).slice(-MASTERY_WIN); recAcc2(id,ok,d); const s1=mastery(d.t).s;
   if(s1>s0){ const t=TMAP[d.t]; setTimeout(()=>{ toast("⭐",`${t.name}: ${s1} star${s1>1?"s":""}!`, s1===3?"Topic mastered. Keep it topped up.":"See what's needed for the next star in Progress."); sfx("badge"); checkBadges(); if(typeof renderChips==="function") renderChips(); },500); } }
 const MASTERY_WIN=30;
 function mastery(key){
@@ -1896,7 +1896,7 @@ function goalMet(){
 function answer({ok, el, mode, gold, boost}){
   checkStreak();
   const t=today();
-  G.st.cards++; if(ok){ G.st.right++; const pt=petType(); if(pt!=="rat"){ G.pg=G.pg||{}; G.pg[pt]=(G.pg[pt]||0)+1; } } boboTrack(ok); hansTrack(ok);
+  anAnswer(ok); G.st.cards++; if(ok){ G.st.right++; const pt=petType(); if(pt!=="rat"){ G.pg=G.pg||{}; G.pg[pt]=(G.pg[pt]||0)+1; } } boboTrack(ok); hansTrack(ok);
   if(ok){ combo++; if(combo>G.st.combo) G.st.combo=combo; } else { if(combo===7) G.sec.miller=1; combo=0; }
   const base = mode==="quiz" ? (ok?15:4) : mode==="arcade" ? (ok?6:1) : (ok?10:3);
   let mult = ok ? comboMult() : 1;
@@ -3739,11 +3739,29 @@ function smartNext(){
   if(pl.weakN<10) return {icon:"🎯", label:`10 cards on ${TMAP[pl.weak].name}, your weakest topic`, run:()=>{ store.sel=[pl.weak]; save(); renderChips(); goTab("cards"); setFilter("all"); }};
   return {icon:"⚡", label:"A 60-second Blitz on your topics", run:()=>{ goTab("arcade"); startArc("blitz"); }};
 }
+/* ---- 📊 anonymous usage stats, sent to Mr W's Google Sheet: no names, one row per device per day ---- */
+const ANALYTICS_URL="";   // paste the Google Apps Script web app URL here (ends in /exec)
+const anOn=()=>!!ANALYTICS_URL && !DEMO && !isTeacher() && !store.anOff;
+function anDay(){ const t=today(); if(!G.an || G.an.d!==t){ if(G.an && !G.an.final) anSend(G.an,true); G.an={d:t,q:0,r:0,g:{},tq:{},tr:{}}; } return G.an; }
+function anAnswer(ok){ const a=anDay(); a.q++; if(ok) a.r++; }
+function anTopic(t,ok){ const a=anDay(), k=(TMAP[t]||{}).name||t; a.tq[k]=(a.tq[k]||0)+1; if(ok) a.tr[k]=(a.tr[k]||0)+1; }
+function anGame(mode){ const a=anDay(), k=(MODES[mode]&&MODES[mode].name)||mode; a.g[k]=(a.g[k]||0)+1; }
+function anDevice(){ if(!G.anId){ G.anId=Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-3); save(); } return G.anId; }
+let anLast=0;
+function anSend(a,final){
+  if(!anOn() || !a || (!a.q && !Object.keys(a.g).length)) return;
+  const body=JSON.stringify({v:1, day:a.d, dev:anDevice(), yr:store.year||"", lvl:lvlFor(G.xp), plat:matchMedia("(pointer:coarse)").matches?"phone/tablet":"computer", q:a.q, r:a.r, games:a.g, tq:a.tq, tr:a.tr});
+  try{ fetch(ANALYTICS_URL,{method:"POST",mode:"no-cors",keepalive:true,headers:{"Content-Type":"text/plain"},body}); if(final) a.final=true; }catch(e){}
+}
+function anFlush(force){ if(!anOn()) return; const now=Date.now(); if(!force && now-anLast<180000) return; anLast=now; anSend(anDay(),false); }
+document.addEventListener("visibilitychange",()=>{ if(document.hidden) anFlush(true); });
+setInterval(()=>anFlush(false),300000);
+setTimeout(()=>{ if(anOn()) anDay(); },1500);   // sends yesterday's final row if it hadn't gone yet
 /* remember the last thing they were doing, for "Carry on" */
 const LAST_TABS={cards:"Flashcards", quiz:"Quiz", writing:"Writing practice"};
 (function(){ const _go=goTab, _arc=startArc;
   goTab=function(name){ if(LAST_TABS[name]){ G.lastAct={k:"tab", tab:name, label:LAST_TABS[name], t:Date.now()}; save(); } return _go.apply(this,arguments); };
-  startArc=function(mode){ if(MODES[mode] && !["boss","parent","proj","weekly"].includes(mode)){ G.lastAct={k:"arc", mode, label:MODES[mode].icon+" "+MODES[mode].name, t:Date.now()}; save(); } return _arc.apply(this,arguments); };
+  startArc=function(mode){ if(MODES[mode]) anGame(mode); if(MODES[mode] && !["boss","parent","proj","weekly"].includes(mode)){ G.lastAct={k:"arc", mode, label:MODES[mode].icon+" "+MODES[mode].name, t:Date.now()}; save(); } return _arc.apply(this,arguments); };
 })();
 
 /* ---- 🧘 focus timer: 25 minutes, pop-ups paused, bonus XP for 15+ answers ---- */
@@ -4804,6 +4822,7 @@ async function shareProgressLink(){
 }
 function wireBackup(){
   const msg=$("#saveMsg"); if(!msg) return;
+  const at=$("#anToggle"); if(at) at.onchange=()=>{ store.anOff=!at.checked; save(); };
   $("#qrSend").onclick=showSendQR; $("#qrScan").onclick=startScanQR; $("#shareLink").onclick=shareProgressLink;
   $("#copySave").onclick=async()=>{
     const code=await makeSaveCode();
@@ -4912,6 +4931,7 @@ function renderTrophies(){
       <p id="repMsg" class="savemsg" aria-live="polite"></p></div>
     </section>
 <section data-sec="saves" class="ts-backup">
+    ${ANALYTICS_URL&&!DEMO?`<div class="box"><h3>📊 Anonymous usage stats</h3><p class="muted" style="margin:0 0 10px;font-size:15px">To help Mr W improve the site, it shares how much it's used: questions answered, games played and topics, with a random device code. Never your name or answers.</p><label class="chk"><input type="checkbox" id="anToggle" ${store.anOff?"":"checked"}> Share anonymous usage stats</label></div>`:""}
     <div class="box" id="backupBox"><h3>Back up or move your progress <small>Last backed up: ${G.lastBackup?G.lastBackup.split("-").reverse().join("/"):"never"}</small></h3>
       <p class="muted" style="margin:0 0 12px">Your progress is saved in this browser only, so clearing your browser data wipes it. Copy your save code and keep it safe, e.g. email it to yourself. To carry on on another device (school PC, phone, laptop), paste the code there. The code holds your progress only: no name, no login, no personal data.</p>
       <div class="btnrow"><button class="btn" id="copySave">📋 Copy my save code</button><button class="btn ghost" id="dlSave">💾 Download backup file</button></div>
