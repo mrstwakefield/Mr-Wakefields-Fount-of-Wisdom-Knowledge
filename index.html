@@ -605,6 +605,26 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .petstrip.sleepy,.petstrip.asleep{border-style:dashed}
 .petstrip.ecstatic{border-color:var(--good);background:var(--good-bg)}
 @media (max-width:560px){.petstrip{font-size:14px;gap:8px}.petstrip .ps-art svg{width:84px;height:63px}.petstrip .ps-cheese{font-size:14px}}
+.startrow{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 12px}
+.startbtn{flex:1 1 280px;display:flex;flex-direction:column;align-items:flex-start;gap:3px;background:var(--ink);color:var(--paper);border:2px solid var(--ink);border-radius:14px;padding:14px 18px;text-align:left;cursor:pointer;font:800 21px/1.15 var(--display)}
+.startbtn small{font:600 15px/1.3 var(--body);opacity:.85}
+.startbtn:hover{filter:brightness(1.12)}
+.contbtn{flex:0 1 260px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;background:var(--card);color:var(--ink);border:2px solid var(--line);border-radius:14px;padding:12px 16px;text-align:left;cursor:pointer;font:700 16px/1.2 var(--body)}
+.contbtn small{font-weight:400;color:var(--muted);font-size:14px}
+.contbtn:hover{border-color:var(--ink)}
+@media (max-width:560px){.contbtn{flex:1 1 100%}}
+.flagbtn{display:inline-block;background:none;border:0;color:var(--muted);font-size:13px;text-decoration:underline;text-underline-offset:2px;cursor:pointer;padding:6px 0 0;margin:0}
+.flagbtn:hover{color:var(--ink)}
+.flagbox{background:var(--card);color:var(--ink);border-radius:20px;padding:22px;max-width:380px;width:100%;display:flex;flex-direction:column;gap:8px}
+.flagbox h3{margin:0 0 4px}.flagbox p{margin:0 0 6px;color:var(--muted);font-size:15px}
+.flagbox button.reason{text-align:left;background:var(--soft);border:2px solid var(--line);border-radius:12px;padding:10px 14px;font:inherit;font-size:16px;color:var(--ink);cursor:pointer}
+.flagbox button.reason:hover{border-color:var(--ink)}
+.qrbox{background:var(--card);color:var(--ink);border-radius:20px;padding:22px;max-width:420px;width:100%;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
+.qrbox h3{margin:0}.qrbox p{margin:0;color:var(--muted);font-size:15px}
+.qrimg{background:#fff;padding:10px;border-radius:12px;line-height:0}
+.qrimg canvas{width:min(78vw,320px);height:auto;image-rendering:pixelated}
+.qrbox video{width:100%;max-width:360px;border-radius:12px;background:#000}
+.qrprog{width:100%;height:10px;border-radius:9px;background:var(--soft);overflow:hidden}.qrprog i{display:block;height:100%;width:0;background:var(--good);transition:width .2s}
 .pet-box{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
 .pet-art{flex:none;position:relative;background:none;border:0;padding:0;cursor:pointer;border-radius:16px;line-height:0}
 .pet-art:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
@@ -1434,7 +1454,7 @@ function renderCard(){
           <div class="hint">Type the missing key term, then press Enter to check. It's marked for you. ${stLabel}</div>`
           : useMC ? `<div class="q pre ${d.q.length>150?"long":""}">${esc(d.q)}</div>
           <div class="opts one cardopts">${cardMC.opts.map((o,i)=>{ const pk=cardMC.picked; const cls=pk==null?"":i===cardMC.correct?"right":i===pk?"wrong":"dim"; return `<button class="opt ${cls}" data-co="${i}" ${pk!=null?"disabled":""}><span class="k">${i+1}</span><span>${esc(o)}</span></button>`; }).join("")}</div>
-          <div class="hint">${cardMC.picked==null?"Pick the right answer (keys 1–4).":cardMC.picked===cardMC.correct?"✅ Correct!":"❌ Not quite: the right answer is highlighted."} ${stLabel}</div>${cardMC.picked!=null&&d.y?`<p class="why">💡 ${esc(d.y)}</p>`:""}`
+          <div class="hint">${cardMC.picked==null?"Pick the right answer (keys 1–4).":cardMC.picked===cardMC.correct?"✅ Correct!":"❌ Not quite: the right answer is highlighted."} ${stLabel}</div>${cardMC.picked!=null&&d.y?`<p class="why">💡 ${esc(d.y)}</p>`:""}${cardMC.picked!=null?flagBtn(d.id):""}`
           : `<div class="q pre ${d.q.length>150?"long":""}">${esc(d.q)}</div>
           <textarea class="cardin" id="cardIn" rows="3" placeholder="Type your answer, then press Enter to check" aria-label="Type your answer">${esc(cardTyped)}</textarea>
           <div class="hint">Type your answer, then check. It's marked automatically on the key terms, and typed answers earn 2× XP. ${stLabel}</div>`}
@@ -1445,7 +1465,7 @@ function renderCard(){
           :`<div class="q-small">${esc(d.q)}</div>
           ${cardRes?markHTML(cardRes):""}
           ${cardTyped?`<div class="yours"><b>Your answer:</b> ${esc(cardTyped)}</div>`:""}
-          <div class="a">${fmtAnswer(d.a,d.id)}</div>${d.y?`<p class="why">💡 ${esc(d.y)}</p>`:""}`}
+          <div class="a">${fmtAnswer(d.a,d.id)}</div>${d.y?`<p class="why">💡 ${esc(d.y)}</p>`:""}${flagBtn(d.id)}`}
         </div>
       </div>
     </div>
@@ -1540,7 +1560,7 @@ function renderQuiz(){
         <div class="q pre ${d.q.length>150?"long":""}">${esc(d.q)}</div>
         ${quiz.shown
           ? `<div class="compare"><div><h4>Your answer</h4>${mine?esc(mine).replace(/\n/g,"<br>"):'<span class="muted">You didn\'t write anything.</span>'}</div><div class="model"><h4>Model answer</h4><div class="a" style="font-size:17px">${fmtAnswer(d.a,d.id)}</div>${d.y?`<p class="why">💡 ${esc(d.y)}</p>`:""}</div></div>
-             ${quiz.res?markHTML(quiz.res):""}<div class="card-actions"><button class="btn" id="qNext">${quiz.i+1>=quiz.items.length?"See results":"Next question"}</button></div>`
+             ${quiz.res?markHTML(quiz.res):""}${flagBtn(d.id)}<div class="card-actions"><button class="btn" id="qNext">${quiz.i+1>=quiz.items.length?"See results":"Next question"}</button></div>`
           : `<label for="qAns" class="muted" style="display:block;margin-bottom:6px;font-size:15px">Your answer</label>
              <textarea id="qAns" placeholder="Write what you remember">${esc(mine)}</textarea>
              <div class="card-actions"><button class="btn" id="qShow">Check answer</button></div>`}
@@ -2720,7 +2740,7 @@ function arcPick(i){
   };
   if(m.kind==="round" || (m.kind==="daily" && q.explain && (q.tname.startsWith("Exam")||q.tname.startsWith("Stats")))){
     const fb=$("#fb"); arc.fb=advance;
-    fb.innerHTML=`<div class="explain ${ok?"ok":"no"}"><b>${ok?"✓ Correct":"✗ Not quite"}</b> ${esc(q.explain||"")}</div><div class="card-actions"><button class="btn" id="nextQ">${(m.kind==="round"&&arc.i+1>=m.n)||(m.kind==="daily"&&arc.i+1>=10)?"See results":"Next question"}<kbd>Enter</kbd></button></div>`;
+    fb.innerHTML=`<div class="explain ${ok?"ok":"no"}"><b>${ok?"✓ Correct":"✗ Not quite"}</b> ${esc(q.explain||"")}</div>${q.id?flagBtn(q.id):""}<div class="card-actions"><button class="btn" id="nextQ">${(m.kind==="round"&&arc.i+1>=m.n)||(m.kind==="daily"&&arc.i+1>=10)?"See results":"Next question"}<kbd>Enter</kbd></button></div>`;
     $("#nextQ").onclick=()=>{ if(!arc.fb) return; arc.fb=false; advance(); };
     $("#nextQ").focus({preventScroll:true});
     return;
@@ -3192,7 +3212,7 @@ function chk4(str){ let h=7; for(const ch of str) h=(h*31+ch.charCodeAt(0))%1679
 async function makeReport(){ if(DEMO) return "Demo mode: no real progress report can be made here.";
   const t=today(), live=G.last===t||(G.last&&dayNum(t)-dayNum(G.last)===1)?G.streak:0, ts=topicStats();
   const active=Object.keys(G.hist).filter(k=>G.hist[k]>0 && dayNum(t)-dayNum(k)<14).length;
-  const arr=[1,(store.reportName||"").trim().slice(0,30),dayNum(t),G.xp,live,G.best,knownTotal(),G.st.cards,G.st.cards?Math.round(G.st.right/G.st.cards*100):0,G.st.exam,G.st.stats,Object.keys(G.st.bosses||{}).length,active,G.st.essays||0,TOPICS.length,ts.map(x=>[Math.round(x.known*100),x.n?Math.round(x.acc*100):-1,Math.min(x.n,9999),mastery(x.key).s]),store.year||""];
+  const arr=[1,(store.reportName||"").trim().slice(0,30),dayNum(t),G.xp,live,G.best,knownTotal(),G.st.cards,G.st.cards?Math.round(G.st.right/G.st.cards*100):0,G.st.exam,G.st.stats,Object.keys(G.st.bosses||{}).length,active,G.st.essays||0,TOPICS.length,ts.map(x=>[Math.round(x.known*100),x.n?Math.round(x.acc*100):-1,Math.min(x.n,9999),mastery(x.key).s]),store.year||"",Object.entries(G.flags||{}).sort((a,b)=>b[1][1]-a[1][1]).slice(0,30).map(([id,v])=>[+id,v[0]])];
   let bytes=new TextEncoder().encode(JSON.stringify(arr)), pre="FR1";
   try{ if(window.CompressionStream){ bytes=new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream("deflate-raw"))).arrayBuffer()); pre="FR1Z"; } }catch(e){ bytes=new TextEncoder().encode(JSON.stringify(arr)); pre="FR1"; }
   const body=b64u(bytes); G.st.reports=(G.st.reports||0)+1;
@@ -3587,7 +3607,9 @@ function renderPlan(){
   const el=$("#plan"); if(!el) return;
   const tasks=planTasks(), n=tasks.filter(x=>x.done).length, pl=G.plan;
   if(n===3 && !pl.done){ pl.done=true; G.st.plans=(G.st.plans||0)+1; save(); setTimeout(()=>{ toast("📋","Today's plan complete! +40 XP","See you tomorrow."); confetti(140); sfx("badge"); addXP(40,false); checkBadges(); },300); }
-  el.innerHTML=`<div class="plan-card ${n===3?"complete":""}"><div class="plan-h"><b>📋 Today's plan</b><span>${n===3?"All done. Brilliant work! ✓":`${n} of 3 done · finish all three for +40 XP`}</span></div>
+  const nx=smartNext(), la=G.lastAct, showCont=la && Date.now()-la.t<14*864e5 && la.label!==nx.label;
+  el.innerHTML=`<div class="startrow"><button class="startbtn" id="startBtn">▶ Start revising<small>${nx.icon} ${esc(nx.label)}</small></button>${showCont?`<button class="contbtn" id="contBtn">↩ Carry on<small>${esc(la.label)}</small></button>`:""}</div>
+  <div class="plan-card ${n===3?"complete":""}"><div class="plan-h"><b>📋 Today's plan</b><span>${n===3?"All done. Brilliant work! ✓":`${n} of 3 done · finish all three for +40 XP`}</span></div>
     <div class="plan-tasks">${tasks.map(x=>`<button class="ptask ${x.done?"done":""}" data-plan="${x.id}" ${x.done?"disabled":""}><span>${x.done?"✅":x.icon}</span>${esc(x.label)}</button>`).join("")}
     <button class="ptask focusbtn" id="focusBtn">${focusS.end?`🧘 Focus: <span id="focusLeft">${fmtTime(focusS.end-Date.now())}</span> · stop`:"🧘 25-minute focus session"}</button></div></div>`;
   petCheck();
@@ -3599,7 +3621,42 @@ function renderPlan(){
     $(".tabs").scrollIntoView({behavior:reduced()?"auto":"smooth"});
   });
   $("#focusBtn").onclick=()=>focusS.end?stopFocus(false):startFocus();
+  const go=()=>$(".tabs").scrollIntoView({behavior:reduced()?"auto":"smooth"});
+  $("#startBtn").onclick=()=>{ smartNext().run(); go(); };
+  const cb=$("#contBtn"); if(cb) cb.onclick=()=>{ const a=G.lastAct; if(a.k==="arc"){ goTab("arcade"); startArc(a.mode); } else goTab(a.tab); go(); };
 }
+/* ---- ⚑ report a card: flags go into the progress report for the teacher ---- */
+const FLAG_REASONS=["The answer is wrong","The question is unclear","A 'wrong' option is actually right","The answer is too easy to guess","Something else"];
+const flagBtn=id=>id==null||!BY_ID[id]?"":`<button type="button" class="flagbtn" data-flag="${id}">${(G.flags||{})[id]?"⚑ Reported. Thanks!":"⚑ Report a problem with this card"}</button>`;
+document.addEventListener("click",e=>{ const b=e.target.closest("[data-flag]"); if(!b) return; e.preventDefault(); e.stopPropagation(); openFlag(+b.dataset.flag); },true);
+function openFlag(id){
+  const o=document.createElement("div"); o.className="overlay";
+  o.innerHTML=`<div class="flagbox" role="dialog" aria-modal="true" aria-labelledby="flT"><h3 id="flT">⚑ What's the problem?</h3><p>Mr W will see this in your next progress report and fix the card.</p>
+    ${FLAG_REASONS.map((r,i)=>`<button class="reason" data-r="${i}">${esc(r)}</button>`).join("")}<button class="btn ghost" id="flNo">Cancel</button></div>`;
+  document.body.appendChild(o);
+  const close=()=>{ o.remove(); document.removeEventListener("keydown",k,true); }, k=e=>{ if(e.key==="Escape"){ e.stopPropagation(); close(); } };
+  document.addEventListener("keydown",k,true);
+  o.onclick=e=>{ if(e.target===o||e.target.id==="flNo") return close(); const r=e.target.closest("[data-r]"); if(!r) return;
+    G.flags=G.flags||{}; G.flags[id]=[+r.dataset.r, dayNum(today())];
+    const ks=Object.keys(G.flags); if(ks.length>60) ks.sort((a,b)=>G.flags[a][1]-G.flags[b][1]).slice(0,ks.length-60).forEach(x=>delete G.flags[x]);
+    save(); close(); toast("⚑","Thanks for reporting it","It'll be in your next progress report to Mr W.");
+    document.querySelectorAll(`[data-flag="${id}"]`).forEach(b=>b.textContent="⚑ Reported. Thanks!"); };
+  o.querySelector(".reason").focus();
+}
+/* ---- ▶ Start revising: one tap picks the most useful next thing ---- */
+function smartNext(){
+  const due=dueCount(true), dd=G.daily[today()], pl=ensurePlan();
+  if(due>0) return {icon:"📅", label:`Review ${due} card${due===1?"":"s"} due today`, run:()=>{ if(dueCount()===0){ store.sel=TOPICS.map(t=>t.key); save(); renderChips(); } goTab("cards"); setFilter("due"); }};
+  if(!(dd&&dd.done)) return {icon:"📰", label:"Play today's Daily 10", run:()=>{ goTab("arcade"); startArc("daily"); }};
+  if(pl.weakN<10) return {icon:"🎯", label:`10 cards on ${TMAP[pl.weak].name}, your weakest topic`, run:()=>{ store.sel=[pl.weak]; save(); renderChips(); goTab("cards"); setFilter("all"); }};
+  return {icon:"⚡", label:"A 60-second Blitz on your topics", run:()=>{ goTab("arcade"); startArc("blitz"); }};
+}
+/* remember the last thing they were doing, for "Carry on" */
+const LAST_TABS={cards:"Flashcards", quiz:"Quiz", writing:"Writing practice"};
+(function(){ const _go=goTab, _arc=startArc;
+  goTab=function(name){ if(LAST_TABS[name]){ G.lastAct={k:"tab", tab:name, label:LAST_TABS[name], t:Date.now()}; save(); } return _go.apply(this,arguments); };
+  startArc=function(mode){ if(MODES[mode] && !["boss","parent","proj","weekly"].includes(mode)){ G.lastAct={k:"arc", mode, label:MODES[mode].icon+" "+MODES[mode].name, t:Date.now()}; save(); } return _arc.apply(this,arguments); };
+})();
 
 /* ---- 🧘 focus timer: 25 minutes, pop-ups paused, bonus XP for 15+ answers ---- */
 var focusS={end:0, start:0, timer:null};
@@ -4605,8 +4662,58 @@ async function loadSave(code){
   }catch(e){ msg.className="savemsg no"; msg.textContent=e && e.message && !/JSON|atob|decod|base64/i.test(e.message) ? e.message : "Sorry, that code couldn't be read. Make sure you copied all of it."; }
 }
 function markBackedUp(){ G.lastBackup=today(); save(); checkBadges(); }
+/* ---- 📱 move progress by QR code: the save code is split across a short loop of QR codes ---- */
+let QR_LIB=null; const QR_CHUNK=400;
+function loadQrLib(){ if(QR_LIB) return QR_LIB; QR_LIB=new Promise((res,rej)=>{ const sc=document.createElement("script"); sc.src="qr-lib.js"; sc.onload=()=>res(); sc.onerror=()=>{ QR_LIB=null; sc.remove(); rej(new Error("The QR tools couldn't load. Check your internet connection and try again.")); }; document.head.appendChild(sc); }); return QR_LIB; }
+function qrCanvas(text){ const q=qrcode(0,"L"); q.addData(text); q.make(); const n=q.getModuleCount(), m=4, px=6, c=document.createElement("canvas"); c.width=c.height=(n+m*2)*px;
+  const x=c.getContext("2d"); x.fillStyle="#fff"; x.fillRect(0,0,c.width,c.height); x.fillStyle="#000"; for(let r=0;r<n;r++) for(let k=0;k<n;k++) if(q.isDark(r,k)) x.fillRect((k+m)*px,(r+m)*px,px,px); return c; }
+function qrOverlay(html){ const o=document.createElement("div"); o.className="overlay"; o.innerHTML=`<div class="qrbox" role="dialog" aria-modal="true">${html}</div>`; document.body.appendChild(o); return o; }
+async function showSendQR(){
+  const msg=$("#saveMsg"); if(DEMO){ msg.className="savemsg no"; msg.textContent="Demo mode: progress can't be moved."; return; }
+  let code; try{ code=await makeSaveCode(); await loadQrLib(); }catch(e){ msg.className="savemsg no"; msg.textContent=e.message; return; }
+  const sid=Math.random().toString(36).slice(2,6), n=Math.ceil(code.length/QR_CHUNK), frames=[...Array(n)].map((_,i)=>`FQ1|${sid}|${i+1}|${n}|`+code.slice(i*QR_CHUNK,(i+1)*QR_CHUNK)).map(qrCanvas);
+  const o=qrOverlay(`<h3>📱 Scan this with your other device</h3><p>On the other device, open this site, go to <b>Saves</b> and tap <b>📷 Scan a QR code</b>. Hold it steady until the bar is full${n>1?` (${n} codes, about ${Math.max(5,Math.round(n*0.9))} seconds)`:""}.</p><div class="qrimg" id="qrImg"></div><p id="qrFrame"></p><button class="btn" id="qrDone">Done</button>`);
+  let i=0; const show=()=>{ const box=o.querySelector("#qrImg"); box.replaceChildren(frames[i]); o.querySelector("#qrFrame").textContent=n>1?`Code ${i+1} of ${n}, changing automatically`:"One code"; i=(i+1)%n; };
+  show(); const t=n>1?setInterval(show,500):0;
+  const close=()=>{ clearInterval(t); o.remove(); }; o.querySelector("#qrDone").onclick=close; o.onclick=e=>{ if(e.target===o) close(); };
+  markBackedUp();
+}
+async function startScanQR(){
+  const msg=$("#saveMsg");
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ msg.className="savemsg no"; msg.textContent="This browser can't use the camera. Try Chrome or Safari, or use 🔗 Send me a link instead."; return; }
+  const o=qrOverlay(`<h3>📷 Point your camera at the QR code</h3><p id="scanMsg">Starting the camera…</p><video id="scanVid" playsinline muted></video><div class="qrprog"><i id="scanBar"></i></div><button class="btn ghost" id="scanStop">Cancel</button>`);
+  const vid=o.querySelector("#scanVid"), sm=o.querySelector("#scanMsg"), bar=o.querySelector("#scanBar"); let stream=null, raf=0, done=false;
+  const stop=()=>{ done=true; cancelAnimationFrame(raf); if(stream) stream.getTracks().forEach(t=>t.stop()); o.remove(); };
+  o.querySelector("#scanStop").onclick=stop;
+  try{ stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}}); }catch(e){ sm.textContent="The camera was blocked. Allow camera access for this site and try again, or use 🔗 Send me a link instead."; return; }
+  vid.srcObject=stream; await vid.play().catch(()=>{});
+  let det=null; try{ if("BarcodeDetector" in window && (await BarcodeDetector.getSupportedFormats()).includes("qr_code")) det=new BarcodeDetector({formats:["qr_code"]}); }catch(e){}
+  if(!det){ try{ await loadQrLib(); }catch(e){ sm.textContent=e.message; return; } }
+  sm.textContent="Hold steady…";
+  const parts={}; let sid=null, total=0, busy=false; const cv=document.createElement("canvas"), cx=cv.getContext("2d",{willReadFrequently:true});
+  const take=async txt=>{
+    if(txt.includes("#restore=")){ stop(); return loadSave(decodeURIComponent(txt.split("#restore=")[1])); }
+    const m=txt.match(/^FQ1\|(\w+)\|(\d+)\|(\d+)\|(.*)$/s); if(!m) return;
+    if(sid!==m[1]){ sid=m[1]; total=+m[3]; for(const k in parts) delete parts[k]; }
+    parts[m[2]]=m[4]; const got=Object.keys(parts).length; bar.style.width=(got/total*100)+"%"; sm.textContent=`Got ${got} of ${total}`;
+    if(got===total){ const code=[...Array(total)].map((_,i)=>parts[i+1]).join(""); stop(); loadSave(code); } };
+  const loop=async()=>{ if(done) return; if(!busy && vid.readyState>=2){ busy=true;
+      try{ if(det){ const r=await det.detect(vid); for(const x of r) await take(x.rawValue); }
+        else { const w=Math.min(640,vid.videoWidth), h=Math.round(vid.videoHeight*w/vid.videoWidth); cv.width=w; cv.height=h; cx.drawImage(vid,0,0,w,h); const r=jsQR(cx.getImageData(0,0,w,h).data,w,h,{inversionAttempts:"dontInvert"}); if(r&&r.data) await take(r.data); } }catch(e){}
+      busy=false; }
+    raf=requestAnimationFrame(loop); };
+  loop();
+}
+async function shareProgressLink(){
+  const msg=$("#saveMsg"); if(DEMO){ msg.className="savemsg no"; msg.textContent="Demo mode: progress can't be moved."; return; }
+  const code=await makeSaveCode(), url=location.origin+location.pathname+"#restore="+code;
+  if(navigator.share){ try{ await navigator.share({title:"My Fount of Knowledge progress", text:"Open this on my other device to carry on where I left off.", url}); markBackedUp(); return; }catch(e){ if(e&&e.name==="AbortError") return; } }
+  try{ await navigator.clipboard.writeText(url); markBackedUp(); msg.className="savemsg ok"; msg.textContent="Link copied ✓ Send it to yourself (e.g. by email) and open it on your other device."; }
+  catch(e){ const ta=$("#loadCode"); ta.value=url; ta.select(); markBackedUp(); msg.className="savemsg ok"; msg.textContent="Your link is in the box below. Copy it and send it to yourself."; }
+}
 function wireBackup(){
   const msg=$("#saveMsg"); if(!msg) return;
+  $("#qrSend").onclick=showSendQR; $("#qrScan").onclick=startScanQR; $("#shareLink").onclick=shareProgressLink;
   $("#copySave").onclick=async()=>{
     const code=await makeSaveCode();
     try{ await navigator.clipboard.writeText(code); markBackedUp(); msg.className="savemsg ok"; msg.textContent=`Copied ✓ (${code.length.toLocaleString()} characters). Paste it somewhere safe, like an email to yourself.`; }
@@ -4720,6 +4827,9 @@ function renderTrophies(){
       <label for="loadCode" class="muted" style="display:block;margin:16px 0 6px;font-size:15px">Load a save code from another device</label>
       <textarea id="loadCode" placeholder="Paste a save code here (it starts with F1)" spellcheck="false"></textarea>
       <div class="btnrow"><button class="btn ghost" id="loadSave">Load save code</button><label class="btn ghost filebtn">📂 Load backup file<input type="file" id="loadFile" accept=".txt,text/plain" hidden></label></div>
+      <h4 style="margin:18px 0 6px">📱 Move to another device</h4>
+      <p class="muted" style="margin:0 0 10px;font-size:15px">Show a QR code here and scan it with your other device (open this site there, go to Saves and tap Scan). Or send yourself a link that carries your progress.</p>
+      <div class="btnrow"><button class="btn" id="qrSend">📱 Show QR code</button><button class="btn ghost" id="qrScan">📷 Scan a QR code</button><button class="btn ghost" id="shareLink">🔗 Send me a link</button></div>
       <p id="saveMsg" class="savemsg" aria-live="polite"></p></div>
     </section>
 <section data-sec="progress" class="ts-goal">
@@ -4864,6 +4974,9 @@ if(DEMO_ASK){
   setTimeout(()=>$("#dpIn").focus(),50);
 }
 checkStreak(); checkBadges(); save();
+/* a progress link from another device: …#restore=CODE */
+if(/^#restore=/.test(location.hash) && !DEMO){ const rc=decodeURIComponent(location.hash.slice(9)); try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){}
+  setTimeout(()=>{ goTab("saves"); setTimeout(()=>loadSave(rc),150); },900); }
 /* when a student picks Year 12 and still has every topic selected, start them on the topics they've been taught */
 function y12Topics(){ if(store.year!=="12") return; if(store.sel.length<TOPICS.length) return;
   const open=TOPICS.map(t=>t.key).filter(k=>k!=="Exam skills" && topicOpen(k)); if(open.length){ store.sel=open; if(typeof renderChips==="function") renderChips(); if(typeof topicsChanged==="function") topicsChanged(); } }

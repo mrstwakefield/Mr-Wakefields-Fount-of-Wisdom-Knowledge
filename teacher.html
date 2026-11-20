@@ -88,7 +88,7 @@ async function decode(code){
   if(pre==="FR1Z") bytes=new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).arrayBuffer());
   const a=JSON.parse(new TextDecoder().decode(bytes));
   if(a[0]!==1) throw new Error("version");
-  return {name:a[1]||"(no name)", day:a[2], xp:a[3], streak:a[4], best:a[5], known:a[6], answered:a[7], acc:a[8], exam:a[9], stats:a[10], bosses:a[11], active:a[12], essays:a[13], topics:a[15], year:a[16]==="12"?"Y12":a[16]==="13"?"Y13":a[16]==="teacher"?"Teacher":"–"};
+  return {name:a[1]||"(no name)", day:a[2], xp:a[3], streak:a[4], best:a[5], known:a[6], answered:a[7], acc:a[8], exam:a[9], stats:a[10], bosses:a[11], active:a[12], essays:a[13], topics:a[15], year:a[16]==="12"?"Y12":a[16]==="13"?"Y13":a[16]==="teacher"?"Teacher":"–", flags:Array.isArray(a[17])?a[17]:[]};
 }
 let allRows=[], rows=[], sortKey="name", sortDir=1, yearF="all";
 async function run(){
@@ -133,10 +133,23 @@ function render(){
   <div class="box"><h2>Cards known by topic (%)</h2><p class="note">★ = mastery stars in that topic (1 to 3), based on recent accuracy and cards known.</p><div class="scroll"><table class="heat"><thead><tr><th style="cursor:default">Student</th>${TOPICS.map(t=>`<th class="tp">${esc(t[0])}</th>`).join("")}</tr></thead><tbody>
     ${sorted.map(r=>`<tr><td>${esc(r.name)}</td>${TOPICS.map((_,i)=>{ const v=r.topics[i]?r.topics[i][0]:0, a=r.topics[i]?r.topics[i][1]:-1; return `<td class="h" style="background:${heat(v)}" title="${v}% known${a>=0?", "+a+"% accuracy":""}${r.topics[i]&&r.topics[i][3]?", "+r.topics[i][3]+" mastery stars":""}">${v}${r.topics[i]&&r.topics[i][3]?`<small class="st">${"★".repeat(r.topics[i][3])}</small>`:""}</td>`; }).join("")}</tr>`).join("")}
     <tr><td><b>Class average</b></td>${avgKnown.map(v=>`<td class="h" style="background:${heat(v)}"><b>${Math.round(v)}</b></td>`).join("")}</tr>
-  </tbody></table></div></div>`;
-  wireYF();
+  </tbody></table></div></div>${flagsBox()}`;
+  wireYF(); wireFlags();
   document.querySelectorAll("#tbl th").forEach(th=>th.onclick=()=>{ const k=th.dataset.k; if(sortKey===k) sortDir*=-1; else { sortKey=k; sortDir=k==="name"?1:-1; } render(); });
 }
+/* ---- cards students have reported with ⚑ ---- */
+const FLAG_REASONS=["Answer is wrong","Question unclear","A 'wrong' option is right","Too easy to guess","Something else"];
+let CARD_TEXT=null;
+async function loadCardText(){ if(CARD_TEXT) return; try{ const h=await (await fetch("index.html")).text(); const m=h.match(/const DATA = (\[.*?\]);\n/s); CARD_TEXT={}; JSON.parse(m[1]).forEach(d=>CARD_TEXT[d.id]=d); render(); }catch(e){ CARD_TEXT={}; } }
+function flagList(){ const agg={}; rows.forEach(r=>(r.flags||[]).forEach(([id,why])=>{ const a=agg[id]=agg[id]||{id,n:0,why:{},who:[]}; a.n++; a.why[why]=(a.why[why]||0)+1; a.who.push(r.name); }));
+  return Object.values(agg).sort((x,y)=>y.n-x.n||x.id-y.id); }
+function flagsBox(){ const L=flagList(); if(!L.length) return `<div class="box"><h2>Reported cards</h2><p class="note">No students have reported a card yet. When they tap ⚑ on a card, it shows up here.</p></div>`;
+  if(!CARD_TEXT) loadCardText();
+  const txt=L.map(f=>{ const d=(CARD_TEXT||{})[f.id]; return `- Card ${f.id}${d?" ("+d.t+"): "+d.q.split("\n").pop():""} | reported ${f.n}× | ${Object.entries(f.why).map(([k,v])=>FLAG_REASONS[k]+(v>1?" ×"+v:"")).join(", ")}`; }).join("\n");
+  return `<div class="box"><h2>Reported cards</h2><p class="note">Cards your students flagged with ⚑, most reported first. Copy the list and paste it to Claude to get them fixed.</p>
+  <div class="scroll"><table><thead><tr><th>Card</th><th>Question</th><th>Reports</th><th>Why</th></tr></thead><tbody>${L.map(f=>{ const d=(CARD_TEXT||{})[f.id]; return `<tr><td class="n">${f.id}</td><td>${d?esc(d.q.split("\n").pop())+`<br><span class="note">Answer: ${esc(d.a)}</span>`:'<span class="note">Loading…</span>'}</td><td class="n">${f.n}</td><td>${Object.entries(f.why).map(([k,v])=>esc(FLAG_REASONS[k]||"?")+(v>1?" ×"+v:"")).join("<br>")}</td></tr>`; }).join("")}</tbody></table></div>
+  <textarea id="flagTxt" readonly style="width:100%;min-height:90px;margin-top:10px">${esc("Reported cards from my students:\n"+txt)}</textarea><button class="btn" id="flagCopy" style="margin-top:8px">Copy list for Claude</button> <span class="note" id="flagMsg"></span></div>`; }
+function wireFlags(){ const b=document.getElementById("flagCopy"); if(!b) return; b.onclick=async()=>{ const t=document.getElementById("flagTxt"); try{ await navigator.clipboard.writeText(t.value); document.getElementById("flagMsg").textContent="Copied ✓"; }catch(e){ t.select(); document.getElementById("flagMsg").textContent="Selected: press Ctrl+C to copy."; } }; }
 $("#go").onclick=run;
 $("#csv").onclick=()=>{
   const head=["Student","Year","Level","XP","Cards known","Accuracy %","Streak","Best streak","Days active (14)","Essays","Bosses beaten","Exam Skills best","Stats Lab best","Mastery stars","Report date",...TOPICS.map(t=>t[0]+" % known"),...TOPICS.map(t=>t[0]+" stars")];
