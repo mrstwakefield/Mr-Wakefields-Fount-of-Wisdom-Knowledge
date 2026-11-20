@@ -3740,7 +3740,7 @@ function smartNext(){
   return {icon:"⚡", label:"A 60-second Blitz on your topics", run:()=>{ goTab("arcade"); startArc("blitz"); }};
 }
 /* ---- 📊 anonymous usage stats, sent to Mr W's Google Sheet: no names, one row per device per day ---- */
-const ANALYTICS_URL="";   // paste the Google Apps Script web app URL here (ends in /exec)
+const ANALYTICS_URL="https://script.google.com/macros/s/AKfycbzLt7BqToSWwdeo30YCt9ucdlBHI_rsgTfvc6t7MaGfcOPaKDNNK-0ZCTUlapycPYP0Vw/exec";   // paste the Google Apps Script web app URL here (ends in /exec)
 const anOn=()=>!!ANALYTICS_URL && !DEMO && !isTeacher() && !store.anOff;
 function anDay(){ const t=today(); if(!G.an || G.an.d!==t){ if(G.an && !G.an.final) anSend(G.an,true); G.an={d:t,q:0,r:0,g:{},tq:{},tr:{}}; } return G.an; }
 function anAnswer(ok){ const a=anDay(); a.q++; if(ok) a.r++; }
