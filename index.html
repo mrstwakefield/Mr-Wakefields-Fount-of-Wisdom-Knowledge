@@ -48,6 +48,7 @@ button{cursor:pointer}
 h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,6vw,56px);line-height:.95;letter-spacing:-.02em;margin:0}
 h1 span{display:block;font-size:.42em;font-weight:500;letter-spacing:0;color:var(--muted);margin-top:10px;line-height:1.2}
 h1 span b{font-weight:500}
+.h1t{font-style:normal}
 .meter{min-width:220px;flex:0 1 300px}
 .meter p{margin:0 0 6px;font-size:15px;color:var(--muted)}
 .meter b{color:var(--ink);font-family:var(--display);font-size:22px}
@@ -966,15 +967,23 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 :root[data-skin="petcat"] body{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22140%22%20height%3D%22140%22%20opacity%3D%22.45%22%3E%3Ctext%20x%3D%2210%22%20y%3D%2244%22%20font-size%3D%2230%22%3E%F0%9F%90%88%3C/text%3E%3Ctext%20x%3D%2278%22%20y%3D%22112%22%20font-size%3D%2230%22%3E%F0%9F%90%9F%3C/text%3E%3Ctext%20x%3D%2284%22%20y%3D%2244%22%20font-size%3D%2218%22%3E%F0%9F%93%A6%3C/text%3E%3Ctext%20x%3D%2218%22%20y%3D%22108%22%20font-size%3D%2218%22%3E%F0%9F%94%91%3C/text%3E%3C/svg%3E");background-size:140px 140px}
 :root[data-skin="petcat"] .xpbar i{background:repeating-linear-gradient(90deg,#E9954B 0 12px,#B85F22 12px 24px)}
 /* ⛲ The Fount: water and gold, with animated fountains drawn on a canvas behind the page */
-:root[data-skin="fount"]{--paper:#06192A;--card:#0D2A40;--ink:#EAF6FF;--muted:#9CC3D9;--line:#1E4A66;--soft:#123A55;--good:#5FE0B0;--good-bg:#123F37;--warn:#F2C14E;--warn-bg:#3A3112;color-scheme:dark}
-:root[data-skin="fount"]{background:radial-gradient(ellipse at 50% 120%,#0E5A7A 0%,#06192A 60%) fixed #06192A}
-:root[data-skin="fount"] body{background:transparent}
-:root[data-skin="fount"] .box,:root[data-skin="fount"] .hud,:root[data-skin="fount"] .petstrip,:root[data-skin="fount"] .plan-card,:root[data-skin="fount"] .tabs{background:color-mix(in srgb,var(--card) 80%,transparent);backdrop-filter:blur(2px);border-color:#2B6A8C}
-:root[data-skin="fount"] .top h1{background:linear-gradient(100deg,#F2C14E 0%,#FFF3C4 25%,#7FDBFF 50%,#F2C14E 75%,#FFF3C4 100%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:fountShine 6s linear infinite}
-:root[data-skin="fount"] .xpbar i{background:linear-gradient(90deg,#7FDBFF,#F2C14E,#FFF3C4,#7FDBFF);background-size:200% 100%;animation:fountShine 4s linear infinite}
-@keyframes fountShine{to{background-position:200% center}}
-#fountFx{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
-@media (prefers-reduced-motion:reduce){:root[data-skin="fount"] .top h1,:root[data-skin="fount"] .xpbar i{animation:none}}
+/* ---- level 120: The Fount (deliberately over the top, same as the GCSE site) ---- */
+:root[data-skin="fount"]{--paper:#05201D;--card:rgba(10,46,42,.86);--ink:#F2FBF7;--muted:#A9D6C9;--line:rgba(242,193,78,.35);--soft:rgba(20,70,63,.7);--good:#F2C14E;--good-bg:#3A3214;--warn:#FF9B7A;--warn-bg:#3E2418;color-scheme:dark;background:#05201D}
+:root[data-skin="fount"] body{background:linear-gradient(125deg,#04201C,#0B4A42 25%,#1B1450 50%,#0B4A42 75%,#04201C);background-size:400% 400%;background-attachment:fixed;animation:fountBg 22s ease-in-out infinite}
+@keyframes fountBg{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+:root[data-skin="fount"] body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:2147483000;mix-blend-mode:screen;opacity:.55;background-image:radial-gradient(circle,#FFE9A8 0 1.3px,transparent 2px),radial-gradient(circle,#8FF5D8 0 1.1px,transparent 1.8px),radial-gradient(circle,#fff 0 .9px,transparent 1.5px);background-size:180px 220px,260px 190px,130px 150px;background-position:0 0,60px 90px,30px 40px;animation:fountSparkle 9s linear infinite}
+@keyframes fountSparkle{0%{background-position:0 0,60px 90px,30px 40px;opacity:.35}50%{opacity:.7}100%{background-position:0 -220px,60px -100px,30px -110px;opacity:.35}}
+:root[data-skin="fount"] .h1t{background:linear-gradient(100deg,#B88A1E 0%,#FFF1C2 20%,#F2C14E 40%,#FFFBEA 50%,#F2C14E 60%,#FFF1C2 80%,#B88A1E 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:fountShine 5s linear infinite;filter:drop-shadow(0 0 18px rgba(242,193,78,.35))}
+@keyframes fountShine{0%{background-position:100% 0}100%{background-position:-150% 0}}
+:root[data-skin="fount"] .top h1::before{content:"⛲ ";display:inline-block;animation:fountBob 3s ease-in-out infinite}
+:root[data-skin="fount"] .h1t::after{content:" 👑";-webkit-text-fill-color:initial;color:initial}
+@keyframes fountBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+:root[data-skin="fount"] .box,:root[data-skin="fount"] .plan-card,:root[data-skin="fount"] .hud,:root[data-skin="fount"] .petstrip,:root[data-skin="fount"] .tabs{border-color:rgba(242,193,78,.45);box-shadow:0 0 0 1px rgba(242,193,78,.18),0 10px 34px rgba(242,193,78,.14),inset 0 1px 0 rgba(255,241,194,.08);backdrop-filter:blur(6px)}
+:root[data-skin="fount"] .btn{background:linear-gradient(135deg,#FFE7A1,#F2C14E 45%,#C9941F);border-color:#F2C14E;color:#05201D;box-shadow:0 0 16px rgba(242,193,78,.35)}
+:root[data-skin="fount"] .btn.ghost{background:transparent;color:#F2C14E;box-shadow:none}
+:root[data-skin="fount"] .btn.good{color:#05201D}
+:root[data-skin="fount"] .startbtn{background:linear-gradient(120deg,#C9941F,#FFE7A1 30%,#F2C14E 55%,#C9941F);background-size:220% 100%;border-color:#F2C14E;color:#05201D;animation:fountShine 6s linear infinite}
+@media (prefers-reduced-motion:reduce){:root[data-skin="fount"] body,:root[data-skin="fount"] body::after,:root[data-skin="fount"] .h1t,:root[data-skin="fount"] .top h1::before,:root[data-skin="fount"] .startbtn{animation:none}}
 :root[data-skin="petpeacock"]{--paper:#0B2A3A;--card:#123F55;--ink:#F2F7FA;--muted:#A9C8D6;--line:#1E5F7A;--soft:#16506B;--good:#6EE7A8;--good-bg:#174A3A;--warn:#F2C14E;--warn-bg:#3E3514;color-scheme:dark}
 :root[data-skin="petpeacock"] body{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22140%22%20height%3D%22140%22%20opacity%3D%22.4%22%3E%3Ctext%20x%3D%2210%22%20y%3D%2244%22%20font-size%3D%2230%22%3E%F0%9F%A6%9A%3C/text%3E%3Ctext%20x%3D%2278%22%20y%3D%22112%22%20font-size%3D%2230%22%3E%F0%9F%92%9A%3C/text%3E%3Ctext%20x%3D%2284%22%20y%3D%2244%22%20font-size%3D%2218%22%3E%E2%9C%A8%3C/text%3E%3Ctext%20x%3D%2218%22%20y%3D%22108%22%20font-size%3D%2218%22%3E%F0%9F%92%9A%3C/text%3E%3C/svg%3E");background-size:140px 140px}
 :root[data-skin="petpeacock"] .xpbar i{background:linear-gradient(90deg,#1E3F8F,#2E8B57,#E2B53E,#2E8B57,#1E3F8F)}
@@ -1002,7 +1011,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 <div class="wrap">
   <header class="top">
     <button class="pressbtn" id="pressBtn" type="button">🔘 Press here</button>
-    <h1>Mr Wakefield's Fount of Knowledge and Wisdom<span>A-level psychology revision, <b id="totalQ"></b> questions</span></h1>
+    <h1><em class="h1t">Mr Wakefield's Fount of Knowledge and Wisdom</em><span>A-level psychology revision, <b id="totalQ"></b> questions</span></h1>
     <div class="meter" aria-live="polite">
       <p><b id="knownCount">0</b> known · <span id="learningCount">0</span> still learning</p>
       <div class="stack" id="stack" aria-hidden="true"></div>
@@ -1217,7 +1226,7 @@ const SKINS=[
   {id:"peerreview", name:"Peer Review", lvl:108, sw:["#FBFAF7","#C62828"], desc:"Level 108: covered in the reviewer's red pen 🖍️"},
   {id:"paradigm", name:"Paradigm Shift", lvl:112, sw:["#1B1035","#38D9C4"], desc:"Level 112: everything you knew, rearranged"},
   {id:"examdesk", name:"Examiner's Desk", lvl:116, sw:["#E6D8BF","#9C2B23"], desc:"Level 116: a stack of scripts and a red biro"},
-  {id:"fount", name:"The Fount", lvl:120, sw:["#06192A","#F2C14E"], desc:"Level 120: the Fount of All Wisdom itself ⛲✨"},
+  {id:"fount", name:"The Fount", lvl:120, sw:["#05201D","#F2C14E"], desc:"The very top: you've drunk from the Fount of Knowledge and Wisdom. Level 120: the showiest theme of all ⛲👑"},
   {id:"petcat", name:"Thorndike's Cat", lvl:120, sw:["#FBE7D3","#E9954B"], desc:"Unlocks with Thorndike's cat: escape the puzzle box 🐈"},
   {id:"petpeacock", name:"Darwin's Peacock", lvl:100, sw:["#0B2A3A","#2E8B57"], desc:"Unlocks with Darwin's peacock: the most impressive tail wins 🦚"},
   {id:"pethans", name:"Clever Hans", lvl:999, hidden:true, unlock:()=>petOpen("hans"), sw:["#EFE2C4","#A0673A"], desc:"Bonus: 100 right answers in a row, no mistakes 🐴"},
@@ -1245,28 +1254,7 @@ const SKINS=[
   {id:"wakefield", name:"Wakefield Mode", lvl:999, hidden:true, sw:["#0F3D2E","#D4AF37"], desc:"Keeper of the Scrolls ✦"}
 ];
 /* ⛲ fountains for The Fount theme: jets of water droplets with a little gold sparkle */
-const fountFx={raf:0,c:null,p:[]};
-function fountStart(){ if(fountFx.c) return; const c=document.createElement("canvas"); c.id="fountFx"; c.setAttribute("aria-hidden","true"); document.body.prepend(c); fountFx.c=c; const x=c.getContext("2d");
-  const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const size=()=>{ const d=Math.min(2,devicePixelRatio||1); c.width=innerWidth*d; c.height=innerHeight*d; x.setTransform(d,0,0,d,0,0); }; size(); addEventListener("resize",size); fountFx.size=size;
-  const jets=()=>{ const w=innerWidth, n=w<600?3:5; return [...Array(n)].map((_,i)=>({x:w*(i+0.5)/n, h:i===Math.floor(n/2)?1.25:0.85+0.15*Math.sin(i*2.1)})); };
-  const spawn=(j,H)=>({x:j.x+(Math.random()-.5)*6, y:H, vx:(Math.random()-.5)*1.6, vy:-(7.5+Math.random()*2.5)*j.h*Math.min(1.25,H/700), r:1.2+Math.random()*2.3, gold:Math.random()<.12, life:0});
-  let J=jets(); addEventListener("resize",()=>{ J=jets(); });
-  const draw=()=>{ const W=innerWidth,H=innerHeight; x.clearRect(0,0,W,H);
-    // pools of light at the base of each fountain
-    J.forEach(j=>{ const g=x.createRadialGradient(j.x,H,0,j.x,H,90); g.addColorStop(0,"rgba(127,219,255,.35)"); g.addColorStop(1,"rgba(127,219,255,0)"); x.fillStyle=g; x.fillRect(j.x-90,H-90,180,90); });
-    if(!still){ J.forEach(j=>{ for(let k=0;k<4;k++) fountFx.p.push(spawn(j,H)); }); }
-    fountFx.p=fountFx.p.filter(q=>q.y<H+10 && q.life<260);
-    for(const q of fountFx.p){ q.vy+=0.12; q.x+=q.vx; q.y+=q.vy; q.life++;
-      x.beginPath(); x.arc(q.x,q.y,q.r,0,6.283); x.fillStyle=q.gold?"rgba(242,193,78,.9)":`rgba(${170+Math.round(Math.random()*40)},235,255,${q.vy<0?.75:.45})`; x.fill(); }
-    if(still && !fountFx.p.length){ // a still picture of the fountains for reduced motion
-      J.forEach(j=>{ for(let k=0;k<70;k++){ const t=k/70, px=j.x+Math.sin(k)*14*t, py=H-Math.sin(t*Math.PI)*H*0.45*j.h; x.beginPath(); x.arc(px,py,1.6,0,6.283); x.fillStyle="rgba(190,240,255,.55)"; x.fill(); } }); return; }
-    fountFx.raf=requestAnimationFrame(draw); };
-  draw();
-  document.addEventListener("visibilitychange",fountFx.vis=()=>{ if(document.hidden){ cancelAnimationFrame(fountFx.raf); } else if(fountFx.c){ cancelAnimationFrame(fountFx.raf); draw(); } });
-}
-function fountStop(){ if(!fountFx.c) return; cancelAnimationFrame(fountFx.raf); fountFx.c.remove(); fountFx.c=null; fountFx.p=[]; removeEventListener("resize",fountFx.size); document.removeEventListener("visibilitychange",fountFx.vis); }
-function applySkin(id){ if(id==="fount") setTimeout(fountStart,0); else fountStop(); if(id==="arcade8" && !document.getElementById("pixelCss")){ const l=document.createElement("link"); l.id="pixelCss"; l.rel="stylesheet"; l.href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"; document.head.appendChild(l); } const r=document.documentElement; r.removeAttribute("data-skin"); r.removeAttribute("data-theme"); if(id==="light"||id==="dark") r.setAttribute("data-theme",id); else if(id && id!=="auto") r.setAttribute("data-skin",id); }
+function applySkin(id){ if(id==="arcade8" && !document.getElementById("pixelCss")){ const l=document.createElement("link"); l.id="pixelCss"; l.rel="stylesheet"; l.href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"; document.head.appendChild(l); } const r=document.documentElement; r.removeAttribute("data-skin"); r.removeAttribute("data-theme"); if(id==="light"||id==="dark") r.setAttribute("data-theme",id); else if(id && id!=="auto") r.setAttribute("data-skin",id); }
 if(store.theme==="sunset"){ store.theme="tamworth"; save(); }
 if(store.theme==="graph"){ store.theme="slime"; save(); }
 if(store.theme==="postit"||store.theme==="highlighter"){ store.theme=store.theme==="postit"?"lanyard":"senior"; save(); } // replaced by the lanyard themes // Sunset became Tamworth Castle
