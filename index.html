@@ -3915,6 +3915,14 @@ const LAST_TABS={cards:"Flashcards", quiz:"Quiz", writing:"Writing practice"};
 (function(){ const _go=goTab, _arc=startArc;
   goTab=function(name){ if(LAST_TABS[name]){ G.lastAct={k:"tab", tab:name, label:LAST_TABS[name], t:Date.now()}; save(); } return _go.apply(this,arguments); };
   startArc=function(mode){ if(MODES[mode]) anGame(mode); if(MODES[mode] && !["boss","parent","proj","weekly"].includes(mode)){ G.lastAct={k:"arc", mode, label:MODES[mode].icon+" "+MODES[mode].name, t:Date.now()}; save(); } return _arc.apply(this,arguments); };
+  // the mini-games start through their own functions: count them in the stats under their own names
+  startMatch=(f=>function(){ anGame("match"); return f.apply(this,arguments); })(startMatch);
+  startTimeline=(f=>function(){ anGame("timeline"); return f.apply(this,arguments); })(startTimeline);
+  startSort=(f=>function(){ anGame("sort"); return f.apply(this,arguments); })(startSort);
+  startOrder=(f=>function(){ anGame("order"); return f.apply(this,arguments); })(startOrder);
+  startPsychle=(f=>function(){ anGame("psychle"); return f.apply(this,arguments); })(startPsychle);
+  startConnections=(f=>function(){ anGame("connections"); return f.apply(this,arguments); })(startConnections);
+  startParagraph=(f=>function(){ anGame("paragraph"); return f.apply(this,arguments); })(startParagraph);
 })();
 
 /* ---- 🧘 focus timer: 25 minutes, pop-ups paused, bonus XP for 15+ answers ---- */
