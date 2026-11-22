@@ -3158,7 +3158,7 @@ function showScroll(id, reread){
 function tapCounter(n, ms, fn){ let ts=[]; return ()=>{ const t=Date.now(); ts=ts.filter(x=>t-x<ms); ts.push(t); if(ts.length>=n){ ts=[]; fn(); } }; }
 document.querySelector(".top h1").addEventListener("click", tapCounter(5, 2500, ()=>{ G.sec.title=1; save(); checkBadges(); showScroll(1); }));
 /* Wakefield Mode easter egg: tap the title for gold confetti and a Mr W saying */
-const MRW_SAYS=["Keep right on! 💙","Did you TDEE that?","Quote the numbers!","Correlation isn't causation!","Basically Mr Wakefield."];
+const MRW_SAYS=["Keep right on! 💙","Did you PEEL that?","Quote the numbers!","Correlation isn't causation!","Basically Mr Wakefield."];
 let mrwLast=-1;
 document.querySelector(".top h1").addEventListener("click", ()=>{
   if(document.documentElement.dataset.skin!=="wakefield") return;
