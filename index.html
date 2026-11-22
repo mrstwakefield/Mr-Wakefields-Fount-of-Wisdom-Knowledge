@@ -1162,6 +1162,11 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 @keyframes shoot{0%{left:-20%;opacity:0}5%{opacity:1}30%{left:110%;opacity:0}100%{left:110%;opacity:0}}
 @media (prefers-reduced-motion:reduce){:root[data-skin="storm500"] body,:root[data-skin="storm500"] body::after,:root[data-skin="storm500"] .h1t,:root[data-skin="storm500"] .startbtn,:root[data-skin="storm500"] .xpbar i,:root[data-skin="galaxy1000"] body::before,:root[data-skin="galaxy1000"] body::after,:root[data-skin="galaxy1000"] .h1t,:root[data-skin="galaxy1000"] .top h1::before,:root[data-skin="galaxy1000"] .box,:root[data-skin="galaxy1000"] .plan-card,:root[data-skin="galaxy1000"] .hud,:root[data-skin="galaxy1000"] .petstrip,:root[data-skin="galaxy1000"] .tabs,:root[data-skin="galaxy1000"] .startbtn,:root[data-skin="galaxy1000"] .xpbar i{animation:none}}
 @media (prefers-reduced-motion:reduce){.skinfx *{animation:none!important}}
+.top{position:relative}
+.mrw-say{position:absolute;left:min(60%,420px);top:-6px;z-index:20;max-width:260px;padding:10px 14px;border-radius:16px 16px 16px 4px;background:linear-gradient(135deg,#FFF6D8,#FFE9A3);color:#3A2A08;border:2px solid #D4AF37;font-weight:800;font-size:17px;line-height:1.2;box-shadow:0 8px 22px rgba(0,0,0,.35);pointer-events:none;animation:mrwPop 2.6s ease-out forwards}
+@keyframes mrwPop{0%{opacity:0;transform:translateY(10px) scale(.6)}10%{opacity:1;transform:translateY(0) scale(1.06)}16%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
+@media (max-width:560px){.mrw-say{left:auto;right:0;top:-10px;max-width:70%}}
+@media (prefers-reduced-motion:reduce){.mrw-say{animation:none}}
 :root[data-skin="squeaks"] .box,:root[data-skin="squeaks"] .hud,:root[data-skin="squeaks"] .petstrip{border:3px solid #E0428C;box-shadow:6px 6px 0 #2A1030}
 :root[data-skin="squeaks"] header p,:root[data-skin="squeaks"] .sub,:root[data-skin="squeaks"] .count{text-shadow:0 0 6px #FF7EB6,0 0 10px #FF7EB6}
 :root[data-skin="squeaks"] h1{color:#2A1030;text-shadow:3px 3px 0 #FFD93B,6px 6px 0 #7CE0FF}
@@ -3152,6 +3157,17 @@ function showScroll(id, reread){
 // clicking the title 5 times / tapping the level ring 10 times
 function tapCounter(n, ms, fn){ let ts=[]; return ()=>{ const t=Date.now(); ts=ts.filter(x=>t-x<ms); ts.push(t); if(ts.length>=n){ ts=[]; fn(); } }; }
 document.querySelector(".top h1").addEventListener("click", tapCounter(5, 2500, ()=>{ G.sec.title=1; save(); checkBadges(); showScroll(1); }));
+/* Wakefield Mode easter egg: tap the title for gold confetti and a Mr W saying */
+const MRW_SAYS=["Keep right on! 💙","Did you TDEE that?","Quote the numbers!","Correlation isn't causation!","Basically Mr Wakefield."];
+let mrwLast=-1;
+document.querySelector(".top h1").addEventListener("click", ()=>{
+  if(document.documentElement.dataset.skin!=="wakefield") return;
+  let i; do{ i=Math.floor(Math.random()*MRW_SAYS.length); }while(i===mrwLast);
+  mrwLast=i; confetti(90,["#D4AF37","#FFE9A3","#B8860B","#FFF1C2"]);
+  const top=document.querySelector(".top"); top.querySelectorAll(".mrw-say").forEach(x=>x.remove());
+  const b=document.createElement("div"); b.className="mrw-say"; b.setAttribute("role","status"); b.textContent=MRW_SAYS[i];
+  top.appendChild(b); setTimeout(()=>b.remove(),2600);
+});
 $("#hudLvl").addEventListener("click", tapCounter(10, 4000, ()=>{ G.sec.ring=1; save(); checkBadges(); setTimeout(()=>showScroll(2),300); }));
 // typed words and the Konami code (ignored while typing in a box)
 const KONAMI=["arrowup","arrowup","arrowdown","arrowdown","arrowleft","arrowright","arrowleft","arrowright","b","a"];
