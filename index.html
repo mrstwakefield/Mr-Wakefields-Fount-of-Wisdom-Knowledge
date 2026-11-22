@@ -3581,7 +3581,7 @@ const PETS={
 const BOBO_N=50; /* bonus pet: after a wrong answer, get the next BOBO_N right in a row */
 const petOpen=k=>!!PETS[k] && (PETS[k].bonus ? !!(k==="hans"?G.hans:G.bobo) : lvlFor(G.xp)>=PETS[k].lvl) || (!!PETS[k] && (isTeacher()||DEMO));
 const HANS_N=100; /* bonus pet: 100 right in a row, no mistakes */
-const streakOk=k=>(G.hsBest||0)>=k.streak || isTeacher() || store.theme===k.id;
+const streakOk=k=>(G.hsBest||0)>=k.streak || isTeacher() || DEMO || store.theme===k.id;
 const STREAK_THEMES=[[500,"Synapse Storm","⚡"],[1000,"Galaxy Brain","🌌"]];
 function hansTrack(ok){
   if(!ok){ G.hs=0; return; }
