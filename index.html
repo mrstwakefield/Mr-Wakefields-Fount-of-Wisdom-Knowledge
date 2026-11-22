@@ -1109,6 +1109,58 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 #fx-squeaks .fl{left:auto;right:10px;top:auto;bottom:12px;width:92px;text-align:right}
 @keyframes ratRun{0%{offset-distance:0%;opacity:1}80%,96%{offset-distance:100%;opacity:1}99%,100%{offset-distance:100%;opacity:0}}
 @keyframes cheese{0%,80%{opacity:1;transform:none}86%{opacity:1;transform:scale(1.3)}92%,100%{opacity:0}}
+
+/* ---- streak themes: 500 and 1,000 right in a row ---- */
+:root[data-skin="storm500"]{--paper:#0A0420;--card:rgba(24,10,58,.88);--ink:#F3EEFF;--muted:#C4B5FD;--line:rgba(139,92,246,.55);--soft:rgba(49,24,110,.75);--good:#22D3EE;--good-bg:#0E3446;--warn:#F472B6;--warn-bg:#46163A;color-scheme:dark;background:radial-gradient(circle at 18% 8%,rgba(124,58,237,.45),transparent 42%),radial-gradient(circle at 85% 92%,rgba(34,211,238,.28),transparent 46%),#0A0420 fixed}
+:root[data-skin="storm500"] body{background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%27180%27%20height%3D%27180%27%3E%3Cg%20stroke%3D%27%238B5CF6%27%20stroke-opacity%3D%27.35%27%20stroke-width%3D%271.3%27%20fill%3D%27none%27%3E%3Cpath%20d%3D%27M18%2028L84%2062L150%2022M84%2062L58%20140L138%20128M84%2062L138%20128M150%2022L170%2096L138%20128M58%20140L10%20110L18%2028%27/%3E%3C/g%3E%3Cg%20fill%3D%27%2322D3EE%27%20fill-opacity%3D%27.7%27%3E%3Ccircle%20cx%3D%2718%27%20cy%3D%2728%27%20r%3D%273.2%27/%3E%3Ccircle%20cx%3D%2784%27%20cy%3D%2762%27%20r%3D%274.2%27/%3E%3Ccircle%20cx%3D%27150%27%20cy%3D%2722%27%20r%3D%273%27/%3E%3Ccircle%20cx%3D%2758%27%20cy%3D%27140%27%20r%3D%273.4%27/%3E%3Ccircle%20cx%3D%27138%27%20cy%3D%27128%27%20r%3D%273.8%27/%3E%3Ccircle%20cx%3D%27170%27%20cy%3D%2796%27%20r%3D%272.6%27/%3E%3Ccircle%20cx%3D%2710%27%20cy%3D%27110%27%20r%3D%272.6%27/%3E%3C/g%3E%3C/svg%3E") 0 0/180px 180px fixed;animation:stormDrift 40s linear infinite}
+@keyframes stormDrift{to{background-position:180px 360px}}
+:root[data-skin="storm500"] body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:2147483000;mix-blend-mode:screen;opacity:.6;background-image:radial-gradient(circle,#67E8F9 0 1.6px,transparent 2.6px),radial-gradient(circle,#F0ABFC 0 1.3px,transparent 2.2px);background-size:220px 160px,170px 240px;animation:stormSpark 7s linear infinite}
+@keyframes stormSpark{0%{background-position:0 0,40px 80px}100%{background-position:220px 160px,-130px 320px}}
+:root[data-skin="storm500"] .h1t{color:#F5F3FF;text-shadow:0 0 6px #A78BFA,0 0 16px #7C3AED,0 0 30px #22D3EE;animation:stormGlow 3s ease-in-out infinite}
+@keyframes stormGlow{0%,100%{text-shadow:0 0 6px #A78BFA,0 0 16px #7C3AED,0 0 28px #22D3EE}50%{text-shadow:0 0 8px #67E8F9,0 0 22px #22D3EE,0 0 40px #8B5CF6}}
+:root[data-skin="storm500"] .top h1::before{content:"⚡ "}
+:root[data-skin="storm500"] .box,:root[data-skin="storm500"] .plan-card,:root[data-skin="storm500"] .hud,:root[data-skin="storm500"] .petstrip,:root[data-skin="storm500"] .tabs{border-color:rgba(139,92,246,.7);box-shadow:0 0 0 1px rgba(34,211,238,.25),0 0 24px rgba(124,58,237,.35);backdrop-filter:blur(4px)}
+:root[data-skin="storm500"] .btn{background:linear-gradient(135deg,#22D3EE,#8B5CF6);border-color:#67E8F9;color:#0A0420;box-shadow:0 0 14px rgba(34,211,238,.5)}
+:root[data-skin="storm500"] .btn.ghost{background:transparent;color:#67E8F9;box-shadow:none}
+:root[data-skin="storm500"] .startbtn{background:linear-gradient(120deg,#7C3AED,#22D3EE 50%,#7C3AED);background-size:220% 100%;border-color:#67E8F9;color:#fff;animation:fountShine 5s linear infinite;box-shadow:0 0 22px rgba(34,211,238,.45)}
+:root[data-skin="storm500"] .xpbar i{background:linear-gradient(90deg,#7C3AED,#22D3EE,#F472B6,#7C3AED);background-size:200% 100%;animation:fountShine 3s linear infinite}
+:root[data-skin="galaxy1000"]{--paper:#050018;--card:rgba(16,8,48,.82);--ink:#FFF7FE;--muted:#D8C8FF;--line:rgba(255,95,210,.5);--soft:rgba(40,20,90,.7);--good:#A3E635;--good-bg:#24380E;--warn:#FFB86B;--warn-bg:#46280E;color-scheme:dark;background:#050018}
+:root[data-skin="galaxy1000"] body{background:transparent}
+:root[data-skin="galaxy1000"] body::before{content:"";position:fixed;inset:-10%;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 20% 25%,rgba(255,95,210,.45),transparent 40%),radial-gradient(ellipse at 80% 30%,rgba(124,92,255,.5),transparent 42%),radial-gradient(ellipse at 50% 85%,rgba(34,211,238,.38),transparent 45%),#050018;animation:nebula 24s linear infinite}
+@keyframes nebula{0%{filter:hue-rotate(0deg);transform:rotate(0deg) scale(1)}50%{transform:rotate(8deg) scale(1.08)}100%{filter:hue-rotate(360deg);transform:rotate(0deg) scale(1)}}
+:root[data-skin="galaxy1000"] body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:2147483000;mix-blend-mode:screen;opacity:.75;background-image:radial-gradient(circle,#fff 0 1.1px,transparent 1.8px),radial-gradient(circle,#FFE38A 0 1.4px,transparent 2.2px),radial-gradient(circle,#9FF3FF 0 1px,transparent 1.7px),radial-gradient(circle,#FF9DE6 0 1.2px,transparent 2px);background-size:110px 130px,240px 200px,170px 90px,300px 260px;animation:galaxyStars 30s linear infinite}
+@keyframes galaxyStars{0%{background-position:0 0,40px 60px,20px 10px,100px 30px}100%{background-position:-110px 130px,-200px 460px,190px 190px,-500px 290px}}
+:root[data-skin="galaxy1000"] .h1t{background:linear-gradient(90deg,#FF5FD2,#FFB86B,#FFE38A,#A3E635,#22D3EE,#7C5CFF,#FF5FD2);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:galaxyText 6s linear infinite;filter:drop-shadow(0 0 14px rgba(255,95,210,.45))}
+@keyframes galaxyText{to{background-position:300% 0}}
+:root[data-skin="galaxy1000"] .top h1::before{content:"🌌 ";display:inline-block;animation:fountBob 3s ease-in-out infinite}
+:root[data-skin="galaxy1000"] .h1t::after{content:" 🧠✨";-webkit-text-fill-color:initial;color:initial}
+@keyframes galaxySpin{to{transform:rotate(360deg)}}
+:root[data-skin="galaxy1000"] .box,:root[data-skin="galaxy1000"] .plan-card,:root[data-skin="galaxy1000"] .hud,:root[data-skin="galaxy1000"] .petstrip,:root[data-skin="galaxy1000"] .tabs{backdrop-filter:blur(6px);animation:galaxyEdge 8s linear infinite}
+@keyframes galaxyEdge{0%,100%{border-color:#FF5FD2;box-shadow:0 0 22px rgba(255,95,210,.35)}25%{border-color:#FFB86B;box-shadow:0 0 22px rgba(255,184,107,.35)}50%{border-color:#22D3EE;box-shadow:0 0 22px rgba(34,211,238,.35)}75%{border-color:#7C5CFF;box-shadow:0 0 22px rgba(124,92,255,.4)}}
+:root[data-skin="galaxy1000"] .btn{background:linear-gradient(135deg,#FF5FD2,#7C5CFF 55%,#22D3EE);border-color:#FFB4EC;color:#fff;box-shadow:0 0 16px rgba(255,95,210,.45)}
+:root[data-skin="galaxy1000"] .btn.ghost{background:transparent;color:#FF9DE6;box-shadow:none}
+:root[data-skin="galaxy1000"] .startbtn{background:linear-gradient(110deg,#FF5FD2,#FFB86B,#A3E635,#22D3EE,#7C5CFF,#FF5FD2);background-size:300% 100%;border-color:#fff;color:#130630;animation:galaxyText 6s linear infinite;box-shadow:0 0 26px rgba(255,255,255,.35)}
+:root[data-skin="galaxy1000"] .xpbar i{background:linear-gradient(90deg,#FF5FD2,#FFB86B,#FFE38A,#A3E635,#22D3EE,#7C5CFF,#FF5FD2);background-size:300% 100%;animation:galaxyText 3s linear infinite}
+/* scenes */
+:root[data-skin="storm500"] #fx-storm500,:root[data-skin="galaxy1000"] #fx-galaxy1000{display:block}
+#fx-storm500{background:rgba(10,4,32,.85)}
+#fx-storm500 .ap{animation:apRun 2.4s ease-in infinite}
+#fx-storm500 .nt{opacity:0;animation:ntGo 2.4s ease-out infinite}
+#fx-storm500 .nt2{animation-delay:.08s}#fx-storm500 .nt3{animation-delay:.16s}
+#fx-storm500 .sb{animation:somaB 2.4s ease-in-out infinite}
+@keyframes apRun{0%{transform:translateX(0);opacity:0}6%{opacity:1}55%{transform:translateX(150px);opacity:1}62%,100%{transform:translateX(150px);opacity:0}}
+@keyframes ntGo{0%,54%{opacity:0;transform:translateX(0)}60%{opacity:1}78%{opacity:1;transform:translateX(16px)}86%,100%{opacity:0;transform:translateX(18px)}}
+@keyframes somaB{0%,72%,100%{fill:#2E1065}80%{fill:#22D3EE}}
+#fx-galaxy1000{background:radial-gradient(circle at 50% 50%,rgba(124,92,255,.35),rgba(5,0,24,.9) 70%)}
+#fx-galaxy1000 .gb{left:50%;top:50%;font-size:44px;line-height:1;transform:translate(-50%,-50%);animation:brainPulse 2.6s ease-in-out infinite}
+#fx-galaxy1000 .orb{position:absolute;left:50%;top:50%;width:0;height:0;animation:galaxySpin 6s linear infinite}
+#fx-galaxy1000 .orb span{position:absolute;font-size:18px;line-height:1;transform:translate(-50%,-50%)}
+#fx-galaxy1000 .o2{animation-duration:9s;animation-direction:reverse}#fx-galaxy1000 .o3{animation-duration:4s}
+#fx-galaxy1000 .ss{left:-20%;top:18px;width:70px;height:2px;background:linear-gradient(90deg,transparent,#fff);border-radius:2px;transform:rotate(12deg);animation:shoot 5s linear infinite}
+#fx-galaxy1000 .ss+.ss{top:86px;animation-delay:2.4s;animation-duration:6s}
+@keyframes brainPulse{0%,100%{filter:drop-shadow(0 0 6px #FF5FD2);transform:translate(-50%,-50%) scale(1)}50%{filter:drop-shadow(0 0 16px #22D3EE);transform:translate(-50%,-50%) scale(1.1)}}
+@keyframes shoot{0%{left:-20%;opacity:0}5%{opacity:1}30%{left:110%;opacity:0}100%{left:110%;opacity:0}}
+@media (prefers-reduced-motion:reduce){:root[data-skin="storm500"] body,:root[data-skin="storm500"] body::after,:root[data-skin="storm500"] .h1t,:root[data-skin="storm500"] .startbtn,:root[data-skin="storm500"] .xpbar i,:root[data-skin="galaxy1000"] body::before,:root[data-skin="galaxy1000"] body::after,:root[data-skin="galaxy1000"] .h1t,:root[data-skin="galaxy1000"] .top h1::before,:root[data-skin="galaxy1000"] .box,:root[data-skin="galaxy1000"] .plan-card,:root[data-skin="galaxy1000"] .hud,:root[data-skin="galaxy1000"] .petstrip,:root[data-skin="galaxy1000"] .tabs,:root[data-skin="galaxy1000"] .startbtn,:root[data-skin="galaxy1000"] .xpbar i{animation:none}}
 @media (prefers-reduced-motion:reduce){.skinfx *{animation:none!important}}
 :root[data-skin="squeaks"] .box,:root[data-skin="squeaks"] .hud,:root[data-skin="squeaks"] .petstrip{border:3px solid #E0428C;box-shadow:6px 6px 0 #2A1030}
 :root[data-skin="squeaks"] header p,:root[data-skin="squeaks"] .sub,:root[data-skin="squeaks"] .count{text-shadow:0 0 6px #FF7EB6,0 0 10px #FF7EB6}
@@ -1345,6 +1397,8 @@ const SKINS=[
   {id:"petpeacock", name:"Darwin's Peacock", lvl:100, sw:["#0B2A3A","#2E8B57"], desc:"Unlocks with Darwin's peacock: the most impressive tail wins 🦚"},
   {id:"pethans", name:"Clever Hans", lvl:999, hidden:true, unlock:()=>petOpen("hans"), sw:["#EFE2C4","#A0673A"], desc:"Bonus: 100 right answers in a row, no mistakes 🐴"},
   {id:"petbobo", name:"Bobo Doll", lvl:999, hidden:true, unlock:()=>petOpen("bobo"), sw:["#FDE2E2","#E53935"], desc:"Bonus: bounce back from a wrong answer with 50 right in a row 🎈"},
+  {id:"storm500", name:"Synapse Storm", lvl:999, hidden:true, streak:500, sw:["#0A0420","#22D3EE"], desc:"500 right in a row: every neuron firing at once ⚡🧠"},
+  {id:"galaxy1000", name:"Galaxy Brain", lvl:999, hidden:true, streak:1000, sw:["#050018","#FF5FD2"], desc:"1,000 right in a row. Officially galaxy-brained 🌌🧠✨"},
   {id:"squeaks", name:"Professor Squeaks", lvl:100, sw:["#FF7EB6","#FFD93B"], desc:"Level 100: graduation day for your lab rat 🐀🧀🎓"},
   {id:"stan", name:"Stan Gold", lvl:100, sw:["#12100A","#F2C14E"], desc:"Dedicated Wakefield Stans only"},
   {id:"y12class", name:"Class of 2028", lvl:999, hidden:true, unlock:()=>store.year==="12"||isTeacher(), sw:["#EAF3FE","#6198EC"], desc:"Year 12 only 💙"},
@@ -1406,6 +1460,8 @@ const SKIN_FX={
   petpeacock:()=>`<span class="fl">Darwin: the showiest tail wins</span><div class="fa pk">${PET_ART.peacock(2,"happy",112)}</div><span class="fa sp" style="left:24px;top:30px">✨</span><span class="fa sp" style="left:118px;top:44px;animation-delay:.6s">✨</span><span class="fa sp" style="left:70px;top:22px;animation-delay:1.2s">✨</span><div class="fa ph">${PET_ART.peacock(1,"happy",84)}</div><span class="fa hz">💛</span><span class="fa hz">💛</span><span class="fa hz">💛</span>`,
   pethans:()=>`<span class="fl">Clever Hans counts (or does he?) 🐴</span><div class="fa hb">2 + 3 = <span class="hq">?</span><span class="ha">5</span></div>${[1,2,3,4,5].map(n=>`<span class="fa hn" style="animation-delay:${(n*0.56).toFixed(2)}s">${n}</span>`).join("")}<span class="fa cl">👏</span><div class="fa hh">${PET_ART.hans(3,"happy",100)}</div>`,
   petbobo:()=>`<span class="fl">Bandura's Bobo doll always bounces back 🎈</span><div class="fa ml">${MALLET}</div><div class="fa bd">${PET_ART.bobo(3,"happy",92)}</div><span class="fa bg">BOING!</span>`,
+  storm500:()=>`<span class="fl" style="color:#C4B5FD">Action potential → synapse ⚡</span><svg viewBox="0 0 320 124" preserveAspectRatio="xMidYMid meet"><g stroke="#A78BFA" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M30 62L10 44M30 62L8 70M34 50L22 30M34 74L24 96"/><path d="M58 62H206"/><path d="M206 62L220 46M206 62L224 62M206 62L220 78"/><path d="M252 50L242 40M252 74L242 86M250 62H240"/><path d="M290 62L312 46M290 62L314 76"/></g><g fill="#5B21B6" stroke="#C4B5FD" stroke-width="1"><rect x="72" y="56" width="26" height="12" rx="6"/><rect x="108" y="56" width="26" height="12" rx="6"/><rect x="144" y="56" width="26" height="12" rx="6"/><rect x="180" y="56" width="20" height="12" rx="6"/></g><circle cx="42" cy="62" r="16" fill="#2E1065" stroke="#C4B5FD" stroke-width="2"/><g fill="#C4B5FD"><circle cx="222" cy="45" r="4"/><circle cx="226" cy="62" r="4"/><circle cx="222" cy="79" r="4"/></g><circle class="sb" cx="270" cy="62" r="16" fill="#2E1065" stroke="#C4B5FD" stroke-width="2"/><circle class="ap" cx="58" cy="62" r="6" fill="#67E8F9" style="filter:drop-shadow(0 0 6px #22D3EE)"/><g fill="#F472B6"><circle class="nt" cx="230" cy="54" r="2.6"/><circle class="nt nt2" cx="230" cy="62" r="2.6"/><circle class="nt nt3" cx="230" cy="70" r="2.6"/></g></svg>`,
+  galaxy1000:()=>`<span class="fl" style="color:#FFB4EC">1,000 in a row 🌌</span><span class="fa ss"></span><span class="fa ss"></span><div class="orb o1"><span style="left:0;top:-46px">⭐</span><span style="left:0;top:46px">✨</span></div><div class="orb o2"><span style="left:-58px;top:0">🌙</span><span style="left:58px;top:0">☄️</span></div><div class="orb o3"><span style="left:30px;top:0;font-size:12px">✨</span></div><span class="fa gb">🧠</span>`,
   squeaks:()=>`<div class="mz">${MAZE}<span class="ch">🧀</span><div class="rt">${petSVG(5,"happy",40)}</div></div><span class="fl">Professor Squeaks runs the maze 🎓</span>`
 };
 function skinFxMake(id){ const f=SKIN_FX[id]; if(!f || document.getElementById("fx-"+id)) return; const top=document.querySelector(".top"); if(!top) return;
@@ -3525,9 +3581,12 @@ const PETS={
 const BOBO_N=50; /* bonus pet: after a wrong answer, get the next BOBO_N right in a row */
 const petOpen=k=>!!PETS[k] && (PETS[k].bonus ? !!(k==="hans"?G.hans:G.bobo) : lvlFor(G.xp)>=PETS[k].lvl) || (!!PETS[k] && (isTeacher()||DEMO));
 const HANS_N=100; /* bonus pet: 100 right in a row, no mistakes */
+const streakOk=k=>(G.hsBest||0)>=k.streak || isTeacher() || store.theme===k.id;
+const STREAK_THEMES=[[500,"Synapse Storm","⚡"],[1000,"Galaxy Brain","🌌"]];
 function hansTrack(ok){
   if(!ok){ G.hs=0; return; }
   G.hs=(G.hs||0)+1; if(G.hs>(G.hsBest||0)) G.hsBest=G.hs;
+  STREAK_THEMES.forEach(([n,name,emo])=>{ G.strk=G.strk||{}; if(G.hs===n && !G.strk[n]){ G.strk[n]=1; save(); setTimeout(()=>{ confetti(400); sfx("badge"); toast(emo,`${n.toLocaleString()} in a row! ${name} theme unlocked`,"Find it in the Themes tab. That's an incredible run."); },1300); } });
   if(G.hs>=HANS_N && !G.hans){ G.hans=1; G.hansLvl=lvlFor(G.xp); save(); setTimeout(()=>{ confetti(240); sfx("badge"); toast("🐴","Bonus pet unlocked: Clever Hans!",`${HANS_N} right in a row with no mistakes. Clever indeed. The Clever Hans theme is yours too.`); },900); }
 }
 function boboTrack(ok){
@@ -5072,9 +5131,9 @@ function renderTrophies(){
       return `<div class="box" id="weakBox"><h3>Weak spots <small>How often you get each topic right</small></h3>${ts.length?ts.map(x=>bar(x.name,x.acc,x.n,x.c)).join("")+(ys.length?`<h4 class="wh">By type of question</h4>`+ys.map(([k,v])=>bar(k,v[0]/v[1],v[1],"var(--ink)")).join(""):"")+(weakest(1).length?`<div class="btnrow" style="margin-top:12px"><button class="btn" id="weakGo">🎯 Fix my weak spots</button></div>`:`<p class="muted" style="margin:10px 0 0;font-size:14px">Answer at least ${WEAK_MIN} questions in a topic to unlock Fix my weak spots.</p>`):`<p class="muted" style="margin:0">Answer some flashcards, quizzes or Arcade questions and your strongest and weakest topics will appear here.</p>`}</div>`; })()}
     </section>
 <section data-sec="themes" class="ts-themes">
-    <div class="box"><h3>Themes <small>A new one every 4 levels, bonus themes hidden in the secret scrolls, and three for your year group</small></h3>${(()=>{ const vis=SKINS.filter(k=>!k.hidden||(k.unlock?k.unlock():allScrolls())), isOk=k=>k.hidden?true:(n>=k.lvl||store.theme===k.id);
-      const card=k=>{ const ok=isOk(k), on=(store.theme||"auto")===k.id; return `<button class="skin ${on?"on":""}" data-skin="${k.id}" ${ok?"":"disabled"} aria-pressed="${on}"><span class="sw" style="background:linear-gradient(135deg,${k.sw[0]} 50%,${k.sw[1]} 50%)"></span><b>${esc(k.name)}</b><span>${ok?esc(k.desc):"🔒 Level "+k.lvl}</span></button>`; };
-      const okL=vis.filter(isOk), lockL=vis.filter(k=>!isOk(k)).sort((a,b)=>a.lvl-b.lvl);
+    <div class="box"><h3>Themes <small>A new one every 4 levels, bonus themes hidden in the secret scrolls, and three for your year group</small></h3>${(()=>{ const vis=SKINS.filter(k=>!k.hidden||k.streak||(k.unlock?k.unlock():allScrolls())), isOk=k=>k.streak?streakOk(k):k.hidden?true:(n>=k.lvl||store.theme===k.id);
+      const card=k=>{ const ok=isOk(k), on=(store.theme||"auto")===k.id; return `<button class="skin ${on?"on":""}" data-skin="${k.id}" ${ok?"":"disabled"} aria-pressed="${on}"><span class="sw" style="background:linear-gradient(135deg,${k.sw[0]} 50%,${k.sw[1]} 50%)"></span><b>${esc(k.name)}</b><span>${ok?esc(k.desc):k.streak?`🔒 ${k.streak.toLocaleString()} right in a row (best so far: ${Math.min(G.hsBest||0,k.streak)})`:"🔒 Level "+k.lvl}</span></button>`; };
+      const okL=vis.filter(isOk), lockL=vis.filter(k=>!isOk(k)).sort((a,b)=>(a.streak||0)-(b.streak||0)||a.lvl-b.lvl);
       return `<h4 class="skin-h">Unlocked <small>${okL.length}</small></h4><div class="skins">${okL.map(card).join("")}</div>${lockL.length?`<h4 class="skin-h">Still to unlock <small>${lockL.length}</small></h4><div class="skins">${lockL.map(card).join("")}</div>`:""}`; })()}</div>
     </section>
 <section data-sec="badges" class="ts-certs">
