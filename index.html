@@ -1169,8 +1169,37 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 :root[data-skin="stan"] .xpbar i,:root[data-skin="gold"] .xpbar i{background:linear-gradient(90deg,#B8860B,#F2C14E,#FFE9A3)}
 :root[data-skin="neon"] .xpbar i{background:linear-gradient(90deg,#3CF2A0,#00D1FF,#B26BFF)}
 :root[data-skin="wakefield"]{--paper:#0F3D2E;--card:#14503C;--ink:#FFF8E1;--muted:#C9D8C2;--line:#23664F;--soft:#1B5A45;--good:#F2C14E;--good-bg:#3A3315;--warn:#FF9F6E;--warn-bg:#4A2414;color-scheme:dark}
-:root[data-skin="wakefield"] .xpbar i{background:linear-gradient(90deg,#B8860B,#D4AF37,#FFE9A3)}
-:root[data-skin="wakefield"] .top h1::before{content:"✦ ";color:#D4AF37}
+:root[data-skin="wakefield"]{background:radial-gradient(ellipse at 50% -10%,#2A7A5C 0%,#0F3D2E 55%,#082A1F 100%) fixed #0F3D2E}
+:root[data-skin="wakefield"] body{background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%27160%27%20height%3D%27160%27%20opacity%3D%27.32%27%3E%3Ctext%20x%3D%2712%27%20y%3D%2740%27%20font-size%3D%2726%27%3E%F0%9F%93%9C%3C/text%3E%3Ctext%20x%3D%2796%27%20y%3D%2770%27%20font-size%3D%2720%27%20fill%3D%27%23D4AF37%27%3E%E2%9C%A6%3C/text%3E%3Ctext%20x%3D%2740%27%20y%3D%27120%27%20font-size%3D%2722%27%20fill%3D%27%23D4AF37%27%3E%E2%9C%A6%3C/text%3E%3Ctext%20x%3D%27104%27%20y%3D%27146%27%20font-size%3D%2724%27%3E%F0%9F%93%9C%3C/text%3E%3Ctext%20x%3D%2770%27%20y%3D%2726%27%20font-size%3D%2714%27%20fill%3D%27%23FFE9A3%27%3E%E2%9C%A6%3C/text%3E%3C/svg%3E") 0 0/160px 160px;animation:wkFloat 30s linear infinite}
+@keyframes wkFloat{to{background-position:0 -640px}}
+:root[data-skin="wakefield"] body::before{content:"";position:fixed;inset:-50%;z-index:-1;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,233,163,.07) 0 8deg,transparent 8deg 22deg);animation:galaxySpin 90s linear infinite}
+:root[data-skin="wakefield"] body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:2147483000;mix-blend-mode:screen;opacity:.6;background-image:radial-gradient(circle,#FFE9A3 0 1.4px,transparent 2.3px),radial-gradient(circle,#D4AF37 0 1.1px,transparent 1.9px);background-size:190px 210px,130px 170px;animation:wkGlitter 10s linear infinite}
+@keyframes wkGlitter{0%{background-position:0 0,50px 70px;opacity:.35}50%{opacity:.75}100%{background-position:0 -210px,50px -100px;opacity:.35}}
+:root[data-skin="wakefield"] .top h1::before{content:"✦ ";color:#D4AF37;display:inline-block;animation:galaxySpin 6s linear infinite;-webkit-text-fill-color:#D4AF37}
+:root[data-skin="wakefield"] .h1t{background:linear-gradient(100deg,#9A7414 0%,#FFF1C2 18%,#D4AF37 36%,#FFFBEA 50%,#D4AF37 64%,#FFF1C2 82%,#9A7414 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:fountShine 5s linear infinite;filter:drop-shadow(0 2px 0 #082A1F) drop-shadow(0 0 16px rgba(212,175,55,.4))}
+:root[data-skin="wakefield"] .h1t::after{content:" 📜";-webkit-text-fill-color:initial;color:initial;display:inline-block;animation:fountBob 3s ease-in-out infinite}
+:root[data-skin="wakefield"] .box,:root[data-skin="wakefield"] .plan-card,:root[data-skin="wakefield"] .hud,:root[data-skin="wakefield"] .petstrip,:root[data-skin="wakefield"] .tabs{border:1px solid #D4AF37;box-shadow:inset 0 0 0 3px var(--card),inset 0 0 0 4px rgba(212,175,55,.55),0 10px 30px rgba(0,0,0,.35),0 0 18px rgba(212,175,55,.15)}
+:root[data-skin="wakefield"] .btn{background:linear-gradient(135deg,#FFE9A3,#D4AF37 50%,#9A7414);border-color:#D4AF37;color:#082A1F;box-shadow:0 0 14px rgba(212,175,55,.35)}
+:root[data-skin="wakefield"] .btn.ghost{background:transparent;color:#FFE9A3;box-shadow:none}
+:root[data-skin="wakefield"] .startbtn{background:linear-gradient(120deg,#9A7414,#FFE9A3 30%,#D4AF37 55%,#9A7414);background-size:220% 100%;border-color:#FFE9A3;color:#082A1F;animation:fountShine 6s linear infinite}
+:root[data-skin="wakefield"] .xpbar i{background:linear-gradient(90deg,#9A7414,#D4AF37,#FFE9A3,#E0429A,#D4AF37);background-size:200% 100%;animation:fountShine 4s linear infinite}
+:root[data-skin="wakefield"] #fx-wakefield{display:block;background:rgba(8,42,31,.75);border-color:#D4AF37}
+#fx-wakefield .wsc{left:22px;top:22px;height:84px;width:0;background:linear-gradient(180deg,#FBF0D2,#EBD6A2);border-top:2px solid #C9A65A;border-bottom:2px solid #C9A65A;animation:wkUnroll 7s ease-in-out infinite}
+#fx-wakefield .wsc::before,#fx-wakefield .wsc::after{content:"";position:absolute;top:-8px;bottom:-8px;width:12px;border-radius:6px;background:linear-gradient(90deg,#8B5A2B,#D9A766,#8B5A2B)}
+#fx-wakefield .wsc::before{left:-8px}#fx-wakefield .wsc::after{right:-8px}
+#fx-wakefield .wl{position:absolute;left:14px;right:14px;height:2px;background:rgba(90,60,20,.25)}
+#fx-wakefield .tk{left:0;font-weight:900;font-size:20px;color:#E0429A;opacity:0}
+#fx-wakefield .tk1{left:44px;top:30px;animation:wkTick1 7s infinite}#fx-wakefield .tk2{left:94px;top:52px;animation:wkTick2 7s infinite}#fx-wakefield .tk3{left:144px;top:74px;animation:wkTick3 7s infinite}
+#fx-wakefield .pen{left:30px;top:22px;font-size:26px;opacity:0;animation:wkPen 7s ease-in-out infinite}
+#fx-wakefield .seal{right:26px;top:26px;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFE9A3,#D4AF37 55%,#9A7414);box-shadow:0 0 0 4px rgba(212,175,55,.35),0 6px 16px rgba(0,0,0,.4);color:#4A1430;font-weight:900;font-size:26px;line-height:70px;text-align:center;opacity:0;animation:wkSeal 7s infinite}
+#fx-wakefield .fl{left:auto;right:10px;top:auto;bottom:6px;color:#FFE9A3}
+@keyframes wkUnroll{0%{width:0}16%,86%{width:190px}96%,100%{width:0}}
+@keyframes wkPen{0%,18%{opacity:0;transform:translate(0,0)}22%{opacity:1}30%{transform:translate(40px,4px) rotate(-8deg)}40%{transform:translate(90px,26px) rotate(6deg)}50%{transform:translate(140px,48px) rotate(-6deg)}56%{opacity:1;transform:translate(150px,50px)}60%,100%{opacity:0;transform:translate(150px,50px)}}
+@keyframes wkTick1{0%,29%{opacity:0;transform:scale(.4)}32%,86%{opacity:1;transform:none}92%,100%{opacity:0}}
+@keyframes wkTick2{0%,39%{opacity:0;transform:scale(.4)}42%,86%{opacity:1;transform:none}92%,100%{opacity:0}}
+@keyframes wkTick3{0%,49%{opacity:0;transform:scale(.4)}52%,86%{opacity:1;transform:none}92%,100%{opacity:0}}
+@keyframes wkSeal{0%,58%{opacity:0;transform:scale(2.6) rotate(-30deg)}63%{opacity:1;transform:scale(.9) rotate(-8deg)}67%,86%{opacity:1;transform:scale(1) rotate(-8deg)}92%,100%{opacity:0;transform:scale(1) rotate(-8deg)}}
+@media (prefers-reduced-motion:reduce){:root[data-skin="wakefield"] body,:root[data-skin="wakefield"] body::before,:root[data-skin="wakefield"] body::after,:root[data-skin="wakefield"] .top h1::before,:root[data-skin="wakefield"] .h1t,:root[data-skin="wakefield"] .h1t::after,:root[data-skin="wakefield"] .startbtn,:root[data-skin="wakefield"] .xpbar i{animation:none}}
 </style>
 </head>
 <body>
@@ -1419,7 +1448,7 @@ const SKINS=[
   {id:"pavlov", name:"Conditioned Response", lvl:999, hidden:true, unlock:()=>chalDone(8), sw:["#F6E7D2","#A0602C"], desc:"You've been conditioned to get excited about XP"},
   {id:"slime", name:"Mr W's Lanyard", lvl:999, hidden:true, unlock:()=>chalDone(11), sw:["#A2C13C","#1E2A08"], desc:"Lime green, obviously 🟢"},
   {id:"arcade8", name:"8-bit Arcade", lvl:999, hidden:true, unlock:()=>chalDone(6), sw:["#0B0B1E","#FF2E9A"], desc:"Unlocked by the rarest scroll 🎮"},
-  {id:"wakefield", name:"Wakefield Mode", lvl:999, hidden:true, sw:["#0F3D2E","#D4AF37"], desc:"Keeper of the Scrolls ✦"}
+  {id:"wakefield", name:"Wakefield Mode", lvl:999, hidden:true, sw:["#0F3D2E","#D4AF37"], desc:"Keeper of the Scrolls: gold, glitter, and full marks from Mr W himself ✦📜"}
 ];
 /* ⛲ fountains for The Fount theme: jets of water droplets with a little gold sparkle */
 const fountFx={raf:0,c:null,p:[]};
@@ -1462,6 +1491,7 @@ const SKIN_FX={
   petbobo:()=>`<span class="fl">Bandura's Bobo doll always bounces back 🎈</span><div class="fa ml">${MALLET}</div><div class="fa bd">${PET_ART.bobo(3,"happy",92)}</div><span class="fa bg">BOING!</span>`,
   storm500:()=>`<span class="fl" style="color:#C4B5FD">Action potential → synapse ⚡</span><svg viewBox="0 0 320 124" preserveAspectRatio="xMidYMid meet"><g stroke="#A78BFA" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M30 62L10 44M30 62L8 70M34 50L22 30M34 74L24 96"/><path d="M58 62H206"/><path d="M206 62L220 46M206 62L224 62M206 62L220 78"/><path d="M252 50L242 40M252 74L242 86M250 62H240"/><path d="M290 62L312 46M290 62L314 76"/></g><g fill="#5B21B6" stroke="#C4B5FD" stroke-width="1"><rect x="72" y="56" width="26" height="12" rx="6"/><rect x="108" y="56" width="26" height="12" rx="6"/><rect x="144" y="56" width="26" height="12" rx="6"/><rect x="180" y="56" width="20" height="12" rx="6"/></g><circle cx="42" cy="62" r="16" fill="#2E1065" stroke="#C4B5FD" stroke-width="2"/><g fill="#C4B5FD"><circle cx="222" cy="45" r="4"/><circle cx="226" cy="62" r="4"/><circle cx="222" cy="79" r="4"/></g><circle class="sb" cx="270" cy="62" r="16" fill="#2E1065" stroke="#C4B5FD" stroke-width="2"/><circle class="ap" cx="58" cy="62" r="6" fill="#67E8F9" style="filter:drop-shadow(0 0 6px #22D3EE)"/><g fill="#F472B6"><circle class="nt" cx="230" cy="54" r="2.6"/><circle class="nt nt2" cx="230" cy="62" r="2.6"/><circle class="nt nt3" cx="230" cy="70" r="2.6"/></g></svg>`,
   galaxy1000:()=>`<span class="fl" style="color:#FFB4EC">1,000 in a row 🌌</span><span class="fa ss"></span><span class="fa ss"></span><div class="orb o1"><span style="left:0;top:-46px">⭐</span><span style="left:0;top:46px">✨</span></div><div class="orb o2"><span style="left:-58px;top:0">🌙</span><span style="left:58px;top:0">☄️</span></div><div class="orb o3"><span style="left:30px;top:0;font-size:12px">✨</span></div><span class="fa gb">🧠</span>`,
+  wakefield:()=>`<div class="fa wsc"><span class="wl" style="top:22px"></span><span class="wl" style="top:44px"></span><span class="wl" style="top:66px"></span></div><span class="fa tk tk1">✓</span><span class="fa tk tk2">✓</span><span class="fa tk tk3">✓</span><span class="fa pen">🖊️</span><div class="fa seal">A*</div><span class="fl">Marked by Mr W ✦</span>`,
   squeaks:()=>`<div class="mz">${MAZE}<span class="ch">🧀</span><div class="rt">${petSVG(5,"happy",40)}</div></div><span class="fl">Professor Squeaks runs the maze 🎓</span>`
 };
 function skinFxMake(id){ const f=SKIN_FX[id]; if(!f || document.getElementById("fx-"+id)) return; const top=document.querySelector(".top"); if(!top) return;
