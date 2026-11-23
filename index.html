@@ -3916,7 +3916,7 @@ function petDance(){ const a=$("#petArt"); if(!a) return;
 }
 function wirePet(){
   const pa=$("#petArt"); if(pa) pa.onclick=petDance;
-  document.querySelectorAll("[data-pet]").forEach(c=>c.onclick=()=>{ if(c.disabled) return; G.petType=c.dataset.pet; save(); renderTrophies(); petHud(); });
+  document.querySelectorAll("[data-pet]").forEach(c=>c.onclick=()=>{ if(c.disabled) return; G.petType=c.dataset.pet; save(); track("Pet picked",(PETS[G.petType]||{}).def||G.petType); renderTrophies(); petHud(); });
   const b=$("#petRename"); if(b) b.onclick=()=>{
   const pt=petType();
   let n=prompt(`Name your ${PT().noun} (letters only, up to 20):`, petName());
@@ -3974,7 +3974,7 @@ function openFlag(id){
   const close=()=>{ o.remove(); document.removeEventListener("keydown",k,true); }, k=e=>{ if(e.key==="Escape"){ e.stopPropagation(); close(); } };
   document.addEventListener("keydown",k,true);
   o.onclick=e=>{ if(e.target===o||e.target.id==="flNo") return close(); const r=e.target.closest("[data-r]"); if(!r) return;
-    G.flags=G.flags||{}; G.flags[id]=[+r.dataset.r, dayNum(today())];
+    G.flags=G.flags||{}; G.flags[id]=[+r.dataset.r, dayNum(today())]; track("Card reported","");
     const ks=Object.keys(G.flags); if(ks.length>60) ks.sort((a,b)=>G.flags[a][1]-G.flags[b][1]).slice(0,ks.length-60).forEach(x=>delete G.flags[x]);
     save(); close(); toast("⚑","Thanks for reporting it","It'll be in your next progress report to Mr W.");
     document.querySelectorAll(`[data-flag="${id}"]`).forEach(b=>b.textContent="⚑ Reported. Thanks!"); };
@@ -3994,31 +3994,38 @@ function smartNext(){
 const ANALYTICS_URL="https://script.google.com/macros/s/AKfycbzLt7BqToSWwdeo30YCt9ucdlBHI_rsgTfvc6t7MaGfcOPaKDNNK-0ZCTUlapycPYP0Vw/exec";   // the Google Apps Script web app URL (ends in /exec)
 const AN_KEY="fount-al-an-q";
 const anOn=()=>!!ANALYTICS_URL && !DEMO && !isTeacher() && !store.anOff && location.protocol!=="file:";
-let AN=(()=>{ try{ const x=JSON.parse(localStorage.getItem(AN_KEY)||"null"); if(x && x.cards) return x; }catch(e){} return {plays:{}, modes:{}, cards:{}, n:0}; })();
+let AN=(()=>{ try{ const x=JSON.parse(localStorage.getItem(AN_KEY)||"null"); if(x && x.cards){ x.ev=x.ev||{}; x.hrs=x.hrs||{}; x.sec=x.sec||0; return x; } }catch(e){} return {plays:{}, modes:{}, cards:{}, n:0, ev:{}, hrs:{}, sec:0}; })();
 function anSave(){ try{ localStorage.setItem(AN_KEY, JSON.stringify(AN)); }catch(e){} }
 delete G.an; delete G.anId;   // the old one-row-per-device version
 /* the assessment objective a card mainly tests, for the stats sheet */
 function anAO(d){ if(d.t==="Exam skills") return "Exam skills"; if(cardType(d)==="Evaluation") return "AO3";
   if(/\n|scenario|in the context|apply|a psychologist|a researcher|which (test|design|concept)/i.test(d.q)) return "AO2"; return "AO1"; }
 let anMode="Flashcards";   // which game the next answers belong to
-function anGame(mode){ const k=(MODES[mode]&&MODES[mode].name)||mode; anMode=k; if(!anOn()) return; AN.plays[k]=(AN.plays[k]||0)+1; anSave(); }
+function anHour(){ const h=String(new Date().getHours()).padStart(2,"0"); AN.hrs[h]=(AN.hrs[h]||0)+1; }
+/* count a feature being used: track("Theme picked","Galaxy Brain"). Totals only, never anything typed. */
+function track(name, detail){ if(!anOn()) return; const k=String(name).slice(0,40)+"|"+String(detail==null?"":detail).slice(0,60); AN.ev[k]=(AN.ev[k]||0)+1; anHour(); anSave(); }
+function anGame(mode){ const k=(MODES[mode]&&MODES[mode].name)||mode; anMode=k; if(!anOn()) return; AN.plays[k]=(AN.plays[k]||0)+1; anHour(); anSave(); }
 function anAnswer(mode, ok){ if(!anOn()) return; const k=mode==="quiz"?"Quiz":mode==="cards"?"Flashcards":mode==="arcade"?anMode:(mode||"Other");
-  const m=AN.modes[k]=AN.modes[k]||[0,0]; m[ok?0:1]++; AN.n++; if(AN.n>=25) anFlush(false); else anSave(); }
+  const m=AN.modes[k]=AN.modes[k]||[0,0]; m[ok?0:1]++; AN.n++; anHour(); if(AN.n>=25) anFlush(false); else anSave(); }
 function anCard(d, ok){ if(!anOn() || !d) return; const c=AN.cards[d.id]=AN.cards[d.id]||[0,0]; c[ok?0:1]++; anSave(); }
 function anFlush(beacon){
-  if(!anOn() || (!AN.n && !Object.keys(AN.plays).length && !Object.keys(AN.cards).length)) return;
+  if(!anOn() || (!AN.n && !AN.sec && !Object.keys(AN.plays).length && !Object.keys(AN.cards).length && !Object.keys(AN.ev).length)) return;
   const u={}; try{ if(!localStorage.getItem("fount-al-an-ever")){ u.n=1; localStorage.setItem("fount-al-an-ever","1"); } if(localStorage.getItem("fount-al-an-day")!==today()){ u.d=1; localStorage.setItem("fount-al-an-day",today()); } }catch(e){}
-  const body=JSON.stringify({v:1, d:today(), y:store.year==="12"||store.year==="13"?"y"+store.year:"", u, plays:AN.plays, modes:AN.modes,
+  const body=JSON.stringify({v:1, d:today(), y:store.year==="12"||store.year==="13"?"y"+store.year:"", u, plays:AN.plays, modes:AN.modes, sec:Math.round(AN.sec), hrs:AN.hrs,
+    ev:Object.entries(AN.ev).slice(0,60).map(([k,n])=>{ const i=k.indexOf("|"); return [k.slice(0,i), k.slice(i+1), n]; }),
     cards:Object.entries(AN.cards).slice(0,300).map(([id,[r,w]])=>{ const d=BY_ID[id]; return [+id, r, w, d?((TMAP[d.t]||{}).name||d.t):"", d?String(d.q).slice(0,90):"", d?anAO(d):""]; })});
-  AN={plays:{}, modes:{}, cards:{}, n:0}; anSave();
+  AN={plays:{}, modes:{}, cards:{}, n:0, ev:{}, hrs:{}, sec:0}; anSave();
   try{ if(beacon && navigator.sendBeacon) navigator.sendBeacon(ANALYTICS_URL, new Blob([body],{type:"text/plain"}));
        else fetch(ANALYTICS_URL,{method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain"}, body, keepalive:true}).catch(()=>{}); }catch(e){}
 }
-if(ANALYTICS_URL){ document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden") anFlush(true); }); setInterval(()=>anFlush(false), 5*60*1000); }
+if(ANALYTICS_URL){ document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden") anFlush(true); }); setInterval(()=>anFlush(false), 5*60*1000);
+  // time on the site: counts 15-second blocks while the page is open and on screen
+  setInterval(()=>{ if(anOn() && document.visibilityState==="visible"){ AN.sec+=15; anSave(); } }, 15000);
+  setTimeout(()=>track("Site opened", matchMedia("(pointer:coarse)").matches?"Phone/tablet":"Computer"), 2000); }
 /* remember the last thing they were doing, for "Carry on" */
 const LAST_TABS={cards:"Flashcards", quiz:"Quiz", writing:"Writing practice"};
 (function(){ const _go=goTab, _arc=startArc;
-  goTab=function(name){ if(LAST_TABS[name]){ G.lastAct={k:"tab", tab:name, label:LAST_TABS[name], t:Date.now()}; save(); } return _go.apply(this,arguments); };
+  goTab=function(name){ track("Tab opened", ({cards:"Flashcards",quiz:"Quiz",arcade:"Arcade",browse:"Browse",writing:"Writing",progress:"Progress",weak:"Weak spots",badges:"Badges",scrolls:"Secret scrolls",themes:"Themes",saves:"Saves",leaderboard:"Leaderboard"})[name]||name); if(LAST_TABS[name]){ G.lastAct={k:"tab", tab:name, label:LAST_TABS[name], t:Date.now()}; save(); } return _go.apply(this,arguments); };
   startArc=function(mode){ if(MODES[mode]) anGame(mode); if(MODES[mode] && !["boss","parent","proj","weekly"].includes(mode)){ G.lastAct={k:"arc", mode, label:MODES[mode].icon+" "+MODES[mode].name, t:Date.now()}; save(); } return _arc.apply(this,arguments); };
   // the mini-games start through their own functions: count them in the stats under their own names
   startMatch=(f=>function(){ anGame("match"); return f.apply(this,arguments); })(startMatch);
@@ -4028,6 +4035,14 @@ const LAST_TABS={cards:"Flashcards", quiz:"Quiz", writing:"Writing practice"};
   startPsychle=(f=>function(){ anGame("psychle"); return f.apply(this,arguments); })(startPsychle);
   startConnections=(f=>function(){ anGame("connections"); return f.apply(this,arguments); })(startConnections);
   startParagraph=(f=>function(){ anGame("paragraph"); return f.apply(this,arguments); })(startParagraph);
+  arcFinish=(f=>function(){ const was=arc.phase; const r=f.apply(this,arguments); if(was==="play" && arc.phase==="done") track("Game finished",(MODES[arc.mode]||{}).name||arc.mode); return r; })(arcFinish);
+  finishMini=(f=>function(){ track("Game finished",anMode); return f.apply(this,arguments); })(finishMini);
+  levelUp=(f=>function(n){ track("Level reached","Level "+n); return f.apply(this,arguments); })(levelUp);
+  startFocus=(f=>function(){ track("Focus session","Started"); return f.apply(this,arguments); })(startFocus);
+  stopFocus=(f=>function(fin){ if(fin) track("Focus session","Finished"); return f.apply(this,arguments); })(stopFocus);
+  showSendQR=(f=>function(){ track("Progress moved","QR code shown"); return f.apply(this,arguments); })(showSendQR);
+  startScanQR=(f=>function(){ track("Progress moved","QR code scanned"); return f.apply(this,arguments); })(startScanQR);
+  shareProgressLink=(f=>function(){ track("Progress moved","Link copied"); return f.apply(this,arguments); })(shareProgressLink);
 })();
 
 /* ---- 🧘 focus timer: 25 minutes, pop-ups paused, bonus XP for 15+ answers ---- */
@@ -4879,7 +4894,7 @@ function renderMock(area,seg){
     area.innerHTML=`${seg}<div class="empty" style="text-align:left"><h3 style="text-align:center">📝 Mini mock paper</h3><p style="text-align:center">A short timed paper in the style of the real exam: multiple choice, short answers, Apply it, maths (Paper 2) and an 8-mark essay. About 25–30 marks and 35 minutes. Multiple choice marks itself; you self-mark the rest against model answers.</p>
       <div class="designs">${Object.entries(PAPERS).filter(([k])=>!(store.year==="12" && k==="3")).map(([k,P])=>`<button class="dcard" data-p="${k}"><b>${P.name}: ${esc(P.sub)}</b><span>${P.t.map(x=>TMAP[x].name).join(" · ")}</span>${(G.mocks||[]).filter(m=>m[0]==+k).length?`<small>Best: ${Math.max(...G.mocks.filter(m=>m[0]==+k).map(m=>Math.round(m[1]/m[2]*100)))}%</small>`:""}</button>`).join("")}</div></div>`;
     area.querySelectorAll("[data-wm]").forEach(b=>b.onclick=()=>{ wr.mode=b.dataset.wm; renderWriting(); });
-    area.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{ mk.paper=+b.dataset.p; mk.items=buildMock(mk.paper); mk.phase="sit"; const mins=Math.round(mk.items.reduce((a,x)=>a+x.marks,0)*1.25); mk.end=Date.now()+mins*60000; clearInterval(mk.timer); mk.timer=setInterval(()=>{ const c=$("#mkClock"); if(!c){ return; } const l=mk.end-Date.now(); c.textContent=l>0?fmtTime(l):"Time's up"; if(l<=0){ clearInterval(mk.timer); toast("⏱","Time's up","Finish your sentence, then submit."); } },500); renderWriting(); });
+    area.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{ mk.paper=+b.dataset.p; track("Mock paper started","Paper "+mk.paper); mk.items=buildMock(mk.paper); mk.phase="sit"; const mins=Math.round(mk.items.reduce((a,x)=>a+x.marks,0)*1.25); mk.end=Date.now()+mins*60000; clearInterval(mk.timer); mk.timer=setInterval(()=>{ const c=$("#mkClock"); if(!c){ return; } const l=mk.end-Date.now(); c.textContent=l>0?fmtTime(l):"Time's up"; if(l<=0){ clearInterval(mk.timer); toast("⏱","Time's up","Finish your sentence, then submit."); } },500); renderWriting(); });
     return;
   }
   const P=PAPERS[mk.paper];
@@ -5202,7 +5217,7 @@ function renderTrophies(){
     </section>
 <section data-sec="saves" class="ts-backup">
     ${ANALYTICS_URL&&isTeacher()?`<div class="box"><h3>📊 Usage stats check</h3><p class="muted" style="margin:0 0 10px;font-size:15px">Teacher and demo mode never send stats. Use this to check the Google Sheet is connected: it sends one row marked as a test (device <b>testrow1</b>).</p><button class="btn" id="anTest">📊 Send a test row</button> <span class="savemsg" id="anTestMsg" aria-live="polite"></span></div>`:""}
-    ${ANALYTICS_URL&&!DEMO&&!isTeacher()?`<div class="box"><h3>📊 Anonymous usage stats</h3><p class="muted" style="margin:0 0 10px;font-size:15px">To help Mr W improve the site, it shares how much it's used: totals like questions answered, games played and which cards people find hard. No names, no device codes, and never your answers.</p><label class="chk"><input type="checkbox" id="anToggle" ${store.anOff?"":"checked"}> Share anonymous usage stats</label></div>`:""}
+    ${ANALYTICS_URL&&!DEMO&&!isTeacher()?`<div class="box"><h3>📊 Anonymous usage stats</h3><p class="muted" style="margin:0 0 10px;font-size:15px">To help Mr W improve the site, it shares how much it's used: totals like questions answered, games played, time spent, which features get used and which cards people find hard. No names, no device codes, and never your answers.</p><label class="chk"><input type="checkbox" id="anToggle" ${store.anOff?"":"checked"}> Share anonymous usage stats</label></div>`:""}
     <div class="box" id="backupBox"><h3>Back up or move your progress <small>Last backed up: ${G.lastBackup?G.lastBackup.split("-").reverse().join("/"):"never"}</small></h3>
       <p class="muted" style="margin:0 0 12px">Your progress is saved in this browser only, so clearing your browser data wipes it. Copy your save code and keep it safe, e.g. email it to yourself. To carry on on another device (school PC, phone, laptop), paste the code there. The code holds your progress only: no name, no login, no personal data.</p>
       <div class="btnrow"><button class="btn" id="copySave">📋 Copy my save code</button><button class="btn ghost" id="dlSave">💾 Download backup file</button></div>
@@ -5235,7 +5250,7 @@ function renderTrophies(){
   wirePet(); lbWire();
   document.querySelectorAll("[data-yr]").forEach(b=>b.onclick=()=>{ const set=y=>{ store.year=y; save(); renderTrophies(); toast(y==="teacher"?"🧑‍🏫":"📅", y==="teacher"?"Teacher mode":"Year "+y+" mode", y==="12"?"Games now use the topics you've been taught.":y==="13"?"Games use the topics you've been taught.":"Every topic is in the games."); };
     if(b.dataset.yr==="teacher" && !isTeacher()) askTeacherPass(()=>set("teacher")); else { set(b.dataset.yr); if(b.dataset.yr==="12"){ y12Topics(); save(); } renderHud(); } });
-  document.querySelectorAll(".skin[data-skin]").forEach(b=>b.onclick=()=>{ store.theme=b.dataset.skin; if(!G.themesTried.includes(store.theme)) G.themesTried.push(store.theme); applySkin(store.theme); save(); checkBadges(); renderTrophies(); });
+  document.querySelectorAll(".skin[data-skin]").forEach(b=>b.onclick=()=>{ store.theme=b.dataset.skin; track("Theme picked",(SKINS.find(k=>k.id===store.theme)||{}).name||store.theme); if(!G.themesTried.includes(store.theme)) G.themesTried.push(store.theme); applySkin(store.theme); save(); checkBadges(); renderTrophies(); });
   wireBackup();
   ta.querySelectorAll("[data-bf]").forEach(b=>b.onclick=()=>{ badgeFilter=b.dataset.bf; renderTrophies(); });
   document.querySelectorAll("button[data-font]").forEach(b=>b.onclick=()=>{ store.a11y.font=b.dataset.font; applyA11y(); save(); renderTrophies(); });

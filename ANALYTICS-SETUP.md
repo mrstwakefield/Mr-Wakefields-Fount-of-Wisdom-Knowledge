@@ -7,6 +7,8 @@ The revision site sends **anonymous totals** to a Google Sheet you own. It works
 | Games started, and right/wrong per game | Names, emails or the report-box name |
 | Right/wrong per card (card number, topic, question, AO) | Device codes or any ID |
 | The date and year group (12 / 13) | Answers or anything typed |
+| Minutes on the site, and which hour of the day it was used | Which student did what |
+| Feature use, e.g. "Theme picked: Galaxy Brain", "Tab opened: Arcade", "Level reached: Level 12" | |
 | "First time this device has sent anything" / "first time today" (used to count students) | Anything from teacher mode or demo mode |
 
 Students can switch it off in **Saves → 📊 Anonymous usage stats**.
@@ -18,6 +20,10 @@ Students can switch it off in **Saves → 📊 Anonymous usage stats**.
 - **Games**: how often each game is started.
 - **Modes**: right/wrong per game.
 - **Cards**: right/wrong per card.
+- **Events**: how often each feature is used (tabs, themes, pets, games finished, levels reached, focus sessions, mock papers, card reports, moving progress).
+- **Hours**: activity by hour of the day.
+
+The Summary also shows minutes on the site in the last 7 days, average minutes per student-day and the busiest hour.
 
 ## Updating the script (keeps the same web address)
 

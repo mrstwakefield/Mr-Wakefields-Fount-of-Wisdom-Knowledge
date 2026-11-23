@@ -16,12 +16,14 @@
  */
 
 const TABS = {
-  "Daily": ["Date", "Year", "Questions answered", "Right", "% right", "Games started", "Active students", "New students"],
+  "Daily": ["Date", "Year", "Questions answered", "Right", "% right", "Games started", "Active students", "New students", "Minutes on site"],
   "Games": ["Game", "Times started", "Last played"],
   "Modes": ["Mode", "Right", "Wrong", "Answers", "% right"],
   "Cards": ["Card #", "Topic", "Question", "Right", "Wrong", "Answers", "% right", "AO"],
+  "Events": ["Event", "Detail", "Count", "Last seen"],
+  "Hours": ["Hour", "Activity"],
 };
-const TEXT_COLS = ["Topic", "Question", "Last played", "AO"];
+const TEXT_COLS = ["Topic", "Question", "Last played", "AO", "Event", "Detail", "Last seen", "Hour"];
 const MIN_ANSWERS = 10;   // a card needs this many answers before it counts as hardest/easiest
 
 /** Makes the tabs (and updates their headings). Runs itself whenever data arrives. */
@@ -64,8 +66,15 @@ function doPost(e) {
     upsert_("Games", 1, Object.entries(p.plays || {}).slice(0, 40).map(([g, n]) => { const k = num(n); games += k; return { key: [clean_(g, 40)], add: [k] }; }),
       (row, a) => { row[1] += a[0]; row[2] = date; });
 
-    upsert_("Daily", 2, [{ key: [date, year], add: [answered, right, games, active, fresh] }],
-      (row, a) => { row[2] += a[0]; row[3] += a[1]; row[4] = pct_(row[3], row[2]); row[5] += a[2]; row[6] += a[3]; row[7] += a[4]; });
+    const secs = Math.max(0, Math.min(14400, Math.floor(Number(p.sec) || 0)));   // time on the site in this batch (max 4 hours)
+    upsert_("Daily", 2, [{ key: [date, year], add: [answered, right, games, active, fresh, secs] }],
+      (row, a) => { row[2] += a[0]; row[3] += a[1]; row[4] = pct_(row[3], row[2]); row[5] += a[2]; row[6] += a[3]; row[7] += a[4]; row[8] = Math.round((Number(row[8]) + a[5] / 60) * 10) / 10; });
+
+    upsert_("Events", 2, (Array.isArray(p.ev) ? p.ev : []).slice(0, 60).map(x => ({ key: [clean_(x && x[0], 40), clean_(x && x[1], 60)], add: [num(x && x[2])] }))
+      .filter(x => x.key[0]), (row, a) => { row[2] += a[0]; row[3] = date; });
+
+    upsert_("Hours", 1, Object.entries(p.hrs || {}).filter(([h]) => /^\d\d$/.test(h) && Number(h) < 24).map(([h, n]) => ({ key: [h + ":00–" + h + ":59"], add: [num(n)] })),
+      (row, a) => { row[1] += a[0]; });
 
     const cards = (Array.isArray(p.cards) ? p.cards : []).slice(0, 300);
     upsert_("Cards", 1, cards.map(c => ({ key: [Math.floor(Number(c[0]) || 0)], add: [num(c[1]), num(c[2])], topic: clean_(c[3], 40), q: clean_(c[4], 120), ao: clean_(c[5], 20) }))
@@ -92,7 +101,7 @@ function onOpen() {
 function buildSummary_() {
   const ss = SpreadsheetApp.getActive(), sh = ss.getSheetByName("Summary");
   const rows = name => { const s = ss.getSheetByName(name), n = s.getLastRow(); return n > 1 ? s.getRange(2, 1, n - 1, TABS[name].length).getValues() : []; };
-  const daily = rows("Daily"), games = rows("Games"), cards = rows("Cards");
+  const daily = rows("Daily"), games = rows("Games"), cards = rows("Cards"), events = rows("Events"), hours = rows("Hours");
   const today = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
   const dayKey = v => v instanceof Date ? Utilities.formatDate(v, Session.getScriptTimeZone(), "yyyy-MM-dd") : String(v);
   const sum = (arr, i, f) => arr.filter(f || (() => true)).reduce((t, r) => t + (Number(r[i]) || 0), 0);
@@ -101,6 +110,10 @@ function buildSummary_() {
   const byDay = {}; daily.forEach(r => { const k = dayKey(r[0]); byDay[k] = (byDay[k] || 0) + (Number(r[6]) || 0); });
   const busiest = Object.entries(byDay).sort((a, b) => b[1] - a[1])[0];
   const topGame = games.slice().sort((a, b) => b[1] - a[1])[0];
+  const mins7 = sum(daily, 8, r => week.includes(dayKey(r[0]))), sd7 = sum(daily, 6, r => week.includes(dayKey(r[0])));
+  const topHour = hours.slice().sort((a, b) => b[1] - a[1])[0];
+  const feat = events.slice().sort((a, b) => b[2] - a[2]).slice(0, 25).map(r => [r[0], r[1], r[2]]);
+  const byHour = hours.slice().sort((a, b) => String(a[0]).localeCompare(String(b[0]))).map(r => [String(r[0]), r[1]]);
 
   const enough = cards.filter(r => Number(r[5]) >= MIN_ANSWERS);
   const cardRow = r => ["#" + r[0], r[1], r[2], r[5], r[6] + "%"];
@@ -120,21 +133,26 @@ function buildSummary_() {
     ["Student-days, last 7 days", sum(daily, 6, r => week.includes(dayKey(r[0])))],
     ["Questions answered", qs],
     ["% right overall", pct_(rt, qs) + "%"],
-    ["Busiest day", busiest ? busiest[0] + " (" + busiest[1] + " students)" : "–"],
+    ["Busiest day", busiest ? busiest[0] + " (" + busiest[1] + (busiest[1] === 1 ? " student)" : " students)") : "–"],
     ["Most played game", topGame ? topGame[0] + " (" + topGame[1] + ")" : "–"],
+    ["Minutes on site, last 7 days", Math.round(mins7)],
+    ["Average minutes per student-day", sd7 ? Math.round(mins7 / sd7 * 10) / 10 : "–"],
+    ["Busiest hour", topHour ? String(topHour[0]) : "–"],
   ]);
   const table = (r, c, title, head, body, empty) => { put(r, c, [[title].concat(new Array(head.length - 1).fill(""))], true); put(r + 1, c, [head], true);
     if (body.length) put(r + 2, c, body); else put(r + 2, c, [[empty].concat(new Array(head.length - 1).fill(""))]); return r + 3 + Math.max(1, body.length); };
-  let r = 13;
+  let r = 16;
   r = table(r, 1, "😬 Hardest cards (at least " + MIN_ANSWERS + " answers)", ["Card", "Topic", "Question", "Answers", "% right"], hardest, "Not enough answers yet");
   r = table(r, 1, "😎 Easiest cards (at least " + MIN_ANSWERS + " answers)", ["Card", "Topic", "Question", "Answers", "% right"], easiest, "Not enough answers yet");
-  let r2 = table(3, 4, "📚 Topics, weakest first", ["Topic", "Answers", "% right"], topics, "No answers yet");
-  table(r2, 4, "🎯 Assessment objectives, weakest first", ["AO", "Answers", "% right"], aos, "No answers yet");
+  let r2 = table(3, 7, "📚 Topics, weakest first", ["Topic", "Answers", "% right"], topics, "No answers yet");
+  r2 = table(r2, 7, "🎯 Assessment objectives, weakest first", ["AO", "Answers", "% right"], aos, "No answers yet");
+  r2 = table(r2, 7, "🖱️ What gets used (top 25)", ["Event", "Detail", "Count"], feat, "Nothing yet");
+  table(r2, 7, "🕒 Activity by hour", ["Hour", "Activity"], byHour, "Nothing yet");
 
   sh.clear();
   out.forEach(([row, col, vals, bold]) => { const g = sh.getRange(row, col, vals.length, vals[0].length); g.setValues(vals); if (bold) g.setFontWeight("bold"); });
   sh.getRange(1, 1).setFontSize(16);
-  sh.setColumnWidth(1, 220); sh.setColumnWidth(3, 380); sh.setColumnWidth(4, 230);
+  sh.setColumnWidth(1, 220); sh.setColumnWidth(3, 380); sh.setColumnWidth(7, 230); sh.setColumnWidth(8, 170);
 }
 
 /** Add to existing rows (matched on the first `keyCols` columns) or append new ones, in one write. */
@@ -170,7 +188,7 @@ function done_() { return ContentService.createTextOutput("ok"); }
 /** Run from the editor to clear all the data (keeps the tabs and headings). */
 function wipeData() {
   const ss = SpreadsheetApp.getActive();
-  ["Daily", "Games", "Modes", "Cards"].forEach(name => {
+  ["Daily", "Games", "Modes", "Cards", "Events", "Hours"].forEach(name => {
     const sh = ss.getSheetByName(name);
     if (sh && sh.getLastRow() > 1) sh.deleteRows(2, sh.getLastRow() - 1);
   });
