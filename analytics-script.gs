@@ -7,7 +7,8 @@
  *
  * Updating the script later: paste the new version, save, then
  * Deploy → Manage deployments → ✏️ Edit → Version: "New version" → Deploy.
- * That keeps the same web address. Then run "setup" once from the editor.
+ * That keeps the same web address. Then run "setup" once from the editor
+ * (it also sets the Summary charts to redraw every 10 minutes).
  *
  * The revision site only ever sends totals: games started, right/wrong per
  * mode and per card, the date, the year group, and two one-off flags
@@ -27,7 +28,7 @@ const TEXT_COLS = ["Topic", "Question", "Last played", "AO", "Event", "Detail", 
 const MIN_ANSWERS = 10;   // a card needs this many answers before it counts as hardest/easiest
 
 /** Makes the tabs (and updates their headings). Runs itself whenever data arrives. */
-function setup() {
+function tabs_() {
   const ss = SpreadsheetApp.getActive();
   if (!ss.getSheetByName("Summary")) ss.insertSheet("Summary", 0);
   Object.entries(TABS).forEach(([name, head]) => {
@@ -41,6 +42,16 @@ function setup() {
   if (first && first.getLastRow() === 0 && ss.getSheets().length > 1) ss.deleteSheet(first);
 }
 
+/** Run once from the editor: makes the tabs, sets the Summary to redraw every 10 minutes, and draws it now. */
+function setup() {
+  tabs_();
+  ScriptApp.getProjectTriggers().forEach(t => {
+    if (["refreshSummary", "buildSummary"].includes(t.getHandlerFunction())) ScriptApp.deleteTrigger(t);
+  });
+  ScriptApp.newTrigger("buildSummary").timeBased().everyMinutes(10).create();
+  buildSummary();
+}
+
 function doGet() {
   return ContentService.createTextOutput("The Fount analytics endpoint is working.");
 }
@@ -51,7 +62,7 @@ function doPost(e) {
   try {
     const p = JSON.parse((e && e.postData && e.postData.contents) || "{}");
     if (!p || p.v !== 1) return done_();
-    setup();
+    tabs_();
     const date = safeDate_(p.d), year = ["y12", "y13"].includes(p.y) ? p.y : "";
     const num = v => Math.max(0, Math.min(500, Math.floor(Number(v) || 0)));   // ignore silly numbers
     const u = p.u || {}, active = u.d === 1 ? 1 : 0, fresh = u.n === 1 ? 1 : 0;
@@ -81,7 +92,6 @@ function doPost(e) {
       .filter(c => c.key[0] > 0),
       (row, a, c) => { row[1] = c.topic || row[1]; row[2] = c.q || row[2]; row[3] += a[0]; row[4] += a[1]; row[5] = row[3] + row[4]; row[6] = pct_(row[3], row[5]); row[7] = c.ao || row[7]; });
 
-    buildSummary_();
   } catch (err) {
     // bad data is ignored
   } finally {
@@ -90,47 +100,81 @@ function doPost(e) {
   return done_();
 }
 
-/** The Summary tab: headline numbers, hardest/easiest cards, weakest topics and AOs. Rebuilt on every update. */
-function buildSummary() { setup(); buildSummary_(); }
-/** The first version ran this every hour; keeping the name means that timer just refreshes the Summary. */
+/** The Summary tab: each section is a chart with its table underneath. Redrawn every 10 minutes (and from the menu). */
+function buildSummary() { tabs_(); buildSummary_(); }
+/** The first version ran this every hour; keeping the name means an old timer still works. */
 function refreshSummary() { buildSummary(); }
 
 function onOpen() {
   SpreadsheetApp.getUi().createMenu("Fount stats").addItem("Refresh summary", "buildSummary").addToUi();
 }
+
 function buildSummary_() {
-  const ss = SpreadsheetApp.getActive(), sh = ss.getSheetByName("Summary");
+  const ss = SpreadsheetApp.getActive(), sh = ss.getSheetByName("Summary"), tz = Session.getScriptTimeZone();
   const rows = name => { const s = ss.getSheetByName(name), n = s.getLastRow(); return n > 1 ? s.getRange(2, 1, n - 1, TABS[name].length).getValues() : []; };
-  const daily = rows("Daily"), games = rows("Games"), cards = rows("Cards"), events = rows("Events"), hours = rows("Hours");
-  const today = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
-  const dayKey = v => v instanceof Date ? Utilities.formatDate(v, Session.getScriptTimeZone(), "yyyy-MM-dd") : String(v);
+  const daily = rows("Daily"), games = rows("Games"), modes = rows("Modes"), cards = rows("Cards"), events = rows("Events"), hours = rows("Hours");
+  const fmt = (d, f) => Utilities.formatDate(d, tz, f);
+  const dayKey = v => v instanceof Date ? fmt(v, "yyyy-MM-dd") : String(v);
+  const today = fmt(new Date(), "yyyy-MM-dd");
   const sum = (arr, i, f) => arr.filter(f || (() => true)).reduce((t, r) => t + (Number(r[i]) || 0), 0);
+  const last = n => { const out = []; for (let i = n - 1; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); out.push(d); } return out; };
+  const week = last(7).map(d => fmt(d, "yyyy-MM-dd"));
+
+  // ---- the numbers ----
   const qs = sum(daily, 2), rt = sum(daily, 3);
-  const week = []; for (let i = 0; i < 7; i++) { const d = new Date(); d.setDate(d.getDate() - i); week.push(Utilities.formatDate(d, Session.getScriptTimeZone(), "yyyy-MM-dd")); }
   const byDay = {}; daily.forEach(r => { const k = dayKey(r[0]); byDay[k] = (byDay[k] || 0) + (Number(r[6]) || 0); });
   const busiest = Object.entries(byDay).sort((a, b) => b[1] - a[1])[0];
   const topGame = games.slice().sort((a, b) => b[1] - a[1])[0];
   const mins7 = sum(daily, 8, r => week.includes(dayKey(r[0]))), sd7 = sum(daily, 6, r => week.includes(dayKey(r[0])));
   const topHour = hours.slice().sort((a, b) => b[1] - a[1])[0];
-  const feat = events.slice().sort((a, b) => b[2] - a[2]).slice(0, 25).map(r => [r[0], r[1], r[2]]);
-  const byHour = hours.slice().sort((a, b) => String(a[0]).localeCompare(String(b[0]))).map(r => [String(r[0]), r[1]]);
-
+  const days30 = last(30).map(d => { const k = fmt(d, "yyyy-MM-dd"), on = daily.filter(r => dayKey(r[0]) === k);
+    return ["'" + fmt(d, "d MMM"), sum(on, 6), sum(on, 2, r => r[1] === "y12"), sum(on, 2, r => r[1] === "y13"), sum(on, 2, r => r[1] !== "y12" && r[1] !== "y13"), Math.round(sum(on, 8))]; });
+  const byHour = hours.slice().sort((a, b) => String(a[0]).localeCompare(String(b[0]))).map(r => ["'" + String(r[0]).slice(0, 5), Number(r[1]) || 0]);
+  const group = i => { const g = {}; cards.forEach(r => { const k = r[i] || "(unknown)"; g[k] = g[k] || [0, 0]; g[k][0] += Number(r[3]) || 0; g[k][1] += Number(r[5]) || 0; });
+    return Object.entries(g).filter(([, v]) => v[1] > 0).map(([k, v]) => [k, pct_(v[0], v[1]), v[1]]).sort((a, b) => a[1] - b[1]); };
+  const topics = group(1), aos = group(7);
+  const gameRows = games.slice().sort((a, b) => b[1] - a[1]).slice(0, 15).map(r => [r[0], Number(r[1]) || 0]);
+  const modeRows = modes.filter(r => Number(r[3]) > 0).sort((a, b) => a[4] - b[4]).map(r => [r[0], Number(r[4]) || 0, Number(r[3]) || 0]);
+  const feat = events.slice().sort((a, b) => b[2] - a[2]).slice(0, 15).map(r => [r[1] ? r[0] + ": " + r[1] : r[0], Number(r[2]) || 0]);
   const enough = cards.filter(r => Number(r[5]) >= MIN_ANSWERS);
-  const cardRow = r => ["#" + r[0], r[1], r[2], r[5], r[6] + "%"];
+  const cardRow = r => ["#" + r[0], Number(r[6]) || 0, Number(r[5]) || 0, r[1], r[2]];
   const hardest = enough.slice().sort((a, b) => a[6] - b[6] || b[5] - a[5]).slice(0, 10).map(cardRow);
   const easiest = enough.slice().sort((a, b) => b[6] - a[6] || b[5] - a[5]).slice(0, 10).map(cardRow);
-  const group = i => { const g = {}; cards.forEach(r => { const k = r[i] || "(unknown)"; g[k] = g[k] || [0, 0]; g[k][0] += Number(r[3]) || 0; g[k][1] += Number(r[5]) || 0; });
-    return Object.entries(g).filter(([, v]) => v[1] > 0).map(([k, v]) => [k, v[1], pct_(v[0], v[1]) + "%", pct_(v[0], v[1])]).sort((a, b) => a[3] - b[3]).map(r => r.slice(0, 3)); };
-  const topics = group(1), aos = group(7);
 
-  const out = [];   // [row, col, values[][], bold?]
-  const put = (r, c, vals, bold) => out.push([r, c, vals, bold]);
-  put(1, 1, [["📊 Fount summary", "Updated " + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "d MMM yyyy, HH:mm")]], true);
-  put(3, 1, [["Headline numbers", ""]], true);
-  put(4, 1, [
+  // ---- draw it ----
+  sh.getCharts().forEach(c => sh.removeChart(c));
+  sh.clear();
+  const W = 760, H = 300, CHART_ROWS = 16;
+  let r = 1;
+  const write = (vals, bold) => { const g = sh.getRange(r, 1, vals.length, vals[0].length); g.setValues(vals); if (bold) g.setFontWeight("bold"); const at = r; r += vals.length; return at; };
+  const title = t => { sh.getRange(r, 1).setValue(t).setFontWeight("bold").setFontSize(13); r += 1; };
+  // one section: title, chart(s), then the table the chart is drawn from
+  const section = (name, head, body, charts, empty) => {
+    title(name);
+    if (!body.length) { write([[empty]]); r += 2; return; }
+    const chartAt = r; r += CHART_ROWS * charts.length;
+    const top = write([head], true); write(body);
+    charts.forEach((c, k) => {
+      let b = sh.newChart().setChartType(c.type).setPosition(chartAt + k * CHART_ROWS, 1, 0, 0)
+        .setOption("title", c.title).setOption("width", W).setOption("height", H).setOption("legend", { position: c.legend || "none" });
+      c.cols.forEach(col => { b = b.addRange(sh.getRange(top, col, body.length + 1, 1)); });
+      if (c.stacked) b = b.setOption("isStacked", true);
+      if (c.colors) b = b.setOption("colors", c.colors);
+      if (c.max) b = b.setOption("hAxis", { minValue: 0, maxValue: 100 }).setOption("vAxis", { minValue: 0 });
+      b = b.setNumHeaders(1);
+      sh.insertChart(b.build());
+    });
+    r += 2;
+  };
+  const C = Charts.ChartType;
+
+  sh.getRange(r, 1, 1, 2).setValues([["📊 Fount summary", "Updated " + fmt(new Date(), "d MMM yyyy, HH:mm")]]).setFontWeight("bold");
+  sh.getRange(r, 1).setFontSize(16); r += 2;
+  title("Headline numbers");
+  write([
     ["Students (all time)", sum(daily, 7)],
-    ["Active today", sum(daily, 6, r => dayKey(r[0]) === today)],
-    ["Student-days, last 7 days", sum(daily, 6, r => week.includes(dayKey(r[0])))],
+    ["Active today", sum(daily, 6, x => dayKey(x[0]) === today)],
+    ["Student-days, last 7 days", sd7],
     ["Questions answered", qs],
     ["% right overall", pct_(rt, qs) + "%"],
     ["Busiest day", busiest ? busiest[0] + " (" + busiest[1] + (busiest[1] === 1 ? " student)" : " students)") : "–"],
@@ -139,20 +183,21 @@ function buildSummary_() {
     ["Average minutes per student-day", sd7 ? Math.round(mins7 / sd7 * 10) / 10 : "–"],
     ["Busiest hour", topHour ? String(topHour[0]) : "–"],
   ]);
-  const table = (r, c, title, head, body, empty) => { put(r, c, [[title].concat(new Array(head.length - 1).fill(""))], true); put(r + 1, c, [head], true);
-    if (body.length) put(r + 2, c, body); else put(r + 2, c, [[empty].concat(new Array(head.length - 1).fill(""))]); return r + 3 + Math.max(1, body.length); };
-  let r = 16;
-  r = table(r, 1, "😬 Hardest cards (at least " + MIN_ANSWERS + " answers)", ["Card", "Topic", "Question", "Answers", "% right"], hardest, "Not enough answers yet");
-  r = table(r, 1, "😎 Easiest cards (at least " + MIN_ANSWERS + " answers)", ["Card", "Topic", "Question", "Answers", "% right"], easiest, "Not enough answers yet");
-  let r2 = table(3, 7, "📚 Topics, weakest first", ["Topic", "Answers", "% right"], topics, "No answers yet");
-  r2 = table(r2, 7, "🎯 Assessment objectives, weakest first", ["AO", "Answers", "% right"], aos, "No answers yet");
-  r2 = table(r2, 7, "🖱️ What gets used (top 25)", ["Event", "Detail", "Count"], feat, "Nothing yet");
-  table(r2, 7, "🕒 Activity by hour", ["Hour", "Activity"], byHour, "Nothing yet");
+  r += 2;
+  section("📈 Daily use, last 30 days", ["Day", "Students", "Y12 questions", "Y13 questions", "Other questions", "Minutes on site"], days30, [
+    { type: C.LINE, title: "Students per day", cols: [1, 2], colors: ["#1C7F57"] },
+    { type: C.COLUMN, title: "Questions answered per day", cols: [1, 3, 4, 5], stacked: true, legend: "bottom", colors: ["#4F7CFF", "#E9954B", "#B0B0B0"] },
+  ], "No use yet");
+  section("🕒 Activity by hour", ["Hour", "Activity"], byHour, [{ type: C.COLUMN, title: "When students revise", cols: [1, 2], colors: ["#7C5CFF"] }], "Nothing yet");
+  section("📚 Topics, weakest first", ["Topic", "% right", "Answers"], topics, [{ type: C.BAR, title: "% right by topic", cols: [1, 2], colors: ["#E9954B"], max: true }], "No answers yet");
+  section("🎯 Assessment objectives, weakest first", ["AO", "% right", "Answers"], aos, [{ type: C.BAR, title: "% right by AO", cols: [1, 2], colors: ["#4F7CFF"], max: true }], "No answers yet");
+  section("🕹️ Most played games", ["Game", "Times started"], gameRows, [{ type: C.BAR, title: "Games started", cols: [1, 2], colors: ["#1C7F57"] }], "No games yet");
+  section("✅ % right by game, weakest first", ["Game", "% right", "Answers"], modeRows, [{ type: C.BAR, title: "% right by game", cols: [1, 2], colors: ["#C0392B"], max: true }], "No answers yet");
+  section("🖱️ What gets used (top 15)", ["Feature", "Count"], feat, [{ type: C.BAR, title: "Feature use", cols: [1, 2], colors: ["#F2C14E"] }], "Nothing yet");
+  section("😬 Hardest cards (at least " + MIN_ANSWERS + " answers)", ["Card", "% right", "Answers", "Topic", "Question"], hardest, [{ type: C.BAR, title: "Hardest cards: % right", cols: [1, 2], colors: ["#C0392B"], max: true }], "Not enough answers yet");
+  section("😎 Easiest cards (at least " + MIN_ANSWERS + " answers)", ["Card", "% right", "Answers", "Topic", "Question"], easiest, [{ type: C.BAR, title: "Easiest cards: % right", cols: [1, 2], colors: ["#1C7F57"], max: true }], "Not enough answers yet");
 
-  sh.clear();
-  out.forEach(([row, col, vals, bold]) => { const g = sh.getRange(row, col, vals.length, vals[0].length); g.setValues(vals); if (bold) g.setFontWeight("bold"); });
-  sh.getRange(1, 1).setFontSize(16);
-  sh.setColumnWidth(1, 220); sh.setColumnWidth(3, 380); sh.setColumnWidth(7, 230); sh.setColumnWidth(8, 170);
+  sh.setColumnWidth(1, 240); sh.setColumnWidth(2, 120); sh.setColumnWidth(3, 120); sh.setColumnWidth(4, 160); sh.setColumnWidth(5, 420);
 }
 
 /** Add to existing rows (matched on the first `keyCols` columns) or append new ones, in one write. */

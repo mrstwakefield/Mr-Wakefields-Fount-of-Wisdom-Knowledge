@@ -15,7 +15,7 @@ Students can switch it off in **Saves → 📊 Anonymous usage stats**.
 
 ## The tabs
 
-- **Summary**: headline numbers, hardest and easiest 10 cards (at least 10 answers each), topics weakest first, AOs weakest first. Rebuilt every time data arrives.
+- **Summary**: headline numbers, then a chart with its table for each of: daily use (last 30 days), activity by hour, topics, AOs, most played games, % right by game, what gets used, and the hardest and easiest cards. Redrawn every 10 minutes, or straight away from **Fount stats → Refresh summary**.
 - **Daily**: one row per date and year group.
 - **Games**: how often each game is started.
 - **Modes**: right/wrong per game.
