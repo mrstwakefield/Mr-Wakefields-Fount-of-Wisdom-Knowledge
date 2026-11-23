@@ -157,7 +157,7 @@ function buildSummary_() {
     charts.forEach((c, k) => {
       let b = sh.newChart().setChartType(c.type).setPosition(chartAt + k * CHART_ROWS, 1, 0, 0)
         .setOption("title", c.title).setOption("width", W).setOption("height", H).setOption("legend", { position: c.legend || "none" });
-      c.cols.forEach(col => { b = b.addRange(sh.getRange(top, col, body.length + 1, 1)); });
+      b = b.addRange(sh.getRange(top, 1, body.length + 1, c.width || 2));   // one block: labels, then the numbers
       if (c.stacked) b = b.setOption("isStacked", true);
       if (c.colors) b = b.setOption("colors", c.colors);
       if (c.max) b = b.setOption("hAxis", { minValue: 0, maxValue: 100 }).setOption("vAxis", { minValue: 0 });
@@ -184,18 +184,19 @@ function buildSummary_() {
     ["Busiest hour", topHour ? String(topHour[0]) : "–"],
   ]);
   r += 2;
-  section("📈 Daily use, last 30 days", ["Day", "Students", "Y12 questions", "Y13 questions", "Other questions", "Minutes on site"], days30, [
-    { type: C.LINE, title: "Students per day", cols: [1, 2], colors: ["#1C7F57"] },
-    { type: C.COLUMN, title: "Questions answered per day", cols: [1, 3, 4, 5], stacked: true, legend: "bottom", colors: ["#4F7CFF", "#E9954B", "#B0B0B0"] },
-  ], "No use yet");
-  section("🕒 Activity by hour", ["Hour", "Activity"], byHour, [{ type: C.COLUMN, title: "When students revise", cols: [1, 2], colors: ["#7C5CFF"] }], "Nothing yet");
-  section("📚 Topics, weakest first", ["Topic", "% right", "Answers"], topics, [{ type: C.BAR, title: "% right by topic", cols: [1, 2], colors: ["#E9954B"], max: true }], "No answers yet");
-  section("🎯 Assessment objectives, weakest first", ["AO", "% right", "Answers"], aos, [{ type: C.BAR, title: "% right by AO", cols: [1, 2], colors: ["#4F7CFF"], max: true }], "No answers yet");
-  section("🕹️ Most played games", ["Game", "Times started"], gameRows, [{ type: C.BAR, title: "Games started", cols: [1, 2], colors: ["#1C7F57"] }], "No games yet");
-  section("✅ % right by game, weakest first", ["Game", "% right", "Answers"], modeRows, [{ type: C.BAR, title: "% right by game", cols: [1, 2], colors: ["#C0392B"], max: true }], "No answers yet");
-  section("🖱️ What gets used (top 15)", ["Feature", "Count"], feat, [{ type: C.BAR, title: "Feature use", cols: [1, 2], colors: ["#F2C14E"] }], "Nothing yet");
-  section("😬 Hardest cards (at least " + MIN_ANSWERS + " answers)", ["Card", "% right", "Answers", "Topic", "Question"], hardest, [{ type: C.BAR, title: "Hardest cards: % right", cols: [1, 2], colors: ["#C0392B"], max: true }], "Not enough answers yet");
-  section("😎 Easiest cards (at least " + MIN_ANSWERS + " answers)", ["Card", "% right", "Answers", "Topic", "Question"], easiest, [{ type: C.BAR, title: "Easiest cards: % right", cols: [1, 2], colors: ["#1C7F57"], max: true }], "Not enough answers yet");
+  const used = days30.some(d => d[1] || d[2] || d[3] || d[4] || d[5]);
+  section("👥 Students per day, last 30 days", ["Day", "Students", "Minutes on site"], used ? days30.map(d => [d[0], d[1], d[5]]) : [],
+    [{ type: C.LINE, title: "Students per day", width: 2, colors: ["#1C7F57"] }], "No use yet");
+  section("📝 Questions answered per day, last 30 days", ["Day", "Year 12", "Year 13", "Other"], used ? days30.map(d => [d[0], d[2], d[3], d[4]]) : [],
+    [{ type: C.COLUMN, title: "Questions answered per day", width: 4, stacked: true, legend: "bottom", colors: ["#4F7CFF", "#E9954B", "#B0B0B0"] }], "No use yet");
+  section("🕒 Activity by hour", ["Hour", "Activity"], byHour, [{ type: C.COLUMN, title: "When students revise", width: 2, colors: ["#7C5CFF"] }], "Nothing yet");
+  section("📚 Topics, weakest first", ["Topic", "% right", "Answers"], topics, [{ type: C.BAR, title: "% right by topic", width: 2, colors: ["#E9954B"], max: true }], "No answers yet");
+  section("🎯 Assessment objectives, weakest first", ["AO", "% right", "Answers"], aos, [{ type: C.BAR, title: "% right by AO", width: 2, colors: ["#4F7CFF"], max: true }], "No answers yet");
+  section("🕹️ Most played games", ["Game", "Times started"], gameRows, [{ type: C.BAR, title: "Games started", width: 2, colors: ["#1C7F57"] }], "No games yet");
+  section("✅ % right by game, weakest first", ["Game", "% right", "Answers"], modeRows, [{ type: C.BAR, title: "% right by game", width: 2, colors: ["#C0392B"], max: true }], "No answers yet");
+  section("🖱️ What gets used (top 15)", ["Feature", "Count"], feat, [{ type: C.BAR, title: "Feature use", width: 2, colors: ["#F2C14E"] }], "Nothing yet");
+  section("😬 Hardest cards (at least " + MIN_ANSWERS + " answers)", ["Card", "% right", "Answers", "Topic", "Question"], hardest, [{ type: C.BAR, title: "Hardest cards: % right", width: 2, colors: ["#C0392B"], max: true }], "Not enough answers yet");
+  section("😎 Easiest cards (at least " + MIN_ANSWERS + " answers)", ["Card", "% right", "Answers", "Topic", "Question"], easiest, [{ type: C.BAR, title: "Easiest cards: % right", width: 2, colors: ["#1C7F57"], max: true }], "Not enough answers yet");
 
   sh.setColumnWidth(1, 240); sh.setColumnWidth(2, 120); sh.setColumnWidth(3, 120); sh.setColumnWidth(4, 160); sh.setColumnWidth(5, 420);
 }
