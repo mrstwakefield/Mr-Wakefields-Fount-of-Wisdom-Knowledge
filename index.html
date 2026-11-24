@@ -1184,6 +1184,12 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 @media (min-width:761px){:root[data-skin="storm500"] .top h1,:root[data-skin="galaxy1000"] .top h1,:root[data-skin="wakefield"] .top h1,:root[data-skin="snowdome"] .top h1,:root[data-skin="ocean"] .top h1,:root[data-skin="exam"] .top h1,:root[data-skin="blues"] .top h1,:root[data-skin="tamworth"] .top h1,:root[data-skin="pink"] .top h1,:root[data-skin="grape"] .top h1,:root[data-skin="terminal"] .top h1,:root[data-skin="chalk"] .top h1,:root[data-skin="brainscan"] .top h1,:root[data-skin="results"] .top h1,:root[data-skin="ethics"] .top h1,:root[data-skin="coffee"] .top h1,:root[data-skin="arcade8"] .top h1{max-width:calc(100% - 430px)}}
 @media (max-width:760px){.tbg{transform:scale(.9);opacity:.32;right:0}.tbg .to,.tbg .ic,.tbg .cw,.tbg .cs2,.tbg text{display:none}}
 @media (prefers-reduced-motion:reduce){.tbg *{animation:none!important}}
+/* calm mode: while a student is answering, the showy theme effects fade out or freeze (colours stay) */
+.tfx>*,.tbg{transition:opacity .5s}
+html.calm .tfx>*:not(.vd):not(.pb):not(.pd),html.calm .tbg,html.calm #fountFx{opacity:0!important}
+html.calm body::after{opacity:0!important;animation-play-state:paused!important}
+html.calm body,html.calm body::before,html.calm .skinfx *,html.calm #pongFx *,html.calm #harlowFx *,html.calm .box,html.calm .hud,html.calm .tabs,html.calm .plan-card,html.calm .petstrip,html.calm .startbtn,html.calm .top h1,html.calm .top h1::before,html.calm .h1t,html.calm .h1t::after,html.calm .xpbar i{animation-play-state:paused!important}
+html.calm[data-skin="fool"] .btn,html.calm[data-skin="fool"] .chip{animation:none!important}
 /* ===== full-screen theme effects (behind nothing, never clickable) + more scenes ===== */
 .tfx{display:none;position:fixed;inset:0;pointer-events:none;z-index:2147482500;overflow:hidden}
 :root[data-skin="volts"] #tfx-volts,:root[data-skin="petdog"] #tfx-petdog,:root[data-skin="dreams"] #tfx-dreams,:root[data-skin="veggie"] #tfx-veggie,:root[data-skin="inner"] #tfx-inner,:root[data-skin="neon"] #tfx-neon,:root[data-skin="exam"] #tfx-exam,:root[data-skin="blues"] #tfx-blues,:root[data-skin="grape"] #tfx-grape,:root[data-skin="terminal"] #tfx-terminal,:root[data-skin="chalk"] #tfx-chalk,:root[data-skin="brainscan"] #tfx-brainscan,:root[data-skin="arcade8"] #tfx-arcade8{display:block}
@@ -1730,6 +1736,13 @@ const THEME_OV={
   brainscan:()=>`<span class="a sl"></span>`,
   arcade8:()=>`<div class="a pxs"></div>`
 };
+
+/* calm mode: effects only while a student is idle at the top of the page */
+let calmLast=0, calmTop=true, calmTimer=0;
+function calmBusy(){ return Date.now()-calmLast<60000 || (typeof arc!=="undefined" && ["play","mini"].includes(arc.phase)); }
+function calmCheck(){ clearTimeout(calmTimer); const busy=calmBusy(); document.documentElement.classList.toggle("calm", busy || !calmTop); if(busy) calmTimer=setTimeout(calmCheck, 15000); }
+function calmPoke(){ calmLast=Date.now(); calmCheck(); }
+if("IntersectionObserver" in window){ const t=document.querySelector(".top"); if(t) new IntersectionObserver(es=>{ calmTop=es[0].isIntersecting; calmCheck(); },{threshold:0.15}).observe(t); }
 function themeOvMake(id){ const f=THEME_OV[id]; if(!f || document.getElementById("tfx-"+id)) return; const d=document.createElement("div"); d.className="tfx"; d.id="tfx-"+id; d.setAttribute("aria-hidden","true"); d.innerHTML=f(); document.body.appendChild(d); if(id==="volts") voltShow(); }
 /* reactions to answers: Pavlov's bell, the 450 Volts dial, Bullring streak confetti */
 let voltV=15;
@@ -2370,7 +2383,7 @@ function answer({ok, el, mode, gold, boost, self}){
   const t=today();
   anAnswer(mode, ok); G.st.cards++; if(ok){ G.st.right++; const pt=petType(); if(pt!=="rat"){ G.pg=G.pg||{}; G.pg[pt]=(G.pg[pt]||0)+1; } } if(!self){ boboTrack(ok); hansTrack(ok); }   // the parent quiz is marked by a person, so it doesn't count towards in-a-row challenges
   if(ok){ combo++; if(combo>G.st.combo) G.st.combo=combo; } else { if(combo===7) G.sec.miller=1; combo=0; }
-  try{ themeHit(ok); }catch(e){}
+  try{ themeHit(ok); calmPoke(); }catch(e){}
   const base = mode==="quiz" ? (ok?15:4) : mode==="arcade" ? (ok?6:1) : (ok?10:3);
   let mult = ok ? comboMult() : 1;
   if(gold && ok){ mult*=5; G.st.gold++; }
@@ -4264,15 +4277,15 @@ if(ANALYTICS_URL){ document.addEventListener("visibilitychange",()=>{ if(documen
 const LAST_TABS={cards:"Flashcards", quiz:"Quiz", writing:"Writing practice"};
 (function(){ const _go=goTab, _arc=startArc;
   goTab=function(name){ track("Tab opened", ({cards:"Flashcards",quiz:"Quiz",arcade:"Arcade",browse:"Browse",writing:"Writing",progress:"Progress",weak:"Weak spots",badges:"Badges",scrolls:"Secret scrolls",themes:"Themes",saves:"Saves",leaderboard:"Leaderboard"})[name]||name); if(LAST_TABS[name]){ G.lastAct={k:"tab", tab:name, label:LAST_TABS[name], t:Date.now()}; save(); } return _go.apply(this,arguments); };
-  startArc=function(mode){ if(MODES[mode]) anGame(mode); if(MODES[mode] && !["boss","parent","proj","weekly"].includes(mode)){ G.lastAct={k:"arc", mode, label:MODES[mode].icon+" "+MODES[mode].name, t:Date.now()}; save(); } return _arc.apply(this,arguments); };
+  startArc=function(mode){ calmPoke(); if(MODES[mode]) anGame(mode); if(MODES[mode] && !["boss","parent","proj","weekly"].includes(mode)){ G.lastAct={k:"arc", mode, label:MODES[mode].icon+" "+MODES[mode].name, t:Date.now()}; save(); } return _arc.apply(this,arguments); };
   // the mini-games start through their own functions: count them in the stats under their own names
-  startMatch=(f=>function(){ anGame("match"); return f.apply(this,arguments); })(startMatch);
-  startTimeline=(f=>function(){ anGame("timeline"); return f.apply(this,arguments); })(startTimeline);
-  startSort=(f=>function(){ anGame("sort"); return f.apply(this,arguments); })(startSort);
-  startOrder=(f=>function(){ anGame("order"); return f.apply(this,arguments); })(startOrder);
-  startPsychle=(f=>function(){ anGame("psychle"); return f.apply(this,arguments); })(startPsychle);
-  startConnections=(f=>function(){ anGame("connections"); return f.apply(this,arguments); })(startConnections);
-  startParagraph=(f=>function(){ anGame("paragraph"); return f.apply(this,arguments); })(startParagraph);
+  startMatch=(f=>function(){ calmPoke(); anGame("match"); return f.apply(this,arguments); })(startMatch);
+  startTimeline=(f=>function(){ calmPoke(); anGame("timeline"); return f.apply(this,arguments); })(startTimeline);
+  startSort=(f=>function(){ calmPoke(); anGame("sort"); return f.apply(this,arguments); })(startSort);
+  startOrder=(f=>function(){ calmPoke(); anGame("order"); return f.apply(this,arguments); })(startOrder);
+  startPsychle=(f=>function(){ calmPoke(); anGame("psychle"); return f.apply(this,arguments); })(startPsychle);
+  startConnections=(f=>function(){ calmPoke(); anGame("connections"); return f.apply(this,arguments); })(startConnections);
+  startParagraph=(f=>function(){ calmPoke(); anGame("paragraph"); return f.apply(this,arguments); })(startParagraph);
   arcFinish=(f=>function(){ const was=arc.phase; const r=f.apply(this,arguments); if(was==="play" && arc.phase==="done") track("Game finished",(MODES[arc.mode]||{}).name||arc.mode); return r; })(arcFinish);
   finishMini=(f=>function(){ track("Game finished",anMode); return f.apply(this,arguments); })(finishMini);
   levelUp=(f=>function(n){ track("Level reached","Level "+n); return f.apply(this,arguments); })(levelUp);
