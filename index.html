@@ -1175,6 +1175,174 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 @keyframes shoot{0%{left:-20%;opacity:0}5%{opacity:1}30%{left:110%;opacity:0}100%{left:110%;opacity:0}}
 @media (prefers-reduced-motion:reduce){:root[data-skin="storm500"] body,:root[data-skin="storm500"] body::after,:root[data-skin="storm500"] .h1t,:root[data-skin="storm500"] .startbtn,:root[data-skin="storm500"] .xpbar i,:root[data-skin="galaxy1000"] body::before,:root[data-skin="galaxy1000"] body::after,:root[data-skin="galaxy1000"] .h1t,:root[data-skin="galaxy1000"] .top h1::before,:root[data-skin="galaxy1000"] .box,:root[data-skin="galaxy1000"] .plan-card,:root[data-skin="galaxy1000"] .hud,:root[data-skin="galaxy1000"] .petstrip,:root[data-skin="galaxy1000"] .tabs,:root[data-skin="galaxy1000"] .startbtn,:root[data-skin="galaxy1000"] .xpbar i{animation:none}}
 @media (prefers-reduced-motion:reduce){.skinfx *{animation:none!important}}
+/* ===== full-screen theme effects (behind nothing, never clickable) + more scenes ===== */
+.tfx{display:none;position:fixed;inset:0;pointer-events:none;z-index:2147482500;overflow:hidden}
+:root[data-skin="volts"] #tfx-volts,:root[data-skin="petdog"] #tfx-petdog,:root[data-skin="dreams"] #tfx-dreams,:root[data-skin="veggie"] #tfx-veggie,:root[data-skin="inner"] #tfx-inner,:root[data-skin="neon"] #tfx-neon,:root[data-skin="exam"] #tfx-exam,:root[data-skin="blues"] #tfx-blues,:root[data-skin="grape"] #tfx-grape,:root[data-skin="terminal"] #tfx-terminal,:root[data-skin="chalk"] #tfx-chalk,:root[data-skin="brainscan"] #tfx-brainscan,:root[data-skin="arcade8"] #tfx-arcade8{display:block}
+:root[data-skin="ocean"] #fx-ocean,:root[data-skin="exam"] #fx-exam,:root[data-skin="blues"] #fx-blues,:root[data-skin="tamworth"] #fx-tamworth,:root[data-skin="pink"] #fx-pink,:root[data-skin="grape"] #fx-grape,:root[data-skin="terminal"] #fx-terminal,:root[data-skin="chalk"] #fx-chalk,:root[data-skin="brainscan"] #fx-brainscan,:root[data-skin="results"] #fx-results,:root[data-skin="ethics"] #fx-ethics,:root[data-skin="coffee"] #fx-coffee,:root[data-skin="arcade8"] #fx-arcade8{display:block}
+.tfx .a{position:absolute}
+/* ⚡ 450 Volts: lightning, a gentle flash, and a voltage dial */
+#tfx-volts .vfl{position:absolute;inset:0;background:#fff;opacity:0;animation:volFlash 9s infinite}
+#tfx-volts .vfl+.vfl{animation-duration:13s;animation-delay:4s}
+#tfx-volts .vb{top:0;width:120px;height:62vh;opacity:0;animation:volBolt 9s infinite;filter:drop-shadow(0 0 8px #FFF7B0) drop-shadow(0 0 18px #FFD400)}
+#tfx-volts .vb2{animation-duration:13s;animation-delay:4s}
+#tfx-volts .vd{left:12px;bottom:12px;width:92px;padding:6px 6px 5px;border-radius:12px;background:#1C1C1C;border:2px solid #FFD400;box-shadow:0 0 14px rgba(255,212,0,.35);text-align:center;color:#FFF8D6;font-weight:800;font-size:13px;line-height:1.1}
+#tfx-volts .vd svg{display:block;width:80px;height:44px;margin:0 auto 2px}
+#tfx-volts .vd .nd{transform-box:view-box;transform-origin:40px 40px;transition:transform .5s cubic-bezier(.3,1.5,.5,1)}
+@keyframes volFlash{0%,57%,62%,100%{opacity:0}58%{opacity:.32}59%{opacity:.04}60.5%{opacity:.2}}
+@keyframes volBolt{0%,57%,62%,100%{opacity:0}58%,61%{opacity:1}}
+/* 🔔 Pavlov's Dog: the bell rings on every right answer, paw prints trot past */
+#tfx-petdog .pb{top:84px;right:14px;font-size:40px;transform-origin:50% 8%}
+#tfx-petdog .pb.ring{animation:bellRing2 .9s ease-out}
+#tfx-petdog .pd{top:92px;right:62px;font-weight:800;font-size:15px;color:#B0281C;opacity:0}
+#tfx-petdog .pb.ring+.pd{animation:dingPop .9s ease-out}
+#tfx-petdog .pw{bottom:4px;font-size:20px;opacity:0;transform:rotate(90deg);animation:pawStep 16s linear infinite}
+@keyframes bellRing2{0%{transform:rotate(0)}15%{transform:rotate(26deg)}35%{transform:rotate(-22deg)}55%{transform:rotate(14deg)}75%{transform:rotate(-7deg)}100%{transform:rotate(0)}}
+@keyframes dingPop{0%{opacity:0;transform:translateY(4px)}20%,70%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-8px)}}
+@keyframes pawStep{0%{opacity:0}1%{opacity:.75}9%{opacity:.75}14%,100%{opacity:0}}
+/* 🐂 Bullring: slow shimmer across the title (confetti on streaks is in JS) */
+:root[data-skin="bullring"] .h1t{background:linear-gradient(110deg,#E9EDF3 30%,#FFFFFF 44%,#8DB8FF 50%,#FFFFFF 56%,#E9EDF3 70%);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:bullShine 7s ease-in-out infinite}
+@keyframes bullShine{0%{background-position:120% 0}100%{background-position:-120% 0}}
+/* 😴 Sweet Dreams: twinkling stars, drifting moon, floating Zzz */
+#tfx-dreams .st{inset:0;background-image:radial-gradient(circle,#fff 0 1.2px,transparent 2px),radial-gradient(circle,#FFE9A8 0 1px,transparent 1.8px);background-size:130px 150px,210px 170px;background-position:20px 30px,90px 60px;animation:twinkle2 3.5s ease-in-out infinite}
+#tfx-dreams .st+.st{background-size:170px 120px,90px 230px;background-position:60px 10px,10px 100px;animation-duration:5s;animation-delay:-2s}
+#tfx-dreams .mn{top:10px;left:-60px;font-size:42px;filter:drop-shadow(0 0 12px rgba(255,233,168,.6));animation:moonDrift 90s linear infinite}
+#tfx-dreams .zz{right:8%;bottom:12%;font-weight:800;color:#B9A7FF;opacity:0;animation:zzzUp 7s ease-out infinite}
+@keyframes twinkle2{0%,100%{opacity:.35}50%{opacity:.9}}
+@keyframes moonDrift{from{left:-60px}to{left:100%}}
+@keyframes zzzUp{0%{opacity:0;transform:translate(0,0) rotate(0)}15%{opacity:.85}100%{opacity:0;transform:translate(-40px,-220px) rotate(-12deg)}}
+/* 🥦 Veggie Patch: broccoli and peas bounce down onto a pile */
+#tfx-veggie .vf{top:-40px;font-size:24px;animation:vegFall 9s ease-in infinite}
+#tfx-veggie .pea{width:13px;height:13px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#B5E37A,#5E9A2C);box-shadow:0 1px 0 #3E6B1A}
+#tfx-veggie .vpile{left:0;right:0;bottom:-4px;height:30px}
+#tfx-veggie .vpile span{position:absolute;bottom:0}
+@keyframes vegFall{0%{top:-40px;opacity:1}78%{top:calc(100% - 44px)}84%{top:calc(100% - 66px)}90%{top:calc(100% - 44px)}95%{opacity:1}100%{top:calc(100% - 44px);opacity:0}}
+/* 🃏 April Fool: colours slowly swap places, buttons try to run off */
+:root[data-skin="fool"] .box,:root[data-skin="fool"] .hud,:root[data-skin="fool"] .tabs,:root[data-skin="fool"] .plan-card,:root[data-skin="fool"] .top h1{animation:foolHue 40s linear infinite}
+:root[data-skin="fool"] .btn,:root[data-skin="fool"] .startbtn,:root[data-skin="fool"] .chip{animation:foolHue 40s linear infinite,foolWobble 11s ease-in-out infinite}
+:root[data-skin="fool"] .btn:nth-of-type(2n),:root[data-skin="fool"] .chip:nth-of-type(3n){animation-delay:0s,-4s}
+:root[data-skin="fool"] .chip:nth-of-type(3n+1){animation-delay:0s,-8s}
+@keyframes foolHue{to{filter:hue-rotate(360deg)}}
+@keyframes foolWobble{0%,88%,100%{transform:none}90%{transform:translateX(4px) rotate(2deg)}92%{transform:translateX(-4px) rotate(-2deg)}94%{transform:translateX(3px) rotate(1deg)}96%{transform:translateX(-1px)}}
+/* 🤫 Inner Circle: gold shimmer sweeps over cards, candlelight at the edges */
+:root[data-skin="inner"] .box,:root[data-skin="inner"] .hud,:root[data-skin="inner"] .plan-card,:root[data-skin="inner"] .petstrip,:root[data-skin="inner"] .tabs{background-image:linear-gradient(110deg,transparent 35%,rgba(242,193,78,.17) 50%,transparent 65%);background-size:300% 100%;background-repeat:no-repeat;animation:innerSweep 8s ease-in-out infinite}
+@keyframes innerSweep{0%{background-position:160% 0}55%,100%{background-position:-60% 0}}
+#tfx-inner .cv{inset:0;background:radial-gradient(ellipse at 0% 100%,rgba(255,150,60,.28),transparent 42%),radial-gradient(ellipse at 100% 100%,rgba(255,150,60,.28),transparent 42%),radial-gradient(ellipse at 0% 0%,rgba(255,170,90,.14),transparent 35%),radial-gradient(ellipse at 100% 0%,rgba(255,170,90,.14),transparent 35%);animation:candle 2.6s steps(1) infinite}
+#tfx-inner .cd{bottom:8px;font-size:26px;animation:candle 1.7s steps(1) infinite}
+@keyframes candle{0%{opacity:.85}17%{opacity:1}33%{opacity:.72}50%{opacity:.95}67%{opacity:.8}83%{opacity:1}}
+/* Neon Synapse: signals racing across */
+#tfx-neon .ns{left:-30%;width:180px;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,#FF2BD6,#00F0FF,transparent);box-shadow:0 0 10px #00F0FF,0 0 18px #FF2BD6;opacity:.6;animation:neonRun 7s linear infinite}
+@keyframes neonRun{from{left:-30%}to{left:115%}}
+/* Exam Season: drifting paper */
+#tfx-exam .pp2{top:-60px;font-size:30px;opacity:.28;animation:paperFall 18s linear infinite}
+@keyframes paperFall{0%{top:-60px;transform:translateX(0) rotate(0)}50%{transform:translateX(60px) rotate(160deg)}100%{top:105%;transform:translateX(-30px) rotate(340deg)}}
+/* Keep Right On: bunting along the top */
+#tfx-blues .bt{left:-40px;right:-40px;top:0;height:34px;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%2780%27%20height%3D%2734%27%3E%3Cpath%20d%3D%27M0%204Q40%2012%2080%204%27%20stroke%3D%27%23fff%27%20stroke-width%3D%271.5%27%20fill%3D%27none%27/%3E%3Cpath%20d%3D%27M4%206L20%2030L36%208z%27%20fill%3D%27%23fff%27/%3E%3Cpath%20d%3D%27M44%208L60%2030L76%206z%27%20fill%3D%27%236F8CFF%27/%3E%3C/svg%3E") 0 0/80px 34px repeat-x;animation:buntWave 6s ease-in-out infinite}
+@keyframes buntWave{0%,100%{transform:translateX(0) translateY(0)}50%{transform:translateX(18px) translateY(2px)}}
+/* Stroop Effect: colour words in the wrong colours drift up */
+#tfx-grape .sw2{bottom:-40px;font-weight:900;font-size:24px;letter-spacing:.04em;opacity:.3;animation:stroopUp 20s linear infinite}
+@keyframes stroopUp{from{bottom:-40px}to{bottom:105%}}
+/* Computer Analogy: code rain */
+#tfx-terminal .cr{top:-100%;width:1.2ch;font:14px/1.15 ui-monospace,Menlo,Consolas,monospace;color:#39FF6A;opacity:.22;word-break:break-all;text-shadow:0 0 6px #39FF6A;animation:codeFall 9s linear infinite}
+@keyframes codeFall{from{top:-100%}to{top:100%}}
+/* Chalkboard: chalk dust */
+#tfx-chalk .du{inset:0;opacity:.35;background-image:radial-gradient(circle,#fff 0 1px,transparent 1.6px),radial-gradient(circle,#fff 0 .8px,transparent 1.3px),radial-gradient(circle,#E9F5EC 0 1.2px,transparent 2px);background-size:120px 160px,80px 90px,200px 240px;animation:chalkDust 20s linear infinite}
+@keyframes chalkDust{from{background-position:0 0,30px 10px,60px 40px}to{background-position:30px 160px,10px 180px,100px 280px}}
+/* Brain Scan: scanner line */
+#tfx-brainscan .sl{left:0;right:0;top:-4%;height:3px;background:linear-gradient(90deg,transparent,#22D3EE 30%,#A5F3FC 50%,#22D3EE 70%,transparent);box-shadow:0 0 18px #22D3EE,0 0 40px rgba(34,211,238,.5);opacity:.6;animation:scanLine 6s linear infinite}
+@keyframes scanLine{from{top:-4%}to{top:104%}}
+/* 8-bit Arcade: pixel stars */
+#tfx-arcade8 .pxs{inset:0;opacity:.55;background-image:radial-gradient(#fff 0 1.5px,transparent 1.6px),radial-gradient(#FFE14D 0 1.5px,transparent 1.6px),radial-gradient(#22D3EE 0 1px,transparent 1.2px);background-size:150px 110px,230px 170px,90px 130px;animation:pixStars 12s steps(48) infinite}
+@keyframes pixStars{from{background-position:0 0,40px 60px,20px 30px}to{background-position:-150px 0,-190px 60px,-70px 30px}}
+
+/* ---- scenes ---- */
+/* The Iceberg */
+#fx-ocean{background:linear-gradient(180deg,#3B6E99 0 40%,#0E3550 40% 100%)}
+#fx-ocean .ib{animation:bergBob 4s ease-in-out infinite;transform-box:view-box;transform-origin:170px 48px}
+#fx-ocean .wv{animation:waveSlide 3s linear infinite}
+@keyframes bergBob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(3px) rotate(1deg)}}
+@keyframes waveSlide{from{transform:translateX(0)}to{transform:translateX(-40px)}}
+/* Exam Season */
+#fx-exam .ck{left:22px;top:16px;width:92px;height:92px}
+#fx-exam .sh{transform-box:view-box;transform-origin:50px 50px;animation:secHand 60s steps(60) infinite}
+#fx-exam .mh{transform-box:view-box;transform-origin:50px 50px;animation:secHand 600s linear infinite}
+#fx-exam .to{left:132px;top:36px;right:12px;font-weight:800;font-size:18px;line-height:1.2;color:var(--ink);animation:turnOver 4s ease-in-out infinite}
+@keyframes secHand{to{transform:rotate(360deg)}}
+@keyframes turnOver{0%,100%{opacity:.35}50%{opacity:1}}
+/* Keep Right On ticker */
+#fx-blues .tk2{left:0;top:42px;height:40px;right:0;background:#061466;border-top:2px solid #fff;border-bottom:2px solid #fff;overflow:hidden}
+#fx-blues .tk2 span{position:absolute;top:6px;left:0;white-space:nowrap;font-weight:900;font-size:22px;letter-spacing:.06em;color:#fff;animation:ticker 10s linear infinite}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+/* Tamworth Castle */
+#fx-tamworth{background:linear-gradient(180deg,#A9D3F0,#E3F1FA)}
+#fx-tamworth .fg{transform-box:fill-box;transform-origin:0 50%;animation:flagFlap 1.4s ease-in-out infinite}
+#fx-tamworth .fg2{animation-delay:-.6s}
+#fx-tamworth .cl{fill:#fff;opacity:.9;animation:cloudDrift 30s linear infinite}
+#fx-tamworth .cl2{animation-duration:45s;animation-delay:-20s}
+@keyframes flagFlap{0%,100%{transform:skewY(0) scaleX(1)}50%{transform:skewY(8deg) scaleX(.86)}}
+@keyframes cloudDrift{from{transform:translateX(-120px)}to{transform:translateX(380px)}}
+/* Pink Pen */
+#fx-pink .pg{left:16px;top:14px;width:200px;height:96px;background:#fff;border:1px solid #F3C6DA;border-radius:6px;background-image:repeating-linear-gradient(180deg,transparent 0 19px,#F6D9E6 19px 20px)}
+#fx-pink .ln{position:absolute;left:12px;height:5px;border-radius:3px;background:#C9B3BF}
+#fx-pink .pt{font-weight:900;font-size:20px;color:#E0429A;opacity:0}
+#fx-pink .gp{right:14px;top:34px;font:700 22px/1.1 "Comic Sans MS","Chalkboard SE","Segoe Print",cursive;color:#E0429A;transform:rotate(-8deg);opacity:0;animation:pinkGP 6s infinite}
+@keyframes pinkTick{0%{opacity:0;transform:scale(.3)}100%{opacity:1;transform:none}}
+@keyframes pinkGP{0%,55%{opacity:0;transform:rotate(-8deg) scale(.6)}62%,90%{opacity:1;transform:rotate(-8deg) scale(1)}100%{opacity:0}}
+/* Stroop scene */
+#fx-grape .sq{left:0;right:0;top:30px;text-align:center;font-weight:900;font-size:40px;letter-spacing:.04em;opacity:0;animation:stroopCycle 8s infinite}
+#fx-grape .fl{left:0;right:0;text-align:center;top:auto;bottom:10px;color:#F3EAFF;font-size:13px}
+@keyframes stroopCycle{0%{opacity:0;transform:scale(.8)}3%,22%{opacity:1;transform:none}25%,100%{opacity:0}}
+/* Computer Analogy */
+#fx-terminal .ip{display:flex;gap:6px;align-items:center;justify-content:center;position:absolute;left:8px;right:8px;top:38px;font:700 13px/1 ui-monospace,Menlo,Consolas,monospace;color:#C8FFD4}
+#fx-terminal .ip b{padding:9px 8px;border:2px solid #1E5A2A;border-radius:6px;animation:ipLight 4.5s infinite}
+#fx-terminal .ip b:nth-of-type(2){animation-delay:1.5s}#fx-terminal .ip b:nth-of-type(3){animation-delay:3s}
+#fx-terminal .cu{left:14px;bottom:12px;font:700 14px ui-monospace,Menlo,Consolas,monospace;color:#39FF6A}
+#fx-terminal .cu i{display:inline-block;width:9px;height:15px;background:#39FF6A;vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes ipLight{0%,30%,100%{background:transparent;border-color:#1E5A2A;box-shadow:none}5%,25%{background:#0F3A1A;border-color:#39FF6A;box-shadow:0 0 12px #39FF6A}}
+@keyframes blink{50%{opacity:0}}
+/* Chalkboard */
+#fx-chalk{background:#264736}
+#fx-chalk .cw{left:22px;top:30px;white-space:nowrap;overflow:hidden;width:0;font:700 30px/1.2 "Chalkboard SE","Comic Sans MS","Segoe Print",cursive;color:#F1F5EE;text-shadow:0 0 1px #fff;animation:chalkWrite 8s steps(15) infinite}
+#fx-chalk .cs2{left:22px;top:74px;white-space:nowrap;overflow:hidden;width:0;font:700 17px/1.2 "Chalkboard SE","Comic Sans MS","Segoe Print",cursive;color:#FDE68A;animation:chalkWrite2 8s steps(22) infinite}
+#fx-chalk .er{top:24px;left:-90px;width:70px;height:34px;border-radius:5px;background:linear-gradient(#8B5A2B 0 40%,#E8E2D2 40%);animation:eraser 8s ease-in-out infinite}
+@keyframes chalkWrite{0%{width:0}25%,72%{width:250px}80%,100%{width:250px;opacity:0}}
+@keyframes chalkWrite2{0%,28%{width:0}48%,72%{width:290px}80%,100%{width:290px;opacity:0}}
+@keyframes eraser{0%,70%{left:-90px;top:24px}78%{left:120px;top:44px}86%{left:300px;top:30px}100%{left:400px}}
+/* Brain Scan */
+#fx-brainscan .br{left:50%;top:12px;width:100px;height:100px;margin-left:-50px;font-size:84px;line-height:100px;text-align:center;filter:grayscale(.6) brightness(.8)}
+#fx-brainscan .hb2{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle,#FFF2A8 0 15%,#FF8A00 40%,rgba(255,40,0,.6) 65%,transparent 72%);mix-blend-mode:screen;opacity:0;animation:heat 4.5s ease-in-out infinite}
+@keyframes heat{0%,100%{opacity:0;transform:scale(.6)}30%,60%{opacity:.95;transform:scale(1)}}
+/* Results Day */
+#fx-results .ev{left:50%;bottom:10px;width:150px;height:78px;margin-left:-75px;background:#B98A54;border-radius:4px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.15)}
+#fx-results .ef{left:50%;bottom:52px;width:0;height:0;margin-left:-75px;border-left:75px solid transparent;border-right:75px solid transparent;border-top:40px solid #A8784A;transform-origin:50% 0;z-index:1;animation:flapOpen 7s ease-in-out infinite}
+#fx-results .rc{left:50%;bottom:12px;width:120px;height:50px;margin-left:-60px;background:#FFFDF6;border:2px solid #D4AF37;border-radius:4px;text-align:center;font-weight:900;font-size:30px;line-height:46px;color:#9A7414;z-index:2;animation:cardUp 7s ease-in-out infinite}
+#fx-results .ev2{left:50%;bottom:10px;width:150px;height:46px;margin-left:-75px;background:#C99A64;border-radius:0 0 4px 4px;z-index:4}
+#fx-results .cf{width:7px;height:10px;left:50%;top:30px;opacity:0;animation:resConf 7s ease-out infinite}
+@keyframes flapOpen{0%,12%{transform:rotateX(0)}22%,84%{transform:rotateX(180deg)}94%,100%{transform:rotateX(0)}}
+@keyframes cardUp{0%,22%{transform:translateY(10px)}36%,80%{transform:translateY(-52px)}90%,100%{transform:translateY(10px)}}
+@keyframes resConf{0%,36%{opacity:0;transform:translate(0,0) rotate(0)}38%{opacity:1}60%{opacity:1}75%,100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(260deg)}}
+/* Ethics Committee */
+#fx-ethics .ec{left:50%;top:18px;width:200px;height:88px;margin-left:-100px;background:#fff;border:1px solid #C9D6D1;border-radius:8px;box-shadow:0 4px 10px rgba(0,0,0,.08);padding:10px 12px;font-weight:700;font-size:15px;color:#1C2B27;opacity:0}
+#fx-ethics .ec small{display:block;font-weight:500;font-size:12px;color:#4C5F59;margin-top:4px}
+#fx-ethics .e1{animation:ethCard 10s infinite}#fx-ethics .e2{animation:ethCard 10s infinite -5s}
+#fx-ethics .stp{position:absolute;right:8px;bottom:8px;padding:3px 8px;border:3px solid;border-radius:6px;font-weight:900;font-size:16px;letter-spacing:.04em;transform:rotate(-12deg) scale(2.4);opacity:0}
+#fx-ethics .e1 .stp{color:#C0392B;animation:ethStamp 10s infinite}#fx-ethics .e2 .stp{color:#1C7F57;animation:ethStamp 10s infinite -5s}
+@keyframes ethCard{0%,2%{opacity:0;transform:translateY(8px)}6%,44%{opacity:1;transform:none}50%,100%{opacity:0}}
+@keyframes ethStamp{0%,18%{opacity:0;transform:rotate(-12deg) scale(2.4)}22%{opacity:1;transform:rotate(-12deg) scale(.92)}25%,44%{opacity:1;transform:rotate(-12deg) scale(1)}50%,100%{opacity:0}}
+/* Coffee Break */
+#fx-coffee .mug{left:50%;bottom:12px;width:70px;height:60px;margin-left:-45px;background:linear-gradient(90deg,#F7ECDD,#E8D7C2);border-radius:0 0 16px 16px;box-shadow:inset 0 6px 0 #6B3E1F}
+#fx-coffee .mug::after{content:"";position:absolute;right:-20px;top:12px;width:16px;height:24px;border:6px solid #E8D7C2;border-left:0;border-radius:0 14px 14px 0}
+#fx-coffee .stm{bottom:74px;width:10px;height:36px;border-left:4px solid rgba(247,236,221,.7);border-radius:50%;opacity:0;animation:steam 3.2s ease-out infinite}
+@keyframes steam{0%{opacity:0;transform:translateY(8px) scaleY(.7)}30%{opacity:.8}100%{opacity:0;transform:translate(6px,-30px) scaleY(1.2) skewX(14deg)}}
+/* 8-bit Arcade */
+#fx-arcade8{background:#0B0B1E}
+#fx-arcade8 .gr{left:0;right:0;bottom:0;height:16px;background:repeating-linear-gradient(90deg,#3A2A8A 0 16px,#2E2270 16px 32px);border-top:3px solid #6D5BD0;animation:groundScroll 1s steps(8) infinite}
+#fx-arcade8 .hero{left:60px;bottom:16px;font-size:30px;line-height:1;animation:heroJump 2s steps(10) infinite}
+#fx-arcade8 .blk{bottom:16px;width:22px;height:22px;background:#FF2E9A;box-shadow:inset -4px -4px 0 #B0126A;animation:blockRun 2s linear infinite}
+#fx-arcade8 .ic{right:14px;top:34px;font:12px/1.4 "Press Start 2P",ui-monospace,monospace;color:#FFE14D;text-align:right;animation:blink 1.2s steps(1) infinite}
+@keyframes groundScroll{to{background-position:-32px 0}}
+@keyframes heroJump{0%,30%,100%{transform:translateY(0)}45%,60%{transform:translateY(-38px)}}
+@keyframes blockRun{from{left:105%}to{left:-10%}}
+@media (prefers-reduced-motion:reduce){.tfx *{animation:none!important}#tfx-volts .vfl,#tfx-volts .vb,#tfx-dreams .zz,#tfx-veggie .vf{display:none}:root[data-skin="fool"] .box,:root[data-skin="fool"] .hud,:root[data-skin="fool"] .tabs,:root[data-skin="fool"] .plan-card,:root[data-skin="fool"] .top h1,:root[data-skin="fool"] .btn,:root[data-skin="fool"] .startbtn,:root[data-skin="fool"] .chip,:root[data-skin="inner"] .box,:root[data-skin="inner"] .hud,:root[data-skin="inner"] .plan-card,:root[data-skin="inner"] .petstrip,:root[data-skin="inner"] .tabs,:root[data-skin="bullring"] .h1t{animation:none}}
 .top{position:relative}
 .mrw-say{position:absolute;left:min(60%,420px);top:-6px;z-index:20;max-width:260px;padding:10px 14px;border-radius:16px 16px 16px 4px;background:linear-gradient(135deg,#FFF6D8,#FFE9A3);color:#3A2A08;border:2px solid #D4AF37;font-weight:800;font-size:17px;line-height:1.2;box-shadow:0 8px 22px rgba(0,0,0,.35);pointer-events:none;animation:mrwPop 2.6s ease-out forwards}
 @keyframes mrwPop{0%{opacity:0;transform:translateY(10px) scale(.6)}10%{opacity:1;transform:translateY(0) scale(1.06)}16%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
@@ -1511,11 +1679,52 @@ const SKIN_FX={
   galaxy1000:()=>`<span class="fl" style="color:#FFB4EC">1,000 in a row 🌌</span><span class="fa ss"></span><span class="fa ss"></span><div class="orb o1"><span style="left:0;top:-46px">⭐</span><span style="left:0;top:46px">✨</span></div><div class="orb o2"><span style="left:-58px;top:0">🌙</span><span style="left:58px;top:0">☄️</span></div><div class="orb o3"><span style="left:30px;top:0;font-size:12px">✨</span></div><span class="fa gb">🧠</span>`,
   wakefield:()=>`<div class="fa wsc"><span class="wl" style="top:22px"></span><span class="wl" style="top:44px"></span><span class="wl" style="top:66px"></span></div><span class="fa tk tk1">✓</span><span class="fa tk tk2">✓</span><span class="fa tk tk3">✓</span><span class="fa pen">🖊️</span><div class="fa seal">A*</div><span class="fl">Marked by Mr W ✦</span>`,
   snowdome:()=>`<span class="fl">Tamworth SnowDome ❄️</span><div class="fa gl"><span class="sk">⛷️</span></div><div class="fa bs"></div>`,
+  ocean:()=>`<span class="fl" style="color:#E6F1FA">Freud's iceberg 🧊</span><svg viewBox="0 0 340 124"><g class="ib"><polygon points="146,48 160,26 170,34 182,22 196,48" fill="#F4FBFF"/><polygon points="138,48 116,76 124,108 166,120 214,112 232,82 204,48" fill="#CFE6F5" opacity=".75"/></g><g class="wv"><path d="M0 48q10-5 20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0t20 0" stroke="#fff" stroke-width="2" fill="none" opacity=".8"/></g><g font-size="11" font-weight="700" fill="#fff"><text x="204" y="30">Conscious</text><text x="240" y="62">Preconscious</text><text x="240" y="98">Unconscious</text></g><path d="M200 28l-12 2M236 59l-30-4M236 95l-22 4" stroke="#fff" stroke-width="1" opacity=".7"/></svg>`,
+  exam:()=>`<svg class="fa ck" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#fff" stroke="#3F3F46" stroke-width="4"/>${Array.from({length:12},(_,i)=>`<line x1="50" y1="8" x2="50" y2="${i%3?14:18}" stroke="#18181B" stroke-width="${i%3?2:3.5}" transform="rotate(${i*30} 50 50)"/>`).join("")}<line class="mh" x1="50" y1="50" x2="50" y2="18" stroke="#18181B" stroke-width="4" stroke-linecap="round"/><line class="sh" x1="50" y1="58" x2="50" y2="12" stroke="#DC2626" stroke-width="2" stroke-linecap="round"/><circle cx="50" cy="50" r="4" fill="#DC2626"/></svg><span class="fa to">You may now turn over your paper.</span>`,
+  blues:()=>`<span class="fl" style="color:#C6D0FF">Keep right on 💙</span><div class="fa tk2"><span>KEEP RIGHT ON! 💙 KEEP RIGHT ON TO THE END OF THE ROAD 💙 KEEP RIGHT ON! 💙 KEEP RIGHT ON TO THE END OF THE ROAD 💙 </span></div>`,
+  tamworth:()=>`<span class="fl">Tamworth Castle 🏰</span><svg viewBox="0 0 340 124"><ellipse class="cl" cx="40" cy="22" rx="26" ry="9"/><ellipse class="cl cl2" cx="40" cy="38" rx="20" ry="7"/><rect x="0" y="110" width="340" height="14" fill="#7FB65A"/><g fill="#D9B07A" stroke="#A97B47" stroke-width="1.5"><rect x="110" y="56" width="120" height="56"/><rect x="92" y="38" width="34" height="74"/><rect x="214" y="38" width="34" height="74"/><path d="M110 56h12v-8h12v8h12v-8h12v8h12v-8h12v8h12v-8h12v8h12v-8h12v8" fill="#D9B07A"/><path d="M92 38h7v-7h7v7h7v-7h7v7h6" /><path d="M214 38h7v-7h7v7h7v-7h7v7h6"/></g><path d="M160 112v-26a10 10 0 0 1 20 0v26z" fill="#6B3E1F"/><g fill="#A33B2B"><rect x="137" y="70" width="8" height="10" rx="1"/><rect x="195" y="70" width="8" height="10" rx="1"/></g><line x1="109" y1="31" x2="109" y2="8" stroke="#5A3A20" stroke-width="2"/><line x1="231" y1="31" x2="231" y2="8" stroke="#5A3A20" stroke-width="2"/><path class="fg" d="M110 8h22l-5 6 5 6h-22z" fill="#A33B2B"/><path class="fg fg2" d="M232 8h22l-5 6 5 6h-22z" fill="#2E5BD6"/></svg>`,
+  pink:()=>`<div class="fa pg">${[14,34,54,74].map((t,i)=>`<span class="ln" style="top:${t}px;width:${[150,120,160,90][i]}px"></span>`).join("")}</div>${[[178,18,1],[178,38,2],[150,78,3]].map(([l,t,k])=>`<span class="fa pt" style="left:${l}px;top:${t}px;animation:pinkTick .35s ${(k*0.9).toFixed(1)}s both, pinkGP 6s infinite"></span>`).join("").replace(/<\/span>/g,"✓</span>")}<span class="fa gp">Good point!<br>+1 AO3 ✨</span>`,
+  grape:()=>`${[["RED","#3B7DD8"],["GREEN","#F59E0B"],["BLUE","#22C55E"],["YELLOW","#C084FC"]].map(([w,c],i)=>`<span class="fa sq" style="color:${c};animation-delay:${i*2}s">${w}</span>`).join("")}<span class="fl">Say the colour, not the word!</span>`,
+  terminal:()=>`<span class="fl" style="color:#7CFF9A">The computer analogy 💻</span><div class="ip"><b>INPUT</b>→<b>PROCESS</b>→<b>OUTPUT</b></div><span class="fa cu">&gt; encoding memory <i></i></span>`,
+  chalk:()=>`<span class="fa cw">Milgram (1963)</span><span class="fa cs2">65% went to 450 volts</span><span class="fa er"></span>`,
+  brainscan:()=>`<span class="fl" style="color:#A5F3FC">fMRI scan 🧠</span><span class="fa br">🧠</span>${[[150,30,0],[186,46,1.5],[160,68,3]].map(([l,t,d])=>`<span class="fa hb2" style="left:calc(50% - 170px + ${l}px);top:${t}px;animation-delay:${d}s"></span>`).join("")}`,
+  results:()=>`<span class="fl">Results Day ✉️</span><div class="fa ev"></div><div class="fa rc">A*</div><div class="fa ev2"></div><div class="fa ef"></div>${Array.from({length:12},(_,i)=>`<span class="fa cf" style="background:${["#D4AF37","#E0429A","#22C55E","#3B7DD8"][i%4]};--dx:${Math.round(Math.cos(i/12*6.28)*110)}px;--dy:${Math.round(Math.sin(i/12*6.28)*50-20)}px"></span>`).join("")}`,
+  ethics:()=>`<span class="fl">Ethics committee ✅</span><div class="fa ec e1">Milgram (1963)<small>Deception, no right to withdraw, distress</small><span class="stp">REJECTED ✗</span></div><div class="fa ec e2">Your study<small>Consent, debrief, right to withdraw</small><span class="stp">APPROVED ✓</span></div>`,
+  coffee:()=>`<span class="fl">IV: coffee ☕ DV: marking</span>${[0,1,2].map(i=>`<span class="fa stm" style="left:calc(50% - ${30-i*14}px);animation-delay:${i*1.05}s"></span>`).join("")}<div class="fa mug"></div>`,
+  arcade8:()=>`<span class="fa ic">INSERT<br>COIN</span><div class="fa gr"></div><span class="fa blk"></span><span class="fa hero">👾</span>`,
   squeaks:()=>`<div class="mz">${MAZE}<span class="ch">🧀</span><div class="rt">${petSVG(5,"happy",40)}</div></div><span class="fl">Professor Squeaks runs the maze 🎓</span>`
 };
 function skinFxMake(id){ const f=SKIN_FX[id]; if(!f || document.getElementById("fx-"+id)) return; const top=document.querySelector(".top"); if(!top) return;
   const d=document.createElement("div"); d.className="skinfx"; d.id="fx-"+id; d.setAttribute("aria-hidden","true"); d.innerHTML=f(); const h=top.querySelector("h1"); h?h.after(d):top.appendChild(d); }
-function applySkin(id){ setTimeout(()=>skinFxMake(id),0); if(id==="petmonkey") setTimeout(harlowMake,0); if(id==="fount") setTimeout(fountStart,0); else fountStop(); if(id==="petpigeon") setTimeout(pongMake,0); if(id==="arcade8" && !document.getElementById("pixelCss")){ const l=document.createElement("link"); l.id="pixelCss"; l.rel="stylesheet"; l.href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"; document.head.appendChild(l); } const r=document.documentElement; r.removeAttribute("data-skin"); r.removeAttribute("data-theme"); if(id==="light"||id==="dark") r.setAttribute("data-theme",id); else if(id && id!=="auto") r.setAttribute("data-skin",id); }
+/* full-screen theme effects: built once when the theme is first used, shown only while it's on */
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const THEME_OV={
+  volts:()=>`<div class="vfl"></div><div class="vfl"></div>
+    <svg class="a vb" style="left:18%" viewBox="0 0 120 400" preserveAspectRatio="none"><polyline points="70,0 40,120 80,130 30,260 70,270 20,400" fill="none" stroke="#FFFBE0" stroke-width="5"/></svg>
+    <svg class="a vb vb2" style="left:68%" viewBox="0 0 120 400" preserveAspectRatio="none"><polyline points="50,0 80,110 35,125 85,240 45,255 90,400" fill="none" stroke="#FFFBE0" stroke-width="5"/></svg>
+    <div class="a vd"><svg viewBox="0 0 80 44"><path d="M6 40A34 34 0 0 1 74 40" fill="none" stroke="#333" stroke-width="8"/><path d="M6 40A34 34 0 0 1 74 40" fill="none" stroke="url(#vg)" stroke-width="8" stroke-dasharray="107" stroke-dashoffset="0"/><defs><linearGradient id="vg"><stop offset="0" stop-color="#7CE0A8"/><stop offset=".55" stop-color="#FFD400"/><stop offset="1" stop-color="#FF3B3B"/></linearGradient></defs><line class="nd" x1="40" y1="40" x2="40" y2="10" stroke="#FFF8D6" stroke-width="3" stroke-linecap="round"/><circle cx="40" cy="40" r="4" fill="#FFD400"/></svg><span id="voltTxt">15V</span></div>`,
+  petdog:()=>`<span class="a pb">🔔</span><span class="a pd">ding!</span>${Array.from({length:10},(_,i)=>`<span class="a pw" style="left:${4+i*9.4}%;bottom:${i%2?16:4}px;animation-delay:${(i*0.3).toFixed(1)}s">🐾</span>`).join("")}`,
+  dreams:()=>`<div class="a st"></div><div class="a st"></div><span class="a mn">🌙</span>${[[26,0],[20,2.3],[15,4.6]].map(([f,d])=>`<span class="a zz" style="font-size:${f}px;animation-delay:${d}s">Z</span>`).join("")}`,
+  veggie:()=>`${[8,22,37,52,66,81,93].map((l,i)=>`<span class="a vf" style="left:${l}%;animation-delay:${(i*1.3).toFixed(1)}s;animation-duration:${(8+i%3*1.5).toFixed(1)}s">${i%2?'<i class="pea" style="display:block"></i>':"🥦"}</span>`).join("")}<div class="a vpile">${Array.from({length:30},(_,i)=>i%3===1?`<span class="pea" style="left:${i*3.4}%;bottom:${i%2?2:8}px"></span>`:`<span style="left:${i*3.4-1}%;font-size:${18+(i*7)%10}px">🥦</span>`).join("")}</div>`,
+  inner:()=>`<div class="a cv"></div><span class="a cd" style="left:10px">🕯️</span><span class="a cd" style="right:10px;animation-delay:-.8s">🕯️</span>`,
+  neon:()=>[12,29,47,66,84].map((t,i)=>`<span class="a ns" style="top:${t}%;animation-delay:${(-i*1.7).toFixed(1)}s;animation-duration:${(6+i%3*2)}s"></span>`).join(""),
+  exam:()=>[6,24,45,63,82].map((l,i)=>`<span class="a pp2" style="left:${l}%;animation-delay:${(-i*3.5).toFixed(1)}s;animation-duration:${16+i%3*4}s">📄</span>`).join(""),
+  blues:()=>`<div class="a bt"></div>`,
+  grape:()=>[["RED","#3B7DD8"],["GREEN","#C084FC"],["BLUE","#F59E0B"],["YELLOW","#22C55E"],["PURPLE","#FACC15"],["ORANGE","#38BDF8"]].map(([w,c],i)=>`<span class="a sw2" style="left:${4+i*16}%;color:${c};animation-delay:${(-i*3.3).toFixed(1)}s;animation-duration:${18+i%3*4}s">${w}</span>`).join(""),
+  terminal:()=>Array.from({length:16},(_,i)=>`<span class="a cr" style="left:${2+i*6.2}%;animation-delay:${(-Math.random()*9).toFixed(1)}s;animation-duration:${(7+Math.random()*6).toFixed(1)}s">${Array.from({length:40},()=>Math.random()<.5?"0":"1").join("")}</span>`).join(""),
+  chalk:()=>`<div class="a du"></div>`,
+  brainscan:()=>`<span class="a sl"></span>`,
+  arcade8:()=>`<div class="a pxs"></div>`
+};
+function themeOvMake(id){ const f=THEME_OV[id]; if(!f || document.getElementById("tfx-"+id)) return; const d=document.createElement("div"); d.className="tfx"; d.id="tfx-"+id; d.setAttribute("aria-hidden","true"); d.innerHTML=f(); document.body.appendChild(d); if(id==="volts") voltShow(); }
+/* reactions to answers: Pavlov's bell, the 450 Volts dial, Bullring streak confetti */
+let voltV=15;
+function voltShow(){ const t=document.getElementById("voltTxt"); if(!t) return; t.textContent=voltV>=450?"450V XXX":voltV+"V"; const n=document.querySelector("#tfx-volts .nd"); if(n) n.style.transform=`rotate(${-90+180*(voltV-15)/435}deg)`; }
+function themeHit(ok){ const sk=document.documentElement.dataset.skin;
+  if(sk==="volts"){ voltV=ok?Math.min(450,voltV+15):Math.max(15,voltV-45); voltShow(); }
+  else if(sk==="petdog" && ok){ const b=document.querySelector("#tfx-petdog .pb"); if(b){ b.classList.remove("ring"); void b.offsetWidth; b.classList.add("ring"); } }
+  else if(sk==="bullring" && ok && combo>0 && combo%5===0) confetti(170,["#1E5FAF","#FFFFFF","#8DB8FF","#0A3D8F"]); }
+function applySkin(id){ setTimeout(()=>themeOvMake(id),0); setTimeout(()=>skinFxMake(id),0); if(id==="petmonkey") setTimeout(harlowMake,0); if(id==="fount") setTimeout(fountStart,0); else fountStop(); if(id==="petpigeon") setTimeout(pongMake,0); if(id==="arcade8" && !document.getElementById("pixelCss")){ const l=document.createElement("link"); l.id="pixelCss"; l.rel="stylesheet"; l.href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"; document.head.appendChild(l); } const r=document.documentElement; r.removeAttribute("data-skin"); r.removeAttribute("data-theme"); if(id==="light"||id==="dark") r.setAttribute("data-theme",id); else if(id && id!=="auto") r.setAttribute("data-skin",id); }
 if(store.theme==="sunset"){ store.theme="tamworth"; save(); }
 if(store.theme==="graph"){ store.theme="slime"; save(); }
 if(store.theme==="postit"||store.theme==="highlighter"){ store.theme=store.theme==="postit"?"lanyard":"senior"; save(); } // replaced by the lanyard themes // Sunset became Tamworth Castle
@@ -2147,6 +2356,7 @@ function answer({ok, el, mode, gold, boost, self}){
   const t=today();
   anAnswer(mode, ok); G.st.cards++; if(ok){ G.st.right++; const pt=petType(); if(pt!=="rat"){ G.pg=G.pg||{}; G.pg[pt]=(G.pg[pt]||0)+1; } } if(!self){ boboTrack(ok); hansTrack(ok); }   // the parent quiz is marked by a person, so it doesn't count towards in-a-row challenges
   if(ok){ combo++; if(combo>G.st.combo) G.st.combo=combo; } else { if(combo===7) G.sec.miller=1; combo=0; }
+  try{ themeHit(ok); }catch(e){}
   const base = mode==="quiz" ? (ok?15:4) : mode==="arcade" ? (ok?6:1) : (ok?10:3);
   let mult = ok ? comboMult() : 1;
   if(gold && ok){ mult*=5; G.st.gold++; }
