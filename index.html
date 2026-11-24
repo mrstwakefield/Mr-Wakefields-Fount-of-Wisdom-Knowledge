@@ -1194,16 +1194,20 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 #tfx-volts .vfl+.vfl{animation-duration:13s;animation-delay:4s}
 #tfx-volts .vb{top:0;width:120px;height:62vh;opacity:0;animation:volBolt 9s infinite;filter:drop-shadow(0 0 8px #FFF7B0) drop-shadow(0 0 18px #FFD400)}
 #tfx-volts .vb2{animation-duration:13s;animation-delay:4s}
-#tfx-volts .vd{left:12px;bottom:12px;width:92px;padding:6px 6px 5px;border-radius:12px;background:#1C1C1C;border:2px solid #FFD400;box-shadow:0 0 14px rgba(255,212,0,.35);text-align:center;color:#FFF8D6;font-weight:800;font-size:13px;line-height:1.1}
-#tfx-volts .vd svg{display:block;width:80px;height:44px;margin:0 auto 2px}
-#tfx-volts .vd .nd{transform-box:view-box;transform-origin:40px 40px;transition:transform .5s cubic-bezier(.3,1.5,.5,1)}
 @keyframes volFlash{0%,57%,62%,100%{opacity:0}58%{opacity:.32}59%{opacity:.04}60.5%{opacity:.2}}
 @keyframes volBolt{0%,57%,62%,100%{opacity:0}58%,61%{opacity:1}}
 /* 🔔 Pavlov's Dog: the bell rings on every right answer, paw prints trot past */
-#tfx-petdog .pb{top:84px;right:14px;font-size:40px;transform-origin:50% 8%}
-#tfx-petdog .pb.ring{animation:bellRing2 .9s ease-out}
-#tfx-petdog .pd{top:92px;right:62px;font-weight:800;font-size:15px;color:#B0281C;opacity:0}
-#tfx-petdog .pb.ring+.pd{animation:dingPop .9s ease-out}
+/* 450 Volts dial and Pavlov's bell live in the sticky HUD, so they're always visible and never cover a card */
+.hudfx{display:none;position:relative;align-items:center;gap:4px;font-weight:800;font-size:14px;line-height:1}
+:root[data-skin="volts"] .hudfx,:root[data-skin="petdog"] .hudfx{display:flex}
+.hudfx .vg{width:38px;height:22px}
+.hudfx .nd{transform-box:view-box;transform-origin:40px 40px;transition:transform .5s cubic-bezier(.3,1.5,.5,1)}
+.hudfx .vt{color:#FFD400;min-width:3.6em}
+.hudfx .pb{display:inline-block;font-size:24px;transform-origin:50% 10%}
+.hudfx .pb.ring{animation:bellRing2 .9s ease-out}
+.hudfx .pd{position:absolute;left:28px;top:-4px;font-size:12px;color:var(--warn);opacity:0}
+.hudfx .pb.ring+.pd{animation:dingPop .9s ease-out}
+@media (max-width:560px){.hudfx{flex-direction:column;gap:1px;padding:4px 6px}.hudfx .vg{width:30px;height:17px}.hudfx .vt{font-size:10px;min-width:0}.hudfx .pb{font-size:20px}.hudfx .pd{left:18px}}
 #tfx-petdog .pw{top:46%;font-size:20px;opacity:0;transform:rotate(90deg);animation:pawStep 16s linear infinite}
 @keyframes bellRing2{0%{transform:rotate(0)}15%{transform:rotate(26deg)}35%{transform:rotate(-22deg)}55%{transform:rotate(14deg)}75%{transform:rotate(-7deg)}100%{transform:rotate(0)}}
 @keyframes dingPop{0%{opacity:0;transform:translateY(4px)}20%,70%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-8px)}}
@@ -1421,6 +1425,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
     <button class="hud-stat" id="hudGoal" aria-label="Today's goal. Open Progress"><svg class="goalring" viewBox="0 0 30 30"><circle class="ring-bg" cx="15" cy="15" r="12" style="stroke-width:4"/><circle class="ring-fg" id="hudGoalRing" cx="15" cy="15" r="12" style="stroke-width:4" stroke-dasharray="75.4" stroke-dashoffset="75.4"/></svg><span><span id="hudGoalN">0/30</span><span class="lab">today</span></span></button>
     <button class="hud-stat examc" id="hudExam" aria-label="Exam countdown" hidden><span class="ico">⏳</span><span><span id="hudExamN">0</span><span class="lab" id="hudExamL">days</span></span></button>
     <button class="hud-stat duebtn" id="hudDue" aria-label="Cards due today" title="Cards due for review today" hidden><span class="ico">📅</span><span><span id="hudDueN">0</span><span class="lab">due today</span></span></button>
+    <div class="hud-stat hudfx" id="hudFx" aria-hidden="true"></div>
     <div class="combo" id="combo" aria-live="polite"></div>
     <button class="iconbtn" id="soundBtn" aria-label="Mute sounds">🔊</button>
   </div>
@@ -1719,9 +1724,8 @@ const rnd=(a,b)=>a+Math.random()*(b-a);
 const THEME_OV={
   volts:()=>`<div class="vfl"></div><div class="vfl"></div>
     <svg class="a vb" style="left:18%" viewBox="0 0 120 400" preserveAspectRatio="none"><polyline points="70,0 40,120 80,130 30,260 70,270 20,400" fill="none" stroke="#FFFBE0" stroke-width="5"/></svg>
-    <svg class="a vb vb2" style="left:68%" viewBox="0 0 120 400" preserveAspectRatio="none"><polyline points="50,0 80,110 35,125 85,240 45,255 90,400" fill="none" stroke="#FFFBE0" stroke-width="5"/></svg>
-    <div class="a vd"><svg viewBox="0 0 80 44"><path d="M6 40A34 34 0 0 1 74 40" fill="none" stroke="#333" stroke-width="8"/><path d="M6 40A34 34 0 0 1 74 40" fill="none" stroke="url(#vg)" stroke-width="8" stroke-dasharray="107" stroke-dashoffset="0"/><defs><linearGradient id="vg"><stop offset="0" stop-color="#7CE0A8"/><stop offset=".55" stop-color="#FFD400"/><stop offset="1" stop-color="#FF3B3B"/></linearGradient></defs><line class="nd" x1="40" y1="40" x2="40" y2="10" stroke="#FFF8D6" stroke-width="3" stroke-linecap="round"/><circle cx="40" cy="40" r="4" fill="#FFD400"/></svg><span id="voltTxt">15V</span></div>`,
-  petdog:()=>`<span class="a pb">🔔</span><span class="a pd">ding!</span>${Array.from({length:10},(_,i)=>`<span class="a pw" style="left:${4+i*9.4}%;margin-top:${i%2?14:0}px;animation-delay:${(i*0.3).toFixed(1)}s">🐾</span>`).join("")}`,
+    <svg class="a vb vb2" style="left:68%" viewBox="0 0 120 400" preserveAspectRatio="none"><polyline points="50,0 80,110 35,125 85,240 45,255 90,400" fill="none" stroke="#FFFBE0" stroke-width="5"/></svg>`,
+  petdog:()=>`${Array.from({length:10},(_,i)=>`<span class="a pw" style="left:${4+i*9.4}%;margin-top:${i%2?14:0}px;animation-delay:${(i*0.3).toFixed(1)}s">🐾</span>`).join("")}`,
   dreams:()=>`<div class="a st"></div><div class="a st"></div><span class="a mn">🌙</span>${[[26,0],[20,2.3],[15,4.6]].map(([f,d])=>`<span class="a zz" style="font-size:${f}px;animation-delay:${d}s">Z</span>`).join("")}`,
   veggie:()=>`${[8,22,37,52,66,81,93].map((l,i)=>`<span class="a vf" style="left:${l}%;animation-delay:${(i*1.3).toFixed(1)}s;animation-duration:${(8+i%3*1.5).toFixed(1)}s">${i%2?'<i class="pea" style="display:block"></i>':"🥦"}</span>`).join("")}`,
   inner:()=>`<div class="a cv"></div><span class="a cd" style="left:10px">🕯️</span><span class="a cd" style="right:10px;animation-delay:-.8s">🕯️</span>`,
@@ -1739,15 +1743,19 @@ function vegPileMake(){ if(document.getElementById("vegPile")) return; const d=d
   d.innerHTML=Array.from({length:34},(_,i)=>i%3===1?`<span class="pea" style="left:${i*3}%;bottom:${i%2?2:9}px"></span>`:`<span style="left:${i*3-1}%;font-size:${18+(i*7)%10}px">🥦</span>`).join(""); document.body.appendChild(d); }
 /* is the title on screen? (used by the Veggie Patch pile) */
 if("IntersectionObserver" in window){ const t=document.querySelector(".top"); if(t) new IntersectionObserver(es=>document.documentElement.classList.toggle("attop",es[0].isIntersecting),{threshold:0.15}).observe(t); }
-function themeOvMake(id){ const f=THEME_OV[id]; if(!f || document.getElementById("tfx-"+id)) return; const d=document.createElement("div"); d.className="tfx"; d.id="tfx-"+id; d.setAttribute("aria-hidden","true"); d.innerHTML=f(); document.body.appendChild(d); if(id==="volts") voltShow(); if(id==="veggie") vegPileMake(); }
+function hudFxSet(id){ const h=document.getElementById("hudFx"); if(!h) return;
+  if(id==="volts"){ h.innerHTML=`<svg class="vg" viewBox="0 0 80 44"><path d="M6 40A34 34 0 0 1 74 40" fill="none" stroke="#333" stroke-width="9"/><path d="M6 40A34 34 0 0 1 74 40" fill="none" stroke="url(#vg)" stroke-width="9"/><defs><linearGradient id="vg"><stop offset="0" stop-color="#7CE0A8"/><stop offset=".55" stop-color="#FFD400"/><stop offset="1" stop-color="#FF3B3B"/></linearGradient></defs><line class="nd" x1="40" y1="40" x2="40" y2="8" stroke="#FFF8D6" stroke-width="4" stroke-linecap="round"/><circle cx="40" cy="40" r="5" fill="#FFD400"/></svg><span class="vt" id="voltTxt"></span>`; voltShow(); }
+  else if(id==="petdog") h.innerHTML=`<span class="pb">🔔</span><span class="pd">ding!</span>`;
+  else h.innerHTML=""; }
+function themeOvMake(id){ const f=THEME_OV[id]; if(!f || document.getElementById("tfx-"+id)) return; const d=document.createElement("div"); d.className="tfx"; d.id="tfx-"+id; d.setAttribute("aria-hidden","true"); d.innerHTML=f(); document.body.appendChild(d); if(id==="veggie") vegPileMake(); }
 /* reactions to answers: Pavlov's bell, the 450 Volts dial, Bullring streak confetti */
 let voltV=15;
-function voltShow(){ const t=document.getElementById("voltTxt"); if(!t) return; t.textContent=voltV>=450?"450V XXX":voltV+"V"; const n=document.querySelector("#tfx-volts .nd"); if(n) n.style.transform=`rotate(${-90+180*(voltV-15)/435}deg)`; }
+function voltShow(){ const t=document.getElementById("voltTxt"); if(!t) return; t.textContent=voltV>=450?"450V XXX":voltV+"V"; const n=document.querySelector("#hudFx .nd"); if(n) n.style.transform=`rotate(${-90+180*(voltV-15)/435}deg)`; }
 function themeHit(ok){ const sk=document.documentElement.dataset.skin;
   if(sk==="volts"){ voltV=ok?Math.min(450,voltV+15):Math.max(15,voltV-45); voltShow(); }
-  else if(sk==="petdog" && ok){ const b=document.querySelector("#tfx-petdog .pb"); if(b){ b.classList.remove("ring"); void b.offsetWidth; b.classList.add("ring"); } }
+  else if(sk==="petdog" && ok){ const b=document.querySelector("#hudFx .pb"); if(b){ b.classList.remove("ring"); void b.offsetWidth; b.classList.add("ring"); } }
   else if(sk==="bullring" && ok && combo>0 && combo%5===0) confetti(170,["#1E5FAF","#FFFFFF","#8DB8FF","#0A3D8F"]); }
-function applySkin(id){ setTimeout(()=>themeOvMake(id),0); setTimeout(()=>skinFxMake(id),0); if(id==="petmonkey") setTimeout(harlowMake,0); if(id==="fount") setTimeout(fountStart,0); else fountStop(); if(id==="petpigeon") setTimeout(pongMake,0); if(id==="arcade8" && !document.getElementById("pixelCss")){ const l=document.createElement("link"); l.id="pixelCss"; l.rel="stylesheet"; l.href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"; document.head.appendChild(l); } const r=document.documentElement; r.removeAttribute("data-skin"); r.removeAttribute("data-theme"); if(id==="light"||id==="dark") r.setAttribute("data-theme",id); else if(id && id!=="auto") r.setAttribute("data-skin",id); }
+function applySkin(id){ setTimeout(()=>{ themeOvMake(id); hudFxSet(id); },0); setTimeout(()=>skinFxMake(id),0); if(id==="petmonkey") setTimeout(harlowMake,0); if(id==="fount") setTimeout(fountStart,0); else fountStop(); if(id==="petpigeon") setTimeout(pongMake,0); if(id==="arcade8" && !document.getElementById("pixelCss")){ const l=document.createElement("link"); l.id="pixelCss"; l.rel="stylesheet"; l.href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"; document.head.appendChild(l); } const r=document.documentElement; r.removeAttribute("data-skin"); r.removeAttribute("data-theme"); if(id==="light"||id==="dark") r.setAttribute("data-theme",id); else if(id && id!=="auto") r.setAttribute("data-skin",id); }
 if(store.theme==="sunset"){ store.theme="tamworth"; save(); }
 if(store.theme==="graph"){ store.theme="slime"; save(); }
 if(store.theme==="postit"||store.theme==="highlighter"){ store.theme=store.theme==="postit"?"lanyard":"senior"; save(); } // replaced by the lanyard themes // Sunset became Tamworth Castle
