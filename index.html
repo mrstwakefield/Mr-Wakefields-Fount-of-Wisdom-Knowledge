@@ -1175,8 +1175,8 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 @keyframes shoot{0%{left:-20%;opacity:0}5%{opacity:1}30%{left:110%;opacity:0}100%{left:110%;opacity:0}}
 @media (prefers-reduced-motion:reduce){:root[data-skin="storm500"] body,:root[data-skin="storm500"] body::after,:root[data-skin="storm500"] .h1t,:root[data-skin="storm500"] .startbtn,:root[data-skin="storm500"] .xpbar i,:root[data-skin="galaxy1000"] body::before,:root[data-skin="galaxy1000"] body::after,:root[data-skin="galaxy1000"] .h1t,:root[data-skin="galaxy1000"] .top h1::before,:root[data-skin="galaxy1000"] .box,:root[data-skin="galaxy1000"] .plan-card,:root[data-skin="galaxy1000"] .hud,:root[data-skin="galaxy1000"] .petstrip,:root[data-skin="galaxy1000"] .tabs,:root[data-skin="galaxy1000"] .startbtn,:root[data-skin="galaxy1000"] .xpbar i{animation:none}}
 @media (prefers-reduced-motion:reduce){.skinfx *{animation:none!important}}
-/* background scenes: behind everything, top right of the page, edges faded out */
-.tbg{display:none;position:absolute;top:6px;right:10px;width:340px;height:124px;z-index:-1;pointer-events:none;overflow:hidden;transform:scale(1.25);transform-origin:top right;
+/* background scenes: behind everything, fixed in the top right of the screen (stays put while scrolling), edges faded out */
+.tbg{display:none;position:fixed;top:6px;right:10px;width:340px;height:124px;z-index:-1;pointer-events:none;overflow:hidden;transform:scale(1.25);transform-origin:top right;
   -webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 62%,transparent 100%);mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 62%,transparent 100%);border:0!important;box-shadow:none!important}
 .tbg .fa{position:absolute}
 .tbg svg{display:block;width:100%;height:100%}
