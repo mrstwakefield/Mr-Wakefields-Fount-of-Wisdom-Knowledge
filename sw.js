@@ -1,6 +1,6 @@
 /* Offline support for Mr Wakefield's Fount of Knowledge and Wisdom.
    Bump VERSION whenever index.html changes so students get the update. */
-const VERSION = "fount-alevel-v121";
+const VERSION = "fount-alevel-v122";
 const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 
 self.addEventListener("install", e => {
