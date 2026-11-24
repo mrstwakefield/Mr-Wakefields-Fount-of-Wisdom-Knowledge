@@ -37,7 +37,7 @@
 }
 *,*::before,*::after{box-sizing:inherit}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{margin:0;isolation:isolate;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
 button,input,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:3px solid #4D7CFE;outline-offset:2px;border-radius:6px}
@@ -1175,6 +1175,15 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 @keyframes shoot{0%{left:-20%;opacity:0}5%{opacity:1}30%{left:110%;opacity:0}100%{left:110%;opacity:0}}
 @media (prefers-reduced-motion:reduce){:root[data-skin="storm500"] body,:root[data-skin="storm500"] body::after,:root[data-skin="storm500"] .h1t,:root[data-skin="storm500"] .startbtn,:root[data-skin="storm500"] .xpbar i,:root[data-skin="galaxy1000"] body::before,:root[data-skin="galaxy1000"] body::after,:root[data-skin="galaxy1000"] .h1t,:root[data-skin="galaxy1000"] .top h1::before,:root[data-skin="galaxy1000"] .box,:root[data-skin="galaxy1000"] .plan-card,:root[data-skin="galaxy1000"] .hud,:root[data-skin="galaxy1000"] .petstrip,:root[data-skin="galaxy1000"] .tabs,:root[data-skin="galaxy1000"] .startbtn,:root[data-skin="galaxy1000"] .xpbar i{animation:none}}
 @media (prefers-reduced-motion:reduce){.skinfx *{animation:none!important}}
+/* background scenes: behind everything, top right of the page, edges faded out */
+.tbg{display:none;position:absolute;top:6px;right:10px;width:340px;height:124px;z-index:-1;pointer-events:none;overflow:hidden;transform:scale(1.25);transform-origin:top right;
+  -webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 62%,transparent 100%);mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 62%,transparent 100%);border:0!important;box-shadow:none!important}
+.tbg .fa{position:absolute}
+.tbg svg{display:block;width:100%;height:100%}
+.tbg .fl{display:none}
+@media (min-width:761px){:root[data-skin="storm500"] .top h1,:root[data-skin="galaxy1000"] .top h1,:root[data-skin="wakefield"] .top h1,:root[data-skin="snowdome"] .top h1,:root[data-skin="ocean"] .top h1,:root[data-skin="exam"] .top h1,:root[data-skin="blues"] .top h1,:root[data-skin="tamworth"] .top h1,:root[data-skin="pink"] .top h1,:root[data-skin="grape"] .top h1,:root[data-skin="terminal"] .top h1,:root[data-skin="chalk"] .top h1,:root[data-skin="brainscan"] .top h1,:root[data-skin="results"] .top h1,:root[data-skin="ethics"] .top h1,:root[data-skin="coffee"] .top h1,:root[data-skin="arcade8"] .top h1{max-width:calc(100% - 430px)}}
+@media (max-width:760px){.tbg{transform:scale(.9);opacity:.32;right:0}.tbg .to,.tbg .ic,.tbg .cw,.tbg .cs2,.tbg text{display:none}}
+@media (prefers-reduced-motion:reduce){.tbg *{animation:none!important}}
 /* ===== full-screen theme effects (behind nothing, never clickable) + more scenes ===== */
 .tfx{display:none;position:fixed;inset:0;pointer-events:none;z-index:2147482500;overflow:hidden}
 :root[data-skin="volts"] #tfx-volts,:root[data-skin="petdog"] #tfx-petdog,:root[data-skin="dreams"] #tfx-dreams,:root[data-skin="veggie"] #tfx-veggie,:root[data-skin="inner"] #tfx-inner,:root[data-skin="neon"] #tfx-neon,:root[data-skin="exam"] #tfx-exam,:root[data-skin="blues"] #tfx-blues,:root[data-skin="grape"] #tfx-grape,:root[data-skin="terminal"] #tfx-terminal,:root[data-skin="chalk"] #tfx-chalk,:root[data-skin="brainscan"] #tfx-brainscan,:root[data-skin="arcade8"] #tfx-arcade8{display:block}
@@ -1695,8 +1704,12 @@ const SKIN_FX={
   arcade8:()=>`<span class="fa ic">INSERT<br>COIN</span><div class="fa gr"></div><span class="fa blk"></span><span class="fa hero">👾</span>`,
   squeaks:()=>`<div class="mz">${MAZE}<span class="ch">🧀</span><div class="rt">${petSVG(5,"happy",40)}</div></div><span class="fl">Professor Squeaks runs the maze 🎓</span>`
 };
+/* the animal themes get a little scene under the title; every other theme's scene sits in the page background, top right */
+const FX_PANEL=new Set(["petgoose","petdog","petcat","petpeacock","pethans","petbobo","squeaks"]);
 function skinFxMake(id){ const f=SKIN_FX[id]; if(!f || document.getElementById("fx-"+id)) return; const top=document.querySelector(".top"); if(!top) return;
-  const d=document.createElement("div"); d.className="skinfx"; d.id="fx-"+id; d.setAttribute("aria-hidden","true"); d.innerHTML=f(); const h=top.querySelector("h1"); h?h.after(d):top.appendChild(d); }
+  const d=document.createElement("div"); d.id="fx-"+id; d.setAttribute("aria-hidden","true"); d.innerHTML=f();
+  if(FX_PANEL.has(id)){ d.className="skinfx"; const h=top.querySelector("h1"); h?h.after(d):top.appendChild(d); }
+  else { d.className="tbg"; document.body.prepend(d); } }
 /* full-screen theme effects: built once when the theme is first used, shown only while it's on */
 const rnd=(a,b)=>a+Math.random()*(b-a);
 const THEME_OV={
