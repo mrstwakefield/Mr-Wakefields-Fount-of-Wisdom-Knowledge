@@ -1178,6 +1178,9 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 /* background scenes: behind everything, fixed in the top right of the screen (stays put while scrolling), edges faded out */
 .tbg{display:none;position:fixed;top:6px;right:10px;width:340px;height:124px;z-index:-1;pointer-events:none;overflow:hidden;transform:scale(1.25);transform-origin:top right;
   -webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 62%,transparent 100%);mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 62%,transparent 100%);border:0!important;box-shadow:none!important}
+html:not(.attop) .tbg{top:auto;bottom:8px;transform-origin:bottom right;opacity:.6;animation:tbgIn .5s ease-out}
+html.attop .tbg{animation:tbgIn .5s ease-out}
+@keyframes tbgIn{from{opacity:0}}
 .tbg .fa{position:absolute}
 .tbg svg{display:block;width:100%;height:100%}
 .tbg .fl{display:none}
@@ -1741,7 +1744,8 @@ const THEME_OV={
 
 function vegPileMake(){ if(document.getElementById("vegPile")) return; const d=document.createElement("div"); d.id="vegPile"; d.setAttribute("aria-hidden","true");
   d.innerHTML=Array.from({length:34},(_,i)=>i%3===1?`<span class="pea" style="left:${i*3}%;bottom:${i%2?2:9}px"></span>`:`<span style="left:${i*3-1}%;font-size:${18+(i*7)%10}px">🥦</span>`).join(""); document.body.appendChild(d); }
-/* is the title on screen? (used by the Veggie Patch pile) */
+/* is the title on screen? (Veggie Patch pile; background scenes sit top right at the top of the page, bottom right once scrolled) */
+document.documentElement.classList.add("attop");
 if("IntersectionObserver" in window){ const t=document.querySelector(".top"); if(t) new IntersectionObserver(es=>document.documentElement.classList.toggle("attop",es[0].isIntersecting),{threshold:0.15}).observe(t); }
 function hudFxSet(id){ const h=document.getElementById("hudFx"); if(!h) return;
   if(id==="volts"){ h.innerHTML=`<svg class="vg" viewBox="0 0 80 44"><path d="M6 40A34 34 0 0 1 74 40" fill="none" stroke="#333" stroke-width="9"/><path d="M6 40A34 34 0 0 1 74 40" fill="none" stroke="url(#vg)" stroke-width="9"/><defs><linearGradient id="vg"><stop offset="0" stop-color="#7CE0A8"/><stop offset=".55" stop-color="#FFD400"/><stop offset="1" stop-color="#FF3B3B"/></linearGradient></defs><line class="nd" x1="40" y1="40" x2="40" y2="8" stroke="#FFF8D6" stroke-width="4" stroke-linecap="round"/><circle cx="40" cy="40" r="5" fill="#FFD400"/></svg><span class="vt" id="voltTxt"></span>`; voltShow(); }
