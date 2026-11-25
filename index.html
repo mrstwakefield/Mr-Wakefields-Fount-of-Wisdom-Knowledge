@@ -1187,7 +1187,7 @@ html.attop .tbg{animation:tbgIn .5s ease-out}
 @media (min-width:761px){:root[data-skin="storm500"] .top h1,:root[data-skin="galaxy1000"] .top h1,:root[data-skin="wakefield"] .top h1,:root[data-skin="snowdome"] .top h1,:root[data-skin="ocean"] .top h1,:root[data-skin="exam"] .top h1,:root[data-skin="blues"] .top h1,:root[data-skin="tamworth"] .top h1,:root[data-skin="pink"] .top h1,:root[data-skin="grape"] .top h1,:root[data-skin="terminal"] .top h1,:root[data-skin="chalk"] .top h1,:root[data-skin="brainscan"] .top h1,:root[data-skin="results"] .top h1,:root[data-skin="ethics"] .top h1,:root[data-skin="coffee"] .top h1,:root[data-skin="arcade8"] .top h1{max-width:calc(100% - 430px)}}
 @media (max-width:760px){.tbg,html:not(.attop) .tbg{transform:scale(.9);opacity:.32;right:0}.tbg .to,.tbg .ic,.tbg .cw,.tbg .cs2,.tbg text{display:none}}
 @media (prefers-reduced-motion:reduce){.tbg *{animation:none!important}}
-/* Deep Recall */
+/* Rare Recall */
 .deep-sea{position:relative;height:120px;margin:0 0 14px;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#7FD3F2 0%,#1F7FB0 calc(30% - var(--d)*28%),#0A3556 calc(65% - var(--d)*40%),#020B16 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}
 .deep-sea::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.55) 0 1.5px,transparent 2.4px),radial-gradient(circle,rgba(255,255,255,.35) 0 1px,transparent 1.8px);background-size:70px 90px,40px 60px;animation:deepBub 6s linear infinite}
 .deep-diver{position:absolute;left:18%;font-size:30px;transition:top .8s cubic-bezier(.3,1.3,.5,1);transform:translateY(-50%)}
@@ -2473,7 +2473,7 @@ function onKnown(id, prevPct){
 /* ---- badges ---- */
 const BADGES = [
   ["first","🌱","First steps","Answer your first question",()=>G.st.cards>=1],
-  ["deep5k","🐋","Abyssal diver","Dive 5,000 m in one Deep Recall",()=>(G.st.deepBest||0)>=5000],
+  ["deep5k","🐋","Abyssal diver","Dive 5,000 m in one Rare Recall",()=>(G.st.deepBest||0)>=5000],
   ["c100","📚","Century","Answer 100 questions",()=>G.st.cards>=100],
   ["c1000","🏛️","Thousand club","Answer 1,000 questions",()=>G.st.cards>=1000],
   ["combo10","🔥","On fire","Get 10 right in a row",()=>G.st.combo>=10],
@@ -3086,7 +3086,7 @@ const MODES = {
   match:{icon:"🔗", name:"Study Matcher", c:"#D6478F", kind:"mini", src:"match", desc:"Match the researcher to what they found. Three rounds of five, from the topics you've selected."},
   detective:{icon:"🕵️", name:"Study Detective", c:"#52525B", kind:"round", n:8, src:"detective", desc:"A case file describes a study. Work out who did it, what they found, the method and a criticism that fits. Explanations after every answer."},
   whoami:{icon:"🎭", name:"Who Am I?", c:"#9A7440", kind:"round", n:6, src:"whoami", desc:"Clues about a famous study appear one at a time. Guess the researcher early for up to triple XP, or reveal more clues to play it safe."},
-  deep:{icon:"🤿", name:"Deep Recall", c:"#0E5A7A", kind:"mini", src:"deep", desc:"Seven \"name a…\" questions with lots of right answers. Obvious answers are a shallow dive; rare ones take you deeper. A new dive every Monday and Thursday."},
+  deep:{icon:"🤿", name:"Rare Recall", c:"#0E5A7A", kind:"mini", src:"deep", desc:"Seven \"name a…\" questions with lots of right answers. Obvious answers are a short dive; rarer ones take you further down. A new dive every Monday and Thursday."},
   psychle:{icon:"🟩", name:"Psychle", c:"#2E8B57", kind:"mini", src:"psychle", desc:"Guess today's psychology key term in six tries. Green = right letter, right place; yellow = in the word, wrong place. A new word every day."},
   connections:{icon:"🔗", name:"Connections", c:"#8B5CF6", kind:"mini", src:"connections", desc:"Sixteen terms, four hidden groups of four. Find the links before you run out of mistakes."},
   truths:{icon:"🤥", name:"Two Truths and a Lie", c:"#DB2777", kind:"round", n:8, src:"truths", desc:"Three statements about a famous study, and one is false. Can you spot the lie?"},
@@ -4892,7 +4892,7 @@ function qTF(rng){
 }
 
 /* ---- 🟩 Psychle: one word a day (the same for everyone in a year group) ---- */
-/* ===== 🤿 Deep Recall: "name a…" questions where rarer right answers dive deeper. New dive every Monday and Thursday ===== */
+/* ===== 🤿 Rare Recall: "name a…" questions where rarer right answers dive deeper. New dive every Monday and Thursday ===== */
 const DEEP_SETS=[
   ["RM","Name a type of validity",[["ecological validity","ecological"],["temporal validity","temporal"],["population validity","population"],["face validity","face"],["concurrent validity","concurrent"],["internal validity","internal"],["external validity","external"],["predictive validity","predictive"],["construct validity","construct"]]],
   ["RM","Name a sampling method",[["random sampling","random"],["opportunity sampling","opportunity"],["volunteer sampling","volunteer","self-selected","self selected"],["systematic sampling","systematic"],["stratified sampling","stratified"]]],
@@ -4958,27 +4958,27 @@ function deepSubmit(pass){ const dg=G.deep, q=deepBuild().find(b=>b.q===dg.qs[dg
   dg.res.push(r); mg.dv=r; if(q.t && !pass) answer({ok:r.ok, el:inp||false, mode:"arcade"});
   if(dg.res.length>=dg.qs.length){ dg.done=true; const tot=dg.res.reduce((s,x)=>s+x.depth,0); G.st.deepBest=Math.max(G.st.deepBest||0,tot); G.st.deepDives=(G.st.deepDives||0)+1; const xp=Math.round(tot/200); if(xp) addXP(xp,false); if(tot>=3000) confetti(160); checkBadges(); }
   save(); renderArcade(); }
-const DEEP_ZONES=[[0,"🐠","Sunlit shallows"],[1200,"🐢","Twilight zone"],[2500,"🦈","Midnight zone"],[3800,"🐙","The abyss"],[5000,"🦑","The trenches"],[6200,"🐋","Deepest of the deep"]];
+const DEEP_ZONES=[[0,"🐠","Sunlit shallows"],[1200,"🐢","Twilight zone"],[2500,"🦈","Midnight zone"],[3800,"🐙","The abyss"],[5000,"🦑","The trenches"],[6200,"🐋","The ocean floor"]];
 const deepZone=m=>DEEP_ZONES.filter(z=>m>=z[0]).pop();
 function renderDeep(area){ const dg=G.deep, bank=deepBuild(), tot=dg.res.reduce((s,x)=>s+x.depth,0), z=deepZone(tot), frac=Math.min(1,tot/7000);
   const sea=`<div class="deep-sea" style="--d:${frac.toFixed(3)}"><span class="deep-diver" style="top:${(8+frac*70).toFixed(1)}%">🤿</span><span class="deep-m">${tot.toLocaleString()} m</span><span class="deep-z">${z[1]} ${z[2]}</span>${dg.qs.map((_,i)=>`<i class="deep-dot ${i<dg.res.length?(dg.res[i].ok?"ok":"no"):i===dg.res.length?"cur":""}"></i>`).join("")}</div>`;
-  const top=`<div class="arc-top"><span class="big">🤿 Deep Recall</span><span class="spacer"></span><button class="linkbtn" id="deepBack">← Arcade menu</button></div>`;
+  const top=`<div class="arc-top"><span class="big">🤿 Rare Recall</span><span class="spacer"></span><button class="linkbtn" id="deepBack">← Arcade menu</button></div>`;
   if(dg.done && !mg.dv){ const best=G.st.deepBest||0;
     area.innerHTML=`${top}${sea}<div class="quiz-q deep-end"><div class="q" style="margin:4px 0 6px">${z[1]} You reached <b>${tot.toLocaleString()} m</b>: ${esc(z[2])}</div>
       <p class="muted" style="margin:0 0 10px">Personal best: ${best.toLocaleString()} m · next dive ${deepNext()}</p>
-      <ul class="results">${dg.qs.map((qq,i)=>{ const r=dg.res[i], b=bank.find(x=>x.q===qq); return `<li class="${r.ok?"ok":"no"}"><b>${esc(qq)}</b><span>${r.ok?`${esc(r.label)} · ${r.depth} m`:(r.typed?`“${esc(r.typed)}” wasn't on the list`:"Passed")}${b?` · deepest: ${esc(b.ans[0].label)}`:""}</span></li>`; }).join("")}</ul></div>`;
+      <ul class="results">${dg.qs.map((qq,i)=>{ const r=dg.res[i], b=bank.find(x=>x.q===qq); return `<li class="${r.ok?"ok":"no"}"><b>${esc(qq)}</b><span>${r.ok?`${esc(r.label)} · ${r.depth} m`:(r.typed?`“${esc(r.typed)}” wasn't on the list`:"Passed")}${b?` · rarest: ${esc(b.ans[0].label)}`:""}</span></li>`; }).join("")}</ul></div>`;
     $("#deepBack").onclick=()=>{ arc.phase="menu"; renderArcade(); }; return; }
   const i=dg.res.length-(mg.dv?1:0), qq=dg.qs[i], b=bank.find(x=>x.q===qq), t=b?TMAP[b.t]:null;
   if(mg.dv){ const r=mg.dv, others=b?b.ans.filter(a=>a.label!==r.label):[], deep=others.slice(0,4), common=b?b.ans[b.ans.length-1]:null;
     area.innerHTML=`${top}${sea}<div class="quiz-q" style="--c:${t?t.c:"#0E5A7A"}"><div class="tag">${esc(t?t.name:"")} · question ${i+1} of ${dg.qs.length}</div><div class="q" style="font-size:clamp(18px,2.2vw,22px);margin:8px 0">${esc(qq)}</div>
-      <div class="explain ${r.ok?"ok":"no"}">${r.ok?`<b>✓ ${esc(r.label)}: ${r.depth} m</b> ${r.depth>=800?"🐙 A rare find!":r.depth>=400?"Nice and deep.":"A safe, shallow answer."}`:`<b>${r.typed?"✗ Not on the list":"Passed"}</b>`}</div>
-      <p style="margin:10px 0 4px;font-size:15px"><b>Deep answers you could have given:</b> ${deep.map(a=>`${esc(a.label)} <span class="muted">(${a.depth} m)</span>`).join(", ")}</p>
+      <div class="explain ${r.ok?"ok":"no"}">${r.ok?`<b>✓ ${esc(r.label)}: ${r.depth} m</b> ${r.depth>=800?"🐙 A rare find!":r.depth>=400?"Nice dive.":"A safe, common answer."}`:`<b>${r.typed?"✗ Not on the list":"Passed"}</b>`}</div>
+      <p style="margin:10px 0 4px;font-size:15px"><b>Rarer answers you could have given:</b> ${deep.map(a=>`${esc(a.label)} <span class="muted">(${a.depth} m)</span>`).join(", ")}</p>
       ${common&&common.label!==r.label?`<p class="muted" style="margin:0 0 10px;font-size:14px">The most common answer: ${esc(common.label)} (${common.depth} m)</p>`:""}
       <div class="card-actions"><button class="btn" id="deepNext">${dg.done?"See my dive":"Next question"}<kbd>Enter</kbd></button></div></div>`;
     const nx=$("#deepNext"); nx.onclick=()=>{ mg.dv=null; renderArcade(); const ip=$("#deepIn"); if(ip) ip.focus(); }; nx.focus({preventScroll:true});
   } else {
     area.innerHTML=`${top}${sea}<div class="quiz-q" style="--c:${t?t.c:"#0E5A7A"}"><div class="tag">${esc(t?t.name:"")} · question ${i+1} of ${dg.qs.length}</div><div class="q" style="font-size:clamp(18px,2.2vw,22px);margin:8px 0 10px">${esc(qq)}</div>
-      <p class="muted" style="margin:0 0 8px;font-size:14px">Lots of answers are right. The rarer your answer, the deeper you dive.</p>
+      <p class="muted" style="margin:0 0 8px;font-size:14px">Lots of answers are right. The rarer your answer, the further down you dive.</p>
       <input id="deepIn" class="deep-in" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type one answer…" maxlength="40">
       <div class="card-actions"><button class="btn" id="deepGo">Dive 🤿<kbd>Enter</kbd></button><button class="btn ghost" id="deepPass">Pass</button></div></div>`;
     const ip=$("#deepIn"); ip.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); deepSubmit(false); } e.stopPropagation(); };
