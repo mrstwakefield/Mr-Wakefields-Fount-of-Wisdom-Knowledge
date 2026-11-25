@@ -306,7 +306,7 @@ mark{background:#FFE17A;color:#18203A;border-radius:3px;padding:0 1px}
 .opt.dim{opacity:.45}
 @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .newbest{display:inline-block;background:linear-gradient(135deg,#F39A3C,#E0533D);color:#fff;font-weight:800;border-radius:99px;padding:4px 14px;margin-bottom:8px;animation:pulse 1.2s infinite}
-.share{font-family:ui-monospace,Menlo,monospace;background:var(--soft);border-radius:12px;padding:12px;white-space:pre-wrap;display:inline-block;text-align:left;margin:4px 0 14px;font-size:15px}
+.share{font-family:ui-monospace,Menlo,monospace;background:var(--soft);border-radius:12px;padding:12px;white-space:pre-wrap;display:inline-block;text-align:left;margin:4px 0 14px;font-size:15px;overflow-wrap:anywhere;max-width:100%}
 
 /* spaced repetition, themes, boss, backup */
 .duen{display:inline-block;min-width:1.4em;font-size:12px;font-weight:800;background:var(--warn);color:#fff;border-radius:99px;padding:0 6px;margin-left:2px}
@@ -3117,7 +3117,11 @@ function weekStart(){ const d=new Date(); d.setDate(d.getDate()-((d.getDay()+6)%
 const weekNo=()=>Math.floor((dayNum(weekStart())-dayNum("2026-01-05"))/7)+1;
 const weekTopic=()=>{ const L=WEEK_TOPICS.length; let i=((weekNo()%L)+L)%L; for(let n=0;n<L && !topicOpen(WEEK_TOPICS[i].key);n++) i=(i+1)%L; return WEEK_TOPICS[i]; };
 function weeklyQs(){ const t=weekTopic(), rng=rngFrom("weekly-"+weekStart()), c=shuffleR(DATA.filter(d=>d.t===t.key&&mcOK(d)),rng).slice(0,15); return c.map(d=>qFromCard(d,rng)); }
-function weeklyShare(){ const w=G.weekly[weekStart()]; return `Fount of Wisdom A-level Weekly #${weekNo()} · ${weekTopic().name}\n${w.score}/15 · ${fmtTime(w.time)}\n${w.log.map(x=>x?"🟩":"🟥").join("")}`; }
+const SHARE_EMO={"Social Influence":"👥","Memory":"💭","Attachment":"👶","Psychopathology":"🩺","Approaches":"🧭","Biopsychology":"🧠","RM":"🔬","Issues and Debates part I":"⚖️","Relationships":"🤝","Schizophrenia":"🌀","Forensic Psychology":"🔎","Exam skills":"📝","Stats":"📊"};
+const SITE_URL="https://mrstwakefield.github.io/Mr-Wakefields-Fount-of-Wisdom-Knowledge/";
+const shareRows=(log,tp,per)=>{ const cells=log.map((ok,i)=>ok?(SHARE_EMO[(tp||[])[i]]||"🟩"):"⬜"); const rows=[]; for(let i=0;i<cells.length;i+=per) rows.push(cells.slice(i,i+per).join("")); return rows.join("\n"); };
+const qTopic=q=>q.id&&BY_ID[q.id]?BY_ID[q.id].t:/^Stats/.test(q.tname||"")?"Stats":/^Exam/.test(q.tname||"")?"Exam skills":"";
+function weeklyShare(){ const w=G.weekly[weekStart()], t=weekTopic(); return `⛲ Fount Weekly 10 #${weekNo()} · ${t.name}\n${w.score}/15 · ${fmtTime(w.time)}\n${shareRows(w.log, w.log.map(()=>t.key), 5)}\n${SITE_URL}`; }
 function bestLabel(k){
   if(k==="weekly"){ const w=(G.weekly||{})[weekStart()]; return w&&w.done?`Done this week: ${w.score}/15 ✓`:`This week: ${weekTopic().name}`; }
   const st=G.st;
@@ -3219,12 +3223,12 @@ function renderArcade(){
   if(k==="weekly"){
     const w=G.weekly[weekStart()];
     head=`<p class="score">${w.score}/15</p><p class="muted">Weekly Challenge #${weekNo()} · ${esc(weekTopic().name)} · ${fmtTime(w.time)}</p>`;
-    extra=`<div class="share" id="shareTxt">${esc(weeklyShare())}</div><br><button class="btn ghost" id="copyShare">Copy result</button> `;
+    extra=`<div class="share" id="shareTxt">${esc(weeklyShare())}</div><br>${navigator.share?'<button class="btn" id="nativeShare">📤 Share</button> ':""}<button class="btn ghost" id="copyShare">Copy result</button> `;
   }
   if(k==="daily"){
     const dd=G.daily[today()];
     head=`<p class="score">${dd.score}/10</p><p class="muted">Daily 10 #${dailyNo()} · ${fmtTime(dd.time)}</p>`;
-    extra=`<div class="share" id="shareTxt">${esc(shareText())}</div><br><button class="btn ghost" id="copyShare">Copy result</button> `;
+    extra=`<div class="share" id="shareTxt">${esc(shareText())}</div><br>${navigator.share?'<button class="btn" id="nativeShare">📤 Share</button> ':""}<button class="btn ghost" id="copyShare">Copy result</button> `;
   }
   area.innerHTML=`<div class="empty">${arc.best&&k!=="boss"?'<div class="newbest">🏆 NEW PERSONAL BEST</div>':""}<h3>${k==="boss"?(arc.won?"🏆 Boss defeated":"👹 The boss wins this time"):m.icon+" "+m.name+" over"}</h3>${head}
     <p style="margin-top:10px">+${arc.xp} XP earned${m.boost?" (double XP)":""}${k==="daily"?". Next Daily 10 in "+untilMidnight()+".":k==="weekly"?". A new topic starts on Monday.":""}</p>${extra}
@@ -3233,11 +3237,12 @@ function renderArcade(){
   const a=$("#arcAgain"); if(a) a.onclick=()=>startArc(arc.mode);
   $("#arcMenu").onclick=()=>{ arc.phase="menu"; renderArcade(); };
   const bp=$("#bossPick"); if(bp) bp.onclick=()=>{ arc.phase="bossmenu"; renderArcade(); };
-  const c=$("#copyShare"); if(c) c.onclick=()=>{ navigator.clipboard && navigator.clipboard.writeText(k==="weekly"?weeklyShare():shareText()).then(()=>{ c.textContent="Copied ✓"; }).catch(()=>{}); };
+  const c=$("#copyShare"); if(c) c.onclick=()=>{ navigator.clipboard && navigator.clipboard.writeText(k==="weekly"?weeklyShare():shareText()).then(()=>{ c.textContent="Copied ✓"; track("Result shared","Copied"); }).catch(()=>{}); };
+  const ns=$("#nativeShare"); if(ns) ns.onclick=()=>{ navigator.share({text:k==="weekly"?weeklyShare():shareText()}).then(()=>track("Result shared",k==="weekly"?"Weekly 10":"Daily 10")).catch(()=>{}); };
 }
 function fmtTime(ms){ const s=Math.round(ms/1000); return Math.floor(s/60)+":"+String(s%60).padStart(2,"0"); }
 function untilMidnight(){ const n=new Date(), m=new Date(n); m.setHours(24,0,0,0); const h=Math.floor((m-n)/36e5), mi=Math.floor((m-n)%36e5/6e4); return h?`${h}h ${mi}m`:`${mi}m`; }
-function shareText(){ const dd=G.daily[today()]; return `Fount of Wisdom A-level Daily 10 #${dailyNo()}\n${dd.score}/10 · ${fmtTime(dd.time)}\n${dd.log.map(x=>x?"🟩":"🟥").join("")}`; }
+function shareText(){ const dd=G.daily[today()]; return `⛲ Fount Daily 10 #${dailyNo()} · A-level\n${dd.score}/10 · ${fmtTime(dd.time)}\n${shareRows(dd.log, dd.tp, 5)}\n${SITE_URL}`; }
 function dailyQs(){
   const rng=rngFrom("daily-"+today()), cards=shuffleR(DATA.filter(d=>mcOK(d)&&d.t!=="Exam skills"&&topicOpen(d.t)),rng).slice(0,7);
   const qs=cards.map(d=>qFromCard(d,rng)); qs.splice(2,0,qExam(rng)); qs.splice(5,0,qStats(rng)); qs.splice(8,0,qExam(rng));
@@ -3282,7 +3287,7 @@ function startArc(mode){
   if(m.kind==="weekly"){ arc.qs=weeklyQs(); G.weekly[weekStart()]={started:true, done:false, score:0, time:0, log:[], qa:arc.qs.map(q=>[q.q,q.opts[q.correct]])}; save(); }
   if(m.kind==="daily"){
     arc.qs=dailyQs();
-    G.daily[today()]={started:true, done:false, score:0, time:0, log:[], qa:arc.qs.map(q=>[q.q,q.opts[q.correct]])}; save();
+    G.daily[today()]={started:true, done:false, score:0, time:0, log:[], qa:arc.qs.map(q=>[q.q,q.opts[q.correct]]), tp:arc.qs.map(qTopic)}; save();
   } else if(m.kind==="blitz"||m.kind==="surv"){
     if(m.kind==="blitz") arc.end=Date.now()+60000;
     arc.timer=setInterval(arcTick,100);
@@ -3409,7 +3414,7 @@ function arcFinish(){ arcFinishHook();
   if(m.kind==="daily"){
     const log=arc.qs.map((q,i)=>arc.log[i]?arc.log[i].ok:false), score=log.filter(Boolean).length;
     const answeredD=arc.log.filter(Boolean).length;   // a real go: at least 5 of the 10 answered
-    G.daily[today()]={started:true, done:true, n:answeredD, score, time:Date.now()-arc.t0, log, qa:arc.qs.map(q=>[q.q,q.opts[q.correct]])};
+    G.daily[today()]={started:true, done:true, n:answeredD, score, time:Date.now()-arc.t0, log, qa:arc.qs.map(q=>[q.q,q.opts[q.correct]]), tp:arc.qs.map(qTopic)};
     arc.log=arc.qs.map((q,i)=>({q:q.q, a:q.opts[q.correct]+(q.explain&&q.explain!==q.opts[q.correct]?" — "+q.explain:""), ok:log[i]}));
     bonus=(answeredD>=5?30:0)+score*5; if(score===10) bonus+=50;
   }
