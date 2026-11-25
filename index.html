@@ -1188,6 +1188,7 @@ html.attop .tbg{animation:tbgIn .5s ease-out}
 @media (max-width:760px){.tbg,html:not(.attop) .tbg{transform:scale(.9);opacity:.32;right:0}.tbg .to,.tbg .ic,.tbg .cw,.tbg .cs2,.tbg text{display:none}}
 @media (prefers-reduced-motion:reduce){.tbg *{animation:none!important}}
 /* revision card after a wrong answer in a game */
+.retag{display:inline-block;padding:2px 8px;border-radius:999px;background:var(--warn-bg);color:var(--warn);font-weight:800;font-size:12px;margin-right:4px}
 .rev-ov{position:fixed;inset:0;z-index:2147483100;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(10,10,20,.45);animation:revFade .2s ease-out}
 .rev-card{width:min(520px,100%);max-height:90vh;overflow:auto;background:var(--card);color:var(--ink);border:1px solid var(--line);border-left:8px solid var(--c);border-radius:18px;padding:18px 20px 16px;box-shadow:0 18px 50px rgba(0,0,0,.35);animation:revPop .28s cubic-bezier(.3,1.4,.5,1)}
 .rev-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
@@ -2007,7 +2008,7 @@ function renderCard(){
     <div class="stage">
       <div class="card ${flipped?"flipped":""} ${gold?"golden":""}" id="card" style="--c:${t.c}" tabindex="0" role="button" aria-label="Flashcard. Press to ${flipped?"see the question":"reveal the answer"}">
         <div class="face front" aria-hidden="${flipped}">
-          <div class="tag">${gold?'<span class="goldtag">✨ Golden card · 5× XP</span>':(g?"✏️ Gap fill · ":"")+esc(t.name)} <span class="muted">Card ${pos+1} of ${deck.length}</span></div>
+          <div class="tag">${cardReIds.has(d.id)?'<span class="retag">🔁 Has it stuck?</span> ':""}${gold?'<span class="goldtag">✨ Golden card · 5× XP</span>':(g?"✏️ Gap fill · ":"")+esc(t.name)} <span class="muted">Card ${pos+1} of ${deck.length}</span></div>
           ${g?`<div class="gapdef">“<b class="blank">_____</b>: ${esc(g.def).replace(/_____/g,'<b class="blank">_____</b>')}”</div>
           <input class="gapin" id="gapIn" type="text" placeholder="Type the missing key term" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Type the missing key term" value="${esc(gapTyped)}">
           <div class="hint">Type the missing key term, then press Enter to check. It's marked for you. ${stLabel}</div>`
@@ -2060,14 +2061,22 @@ function actionsHTML(){
   : `<button class="btn" id="flipBtn">${gapMode&&gapById(deck[pos])?"Check":"Check my answer"}<kbd>Enter</kbd></button>`; }
 function wireActions(){ const nb=$("#nextCardBtn"); if(nb){ nb.onclick=()=>{ pos++; flipped=false; renderCard(); }; return; }
   if(flipped){ $("#learnBtn").onclick=()=>rate("l"); $("#gotBtn").onclick=()=>rate("k"); } else { const fb=$("#flipBtn"); if(fb) fb.onclick=flip; } }
-function pickCardMC(i){ if(!cardMC || cardMC.picked!=null) return; cardMC.picked=i; const ok=i===cardMC.correct; rate(ok?"k":"l", false); renderCard(); const nb=$("#nextCardBtn"); if(nb) nb.focus({preventScroll:true}); }
+/* flashcards: a wrong answer shows the revision card, then that card comes back 3 cards later */
+const cardReIds=new Set();
+function cardRevAfter(ok){ const id=deck[pos], d=BY_ID[id]; if(!d) return false;
+  if(ok){ cardReIds.delete(id); return false; }
+  cardReIds.add(id); deck.splice(Math.min(deck.length,pos+4),0,id);
+  const g=gapMode&&gapById(id);
+  revOpen({d, q:d.q, ans:g?("The missing term was “"+g.term+"”. "+d.a):d.a}, ()=>{ pos++; flipped=false; renderCard(); });
+  return true; }
+function pickCardMC(i){ if(!cardMC || cardMC.picked!=null) return; cardMC.picked=i; const ok=i===cardMC.correct; rate(ok?"k":"l", false); renderCard(); if(cardRevAfter(ok)) return; const nb=$("#nextCardBtn"); if(nb) nb.focus({preventScroll:true}); }
 function flip(){
   const c=$("#card"); if(!c) return;
   if(curUsesMC()) return;
   if(!flipped && $("#cardIn") && cardTyped.trim().length<3){ const ci=$("#cardIn"); ci.classList.add("need"); ci.placeholder="Have a go first: type at least a few words"; ci.focus(); setTimeout(()=>ci.classList.remove("need"),600); return; }
   if(!flipped && $("#gapIn") && !cardRes){ if(!gapTyped.trim()){ const gi=$("#gapIn"); gi.classList.add("need"); gi.focus(); setTimeout(()=>gi.classList.remove("need"),600); return; }
-    const g=gapById(deck[pos]), v=gapVerdict(gapTyped,g.term)[0]; cardRes={ok:v==="ok"||v==="close", gap:true}; rate(cardRes.ok?"k":"l", false); }
-  if(!flipped && $("#cardIn") && !cardRes){ cardRes=autoMark(cardTyped, BY_ID[deck[pos]].a, BY_ID[deck[pos]].q); rate(cardRes.ok?"k":"l", false); flipped=true; renderCard(); const c2=$("#card"); if(c2){ c2.classList.remove("flipped"); void c2.offsetWidth; c2.classList.add("flipped"); } const nb=$("#nextCardBtn"); if(nb) nb.focus({preventScroll:true}); return; }
+    const g=gapById(deck[pos]), v=gapVerdict(gapTyped,g.term)[0]; cardRes={ok:v==="ok"||v==="close", gap:true}; rate(cardRes.ok?"k":"l", false); if(!cardRes.ok) setTimeout(()=>cardRevAfter(false),450); }
+  if(!flipped && $("#cardIn") && !cardRes){ cardRes=autoMark(cardTyped, BY_ID[deck[pos]].a, BY_ID[deck[pos]].q); rate(cardRes.ok?"k":"l", false); flipped=true; renderCard(); if(cardRevAfter(cardRes.ok)) return; const c2=$("#card"); if(c2){ c2.classList.remove("flipped"); void c2.offsetWidth; c2.classList.add("flipped"); } const nb=$("#nextCardBtn"); if(nb) nb.focus({preventScroll:true}); return; }
   const hadFocus = document.activeElement && ["flipBtn","gotBtn","learnBtn"].includes(document.activeElement.id);
   flipped=!flipped; c.classList.toggle("flipped",flipped);
   c.querySelector(".front").setAttribute("aria-hidden",flipped); c.querySelector(".back").setAttribute("aria-hidden",!flipped);
@@ -2107,15 +2116,15 @@ function renderQuiz(){
       ${n?"":'<p style="margin-top:14px">Pick at least one topic above first.</p>'}
     </div>`;
     area.querySelectorAll("[data-size]").forEach(b=>b.onclick=()=>{quiz.size=+b.dataset.size;renderQuiz();});
-    const s=$("#startQuiz"); if(s) s.onclick=()=>{ quiz.items=shuffle(pool()).slice(0,quiz.size).map(d=>d.id); quiz.i=0; quiz.shown=false; quiz.answers=[]; quiz.marks=[]; quiz.phase="run"; renderQuiz(); const ta=$("#qAns"); if(ta) ta.focus(); };
+    const s=$("#startQuiz"); if(s) s.onclick=()=>{ quiz.items=shuffle(pool()).slice(0,quiz.size).map(d=>d.id); quiz.i=0; quiz.shown=false; quiz.answers=[]; quiz.marks=[]; quiz.retry=[]; quiz.re=null; quiz.phase="run"; renderQuiz(); const ta=$("#qAns"); if(ta) ta.focus(); };
     return;
   }
   if(quiz.phase==="run"){
-    const d=BY_ID[quiz.items[quiz.i]], t=TMAP[d.t], mine=quiz.answers[quiz.i]||"";
+    const d=BY_ID[quiz.re||quiz.items[quiz.i]], t=TMAP[d.t], mine=quiz.re?"":(quiz.answers[quiz.i]||"");
     area.innerHTML=`
       <div class="progressline"><i style="width:${quiz.i/quiz.items.length*100}%"></i></div>
       <div class="quiz-q" style="--c:${t.c}">
-        <div class="tag">${esc(t.name)} <span class="muted">${canSpeak?`<button class="ttsq" id="ttsQ" aria-label="Read aloud">🔈</button> `:""}Question ${quiz.i+1} of ${quiz.items.length}</span></div>
+        <div class="tag">${quiz.re?'<span class="retag">🔁 Has it stuck?</span> ':""}${esc(t.name)} <span class="muted">${canSpeak?`<button class="ttsq" id="ttsQ" aria-label="Read aloud">🔈</button> `:""}Question ${quiz.i+1} of ${quiz.items.length}</span></div>
         <div class="q pre ${d.q.length>150?"long":""}">${esc(d.q)}</div>
         ${quiz.shown
           ? `<div class="compare"><div><h4>Your answer</h4>${mine?esc(mine).replace(/\n/g,"<br>"):'<span class="muted">You didn\'t write anything.</span>'}</div><div class="model"><h4>Model answer</h4><div class="a" style="font-size:17px">${fmtAnswer(d.a,d.id)}</div>${d.y?`<p class="why">💡 ${esc(d.y)}</p>`:""}</div></div>
@@ -2128,13 +2137,15 @@ function renderQuiz(){
     $("#qQuit").onclick=()=>{quiz.phase="setup";renderQuiz();};
     const tq=$("#ttsQ"); if(tq) tq.onclick=()=>speak(quiz.shown ? d.q+". Model answer: "+d.a : d.q);
     if(quiz.shown){
-      $("#qNext").onclick=()=>{ quiz.i++; quiz.shown=false; quiz.res=null; if(quiz.i>=quiz.items.length){ quiz.phase="done"; quizDone(); } renderQuiz(); const ta=$("#qAns"); if(ta) ta.focus(); };
+      $("#qNext").onclick=quizNext;
       $("#qNext").focus({preventScroll:true});
     } else {
       $("#qShow").onclick=()=>{ const v=$("#qAns").value.trim(); if(v.length<3){ const ta=$("#qAns"); ta.classList.add("need"); ta.placeholder="Have a go first: write at least a few words"; ta.focus(); setTimeout(()=>ta.classList.remove("need"),600); return; }
-        quiz.answers[quiz.i]=v; const r=autoMark(v,d.a,d.q), ok=r.ok; quiz.res=r;
-        quiz.marks[quiz.i]=ok; recAcc(d.id,ok); noteLearn(d.id,ok); srReview(d.id,ok); mark(d.id, ok?"k":"l"); answer({ok, el:$("#qShow"), mode:"quiz"});
-        quiz.shown=true; renderQuiz(); };
+        const r=autoMark(v,d.a,d.q), ok=r.ok; quiz.res=r;
+        if(!quiz.re){ quiz.answers[quiz.i]=v; quiz.marks[quiz.i]=ok; }
+        recAcc(d.id,ok); noteLearn(d.id,ok); srReview(d.id,ok); mark(d.id, ok?"k":"l"); answer({ok, el:$("#qShow"), mode:"quiz"});
+        quiz.shown=true; renderQuiz();
+        if(!ok){ quiz.retry=(quiz.retry||[]).filter(x=>x.id!==d.id); quiz.retry.push({id:d.id, due:quiz.i+3+(quiz.re?0:1)}); revOpen({d}, quizNext); } };
     }
     return;
   }
@@ -2149,6 +2160,11 @@ function renderQuiz(){
   $("#qAgain").onclick=()=>{quiz.phase="setup";renderQuiz();};
 }
 
+function quizNext(){ if(quiz.re) quiz.re=null; else quiz.i++;
+  quiz.shown=false; quiz.res=null;
+  if(quiz.i>=quiz.items.length){ quiz.phase="done"; quizDone(); renderQuiz(); return; }
+  const r=(quiz.retry||[]).find(x=>x.due<=quiz.i); if(r){ quiz.retry=quiz.retry.filter(x=>x!==r); quiz.re=r.id; }
+  renderQuiz(); const ta=$("#qAns"); if(ta) ta.focus(); }
 function quizDone(){ const score=quiz.marks.filter(Boolean).length, n=quiz.items.length; G.st.quizzes++; setTimeout(palCheck,600);
   if(score===n){ G.st.perfect++; confetti(220); sfx("lvl"); addXP(50,false); } checkBadges(); save(); }
 
@@ -3314,9 +3330,14 @@ function arcPick(i){
 }
 /* ---- wrong answer in a game: a revision card pops up, then the question comes back a few questions later ---- */
 function revShow(q, done){
-  const d=q.id&&BY_ID[q.id], t=d?TMAP[d.t]:null, right=q.opts[q.correct];
-  const ans=d?d.a:right, tip=d&&d.y?d.y:"", extra=!d && q.explain && q.explain!==right ? q.explain : "";
-  const startPause=Date.now(); arc.paused=startPause;
+  const d=q.id&&BY_ID[q.id], right=q.opts[q.correct], startPause=Date.now(); arc.paused=startPause;
+  revOpen({d, q:q.q, c:q.c, tname:q.tname, ans:d?d.a:right, extra:!d && q.explain && q.explain!==right ? q.explain : ""},
+    ()=>{ const away=Date.now()-startPause; if(M().kind==="blitz") arc.end+=away; arc.paused=0; done(); });
+}
+/* the revision card itself: info = {d (card, optional), q, ans, extra, c, tname} */
+function revOpen(info, done){
+  const d=info.d, t=d?TMAP[d.t]:null, ans=info.ans||(d?d.a:""), tip=d&&d.y?d.y:"", extra=info.extra||"";
+  const q={q:info.q||(d?d.q:""), c:info.c, tname:info.tname};
   const ov=document.createElement("div"); ov.className="rev-ov";
   ov.innerHTML=`<div class="rev-card" role="dialog" aria-modal="true" aria-labelledby="revQ" style="--c:${t?t.c:(q.c||"var(--ink)")}">
     <div class="rev-top"><span class="rev-tag">📇 Revision card</span><span class="rev-topic">${esc(t?t.name:(q.tname||""))}</span></div>
@@ -3326,8 +3347,7 @@ function revShow(q, done){
     <p class="rev-note">🔁 This one will come back in a few questions to check it's stuck.</p>
     <button class="btn" id="revGo">Got it<kbd>Enter</kbd></button></div>`;
   document.body.appendChild(ov);
-  const close=()=>{ if(!ov.isConnected) return; ov.remove(); document.removeEventListener("keydown",key,true);
-    const away=Date.now()-startPause; if(M().kind==="blitz") arc.end+=away; arc.paused=0; done(); };
+  const close=()=>{ if(!ov.isConnected) return; ov.remove(); document.removeEventListener("keydown",key,true); done(); };
   const key=e=>{ if(e.key==="Enter"||e.key===" "||e.key==="Escape"){ e.preventDefault(); close(); } e.stopPropagation(); };
   document.addEventListener("keydown",key,true);
   ov.querySelector("#revGo").onclick=close;
