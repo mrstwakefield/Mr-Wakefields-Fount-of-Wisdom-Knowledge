@@ -1187,6 +1187,21 @@ html.attop .tbg{animation:tbgIn .5s ease-out}
 @media (min-width:761px){:root[data-skin="storm500"] .top h1,:root[data-skin="galaxy1000"] .top h1,:root[data-skin="wakefield"] .top h1,:root[data-skin="snowdome"] .top h1,:root[data-skin="ocean"] .top h1,:root[data-skin="exam"] .top h1,:root[data-skin="blues"] .top h1,:root[data-skin="tamworth"] .top h1,:root[data-skin="pink"] .top h1,:root[data-skin="grape"] .top h1,:root[data-skin="terminal"] .top h1,:root[data-skin="chalk"] .top h1,:root[data-skin="brainscan"] .top h1,:root[data-skin="results"] .top h1,:root[data-skin="ethics"] .top h1,:root[data-skin="coffee"] .top h1,:root[data-skin="arcade8"] .top h1{max-width:calc(100% - 430px)}}
 @media (max-width:760px){.tbg,html:not(.attop) .tbg{transform:scale(.9);opacity:.32;right:0}.tbg .to,.tbg .ic,.tbg .cw,.tbg .cs2,.tbg text{display:none}}
 @media (prefers-reduced-motion:reduce){.tbg *{animation:none!important}}
+/* revision card after a wrong answer in a game */
+.rev-ov{position:fixed;inset:0;z-index:2147483100;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(10,10,20,.45);animation:revFade .2s ease-out}
+.rev-card{width:min(520px,100%);max-height:90vh;overflow:auto;background:var(--card);color:var(--ink);border:1px solid var(--line);border-left:8px solid var(--c);border-radius:18px;padding:18px 20px 16px;box-shadow:0 18px 50px rgba(0,0,0,.35);animation:revPop .28s cubic-bezier(.3,1.4,.5,1)}
+.rev-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+.rev-tag{font-weight:800;font-size:13px;color:var(--muted)}
+.rev-topic{font-weight:700;font-size:13px;color:var(--c)}
+.rev-q{font-family:var(--display);font-weight:800;font-size:20px;line-height:1.2;margin:4px 0 12px}
+.rev-a{background:var(--good-bg);border-radius:12px;padding:10px 12px;font-size:17px;line-height:1.4}
+.rev-lab{display:block;font-weight:800;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--good);margin-bottom:2px}
+.rev-tip{margin:10px 0 0;font-size:15px;color:var(--ink)}
+.rev-note{margin:12px 0 12px;font-size:13px;color:var(--muted)}
+.rev-card .btn{width:100%}
+@keyframes revFade{from{opacity:0}}
+@keyframes revPop{from{opacity:0;transform:translateY(14px) scale(.96)}}
+@media (prefers-reduced-motion:reduce){.rev-ov,.rev-card{animation:none}}
 /* ===== full-screen theme effects (behind nothing, never clickable) + more scenes ===== */
 .tfx{display:none;position:fixed;inset:0;pointer-events:none;z-index:-1;overflow:hidden}
 :root[data-skin="volts"] #tfx-volts,:root[data-skin="petdog"] #tfx-petdog,:root[data-skin="dreams"] #tfx-dreams,:root[data-skin="veggie"] #tfx-veggie,:root[data-skin="inner"] #tfx-inner,:root[data-skin="neon"] #tfx-neon,:root[data-skin="exam"] #tfx-exam,:root[data-skin="blues"] #tfx-blues,:root[data-skin="grape"] #tfx-grape,:root[data-skin="terminal"] #tfx-terminal,:root[data-skin="chalk"] #tfx-chalk,:root[data-skin="brainscan"] #tfx-brainscan,:root[data-skin="arcade8"] #tfx-arcade8{display:block}
@@ -3227,7 +3242,7 @@ function startArc(mode){
     if(dd && (dd.done || dd.started)){ if(!dd.done){ dd.done=true; save(); } arc.mode="daily"; arc.phase="done"; arc.xp=0; arc.best=false; arc.log=(dd.qa||[]).map((x,i)=>({q:x[0],a:x[1],ok:dd.log[i]})); renderArcade(); return; }
   }
   clearInterval(arc.timer);
-  Object.assign(arc,{mode, phase:"play", i:0, score:0, right:0, lives:3, log:[], xp:0, best:false, locked:false, t0:Date.now(), seen:new Set(), fb:false});
+  Object.assign(arc,{mode, phase:"play", i:0, score:0, right:0, lives:3, log:[], xp:0, best:false, locked:false, t0:Date.now(), seen:new Set(), fb:false, retry:[], paused:0});
   resetCombo();
   const m=M();
   if(m.kind==="boss"){ arc.qs=bossQs(arc.bossTopic); if(arc.hard) arc.lives=2; arc.say=(BOSS_LINES[arc.bossTopic]||[])[0]||""; }
@@ -3248,7 +3263,7 @@ function arcNewQ(){
 }
 function arcTick(){
   const m=arc.mode&&M();
-  if(arc.phase!=="play" || !m || (m.kind!=="blitz"&&m.kind!=="surv")) return;
+  if(arc.phase!=="play" || !m || (m.kind!=="blitz"&&m.kind!=="surv") || arc.paused) return;
   const now=Date.now(), left = m.kind==="blitz" ? arc.end-now : arc.qEnd-now, total = m.kind==="blitz"?60000:12000;
   const f=$("#tbFill"), tm=$("#arcTime"), tb=$("#tb");
   if(f && !arc.locked){ f.style.width=Math.max(0,left/total*100)+"%"; tb.classList.toggle("low", left<(m.kind==="blitz"?10000:4000)); }
@@ -3259,17 +3274,18 @@ function arcTick(){
 function arcPick(i){
   if(arc.locked || arc.phase!=="play") return;
   arc.locked=true;
-  const m=M(), q=arc.cur, ok=i===q.correct, btns=[...document.querySelectorAll(".opt")];
+  const m=M(), q=arc.cur, ok=i===q.correct, btns=[...document.querySelectorAll(".opt")], re=!!q.recheck;
   btns.forEach((b,j)=>{ b.disabled=true; if(j===q.correct) b.classList.add("right"); else if(j===i) b.classList.add("wrong"); else b.classList.add("dim"); });
-  arc.log.push({q:q.q, a:q.opts[q.correct]+(q.explain&&q.explain!==q.opts[q.correct]?" — "+q.explain:""), ok});
-  if(m.kind==="weekly"){ const w=G.weekly[weekStart()]; if(w){ w.log=arc.qs.map((x,j)=>arc.log[j]?arc.log[j].ok:false); w.score=w.log.filter(Boolean).length; w.time=Date.now()-arc.t0; } }
-  if(m.kind==="daily"){ const dd=G.daily[today()]; if(dd){ dd.log=arc.qs.map((x,j)=>arc.log[j]?arc.log[j].ok:false); dd.score=dd.log.filter(Boolean).length; dd.time=Date.now()-arc.t0; } }
+  if(!re) arc.log.push({q:q.q, a:q.opts[q.correct]+(q.explain&&q.explain!==q.opts[q.correct]?" — "+q.explain:""), ok});
+  if(!re && m.kind==="weekly"){ const w=G.weekly[weekStart()]; if(w){ w.log=arc.qs.map((x,j)=>arc.log[j]?arc.log[j].ok:false); w.score=w.log.filter(Boolean).length; w.time=Date.now()-arc.t0; } }
+  if(!re && m.kind==="daily"){ const dd=G.daily[today()]; if(dd){ dd.log=arc.qs.map((x,j)=>arc.log[j]?arc.log[j].ok:false); dd.score=dd.log.filter(Boolean).length; dd.time=Date.now()-arc.t0; } }
   if(q.id && BY_ID[q.id]) recAcc(q.id,ok);
   arc.xp += answer({ok, el:btns[i]||btns[q.correct], mode:m.kind==="round"?"quiz":"arcade", boost:q.clues?[3,2,1.5,1][arc.clue-1]:m.boost});
   if(q.clues){ const ol=document.querySelector(".clues"); if(ol) ol.innerHTML=q.clues.map(c=>`<li>${esc(c)}</li>`).join(""); const cm=$("#clueMore"); if(cm) cm.remove(); const w=document.querySelector(".clue-worth"); if(w) w.textContent=""; if(ok && arc.clue===1) G.st.whoFirst=(G.st.whoFirst||0)+1; }
-  if(m.kind==="boss"){ arc.say=ok?BOSS_HITS[Math.floor(Math.random()*BOSS_HITS.length)]:((BOSS_LINES[arc.bossTopic]||[])[1]||""); const sy=$("#bossSay"); if(sy) sy.innerHTML=`<span>${BOSSES[arc.bossTopic][1]}</span>“${esc(arc.say)}”`; }
-  if(m.kind==="boss"){ const bb=$("#bossBar"); if(bb){ bb.classList.remove("hit","miss"); void bb.offsetWidth; bb.classList.add(ok?"hit":"miss"); if(ok){ const fi=bb.querySelector("i"); if(fi) fi.style.width=Math.max(0,(bossHP()-arc.right-1)/bossHP()*100)+"%"; floater("−1 HP", bb, ""); } } }
-  if(ok){ arc.right++; if(m.kind==="blitz"){ arc.score+=Math.round(100*comboMult()); const s=$("#arcScore"); if(s) s.textContent=arc.score.toLocaleString(); } }
+  if(!re && m.kind==="boss"){ arc.say=ok?BOSS_HITS[Math.floor(Math.random()*BOSS_HITS.length)]:((BOSS_LINES[arc.bossTopic]||[])[1]||""); const sy=$("#bossSay"); if(sy) sy.innerHTML=`<span>${BOSSES[arc.bossTopic][1]}</span>“${esc(arc.say)}”`; }
+  if(!re && m.kind==="boss"){ const bb=$("#bossBar"); if(bb){ bb.classList.remove("hit","miss"); void bb.offsetWidth; bb.classList.add(ok?"hit":"miss"); if(ok){ const fi=bb.querySelector("i"); if(fi) fi.style.width=Math.max(0,(bossHP()-arc.right-1)/bossHP()*100)+"%"; floater("−1 HP", bb, ""); } } }
+  if(re){ if(!ok && q.id && BY_ID[q.id] && status(q.id)!=="k") mark(q.id,"l"); }
+  else if(ok){ arc.right++; if(m.kind==="blitz"){ arc.score+=Math.round(100*comboMult()); const s=$("#arcScore"); if(s) s.textContent=arc.score.toLocaleString(); } }
   else {
     if(q.id && BY_ID[q.id] && status(q.id)!=="k") mark(q.id,"l");
     if(m.kind==="blitz"){ arc.end-=3000; floater("−3s", $("#arcTime"), "meh"); }
@@ -3278,12 +3294,15 @@ function arcPick(i){
   }
   const advance=()=>{
     if(arc.phase!=="play") return;
-    arc.i++;
+    if(!re) arc.i++;
     if(m.kind==="boss" && (arc.right>=bossHP() || arc.lives<=0 || arc.i>=arc.qs.length)) return arcFinish();
     if((m.kind==="surv" && arc.lives<=0) || (m.kind==="daily" && arc.i>=10) || (m.kind==="weekly" && arc.i>=15) || (m.kind==="round" && arc.i>=m.n)) return arcFinish();
     if(m.kind==="blitz" && arc.end<=Date.now()) return arcFinish();
+    if(recheckDue()) return;
     arcNewQ(); renderArcade();
   };
+  // wrong answer: show the revision card, and ask it again a few questions later
+  if(!ok){ recheckAdd(q); revShow(q, advance); return; }
   if(m.kind==="round" || (m.kind==="daily" && q.explain && (q.tname.startsWith("Exam")||q.tname.startsWith("Stats")))){
     const fb=$("#fb"); arc.fb=advance;
     fb.innerHTML=`<div class="explain ${ok?"ok":"no"}"><b>${ok?"✓ Correct":"✗ Not quite"}</b> ${esc(q.explain||"")}</div>${q.id?flagBtn(q.id):""}<div class="card-actions"><button class="btn" id="nextQ">${(m.kind==="round"&&arc.i+1>=m.n)||(m.kind==="daily"&&arc.i+1>=10)?"See results":"Next question"}<kbd>Enter</kbd></button></div>`;
@@ -3293,6 +3312,34 @@ function arcPick(i){
   }
   setTimeout(advance, ok ? 380 : 1300);
 }
+/* ---- wrong answer in a game: a revision card pops up, then the question comes back a few questions later ---- */
+function revShow(q, done){
+  const d=q.id&&BY_ID[q.id], t=d?TMAP[d.t]:null, right=q.opts[q.correct];
+  const ans=d?d.a:right, tip=d&&d.y?d.y:"", extra=!d && q.explain && q.explain!==right ? q.explain : "";
+  const startPause=Date.now(); arc.paused=startPause;
+  const ov=document.createElement("div"); ov.className="rev-ov";
+  ov.innerHTML=`<div class="rev-card" role="dialog" aria-modal="true" aria-labelledby="revQ" style="--c:${t?t.c:(q.c||"var(--ink)")}">
+    <div class="rev-top"><span class="rev-tag">📇 Revision card</span><span class="rev-topic">${esc(t?t.name:(q.tname||""))}</span></div>
+    <p class="rev-q" id="revQ">${esc(String(d?d.q:q.q).replace(/\n/g," "))}</p>
+    <div class="rev-a"><span class="rev-lab">Answer</span>${esc(ans)}</div>
+    ${tip?`<p class="rev-tip">💡 ${esc(tip)}</p>`:""}${extra?`<p class="rev-tip">${esc(extra)}</p>`:""}
+    <p class="rev-note">🔁 This one will come back in a few questions to check it's stuck.</p>
+    <button class="btn" id="revGo">Got it<kbd>Enter</kbd></button></div>`;
+  document.body.appendChild(ov);
+  const close=()=>{ if(!ov.isConnected) return; ov.remove(); document.removeEventListener("keydown",key,true);
+    const away=Date.now()-startPause; if(M().kind==="blitz") arc.end+=away; arc.paused=0; done(); };
+  const key=e=>{ if(e.key==="Enter"||e.key===" "||e.key==="Escape"){ e.preventDefault(); close(); } e.stopPropagation(); };
+  document.addEventListener("keydown",key,true);
+  ov.querySelector("#revGo").onclick=close;
+  setTimeout(()=>{ const b=ov.querySelector("#revGo"); if(b) b.focus({preventScroll:true}); },30);
+}
+function recheckAdd(q){ arc.retry=arc.retry||[]; const key=q.q; if(arc.retry.some(r=>r.q.q===key)) return; arc.retry.push({q, due:arc.i+3}); }
+function recheckDue(){ const r=(arc.retry||[]).find(x=>x.due<=arc.i); if(!r) return false;
+  arc.retry=arc.retry.filter(x=>x!==r);
+  const d=r.q.id&&BY_ID[r.q.id]; let q=d&&mcOK(d)?qFromCard(d,Math.random):{...r.q};
+  q.recheck=true; q.tname="🔁 Has it stuck? · "+(q.tname||r.q.tname||"");
+  arc.cur=q; arc.locked=false; arc.fb=false; if(M().kind==="surv") arc.qEnd=Date.now()+12000;
+  renderArcade(); return true; }
 function arcFinishHook(){ if(["truths","hilo","examiner"].includes(arc.mode)) G.st[arc.mode+"Best"]=Math.max(G.st[arc.mode+"Best"]||0,arc.right); if(arc.mode==="tf") G.st.tfBest=Math.max(G.st.tfBest||0,arc.right); if(arc.mode==="detective") G.st.detBest=Math.max(G.st.detBest||0,arc.right); if(arc.mode==="flaw" && arc.log.length>=MODES.flaw.n) G.st.flaws=(G.st.flaws||0)+1; }
 function arcFinish(){ arcFinishHook();
   if(arc.phase!=="play") return;
