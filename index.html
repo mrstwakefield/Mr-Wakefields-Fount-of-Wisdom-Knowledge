@@ -1187,6 +1187,19 @@ html.attop .tbg{animation:tbgIn .5s ease-out}
 @media (min-width:761px){:root[data-skin="storm500"] .top h1,:root[data-skin="galaxy1000"] .top h1,:root[data-skin="wakefield"] .top h1,:root[data-skin="snowdome"] .top h1,:root[data-skin="ocean"] .top h1,:root[data-skin="exam"] .top h1,:root[data-skin="blues"] .top h1,:root[data-skin="tamworth"] .top h1,:root[data-skin="pink"] .top h1,:root[data-skin="grape"] .top h1,:root[data-skin="terminal"] .top h1,:root[data-skin="chalk"] .top h1,:root[data-skin="brainscan"] .top h1,:root[data-skin="results"] .top h1,:root[data-skin="ethics"] .top h1,:root[data-skin="coffee"] .top h1,:root[data-skin="arcade8"] .top h1{max-width:calc(100% - 430px)}}
 @media (max-width:760px){.tbg,html:not(.attop) .tbg{transform:scale(.9);opacity:.32;right:0}.tbg .to,.tbg .ic,.tbg .cw,.tbg .cs2,.tbg text{display:none}}
 @media (prefers-reduced-motion:reduce){.tbg *{animation:none!important}}
+/* Deep Recall */
+.deep-sea{position:relative;height:120px;margin:0 0 14px;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#7FD3F2 0%,#1F7FB0 calc(30% - var(--d)*28%),#0A3556 calc(65% - var(--d)*40%),#020B16 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}
+.deep-sea::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.55) 0 1.5px,transparent 2.4px),radial-gradient(circle,rgba(255,255,255,.35) 0 1px,transparent 1.8px);background-size:70px 90px,40px 60px;animation:deepBub 6s linear infinite}
+.deep-diver{position:absolute;left:18%;font-size:30px;transition:top .8s cubic-bezier(.3,1.3,.5,1);transform:translateY(-50%)}
+.deep-m{position:absolute;right:14px;top:12px;font-weight:900;font-size:28px;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.4)}
+.deep-z{position:absolute;right:14px;top:50px;font-weight:700;font-size:14px;color:#D6F1FF}
+.deep-dot{display:inline-block;position:relative;top:96px;left:14px;width:12px;height:12px;margin-right:6px;border-radius:50%;background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.6)}
+.deep-dot.ok{background:#5FE0B0;border-color:#5FE0B0}.deep-dot.no{background:#FF8A7A;border-color:#FF8A7A}.deep-dot.cur{background:#fff}
+.deep-in{width:100%;box-sizing:border-box;font:inherit;font-size:19px;padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink);margin:0 0 10px}
+.deep-in:focus{outline:none;border-color:var(--c,#0E5A7A)}
+.deep-in.need{border-color:var(--warn)}
+@keyframes deepBub{from{background-position:0 0,20px 10px}to{background-position:0 -90px,20px -110px}}
+@media (prefers-reduced-motion:reduce){.deep-sea::before{animation:none}.deep-diver{transition:none}}
 /* revision card after a wrong answer in a game */
 .retag{display:inline-block;padding:2px 8px;border-radius:999px;background:var(--warn-bg);color:var(--warn);font-weight:800;font-size:12px;margin-right:4px}
 .rev-ov{position:fixed;inset:0;z-index:2147483100;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(10,10,20,.45);animation:revFade .2s ease-out}
@@ -2460,6 +2473,7 @@ function onKnown(id, prevPct){
 /* ---- badges ---- */
 const BADGES = [
   ["first","🌱","First steps","Answer your first question",()=>G.st.cards>=1],
+  ["deep5k","🐋","Abyssal diver","Dive 5,000 m in one Deep Recall",()=>(G.st.deepBest||0)>=5000],
   ["c100","📚","Century","Answer 100 questions",()=>G.st.cards>=100],
   ["c1000","🏛️","Thousand club","Answer 1,000 questions",()=>G.st.cards>=1000],
   ["combo10","🔥","On fire","Get 10 right in a row",()=>G.st.combo>=10],
@@ -3072,6 +3086,7 @@ const MODES = {
   match:{icon:"🔗", name:"Study Matcher", c:"#D6478F", kind:"mini", src:"match", desc:"Match the researcher to what they found. Three rounds of five, from the topics you've selected."},
   detective:{icon:"🕵️", name:"Study Detective", c:"#52525B", kind:"round", n:8, src:"detective", desc:"A case file describes a study. Work out who did it, what they found, the method and a criticism that fits. Explanations after every answer."},
   whoami:{icon:"🎭", name:"Who Am I?", c:"#9A7440", kind:"round", n:6, src:"whoami", desc:"Clues about a famous study appear one at a time. Guess the researcher early for up to triple XP, or reveal more clues to play it safe."},
+  deep:{icon:"🤿", name:"Deep Recall", c:"#0E5A7A", kind:"mini", src:"deep", desc:"Seven \"name a…\" questions with lots of right answers. Obvious answers are a shallow dive; rare ones take you deeper. A new dive every Monday and Thursday."},
   psychle:{icon:"🟩", name:"Psychle", c:"#2E8B57", kind:"mini", src:"psychle", desc:"Guess today's psychology key term in six tries. Green = right letter, right place; yellow = in the word, wrong place. A new word every day."},
   connections:{icon:"🔗", name:"Connections", c:"#8B5CF6", kind:"mini", src:"connections", desc:"Sixteen terms, four hidden groups of four. Find the links before you run out of mistakes."},
   truths:{icon:"🤥", name:"Two Truths and a Lie", c:"#DB2777", kind:"round", n:8, src:"truths", desc:"Three statements about a famous study, and one is false. Can you spot the lie?"},
@@ -3093,7 +3108,7 @@ const arc={phase:"menu", mode:null, qs:[], i:0, score:0, right:0, lives:3, end:0
 const dailyNo = () => dayNum(today())-dayNum("2026-01-01")+1;
 const M = () => MODES[arc.mode];
 /* how the arcade menu is grouped on phones (desktop shows one grid in the MODES order) */
-const ARC_GROUPS=[["📰","Daily and weekly",["daily","psychle","weekly","exam"]],["⚡","Quick play",["tf","blitz","surv","gap","connections","hilo","match","sort","timeline","order"]],["🕵️","Study skills",["stats","flaw","detective","whoami","truths","mistakes"]],["✍️","Exam technique",["paragraph","examiner"]],["👹","Challenges",["boss"]],["👪","For teachers and parents",["parent","proj"]]];
+const ARC_GROUPS=[["📰","Daily and weekly",["daily","psychle","deep","weekly","exam"]],["⚡","Quick play",["tf","blitz","surv","gap","connections","hilo","match","sort","timeline","order"]],["🕵️","Study skills",["stats","flaw","detective","whoami","truths","mistakes"]],["✍️","Exam technique",["paragraph","examiner"]],["👹","Challenges",["boss"]],["👪","For teachers and parents",["parent","proj"]]];
 const GOTD_POOL=["blitz","surv","gap","stats","flaw","match","order","detective","whoami","sort","timeline","tf","hilo","truths","connections","paragraph","examiner"];
 const gotd=()=>GOTD_POOL[((dayNum(today())%GOTD_POOL.length)+GOTD_POOL.length)%GOTD_POOL.length];
 /* weekly challenge: rotates through the content topics every Monday */
@@ -3106,6 +3121,7 @@ function weeklyShare(){ const w=G.weekly[weekStart()]; return `Fount of Wisdom A
 function bestLabel(k){
   if(k==="weekly"){ const w=(G.weekly||{})[weekStart()]; return w&&w.done?`Done this week: ${w.score}/15 ✓`:`This week: ${weekTopic().name}`; }
   const st=G.st;
+  if(k==="deep"){ const dg=G.deep; return dg&&dg.key===deepKey()&&dg.done?`This dive: ${dg.res.reduce((a,r)=>a+r.depth,0).toLocaleString()} m ✓ · next ${deepNext()}`:"A new dive is waiting"; }
   if(k==="psychle"){ const ps=(G.psychle||{})[today()+(store.year||"")]; return ps&&ps.done?(ps.won?`Today: solved in ${ps.g.length} ✓`:"Today: done. New word tomorrow"):"Today's word is waiting"; }
   if(k==="connections") return st.connWins?`Puzzles solved: ${st.connWins}`:"No score yet";
   if(k==="tf") return st.tfBest?`Best: ${st.tfBest} right`:"No score yet";
@@ -3143,7 +3159,7 @@ function renderArcade(){
           || ((k==="detective"||k==="whoami") && !STUDIES.some(x=>topicOpen(x.t))) || (k==="sort" && !SORT_SETS.some(x=>topicOpen(x.t))) || (k==="timeline" && !TIMELINES.some(x=>topicOpen(x.t)))
           || (k==="order" && !SEQUENCES.some(x=>topicOpen(x.t))) || (k==="match" && matchPairs().length<5)
           || (k==="truths" && !STUDIES.some(x=>topicOpen(x.t))) || (k==="hilo" && HILO.filter(x=>topicOpen(x[2])).length<2) || (k==="paragraph" && !PARAGRAPHS.some(x=>topicOpen(x.t)))
-          || (k==="examiner" && !EXAMINER.some(x=>topicOpen(x[0]))) || (k==="psychle" && !PSY_WORDS.some(x=>topicOpen(x[1]))) || (k==="connections" && connGroups(Math.random).length<4);
+          || (k==="examiner" && !EXAMINER.some(x=>topicOpen(x[0]))) || (k==="psychle" && !PSY_WORDS.some(x=>topicOpen(x[1]))) || (k==="deep" && deepPool().length<7) || (k==="connections" && connGroups(Math.random).length<4);
         const tag = k===gotd() ? `<span class="new gotd">🎲 Today 2×</span>` : m.featured ? `<span class="new">2× XP</span>` : (k==="daily"&&!(dd&&dd.done)) ? '<span class="new">NEW</span>' : "";
         return `<button class="mode ${m.featured?"featured":""} ${k===gotd()?"gotd":""}" style="--c:${m.c}" data-mode="${k}" ${dis?"disabled":""}>${tag}<span class="mi">${m.icon}</span><h3>${m.name}${m.featured?' <small>Featured</small>':""}</h3><p>${m.desc}</p><span class="best">${bestLabel(k)}</span></button>`; };
         const used=new Set(ARC_GROUPS.flatMap(g=>g[2])), rest=Object.keys(MODES).filter(k=>!used.has(k));
@@ -3155,7 +3171,7 @@ function renderArcade(){
     $("#weekBan").onclick=()=>startArc("weekly");
     const yc=$("#yearChange"); if(yc) yc.onclick=()=>showYearPicker(true);
     $("#gotdBan").onclick=()=>{ const g=gotd(); if(g==="match") startMatch(); else if(g==="order") startOrder(); else if(g==="sort") startSort(); else if(g==="timeline") startTimeline(); else if(g==="connections") startConnections(); else if(g==="paragraph") startParagraph(); else startArc(g); };
-    area.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{ const md=b.dataset.mode; if(md==="boss"){ arc.phase="bossmenu"; renderArcade(); } else if(md==="match") startMatch(); else if(md==="order") startOrder(); else if(md==="sort") startSort(); else if(md==="timeline") startTimeline(); else if(md==="psychle") startPsychle(); else if(md==="connections") startConnections(); else if(md==="paragraph") startParagraph(); else if(md==="proj") openProjector(); else if(md==="parent") openParent(); else startArc(md); });
+    area.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{ const md=b.dataset.mode; if(md==="boss"){ arc.phase="bossmenu"; renderArcade(); } else if(md==="match") startMatch(); else if(md==="order") startOrder(); else if(md==="sort") startSort(); else if(md==="timeline") startTimeline(); else if(md==="psychle") startPsychle(); else if(md==="deep") startDeep(); else if(md==="connections") startConnections(); else if(md==="paragraph") startParagraph(); else if(md==="proj") openProjector(); else if(md==="parent") openParent(); else startArc(md); });
     return;
   }
   if(arc.phase==="bossmenu"){
@@ -4358,6 +4374,7 @@ const LAST_TABS={cards:"Flashcards", quiz:"Quiz", writing:"Writing practice"};
   startTimeline=(f=>function(){ anGame("timeline"); return f.apply(this,arguments); })(startTimeline);
   startSort=(f=>function(){ anGame("sort"); return f.apply(this,arguments); })(startSort);
   startOrder=(f=>function(){ anGame("order"); return f.apply(this,arguments); })(startOrder);
+  startDeep=(f=>function(){ anGame("deep"); return f.apply(this,arguments); })(startDeep);
   startPsychle=(f=>function(){ anGame("psychle"); return f.apply(this,arguments); })(startPsychle);
   startConnections=(f=>function(){ anGame("connections"); return f.apply(this,arguments); })(startConnections);
   startParagraph=(f=>function(){ anGame("paragraph"); return f.apply(this,arguments); })(startParagraph);
@@ -4875,6 +4892,100 @@ function qTF(rng){
 }
 
 /* ---- 🟩 Psychle: one word a day (the same for everyone in a year group) ---- */
+/* ===== 🤿 Deep Recall: "name a…" questions where rarer right answers dive deeper. New dive every Monday and Thursday ===== */
+const DEEP_SETS=[
+  ["RM","Name a type of validity",[["ecological validity","ecological"],["temporal validity","temporal"],["population validity","population"],["face validity","face"],["concurrent validity","concurrent"],["internal validity","internal"],["external validity","external"],["predictive validity","predictive"],["construct validity","construct"]]],
+  ["RM","Name a sampling method",[["random sampling","random"],["opportunity sampling","opportunity"],["volunteer sampling","volunteer","self-selected","self selected"],["systematic sampling","systematic"],["stratified sampling","stratified"]]],
+  ["RM","Name an experimental design",[["independent groups","independent measures"],["repeated measures"],["matched pairs"]]],
+  ["RM","Name an inferential statistical test",[["sign test","sign"],["chi-squared","chi squared","chi square"],["mann-whitney","mann whitney"],["wilcoxon"],["spearman's rho","spearman"],["pearson's r","pearson"],["related t-test","related t test"],["unrelated t-test","unrelated t test"]]],
+  ["RM","Name a measure of central tendency or dispersion",[["mean"],["median"],["mode"],["range"],["standard deviation"]]],
+  ["RM","Name a type of experiment",[["laboratory experiment","lab experiment","laboratory","lab"],["field experiment","field"],["natural experiment","natural"],["quasi-experiment","quasi experiment","quasi"]]],
+  ["RM","Name an ethical issue",[["deception"],["informed consent","consent"],["right to withdraw"],["confidentiality"],["protection from harm"],["privacy"]]],
+  ["Approaches","Name an ego defence mechanism",[["repression"],["denial"],["displacement"],["projection"],["sublimation"],["regression"],["rationalisation","rationalization"],["reaction formation"]]],
+  ["Approaches","Name a psychosexual stage",[["oral stage","oral"],["anal stage","anal"],["phallic stage","phallic"],["latency stage","latency","latent"],["genital stage","genital"]]],
+  ["Approaches","Name a level of Maslow's hierarchy of needs",[["physiological"],["safety"],["love and belonging","belongingness","belonging","love"],["esteem"],["self-actualisation","self actualisation","self-actualization"]]],
+  ["Biopsychology","Name a lobe of the brain",[["frontal lobe","frontal"],["parietal lobe","parietal"],["temporal lobe","temporal"],["occipital lobe","occipital"]]],
+  ["Biopsychology","Name a hormone or neurotransmitter",[["adrenaline","epinephrine"],["noradrenaline"],["cortisol"],["serotonin"],["dopamine"],["melatonin"],["oxytocin"],["testosterone"],["oestrogen","estrogen"],["GABA"],["glutamate"],["acetylcholine"]]],
+  ["Biopsychology","Name a way of studying the brain",[["fMRI"],["EEG"],["ERP","event-related potentials","event related potentials"],["post-mortem","post mortem"]]],
+  ["Biopsychology","Name a type of biological rhythm",[["circadian rhythm","circadian"],["ultradian rhythm","ultradian"],["infradian rhythm","infradian"]]],
+  ["Social Influence","Name a type of conformity",[["compliance"],["identification"],["internalisation","internalization"]]],
+  ["Social Influence","Name a situational factor affecting obedience",[["proximity"],["location"],["uniform"]]],
+  ["Social Influence","Name a factor in minority influence",[["consistency"],["commitment"],["flexibility"],["augmentation principle","augmentation"],["snowball effect","snowball"]]],
+  ["Attachment","Name one of Ainsworth's attachment types",[["secure attachment","secure"],["insecure-avoidant","insecure avoidant","avoidant"],["insecure-resistant","insecure resistant","resistant","ambivalent"],["disorganised attachment","disorganised","disorganized"]]],
+  ["Attachment","Name a stage of attachment (Schaffer and Emerson)",[["asocial","asocial stage"],["indiscriminate attachment","indiscriminate"],["specific attachment","specific"],["multiple attachments","multiple attachment","multiple"]]],
+  ["Memory","Name a type of long-term memory",[["episodic memory","episodic"],["semantic memory","semantic"],["procedural memory","procedural"]]],
+  ["Memory","Name a part of the working memory model",[["central executive"],["phonological loop"],["visuo-spatial sketchpad","visuospatial sketchpad","sketchpad"],["episodic buffer"],["articulatory process","articulatory control"],["phonological store"],["inner scribe"],["visual cache"]]],
+  ["Psychopathology","Name a definition of abnormality",[["statistical infrequency"],["deviation from social norms","social norms"],["failure to function adequately"],["deviation from ideal mental health","ideal mental health"]]],
+  ["Schizophrenia","Name a symptom of schizophrenia",[["hallucinations","hallucination"],["delusions","delusion"],["speech poverty","alogia"],["avolition"],["disorganised speech","disorganized speech"],["catatonia"],["word salad"],["neologisms","neologism"]]],
+  ["Schizophrenia","Name a treatment for schizophrenia",[["typical antipsychotics","chlorpromazine"],["atypical antipsychotics","clozapine","risperidone"],["cbt","cognitive behavioural therapy","cognitive behaviour therapy"],["family therapy"],["token economy"]]],
+  ["Forensic Psychology","Name a way of dealing with offending behaviour",[["custodial sentencing","prison"],["behaviour modification","behavior modification"],["anger management"],["restorative justice"]]],
+  ["Relationships","Name a theory of romantic relationships",[["social exchange theory","social exchange"],["equity theory","equity"],["investment model"],["duck's phase model","phase model","breakdown model"]]],
+  ["Issues and Debates part I","Name a type of determinism",[["biological determinism","biological"],["environmental determinism","environmental"],["psychic determinism","psychic"],["hard determinism","hard"],["soft determinism","soft"]]]
+];
+const DEEP_NOT=new Set(["Ethics","Council","March","Best","Back","Frame","Field","Read","King","Brown","Stanley","Smith","Taylor","Davis","Miller","Martin","Wood","Lewis","Morgan","Powell","Peterson","Scott","Simon","Mann","Hamilton","Holland","Lee","Bell","Wolf","Hess","Lamb","Dye","Mills","Ryan","Allen","Houston","Wong","Haan","Cohen","Ali","Klein","Terry","Bull","Rogers","Kuhn","Roberts","Murray","Best","Kirby"]);
+let DEEP_BANK=null;
+const deepNorm=s=>String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[’']/g,"").replace(/[^a-z0-9]+/g," ").replace(/\b(the|et al|al)\b/g," ").replace(/\b(19|20)\d\d\b/g," ").replace(/\s+/g," ").trim();
+function deepFreq(words){ let n=0; const res=words.map(w=>new RegExp("\\b"+w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\b","i"));
+  for(const d of DATA){ const t=d.q+" "+d.a+" "+(d.y||""); if(res.some(r=>r.test(t))) n++; } return n; }
+function deepBuild(){ if(DEEP_BANK) return DEEP_BANK; const bank=[];
+  const re=/\b([A-Z][a-z’'\-]{2,})(?:’s|'s)?(?:\s+(?:et al\.?|and [A-Z][a-z]+|& [A-Z][a-z]+))?\s*\(((?:19|20)\d\d)\)/g;
+  TOPICS.filter(t=>t.key!=="Exam skills" && t.key!=="RM").forEach(t=>{ const names=new Set();
+    DATA.filter(d=>d.t===t.key).forEach(d=>{ const txt=d.q+" "+d.a+" "+(d.y||""); let x; re.lastIndex=0; while((x=re.exec(txt))){ const n=x[1].replace(/(’s|'s)$/,""); if(!DEEP_NOT.has(n)) names.add(n); } });
+    if(names.size>=6) bank.push({t:t.key, q:"Name a researcher whose study appears in "+t.name, ans:[...names].map(n=>({label:n, alias:[n]}))}); });
+  DEEP_SETS.forEach(([t,q,list])=>bank.push({t, q, ans:list.map(a=>({label:a[0].replace(/^./,c=>c.toUpperCase()), alias:a}))}));
+  bank.forEach(b=>{ b.ans.forEach(a=>{ a.f=Math.max(1,deepFreq([a.alias[0]])); a.n=a.alias.map(deepNorm); });
+    const lf=b.ans.map(a=>Math.log(a.f)), hi=Math.max(...lf), lo=Math.min(...lf);
+    b.ans.forEach((a,i)=>{ a.depth=hi===lo?500:Math.round((50+950*(hi-lf[i])/(hi-lo))/10)*10; });
+    b.ans.sort((x,y)=>y.depth-x.depth); });
+  return DEEP_BANK=bank; }
+const deepPool=()=>deepBuild().filter(b=>topicOpen(b.t));
+/* a new dive on Mondays (Mon–Wed) and Thursdays (Thu–Sun) */
+const deepKey=()=>weekStart()+([1,2,3].includes(new Date().getDay())?"a":"b")+(store.year||"");
+const deepNext=()=>[1,2,3].includes(new Date().getDay())?"Thursday":"Monday";
+function deepLev(a,b){ if(Math.abs(a.length-b.length)>2) return 9; const m=[...Array(b.length+1).keys()];
+  for(let i=1;i<=a.length;i++){ let prev=m[0]; m[0]=i; for(let j=1;j<=b.length;j++){ const t=m[j]; m[j]=Math.min(m[j]+1,m[j-1]+1,prev+(a[i-1]===b[j-1]?0:1)); prev=t; } } return m[b.length]; }
+function deepMatch(q,typed){ const t=deepNorm(typed); if(!t) return null;
+  for(const a of q.ans) if(a.n.some(n=>n===t)) return a;
+  for(const a of q.ans) if(a.n.some(n=>{ const tol=n.length>=9?2:n.length>=5?1:0; return tol && deepLev(t,n)<=tol; })) return a;
+  return null; }
+function startDeep(){ const key=deepKey(), pool=deepPool();
+  if(!G.deep || G.deep.key!==key){ const rng=rngFrom("deep-"+key); const rs=pool.filter(b=>b.q.startsWith("Name a researcher")), sets=pool.filter(b=>!b.q.startsWith("Name a researcher"));
+    const pick=shuffleR(rs,rng).slice(0,3).concat(shuffleR(sets,rng)).slice(0,7); G.deep={key, qs:shuffleR(pick,rng).map(b=>b.q), res:[], done:false}; save(); }
+  mg.phase="deep"; mg.dv=null; arc.phase="mini"; arc.mode="deep"; renderArcade(); }
+function deepSubmit(pass){ const dg=G.deep, q=deepBuild().find(b=>b.q===dg.qs[dg.res.length]); if(!q) return;
+  const inp=$("#deepIn"), typed=pass?"":(inp?inp.value:""); if(!pass && !deepNorm(typed)){ if(inp){ inp.classList.add("need"); inp.focus(); setTimeout(()=>inp.classList.remove("need"),600); } return; }
+  const a=pass?null:deepMatch(q,typed), r={typed:typed.slice(0,40), ok:!!a, label:a?a.label:"", depth:a?a.depth:0};
+  dg.res.push(r); mg.dv=r; if(q.t && !pass) answer({ok:r.ok, el:inp||false, mode:"arcade"});
+  if(dg.res.length>=dg.qs.length){ dg.done=true; const tot=dg.res.reduce((s,x)=>s+x.depth,0); G.st.deepBest=Math.max(G.st.deepBest||0,tot); G.st.deepDives=(G.st.deepDives||0)+1; const xp=Math.round(tot/200); if(xp) addXP(xp,false); if(tot>=3000) confetti(160); checkBadges(); }
+  save(); renderArcade(); }
+const DEEP_ZONES=[[0,"🐠","Sunlit shallows"],[1200,"🐢","Twilight zone"],[2500,"🦈","Midnight zone"],[3800,"🐙","The abyss"],[5000,"🦑","The trenches"],[6200,"🐋","Deepest of the deep"]];
+const deepZone=m=>DEEP_ZONES.filter(z=>m>=z[0]).pop();
+function renderDeep(area){ const dg=G.deep, bank=deepBuild(), tot=dg.res.reduce((s,x)=>s+x.depth,0), z=deepZone(tot), frac=Math.min(1,tot/7000);
+  const sea=`<div class="deep-sea" style="--d:${frac.toFixed(3)}"><span class="deep-diver" style="top:${(8+frac*70).toFixed(1)}%">🤿</span><span class="deep-m">${tot.toLocaleString()} m</span><span class="deep-z">${z[1]} ${z[2]}</span>${dg.qs.map((_,i)=>`<i class="deep-dot ${i<dg.res.length?(dg.res[i].ok?"ok":"no"):i===dg.res.length?"cur":""}"></i>`).join("")}</div>`;
+  const top=`<div class="arc-top"><span class="big">🤿 Deep Recall</span><span class="spacer"></span><button class="linkbtn" id="deepBack">← Arcade menu</button></div>`;
+  if(dg.done && !mg.dv){ const best=G.st.deepBest||0;
+    area.innerHTML=`${top}${sea}<div class="quiz-q deep-end"><div class="q" style="margin:4px 0 6px">${z[1]} You reached <b>${tot.toLocaleString()} m</b>: ${esc(z[2])}</div>
+      <p class="muted" style="margin:0 0 10px">Personal best: ${best.toLocaleString()} m · next dive ${deepNext()}</p>
+      <ul class="results">${dg.qs.map((qq,i)=>{ const r=dg.res[i], b=bank.find(x=>x.q===qq); return `<li class="${r.ok?"ok":"no"}"><b>${esc(qq)}</b><span>${r.ok?`${esc(r.label)} · ${r.depth} m`:(r.typed?`“${esc(r.typed)}” wasn't on the list`:"Passed")}${b?` · deepest: ${esc(b.ans[0].label)}`:""}</span></li>`; }).join("")}</ul></div>`;
+    $("#deepBack").onclick=()=>{ arc.phase="menu"; renderArcade(); }; return; }
+  const i=dg.res.length-(mg.dv?1:0), qq=dg.qs[i], b=bank.find(x=>x.q===qq), t=b?TMAP[b.t]:null;
+  if(mg.dv){ const r=mg.dv, others=b?b.ans.filter(a=>a.label!==r.label):[], deep=others.slice(0,4), common=b?b.ans[b.ans.length-1]:null;
+    area.innerHTML=`${top}${sea}<div class="quiz-q" style="--c:${t?t.c:"#0E5A7A"}"><div class="tag">${esc(t?t.name:"")} · question ${i+1} of ${dg.qs.length}</div><div class="q" style="font-size:clamp(18px,2.2vw,22px);margin:8px 0">${esc(qq)}</div>
+      <div class="explain ${r.ok?"ok":"no"}">${r.ok?`<b>✓ ${esc(r.label)}: ${r.depth} m</b> ${r.depth>=800?"🐙 A rare find!":r.depth>=400?"Nice and deep.":"A safe, shallow answer."}`:`<b>${r.typed?"✗ Not on the list":"Passed"}</b>`}</div>
+      <p style="margin:10px 0 4px;font-size:15px"><b>Deep answers you could have given:</b> ${deep.map(a=>`${esc(a.label)} <span class="muted">(${a.depth} m)</span>`).join(", ")}</p>
+      ${common&&common.label!==r.label?`<p class="muted" style="margin:0 0 10px;font-size:14px">The most common answer: ${esc(common.label)} (${common.depth} m)</p>`:""}
+      <div class="card-actions"><button class="btn" id="deepNext">${dg.done?"See my dive":"Next question"}<kbd>Enter</kbd></button></div></div>`;
+    const nx=$("#deepNext"); nx.onclick=()=>{ mg.dv=null; renderArcade(); const ip=$("#deepIn"); if(ip) ip.focus(); }; nx.focus({preventScroll:true});
+  } else {
+    area.innerHTML=`${top}${sea}<div class="quiz-q" style="--c:${t?t.c:"#0E5A7A"}"><div class="tag">${esc(t?t.name:"")} · question ${i+1} of ${dg.qs.length}</div><div class="q" style="font-size:clamp(18px,2.2vw,22px);margin:8px 0 10px">${esc(qq)}</div>
+      <p class="muted" style="margin:0 0 8px;font-size:14px">Lots of answers are right. The rarer your answer, the deeper you dive.</p>
+      <input id="deepIn" class="deep-in" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type one answer…" maxlength="40">
+      <div class="card-actions"><button class="btn" id="deepGo">Dive 🤿<kbd>Enter</kbd></button><button class="btn ghost" id="deepPass">Pass</button></div></div>`;
+    const ip=$("#deepIn"); ip.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); deepSubmit(false); } e.stopPropagation(); };
+    $("#deepGo").onclick=()=>deepSubmit(false); $("#deepPass").onclick=()=>deepSubmit(true); setTimeout(()=>ip.focus({preventScroll:true}),30);
+  }
+  $("#deepBack").onclick=()=>{ arc.phase="menu"; renderArcade(); };
+}
 function psyToday(){ const pool=PSY_WORDS.filter(w=>topicOpen(w[1])); const rng=rngFrom("psychle-"+today()+"-"+(store.year||"")); return pickR(pool,rng); }
 function startPsychle(){ const w=psyToday(); G.psychle=G.psychle||{}; const k=today()+(store.year||"");
   if(!G.psychle[k] || G.psychle[k].w!==w[0]) G.psychle[k]={w:w[0], g:[], done:false, won:false};
@@ -5099,6 +5210,7 @@ function startSort(){ const sel=new Set(store.sel), all=SORT_SETS.filter(x=>topi
   mg.phase="sort"; arc.phase="mini"; arc.mode="sort"; renderArcade(); }
 function startOrder(){ mg.tl=false; mg.par=false; const sel=new Set(store.sel), all=SEQUENCES.filter(x=>topicOpen(x.t)); let s=all.filter(x=>sel.has(x.t)); if(s.length<5) s=all; mg.seqs=shuffle(s).slice(0,5); mg.si=0; mg.picked=[]; mg.checked=false; mg.right2=0; mg.xp=0; mg.places=0; mg.placesTotal=0; mg.phase="order"; arc.phase="mini"; arc.mode="order"; mg.shuffled=shuffle(mg.seqs[0].steps); renderArcade(); }
 function renderMini(area){
+  if(mg.phase==="deep"){ renderDeep(area); return; }
   if(renderPsychleOrConn(area)) return;
   if(mg.phase==="sort"){
     const set=mg.sets[mg.si], t=TMAP[set.t], it=mg.items[mg.ii];
