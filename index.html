@@ -66,6 +66,7 @@ h1 span b{font-weight:500}
 .topics-head h2{font-family:var(--display);font-size:18px;margin:0;font-weight:700}
 /* topics fold into one line so the flashcard sits near the top */
 .topics.shut{padding:8px 12px;margin-bottom:14px}
+.petstrip-low{margin-top:22px}
 .topics.shut #topicsBody{display:none}
 .topics:not(.shut) .topics-sum{display:none}
 .topics-sum{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 6px;width:100%;border:0;background:none;color:var(--ink);font:inherit;font-size:15px;text-align:left;padding:2px 0;cursor:pointer}
@@ -1473,7 +1474,6 @@ html.attop .tbg{animation:tbgIn .5s ease-out}
     <button class="iconbtn" id="soundBtn" aria-label="Mute sounds">🔊</button>
   </div>
   <div id="evBanner"></div>
-  <button class="petstrip" id="petStrip" hidden></button>
   <div id="plan"></div>
 
   <div class="tabs" role="tablist" aria-label="Revision mode">
@@ -1550,6 +1550,7 @@ html.attop .tbg{animation:tbgIn .5s ease-out}
     <p class="muted" id="moreWrap" style="text-align:center"></p>
   </section>
 
+  <button class="petstrip petstrip-low" id="petStrip" hidden></button>
   <footer class="foot">
     <span>Your progress is saved in this browser only.</span>
     <span><button class="linkbtn" id="tourLink">📖 How it works</button> <button class="linkbtn" id="parentLink">👪 Parent mode</button> <button class="linkbtn" id="installBtn" hidden>📲 Install the app</button> <button class="linkbtn" id="backupLink">💾 Back up or move my progress</button> <button class="linkbtn" id="resetBtn">Reset my progress</button></span>
