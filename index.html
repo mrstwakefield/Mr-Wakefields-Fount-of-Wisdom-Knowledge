@@ -64,6 +64,13 @@ h1 span b{font-weight:500}
 .topics{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 14px 10px;margin-bottom:22px}
 .topics-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
 .topics-head h2{font-family:var(--display);font-size:18px;margin:0;font-weight:700}
+/* topics fold into one line so the flashcard sits near the top */
+.topics.shut{padding:8px 12px;margin-bottom:14px}
+.topics.shut #topicsBody{display:none}
+.topics:not(.shut) .topics-sum{display:none}
+.topics-sum{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 6px;width:100%;border:0;background:none;color:var(--ink);font:inherit;font-size:15px;text-align:left;padding:2px 0;cursor:pointer}
+.topics-sum #topicsSumTxt{color:var(--muted);flex:1 1 auto;min-width:0}
+.topics-chg{font-weight:700;color:var(--ink);white-space:nowrap;text-decoration:underline;text-underline-offset:3px}
 .linkbtn{border:0;background:none;color:var(--muted);text-decoration:underline;text-underline-offset:3px;padding:4px 6px;font-size:15px}
 .chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(172px,1fr));gap:8px}
 .chip{--c:#888;display:flex;flex-direction:column;align-items:stretch;gap:5px;border:2px solid var(--line);background:transparent;border-radius:12px;padding:8px 11px 9px;text-align:left;min-width:0;transition:border-color .15s,background .15s}
@@ -1484,12 +1491,15 @@ html.attop .tbg{animation:tbgIn .5s ease-out}
     <button role="tab" aria-selected="false" data-tab="saves" id="tab-saves" aria-controls="p-trophies">💾 Saves</button>
   </div>
 
-  <section class="topics" aria-labelledby="topicsTitle">
+  <section class="topics shut" id="topicsBox" aria-labelledby="topicsTitle">
+    <button class="topics-sum" id="topicsSum" type="button" aria-expanded="false" aria-controls="topicsBody"><b>Topics:</b> <span id="topicsSumTxt"></span> <span class="topics-chg">Change ▾</span></button>
+    <div id="topicsBody">
     <div class="topics-head">
       <h2 id="topicsTitle">Topics to revise</h2>
-      <div><button class="linkbtn" id="allTopics">Select all</button><button class="linkbtn" id="noTopics">Clear</button></div>
+      <div><button class="linkbtn" id="allTopics">Select all</button><button class="linkbtn" id="noTopics">Clear</button><button class="linkbtn" id="topicsDone">Done ▴</button></div>
     </div>
     <div class="chips" id="chips"></div>
+    </div>
   </section>
 
   <!-- FLASHCARDS -->
@@ -1859,7 +1869,13 @@ function renderMeter(){ renderDue();
   $("#knownCount").textContent=k; $("#learningCount").textContent=l;
   $("#stack").innerHTML = `<i style="width:${k/DATA.length*100}%;background:var(--good)"></i><i style="width:${l/DATA.length*100}%;background:var(--warn);opacity:.7"></i>`;
 }
-function renderChips(){
+/* topics summary line (collapsed by default; remembers if a student prefers it open) */
+function topicsSumUpdate(){ const el=document.getElementById("topicsSumTxt"); if(!el) return; const sel=TOPICS.filter(t=>store.sel.includes(t.key)).map(t=>t.name);
+  el.textContent=!sel.length?"none chosen yet":sel.length===TOPICS.length?"all topics":sel.slice(0,2).join(", ")+(sel.length>2?" +"+(sel.length-2):""); }
+function topicsOpen(open){ const b=document.getElementById("topicsBox"), s=document.getElementById("topicsSum"); if(!b) return; b.classList.toggle("shut",!open); if(s) s.setAttribute("aria-expanded",open); try{ localStorage.setItem("fount-topics-open",open?"1":""); }catch(e){} }
+(function(){ const s=document.getElementById("topicsSum"), d=document.getElementById("topicsDone"); if(s) s.onclick=()=>topicsOpen(true); if(d) d.onclick=()=>topicsOpen(false);
+  let o=""; try{ o=localStorage.getItem("fount-topics-open")||""; }catch(e){} if(o) topicsOpen(true); })();
+function renderChips(){ setTimeout(topicsSumUpdate,0);
   $("#chips").innerHTML = TOPICS.map(t=>{
     const items = DATA.filter(d=>d.t===t.key); const k = items.filter(d=>status(d.id)==="k").length;
     const on = store.sel.includes(t.key);
